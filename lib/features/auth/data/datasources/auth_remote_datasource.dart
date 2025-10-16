@@ -1,6 +1,5 @@
+import 'package:GreenConnectMobile/core/network/api_client.dart';
 import 'package:dio/dio.dart';
-import 'package:green_connect_mb/core/network/api_client.dart';
-
 
 class AuthRemoteDataSource {
   final ApiClient client;
@@ -18,7 +17,4 @@ class AuthRemoteDataSource {
     final response = await client.dio.get('/users');
     return response.data;
   }
-
-
 }
-

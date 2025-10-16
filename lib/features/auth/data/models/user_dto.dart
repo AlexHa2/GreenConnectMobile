@@ -1,5 +1,4 @@
-
-import 'package:green_connect_mb/features/auth/domain/entities/user.dart';
+import 'package:GreenConnectMobile/features/auth/domain/entities/user.dart';
 
 class UserDto {
   final String id;
@@ -23,10 +22,5 @@ class UserDto {
     );
   }
 
-  User toEntity() => User(
-        id: id,
-        email: email,
-        name: name,
-        token: token,
-      );
+  User toEntity() => User(id: id, email: email, name: name, token: token);
 }
