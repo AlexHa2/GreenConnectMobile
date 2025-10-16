@@ -1,7 +1,8 @@
+import 'package:GreenConnectMobile/features/auth/presentation/providers/auth_provider.dart';
+import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:green_connect_mb/features/auth/presentation/providers/auth_provider.dart';
-import 'package:green_connect_mb/generated/l10n.dart';
 
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
@@ -15,8 +16,8 @@ class LoginPage extends ConsumerWidget {
         title: const Text(
           "Login",
           style: TextStyle(
-            fontFamily: 'Roboto', 
-            color: Color.fromARGB(255, 42, 128, 40),
+            fontFamily: 'Roboto',
+            color: Color.fromARGB(255, 56, 235, 53),
             fontWeight: FontWeight.w900, // bold
             fontSize: 22,
           ),
@@ -43,6 +44,7 @@ class LoginPage extends ConsumerWidget {
                 return ListTile(
                   leading: CircleAvatar(child: Text(user.id.toString())),
                   title: Text(user.name),
+                  trailing: GradientButton(text: 'Login', onPressed: () {}),
                 );
               },
             );

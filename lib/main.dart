@@ -1,12 +1,11 @@
+import 'package:GreenConnectMobile/core/config/app_theme.dart';
+import 'package:GreenConnectMobile/core/di/injector.dart';
+import 'package:GreenConnectMobile/features/auth/presentation/views/login_page.dart';
+import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:green_connect_mb/core/config/app_theme.dart';
-import 'package:green_connect_mb/core/di/injector.dart';
-import 'package:green_connect_mb/features/auth/presentation/views/login_page.dart';
-import 'package:green_connect_mb/generated/l10n.dart';
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,9 +24,9 @@ class GreenConnectApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Green Connect',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: ThemeMode.light,
       localizationsDelegates: const [
         S.delegate,
         GlobalMaterialLocalizations.delegate,
