@@ -1,8 +1,8 @@
+import 'package:GreenConnectMobile/core/di/injector.dart';
+import 'package:GreenConnectMobile/features/auth/domain/entities/user.dart';
+import 'package:GreenConnectMobile/features/auth/domain/usecases/get_user_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:green_connect_mb/core/di/injector.dart';
-import 'package:green_connect_mb/features/auth/domain/entities/user.dart';
-import 'package:green_connect_mb/features/auth/domain/usecases/get_user_usecase.dart';
 
 class AuthNotifier extends StateNotifier<AsyncValue<List<User>>> {
   final GetUserUseCase getUserUseCase;
