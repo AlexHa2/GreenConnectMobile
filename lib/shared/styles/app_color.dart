@@ -30,14 +30,16 @@ class AppColors {
   // ===== Gradients =====
   static const LinearGradient linearPrimary = LinearGradient(
     colors: [Color(0xFF29C562), Color(0xFF70D194)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    stops: [0.60, 1.0],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
   );
 
   static const LinearGradient linearSecondary = LinearGradient(
     colors: [Color(0xFFF3F3D4), Color(0xFFD6F0D8)],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
+    stops: [0.0, 0.7],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
   );
 }
 
@@ -68,13 +70,15 @@ class AppColorsDark {
   // ===== Gradients =====
   static const LinearGradient linearPrimary = LinearGradient(
     colors: [Color(0xFF29C562), Color(0xFF70D194)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    stops: [0.60, 1.0],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
   );
 
   static const LinearGradient linearSecondary = LinearGradient(
-    colors: [Color(0xFF1E1E1E), Color(0xFF2C2C2C)],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
+    colors: [Color(0xFFF3F3D4), Color(0xFFD6F0D8)],
+    stops: [0.0, 0.7],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
   );
 }
