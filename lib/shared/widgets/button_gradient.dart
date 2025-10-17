@@ -15,7 +15,7 @@ class GradientButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        gradient: AppColors.linearSecondary,
+        gradient: AppColors.linearPrimary,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: ElevatedButton(
