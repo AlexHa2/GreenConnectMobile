@@ -23,7 +23,7 @@ class GreenConnectApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Green Connect',
+      title: 'GConnect',
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.light,
@@ -33,6 +33,7 @@ class GreenConnectApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      locale: const Locale('vi', 'VN'),
       supportedLocales: S.supportedLocales,
       home: const LoginPage(),
     );

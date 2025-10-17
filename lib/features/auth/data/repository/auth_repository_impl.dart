@@ -1,7 +1,8 @@
-import '../../domain/entities/user.dart';
-import '../../domain/repository/auth_repository.dart';
-import '../datasources/auth_remote_datasource.dart';
-import '../models/user_dto.dart';
+
+import 'package:GreenConnectMobile/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:GreenConnectMobile/features/auth/data/models/user_dto.dart';
+import 'package:GreenConnectMobile/features/auth/domain/entities/user.dart';
+import 'package:GreenConnectMobile/features/auth/domain/repository/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
