@@ -41,5 +41,8 @@
   "notifications": "Notifications",
   "search": "Search",
   "home": "Home",
-  "about": "About"
+  "about": "About",
+  "username_hint":"Enter your username",
+  "phone_number_hint": "Enter your phone number",
+  "otp_hint": "Enter your OTP"
 }

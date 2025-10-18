@@ -63,7 +63,6 @@ class _WelcomePageState extends State<WelcomePage>
                         Text(
                           S.of(context)!.hello_first,
                           style: theme.textTheme.titleLarge?.copyWith(
-                            color: AppColors.textPrimary,
                             fontSize: 42,
                             fontWeight: FontWeight.bold,
                           ),

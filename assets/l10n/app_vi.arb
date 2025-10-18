@@ -41,5 +41,8 @@
   "notifications": "Thông báo",
   "search": "Tìm kiếm",
   "home": "Trang chủ",
-  "about": "Giới thiệu"
+  "about": "Giới thiệu",
+  "username_hint":"Nhập tên đăng nhập của bạn",
+  "phone_number_hint": "Nhập số điện thoại của bạn",
+  "otp_hint": "Nhập OTP"
 }
