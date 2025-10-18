@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// Light theme color palette
 class AppColors {
   // ===== Core Backgrounds =====
-  static const Color background = Color(0xFFFFFFFF); // Main app background
+  static const Color background = Color(0xFFF5F5F5); // Main app background
   static const Color surface = Color(
     0xFFFFFFFF,
   ); // Surface elements (cards, sheets)

@@ -32,7 +32,25 @@ class SVi extends S {
       'Đăng ký để bắt đầu hành trình xanh của bạn';
 
   @override
+  String get register_complete => 'Hoàn thành đăng ký';
+
+  @override
+  String get register_here => 'Đăng ký ở đây';
+
+  @override
+  String get login_complete => 'Hoàn thành đăng nhập';
+
+  @override
   String get login => 'Đăng nhập';
+
+  @override
+  String get login_here => 'Đăng nhập ở đây';
+
+  @override
+  String get already_have_account => 'Đã có tài khoản ?';
+
+  @override
+  String get dont_have_account => 'Chưa có tài khoản ?';
 
   @override
   String get logout => 'Đăng xuất';
@@ -45,6 +63,12 @@ class SVi extends S {
 
   @override
   String get phone_number => 'Số điện thoại';
+
+  @override
+  String get select_role => 'Chọn vai trò của bạn';
+
+  @override
+  String get select_image => 'Chọn hình đại diện của bạn';
 
   @override
   String get email => 'Email';
@@ -72,6 +96,12 @@ class SVi extends S {
 
   @override
   String get error_occurred => 'Đã xảy ra lỗi';
+
+  @override
+  String get error_all_field => 'Vui lòng nhập hết các trường được yêu cầu';
+
+  @override
+  String get upload => 'Tải lên';
 
   @override
   String get post => 'bài đăng';

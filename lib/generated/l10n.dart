@@ -130,20 +130,56 @@ abstract class S {
   /// No description provided for @welcome_register_primary.
   ///
   /// In en, this message translates to:
-  /// **'Create a new account'**
+  /// **'Join Green Connect'**
   String get welcome_register_primary;
 
   /// No description provided for @welcome_register_secondary.
   ///
   /// In en, this message translates to:
-  /// **'Sign up to start your green journey'**
+  /// **'Start your sustainable journey today'**
   String get welcome_register_secondary;
+
+  /// No description provided for @register_complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Register Complete'**
+  String get register_complete;
+
+  /// No description provided for @register_here.
+  ///
+  /// In en, this message translates to:
+  /// **'Register here'**
+  String get register_here;
+
+  /// No description provided for @login_complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Complete'**
+  String get login_complete;
 
   /// No description provided for @login.
   ///
   /// In en, this message translates to:
   /// **'Login'**
   String get login;
+
+  /// No description provided for @login_here.
+  ///
+  /// In en, this message translates to:
+  /// **'Login here'**
+  String get login_here;
+
+  /// No description provided for @already_have_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have account ?'**
+  String get already_have_account;
+
+  /// No description provided for @dont_have_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account ?'**
+  String get dont_have_account;
 
   /// No description provided for @logout.
   ///
@@ -168,6 +204,18 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Phone Number'**
   String get phone_number;
+
+  /// No description provided for @select_role.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Your Role'**
+  String get select_role;
+
+  /// No description provided for @select_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Your Image'**
+  String get select_image;
 
   /// No description provided for @email.
   ///
@@ -222,6 +270,18 @@ abstract class S {
   /// In en, this message translates to:
   /// **'An error occurred'**
   String get error_occurred;
+
+  /// No description provided for @error_all_field.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all required fields'**
+  String get error_all_field;
+
+  /// No description provided for @upload.
+  ///
+  /// In en, this message translates to:
+  /// **'upload'**
+  String get upload;
 
   /// No description provided for @post.
   ///
