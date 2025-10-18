@@ -1,6 +1,8 @@
 import 'package:GreenConnectMobile/core/config/app_theme.dart';
 import 'package:GreenConnectMobile/core/di/injector.dart';
-import 'package:GreenConnectMobile/features/auth/presentation/views/login_page.dart';
+import 'package:GreenConnectMobile/core/route/routes.dart';
+import 'package:GreenConnectMobile/features/auth/presentation/views/register_page.dart';
+import 'package:GreenConnectMobile/features/auth/presentation/views/welcome_page.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -22,7 +24,7 @@ class GreenConnectApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'GConnect',
       theme: lightTheme,
       darkTheme: darkTheme,
@@ -35,7 +37,8 @@ class GreenConnectApp extends StatelessWidget {
       ],
       locale: const Locale('vi', 'VN'),
       supportedLocales: S.supportedLocales,
-      home: const LoginPage(),
+      routerConfig: greenRouter,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
