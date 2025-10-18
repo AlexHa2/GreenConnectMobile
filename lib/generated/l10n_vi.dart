@@ -135,4 +135,13 @@ class SVi extends S {
 
   @override
   String get about => 'Giới thiệu';
+
+  @override
+  String get username_hint => 'Nhập tên đăng nhập của bạn';
+
+  @override
+  String get phone_number_hint => 'Nhập số điện thoại của bạn';
+
+  @override
+  String get otp_hint => 'Nhập OTP';
 }

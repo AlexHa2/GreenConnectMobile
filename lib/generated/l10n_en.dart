@@ -134,4 +134,13 @@ class SEn extends S {
 
   @override
   String get about => 'About';
+
+  @override
+  String get username_hint => 'Enter your username';
+
+  @override
+  String get phone_number_hint => 'Enter your phone number';
+
+  @override
+  String get otp_hint => 'Enter your OTP';
 }

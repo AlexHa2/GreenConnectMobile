@@ -9,6 +9,7 @@ final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   scaffoldBackgroundColor: AppColors.background,
   primaryColor: AppColors.primary,
+  
   cardColor: AppColors.surface,
   dividerColor: AppColors.border,
 
