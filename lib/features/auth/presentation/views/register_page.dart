@@ -161,27 +161,85 @@ class _RegisterPageState extends State<RegisterPage> {
                           const SizedBox(height: 24),
 
                           // Phone number
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.call,
+                                color: theme.primaryColor,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                S.of(context)!.phone_number,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 8),
+
                           TextFormField(
                             controller: phoneController,
                             keyboardType: TextInputType.phone,
                             validator: (value) => value == null || value.isEmpty
                                 ? S.of(context)!.phone_number
                                 : null,
-                            decoration: const InputDecoration(
-                              prefixIcon: Icon(Icons.phone),
+                            decoration: InputDecoration(
+                              hintText: S.of(context)!.phone_number_hint,
+                              filled: true,
+                              fillColor: theme.inputDecorationTheme.fillColor,
+                              contentPadding:
+                                  theme.inputDecorationTheme.contentPadding,
+                              border: theme.inputDecorationTheme.border,
+                              enabledBorder:
+                                  theme.inputDecorationTheme.enabledBorder,
+                              focusedBorder:
+                                  theme.inputDecorationTheme.focusedBorder,
+                              hintStyle: theme.inputDecorationTheme.hintStyle,
                             ),
                           ),
                           const SizedBox(height: 16),
 
                           // OTP
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.sms,
+                                color: theme.primaryColor,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "${S.of(context)!.send} ${S.of(context)!.otp}",
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 8),
+
                           TextFormField(
                             controller: otpController,
                             keyboardType: TextInputType.number,
                             validator: (value) => value == null || value.isEmpty
                                 ? S.of(context)!.otp
                                 : null,
-                            decoration: const InputDecoration(
-                              prefixIcon: Icon(Icons.lock),
+                            decoration: InputDecoration(
+                              hintText: S.of(context)!.otp_hint,
+                              filled: true,
+                              fillColor: theme.inputDecorationTheme.fillColor,
+                              contentPadding:
+                                  theme.inputDecorationTheme.contentPadding,
+                              border: theme.inputDecorationTheme.border,
+                              enabledBorder:
+                                  theme.inputDecorationTheme.enabledBorder,
+                              focusedBorder:
+                                  theme.inputDecorationTheme.focusedBorder,
+                              hintStyle: theme.inputDecorationTheme.hintStyle,
                             ),
                           ),
 
@@ -210,7 +268,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         style: theme.textTheme.bodyMedium,
                       ),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () => context.go('/login'),
                         child: Text(
                           ' ${S.of(context)!.login}',
                           style: theme.textTheme.bodyMedium?.copyWith(

@@ -348,6 +348,24 @@ abstract class S {
   /// In en, this message translates to:
   /// **'About'**
   String get about;
+
+  /// No description provided for @username_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your username'**
+  String get username_hint;
+
+  /// No description provided for @phone_number_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number'**
+  String get phone_number_hint;
+
+  /// No description provided for @otp_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your OTP'**
+  String get otp_hint;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

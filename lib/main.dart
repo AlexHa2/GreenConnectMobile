@@ -1,8 +1,6 @@
 import 'package:GreenConnectMobile/core/config/app_theme.dart';
 import 'package:GreenConnectMobile/core/di/injector.dart';
 import 'package:GreenConnectMobile/core/route/routes.dart';
-import 'package:GreenConnectMobile/features/auth/presentation/views/register_page.dart';
-import 'package:GreenConnectMobile/features/auth/presentation/views/welcome_page.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -28,7 +26,7 @@ class GreenConnectApp extends StatelessWidget {
       title: 'GConnect',
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.light,
+      themeMode: ThemeMode.system,
       localizationsDelegates: const [
         S.delegate,
         GlobalMaterialLocalizations.delegate,
