@@ -1,8 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
+import 'package:GreenConnectMobile/shared/styles/padding.dart';
+import 'package:flutter/material.dart';
 
 /// Light Theme
 final ThemeData lightTheme = ThemeData(
+  extensions: <ThemeExtension<dynamic>>[const AppSpacing(screenPadding: 12)],
+
   brightness: Brightness.light,
   scaffoldBackgroundColor: AppColors.background,
   primaryColor: AppColors.primary,
@@ -48,8 +51,9 @@ final ThemeData lightTheme = ThemeData(
     style: OutlinedButton.styleFrom(
       foregroundColor: AppColors.primary,
       side: const BorderSide(color: AppColors.primary, width: 1.5),
-      textStyle: const TextStyle(fontWeight: FontWeight.w600),
+      textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
     ),
   ),
 
@@ -94,6 +98,8 @@ final ThemeData lightTheme = ThemeData(
 
 /// Dark Theme
 final ThemeData darkTheme = ThemeData(
+  extensions: <ThemeExtension<dynamic>>[const AppSpacing(screenPadding: 24)],
+
   brightness: Brightness.dark,
   scaffoldBackgroundColor: AppColorsDark.background,
   primaryColor: AppColorsDark.primary,
@@ -137,7 +143,9 @@ final ThemeData darkTheme = ThemeData(
     style: OutlinedButton.styleFrom(
       foregroundColor: AppColorsDark.primary,
       side: const BorderSide(color: AppColorsDark.primary, width: 1.5),
+      textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
     ),
   ),
 

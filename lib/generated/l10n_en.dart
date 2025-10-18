@@ -24,14 +24,32 @@ class SEn extends S {
   String get welcome_login_secondary => 'Login to continue your green journey';
 
   @override
-  String get welcome_register_primary => 'Create a new account';
+  String get welcome_register_primary => 'Join Green Connect';
 
   @override
   String get welcome_register_secondary =>
-      'Sign up to start your green journey';
+      'Start your sustainable journey today';
+
+  @override
+  String get register_complete => 'Register Complete';
+
+  @override
+  String get register_here => 'Register here';
+
+  @override
+  String get login_complete => 'Login Complete';
 
   @override
   String get login => 'Login';
+
+  @override
+  String get login_here => 'Login here';
+
+  @override
+  String get already_have_account => 'Already have account ?';
+
+  @override
+  String get dont_have_account => 'Don\'t have an account ?';
 
   @override
   String get logout => 'Logout';
@@ -44,6 +62,12 @@ class SEn extends S {
 
   @override
   String get phone_number => 'Phone Number';
+
+  @override
+  String get select_role => 'Select Your Role';
+
+  @override
+  String get select_image => 'Select Your Image';
 
   @override
   String get email => 'Email';
@@ -71,6 +95,12 @@ class SEn extends S {
 
   @override
   String get error_occurred => 'An error occurred';
+
+  @override
+  String get error_all_field => 'Please fill all required fields';
+
+  @override
+  String get upload => 'upload';
 
   @override
   String get post => 'Post';
