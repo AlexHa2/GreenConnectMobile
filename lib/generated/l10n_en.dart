@@ -143,4 +143,50 @@ class SEn extends S {
 
   @override
   String get otp_hint => 'Enter your OTP';
+
+  @override
+  String get house_hold => 'Household';
+
+  @override
+  String get collector => 'Collector';
+
+  @override
+  String get profile_setup_primary => 'Your green tree is growing';
+
+  @override
+  String get profile_setup => 'Profile Setup';
+
+  @override
+  String get profile_setup_step1 => 'Step 1 of 2';
+
+  @override
+  String get profile_setup_step2 => 'Step 2 of 2';
+
+  @override
+  String get location => 'Your location';
+
+  @override
+  String get street_address => 'Street Address';
+
+  @override
+  String get street_address_hint => '123 Green Street';
+
+  @override
+  String get city => 'City';
+
+  @override
+  String get city_hint => 'Ho Chi Minh';
+
+  @override
+  String get zip_code => 'Zip Code';
+
+  @override
+  String get zip_code_hint => '12345';
+
+  @override
+  String get all_set => 'All Set!';
+
+  @override
+  String get all_set_message =>
+      'Your profile is ready. Let’s start making a difference together!';
 }

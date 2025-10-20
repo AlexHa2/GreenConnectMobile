@@ -13,7 +13,7 @@ class _FallingLeavesState extends State<FallingLeaves>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final Random _random = Random();
-  final int leafCount = 30;
+  final int leafCount = 50;
   late List<_Leaf> _leaves;
 
   @override
