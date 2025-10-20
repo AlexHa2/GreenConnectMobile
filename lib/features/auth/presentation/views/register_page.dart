@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -18,21 +15,9 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   String? selectedRole;
-  File? imageFile;
 
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController otpController = TextEditingController();
-
-  Future<void> pickImage() async {
-    final picker = ImagePicker();
-    final XFile? picked = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
-    if (picked != null) {
-      setState(() => imageFile = File(picked.path));
-    }
-  }
 
   void submitForm() {
     if (_formKey.currentState!.validate() && selectedRole != null) {
@@ -43,7 +28,6 @@ class _RegisterPageState extends State<RegisterPage> {
       };
 
       debugPrint("Form data: $data");
-      debugPrint("Image file: $imageFile");
     } else {
       ScaffoldMessenger.of(
         context,
@@ -100,7 +84,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 12),
 
                   // Card
                   Card(
@@ -109,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(spacing.screenPadding * 2),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -119,46 +103,12 @@ class _RegisterPageState extends State<RegisterPage> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          _buildRoleOption("HouseHold", Colors.red),
                           const SizedBox(height: 8),
-                          _buildRoleOption("Collector", Colors.red),
+                          _buildRoleOption("H", AppColors.danger),
+                          const SizedBox(height: 8),
+                          _buildRoleOption("C", AppColors.danger),
 
-                          const SizedBox(height: 24),
-
-                          Text(
-                            S.of(context)!.select_image,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
                           const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 35,
-                                backgroundColor: Colors.grey[300],
-                                backgroundImage: imageFile != null
-                                    ? FileImage(imageFile!)
-                                    : null,
-                                child: imageFile == null
-                                    ? const Icon(
-                                        Icons.camera_alt,
-                                        color: Colors.grey,
-                                        size: 30,
-                                      )
-                                    : null,
-                              ),
-                              const SizedBox(width: 16),
-                              OutlinedButton.icon(
-                                onPressed: pickImage,
-                                icon: const Icon(Icons.upload),
-                                label: Text(S.of(context)!.upload),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 24),
 
                           // Phone number
                           Row(
@@ -171,7 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               const SizedBox(width: 8),
                               Text(
                                 S.of(context)!.phone_number,
-                                style: theme.textTheme.bodyMedium?.copyWith(
+                                style: theme.textTheme.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -200,7 +150,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               hintStyle: theme.inputDecorationTheme.hintStyle,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
 
                           // OTP
                           Row(
@@ -213,7 +163,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               const SizedBox(width: 8),
                               Text(
                                 "${S.of(context)!.send} ${S.of(context)!.otp}",
-                                style: theme.textTheme.bodyMedium?.copyWith(
+                                style: theme.textTheme.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -258,7 +208,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -289,29 +239,46 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildRoleOption(String label, Color color) {
-    final bool isSelected = selectedRole == label;
+    final roleText = switch (label) {
+      'H' => S.of(context)!.house_hold,
+      'C' => S.of(context)!.collector,
+      _ => label,
+    };
+
+    final isSelected = selectedRole == roleText;
 
     return InkWell(
-      onTap: () => setState(() => selectedRole = label),
-      child: Container(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => setState(() => selectedRole = roleText),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.border,
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(12),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         child: Row(
           children: [
             Icon(
-              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+              isSelected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_off_outlined,
               color: AppColors.primary,
             ),
             const SizedBox(width: 8),
             Text(
-              label,
-              style: TextStyle(color: color, fontWeight: FontWeight.w600),
+              roleText,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
             ),
           ],
         ),

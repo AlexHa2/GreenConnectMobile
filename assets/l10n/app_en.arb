@@ -44,5 +44,20 @@
   "about": "About",
   "username_hint":"Enter your username",
   "phone_number_hint": "Enter your phone number",
-  "otp_hint": "Enter your OTP"
+  "otp_hint": "Enter your OTP",
+  "house_hold": "Household",
+  "collector": "Collector",
+  "profile_setup_primary": "Your green tree is growing",
+  "profile_setup": "Profile Setup",
+  "profile_setup_step1": "Step 1 of 2",
+  "profile_setup_step2": "Step 2 of 2",
+  "location": "Your location",
+  "street_address": "Street Address",
+  "street_address_hint": "123 Green Street",
+  "city": "City",
+  "city_hint": "Ho Chi Minh",
+  "zip_code": "Zip Code",
+  "zip_code_hint": "12345",
+  "all_set":"All Set!",
+  "all_set_message":"Your profile is ready. Let’s start making a difference together!"
 }

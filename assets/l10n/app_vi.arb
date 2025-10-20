@@ -44,5 +44,20 @@
   "about": "Giới thiệu",
   "username_hint":"Nhập tên đăng nhập của bạn",
   "phone_number_hint": "Nhập số điện thoại của bạn",
-  "otp_hint": "Nhập OTP"
+  "otp_hint": "Nhập OTP",
+  "house_hold": "Hộ gia đình",
+  "collector": "Người thu gom",
+  "profile_setup_primary": "Cây xanh của bạn đang phát triển",
+  "profile_setup": "Thiết lập hồ sơ",
+  "profile_setup_step1": "Bước 1 trong 2",
+  "profile_setup_step2": "Bước 2 trong 2",
+  "location": "Vị trí của bạn",
+  "street_address": "Tên đường",
+  "street_address_hint": "nam kỳ khởi nghĩa",
+  "city": "Thành Phố",
+  "city_hint": "Ho Chi Minh",
+  "zip_code": "Mã zip",
+  "zip_code_hint": "12345",
+  "all_set":"Tất cả đã được thiết lập",
+  "all_set_message":"Hồ sơ của bạn đã sẵn sàng. Hãy làm điều khác biệt với chúng tôi!"
 }
