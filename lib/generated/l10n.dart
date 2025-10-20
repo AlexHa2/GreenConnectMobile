@@ -366,6 +366,96 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Enter your OTP'**
   String get otp_hint;
+
+  /// No description provided for @house_hold.
+  ///
+  /// In en, this message translates to:
+  /// **'Household'**
+  String get house_hold;
+
+  /// No description provided for @collector.
+  ///
+  /// In en, this message translates to:
+  /// **'Collector'**
+  String get collector;
+
+  /// No description provided for @profile_setup_primary.
+  ///
+  /// In en, this message translates to:
+  /// **'Your green tree is growing'**
+  String get profile_setup_primary;
+
+  /// No description provided for @profile_setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Setup'**
+  String get profile_setup;
+
+  /// No description provided for @profile_setup_step1.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 1 of 2'**
+  String get profile_setup_step1;
+
+  /// No description provided for @profile_setup_step2.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 2 of 2'**
+  String get profile_setup_step2;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location'**
+  String get location;
+
+  /// No description provided for @street_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Street Address'**
+  String get street_address;
+
+  /// No description provided for @street_address_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'123 Green Street'**
+  String get street_address_hint;
+
+  /// No description provided for @city.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get city;
+
+  /// No description provided for @city_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ho Chi Minh'**
+  String get city_hint;
+
+  /// No description provided for @zip_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Zip Code'**
+  String get zip_code;
+
+  /// No description provided for @zip_code_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'12345'**
+  String get zip_code_hint;
+
+  /// No description provided for @all_set.
+  ///
+  /// In en, this message translates to:
+  /// **'All Set!'**
+  String get all_set;
+
+  /// No description provided for @all_set_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile is ready. Let’s start making a difference together!'**
+  String get all_set_message;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

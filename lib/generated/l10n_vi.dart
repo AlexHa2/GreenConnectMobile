@@ -144,4 +144,50 @@ class SVi extends S {
 
   @override
   String get otp_hint => 'Nhập OTP';
+
+  @override
+  String get house_hold => 'Hộ gia đình';
+
+  @override
+  String get collector => 'Người thu gom';
+
+  @override
+  String get profile_setup_primary => 'Cây xanh của bạn đang phát triển';
+
+  @override
+  String get profile_setup => 'Thiết lập hồ sơ';
+
+  @override
+  String get profile_setup_step1 => 'Bước 1 trong 2';
+
+  @override
+  String get profile_setup_step2 => 'Bước 2 trong 2';
+
+  @override
+  String get location => 'Vị trí của bạn';
+
+  @override
+  String get street_address => 'Tên đường';
+
+  @override
+  String get street_address_hint => 'nam kỳ khởi nghĩa';
+
+  @override
+  String get city => 'Thành Phố';
+
+  @override
+  String get city_hint => 'Ho Chi Minh';
+
+  @override
+  String get zip_code => 'Mã zip';
+
+  @override
+  String get zip_code_hint => '12345';
+
+  @override
+  String get all_set => 'Tất cả đã được thiết lập';
+
+  @override
+  String get all_set_message =>
+      'Hồ sơ của bạn đã sẵn sàng. Hãy làm điều khác biệt với chúng tôi!';
 }

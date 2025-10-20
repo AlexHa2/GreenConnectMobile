@@ -13,6 +13,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController phoneController = TextEditingController();
+  final TextEditingController otpController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 elevation: 2,
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(spacing.screenPadding * 2),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -72,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                           const SizedBox(width: 8),
                           Text(
                             S.of(context)!.phone_number,
-                            style: theme.textTheme.bodyMedium?.copyWith(
+                            style: theme.textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -96,7 +97,48 @@ class _LoginPageState extends State<LoginPage> {
                           hintStyle: theme.inputDecorationTheme.hintStyle,
                         ),
                       ),
-                      const SizedBox(height: 20),
+
+                      const SizedBox(height: 12),
+
+                      // OTP
+                      Row(
+                        children: [
+                          Icon(Icons.sms, color: theme.primaryColor, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            "${S.of(context)!.send} ${S.of(context)!.otp}",
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      TextFormField(
+                        controller: otpController,
+                        keyboardType: TextInputType.number,
+                        validator: (value) => value == null || value.isEmpty
+                            ? S.of(context)!.otp
+                            : null,
+                        decoration: InputDecoration(
+                          hintText: S.of(context)!.otp_hint,
+                          filled: true,
+                          fillColor: theme.inputDecorationTheme.fillColor,
+                          contentPadding:
+                              theme.inputDecorationTheme.contentPadding,
+                          border: theme.inputDecorationTheme.border,
+                          enabledBorder:
+                              theme.inputDecorationTheme.enabledBorder,
+                          focusedBorder:
+                              theme.inputDecorationTheme.focusedBorder,
+                          hintStyle: theme.inputDecorationTheme.hintStyle,
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
                       SizedBox(
                         width: double.infinity,
                         height: 50,
@@ -112,13 +154,13 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     S.of(context)!.dont_have_account,
-                    style: theme.textTheme.bodyMedium,
+                    style: theme.textTheme.bodyLarge,
                   ),
                   GestureDetector(
                     onTap: () => context.go('/register'),
