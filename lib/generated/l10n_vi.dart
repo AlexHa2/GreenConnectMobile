@@ -144,4 +144,34 @@ class SVi extends S {
 
   @override
   String get otp_hint => 'Nhập OTP';
+
+  @override
+  String get collector_dashboard => 'Bảng điều khiển';
+
+  @override
+  String get ecocollect => 'EcoCollect';
+
+  @override
+  String get todays_stats => 'THỐNG KÊ HÔM NAY';
+
+  @override
+  String get earnings_today => 'Thu nhập hôm nay';
+
+  @override
+  String get jobs_available => 'Công việc có sẵn';
+
+  @override
+  String get your_rating => 'Đánh giá của bạn';
+
+  @override
+  String get nearby_opportunities => 'CƠ HỘI GẦN ĐÂY';
+
+  @override
+  String get tap_to_view_opportunities => 'Chạm để xem các cơ hội gần đó';
+
+  @override
+  String get quick_actions => 'HÀNH ĐỘNG NHANH';
+
+  @override
+  String get browse_all_jobs => 'Duyệt tất cả công việc';
 }

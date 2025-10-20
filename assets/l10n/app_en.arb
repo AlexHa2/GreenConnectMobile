@@ -44,5 +44,15 @@
   "about": "About",
   "username_hint":"Enter your username",
   "phone_number_hint": "Enter your phone number",
-  "otp_hint": "Enter your OTP"
+  "otp_hint": "Enter your OTP",
+  "collector_dashboard": "Dashboard",
+  "ecocollect": "EcoCollect",
+  "todays_stats": "TODAY'S STATS",
+  "earnings_today": "Earnings Today",
+  "jobs_available": "Jobs Available",
+  "your_rating": "Your Rating",
+  "nearby_opportunities": "NEARBY OPPORTUNITIES",
+  "tap_to_view_opportunities": "Tap to view nearby opportunities",
+  "quick_actions": "QUICK ACTIONS",
+  "browse_all_jobs": "Browse All Jobs"
 }

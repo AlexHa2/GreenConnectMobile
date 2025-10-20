@@ -143,4 +143,34 @@ class SEn extends S {
 
   @override
   String get otp_hint => 'Enter your OTP';
+
+  @override
+  String get collector_dashboard => 'Dashboard';
+
+  @override
+  String get ecocollect => 'EcoCollect';
+
+  @override
+  String get todays_stats => 'TODAY\'S STATS';
+
+  @override
+  String get earnings_today => 'Earnings Today';
+
+  @override
+  String get jobs_available => 'Jobs Available';
+
+  @override
+  String get your_rating => 'Your Rating';
+
+  @override
+  String get nearby_opportunities => 'NEARBY OPPORTUNITIES';
+
+  @override
+  String get tap_to_view_opportunities => 'Tap to view nearby opportunities';
+
+  @override
+  String get quick_actions => 'QUICK ACTIONS';
+
+  @override
+  String get browse_all_jobs => 'Browse All Jobs';
 }

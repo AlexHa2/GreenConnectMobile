@@ -44,5 +44,15 @@
   "about": "Giới thiệu",
   "username_hint":"Nhập tên đăng nhập của bạn",
   "phone_number_hint": "Nhập số điện thoại của bạn",
-  "otp_hint": "Nhập OTP"
+  "otp_hint": "Nhập OTP",
+  "collector_dashboard": "Bảng điều khiển",
+  "ecocollect": "EcoCollect",
+  "todays_stats": "THỐNG KÊ HÔM NAY",
+  "earnings_today": "Thu nhập hôm nay",
+  "jobs_available": "Công việc có sẵn",
+  "your_rating": "Đánh giá của bạn",
+  "nearby_opportunities": "CƠ HỘI GẦN ĐÂY",
+  "tap_to_view_opportunities": "Chạm để xem các cơ hội gần đó",
+  "quick_actions": "HÀNH ĐỘNG NHANH",
+  "browse_all_jobs": "Duyệt tất cả công việc"
 }

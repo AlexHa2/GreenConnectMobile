@@ -366,6 +366,66 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Enter your OTP'**
   String get otp_hint;
+
+  /// No description provided for @collector_dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get collector_dashboard;
+
+  /// No description provided for @ecocollect.
+  ///
+  /// In en, this message translates to:
+  /// **'EcoCollect'**
+  String get ecocollect;
+
+  /// No description provided for @todays_stats.
+  ///
+  /// In en, this message translates to:
+  /// **'TODAY\'S STATS'**
+  String get todays_stats;
+
+  /// No description provided for @earnings_today.
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings Today'**
+  String get earnings_today;
+
+  /// No description provided for @jobs_available.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs Available'**
+  String get jobs_available;
+
+  /// No description provided for @your_rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Rating'**
+  String get your_rating;
+
+  /// No description provided for @nearby_opportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'NEARBY OPPORTUNITIES'**
+  String get nearby_opportunities;
+
+  /// No description provided for @tap_to_view_opportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view nearby opportunities'**
+  String get tap_to_view_opportunities;
+
+  /// No description provided for @quick_actions.
+  ///
+  /// In en, this message translates to:
+  /// **'QUICK ACTIONS'**
+  String get quick_actions;
+
+  /// No description provided for @browse_all_jobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse All Jobs'**
+  String get browse_all_jobs;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
