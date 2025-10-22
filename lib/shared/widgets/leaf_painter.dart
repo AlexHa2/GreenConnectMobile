@@ -3,7 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class FallingLeaves extends StatefulWidget {
-  const FallingLeaves({super.key});
+  final int leafCount;
+  const FallingLeaves({super.key, this.leafCount = 30});
 
   @override
   State<FallingLeaves> createState() => _FallingLeavesState();
@@ -13,7 +14,6 @@ class _FallingLeavesState extends State<FallingLeaves>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final Random _random = Random();
-  final int leafCount = 50;
   late List<_Leaf> _leaves;
 
   @override
@@ -24,7 +24,7 @@ class _FallingLeavesState extends State<FallingLeaves>
       vsync: this,
     )..repeat();
 
-    _leaves = List.generate(leafCount, (_) => _Leaf(random: _random));
+    _leaves = List.generate(widget.leafCount, (_) => _Leaf(random: _random));
   }
 
   @override

@@ -12,6 +12,7 @@ final ThemeData lightTheme = ThemeData(
   
   cardColor: AppColors.surface,
   dividerColor: AppColors.border,
+  primaryColorDark: AppColors.textPrimary,
 
   // ===== AppBar =====
   appBarTheme: const AppBarTheme(
@@ -106,6 +107,8 @@ final ThemeData darkTheme = ThemeData(
   primaryColor: AppColorsDark.primary,
   cardColor: AppColorsDark.surface,
   dividerColor: AppColorsDark.border,
+
+  primaryColorDark: AppColorsDark.textPrimary,
 
   appBarTheme: const AppBarTheme(
     backgroundColor: AppColorsDark.surface,

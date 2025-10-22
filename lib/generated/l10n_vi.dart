@@ -190,4 +190,91 @@ class SVi extends S {
   @override
   String get all_set_message =>
       'Hồ sơ của bạn đã sẵn sàng. Hãy làm điều khác biệt với chúng tôi!';
+
+  @override
+  String get make_an_impact => 'Tạo ảnh hưởng nào!';
+
+  @override
+  String get your_impact => 'Tác động của bạn';
+
+  @override
+  String get keep_your_tree => 'Tiếp tục tái chế để trồng cây của bạn';
+
+  @override
+  String get points => 'điểm';
+
+  @override
+  String get accepted => 'Được chấp nhận';
+
+  @override
+  String get available => 'Có sẵn';
+
+  @override
+  String get rejected => 'từ chối';
+
+  @override
+  String get create_new => 'Tạo Mới';
+
+  @override
+  String get my_recycling_post => 'Bài viết tái chế của tôi';
+
+  @override
+  String get transaction_detail => 'Chi tiếc giao dịch';
+
+  @override
+  String get see_all_posts => 'Xem danh sách bài viết';
+
+  @override
+  String get recycling => 'tái chế';
+
+  @override
+  String get post_title => 'Tiêu đề bài viết';
+
+  @override
+  String get description => 'Mô tả';
+
+  @override
+  String get pickup_address => 'Địa chỉ lấy';
+
+  @override
+  String get pickup_time => 'Thời gian lấy';
+
+  @override
+  String get add_scrap_items => 'Thêm các phế liệu';
+
+  @override
+  String get category => 'Phân loại';
+
+  @override
+  String get quantity => 'Số lượng';
+
+  @override
+  String get weight => 'Cân nặng (kg)';
+
+  @override
+  String get add => 'Thêm';
+
+  @override
+  String get post_title_hint => 'Thùng chai nhựa';
+
+  @override
+  String get description_hint => 'Rất nhiều chai nhựa ';
+
+  @override
+  String get pickup_addres_hint => '123 đường xanh';
+
+  @override
+  String get pickup_time_hint => 'thứ 2 dến thứ 6 5 giờ chiều';
+
+  @override
+  String get quantity_hint => '1';
+
+  @override
+  String get weight_hint => '1';
+
+  @override
+  String get scrap_item => 'vật phẩm phế liệu';
+
+  @override
+  String get image => 'hình ảnh';
 }
