@@ -50,7 +50,8 @@ lib/
 │   │   │   └── usecases/login_usecase.dart
 │   │   └── presentation/
 │   │       ├── providers/auth_provider.dart
-│   │       └── views/login_page.dart
+│   │       ├── views/login_page.dart
+│   │       └── viewmodels/login_notifier.dart
 │   │
 │   └── user/               # User module (similar to auth)
 │

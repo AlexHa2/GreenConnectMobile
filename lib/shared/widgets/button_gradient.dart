@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class GradientButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
-  final IconData? icon;
+  final Icon? icon;
 
   const GradientButton({
     super.key,
@@ -15,6 +15,7 @@ class GradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -34,8 +35,8 @@ class GradientButton extends StatelessWidget {
         child: icon == null
             ? Text(
                 text,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: theme.scaffoldBackgroundColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -44,12 +45,12 @@ class GradientButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon, color: Colors.white),
+                  icon!,
                   const SizedBox(width: 8),
                   Text(
                     text,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: theme.scaffoldBackgroundColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
