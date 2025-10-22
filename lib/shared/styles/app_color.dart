@@ -12,6 +12,7 @@ class AppColors {
   static const Color primary = Color(0xFF21BC5A); // Brand primary green
   static const Color warning = Color(0xFFFFD83D); // Warning or alert color
   static const Color danger = Color(0xFFC72323); // Error or destructive color
+  static const Color warningUpdate = Color(0xFFF96E38); // Warning for updates
 
   // ===== Borders & Inputs =====
   static const Color border = Color(0xFFEEEEEE); // Light gray border
@@ -66,6 +67,7 @@ class AppColorsDark {
   static const Color primary = Color(0xFF21BC5A); // Brand green (same as light)
   static const Color warning = Color(0xFFFFD83D); // Alert or caution
   static const Color danger = Color(0xFFC72323); // Error or destructive color
+  static const Color warningUpdate = Color(0xFFF96E38); // Warning for updates
 
   // ===== Gradients =====
   static const LinearGradient linearPrimary = LinearGradient(

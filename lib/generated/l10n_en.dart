@@ -189,4 +189,91 @@ class SEn extends S {
   @override
   String get all_set_message =>
       'Your profile is ready. Let’s start making a difference together!';
+
+  @override
+  String get make_an_impact => 'Make an impact!';
+
+  @override
+  String get your_impact => 'Your impact';
+
+  @override
+  String get keep_your_tree => 'Keep recycling to grow your tree';
+
+  @override
+  String get points => 'points';
+
+  @override
+  String get accepted => 'Accepted';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get rejected => 'Rejected';
+
+  @override
+  String get create_new => 'Create New';
+
+  @override
+  String get my_recycling_post => 'My Recycling Post';
+
+  @override
+  String get transaction_detail => 'Transaction detail';
+
+  @override
+  String get see_all_posts => 'List post';
+
+  @override
+  String get recycling => 'Recycling';
+
+  @override
+  String get post_title => 'Post Title';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get pickup_address => 'Pickup Address';
+
+  @override
+  String get pickup_time => 'Pickup Time';
+
+  @override
+  String get add_scrap_items => 'Add Scrap Items';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get quantity => 'Quantity';
+
+  @override
+  String get weight => 'Weight (kg)';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get post_title_hint => 'plastic package';
+
+  @override
+  String get description_hint => 'container for used plastic bottles';
+
+  @override
+  String get pickup_addres_hint => '123 green street';
+
+  @override
+  String get pickup_time_hint => 'monday to friday 5 PM';
+
+  @override
+  String get quantity_hint => '1';
+
+  @override
+  String get weight_hint => '1';
+
+  @override
+  String get scrap_item => 'scrap item';
+
+  @override
+  String get image => 'image';
 }

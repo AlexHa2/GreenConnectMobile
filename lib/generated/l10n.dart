@@ -456,6 +456,180 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Your profile is ready. Let’s start making a difference together!'**
   String get all_set_message;
+
+  /// No description provided for @make_an_impact.
+  ///
+  /// In en, this message translates to:
+  /// **'Make an impact!'**
+  String get make_an_impact;
+
+  /// No description provided for @your_impact.
+  ///
+  /// In en, this message translates to:
+  /// **'Your impact'**
+  String get your_impact;
+
+  /// No description provided for @keep_your_tree.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep recycling to grow your tree'**
+  String get keep_your_tree;
+
+  /// No description provided for @points.
+  ///
+  /// In en, this message translates to:
+  /// **'points'**
+  String get points;
+
+  /// No description provided for @accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get accepted;
+
+  /// No description provided for @available.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get available;
+
+  /// No description provided for @rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejected;
+
+  /// No description provided for @create_new.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New'**
+  String get create_new;
+
+  /// No description provided for @my_recycling_post.
+  ///
+  /// In en, this message translates to:
+  /// **'My Recycling Post'**
+  String get my_recycling_post;
+
+  /// No description provided for @transaction_detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction detail'**
+  String get transaction_detail;
+
+  /// No description provided for @see_all_posts.
+  ///
+  /// In en, this message translates to:
+  /// **'List post'**
+  String get see_all_posts;
+
+  /// No description provided for @recycling.
+  ///
+  /// In en, this message translates to:
+  /// **'Recycling'**
+  String get recycling;
+
+  /// No description provided for @post_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Post Title'**
+  String get post_title;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @pickup_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup Address'**
+  String get pickup_address;
+
+  /// No description provided for @pickup_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup Time'**
+  String get pickup_time;
+
+  /// No description provided for @add_scrap_items.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Scrap Items'**
+  String get add_scrap_items;
+
+  /// No description provided for @category.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get category;
+
+  /// No description provided for @quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get quantity;
+
+  /// No description provided for @weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get weight;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @post_title_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'plastic package'**
+  String get post_title_hint;
+
+  /// No description provided for @description_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'container for used plastic bottles'**
+  String get description_hint;
+
+  /// No description provided for @pickup_addres_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'123 green street'**
+  String get pickup_addres_hint;
+
+  /// No description provided for @pickup_time_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'monday to friday 5 PM'**
+  String get pickup_time_hint;
+
+  /// No description provided for @quantity_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'1'**
+  String get quantity_hint;
+
+  /// No description provided for @weight_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'1'**
+  String get weight_hint;
+
+  /// No description provided for @scrap_item.
+  ///
+  /// In en, this message translates to:
+  /// **'scrap item'**
+  String get scrap_item;
+
+  /// No description provided for @image.
+  ///
+  /// In en, this message translates to:
+  /// **'image'**
+  String get image;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

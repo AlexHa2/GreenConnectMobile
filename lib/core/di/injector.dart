@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/core/di/auth_injector.dart';
+import 'package:GreenConnectMobile/core/di/setting_injector.dart';
 import 'package:GreenConnectMobile/core/network/api_client.dart';
 import 'package:get_it/get_it.dart';
 
@@ -10,4 +11,5 @@ Future<void> initDependencies() async {
 
   // Modules
   await initAuthModule();
+  await initSettingsModule();
 }
