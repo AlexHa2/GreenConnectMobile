@@ -304,4 +304,22 @@ class SEn extends S {
 
   @override
   String get items => 'items';
+
+  @override
+  String get network_error => 'Network connection error';
+
+  @override
+  String get server_error => 'Server is not responding';
+
+  @override
+  String get cache_error => 'Cache read/write error';
+
+  @override
+  String get unauthorized => 'You are not authorized';
+
+  @override
+  String get not_found => 'Requested resource not found';
+
+  @override
+  String get unexpected_error => 'An unexpected error occurred';
 }
