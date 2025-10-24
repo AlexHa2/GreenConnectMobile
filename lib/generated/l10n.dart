@@ -328,7 +328,7 @@ abstract class S {
   /// No description provided for @notifications.
   ///
   /// In en, this message translates to:
-  /// **'Notifications'**
+  /// **'notifications'**
   String get notifications;
 
   /// No description provided for @search.
@@ -630,6 +630,60 @@ abstract class S {
   /// In en, this message translates to:
   /// **'image'**
   String get image;
+
+  /// No description provided for @are_you_sure.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this post? This action cannot be undone.'**
+  String get are_you_sure;
+
+  /// No description provided for @reason_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for deletion (Optional)'**
+  String get reason_delete;
+
+  /// No description provided for @delete_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you deleting this post?'**
+  String get delete_hint;
+
+  /// No description provided for @search_by_name.
+  ///
+  /// In en, this message translates to:
+  /// **'search by name'**
+  String get search_by_name;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @list.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get list;
+
+  /// No description provided for @detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Detail'**
+  String get detail;
+
+  /// No description provided for @posted.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted'**
+  String get posted;
+
+  /// No description provided for @items.
+  ///
+  /// In en, this message translates to:
+  /// **'items'**
+  String get items;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

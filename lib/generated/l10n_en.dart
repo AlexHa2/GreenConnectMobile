@@ -124,7 +124,7 @@ class SEn extends S {
   String get settings => 'Settings';
 
   @override
-  String get notifications => 'Notifications';
+  String get notifications => 'notifications';
 
   @override
   String get search => 'Search';
@@ -276,4 +276,32 @@ class SEn extends S {
 
   @override
   String get image => 'image';
+
+  @override
+  String get are_you_sure =>
+      'Are you sure you want to delete this post? This action cannot be undone.';
+
+  @override
+  String get reason_delete => 'Reason for deletion (Optional)';
+
+  @override
+  String get delete_hint => 'Why are you deleting this post?';
+
+  @override
+  String get search_by_name => 'search by name';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get list => 'List';
+
+  @override
+  String get detail => 'Detail';
+
+  @override
+  String get posted => 'Posted';
+
+  @override
+  String get items => 'items';
 }

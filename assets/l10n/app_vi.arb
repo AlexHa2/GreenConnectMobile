@@ -88,5 +88,15 @@
   "quantity_hint":"1",
   "weight_hint":"1",
   "scrap_item":"vật phẩm phế liệu",
-  "image":"hình ảnh"
+  "image":"hình ảnh",
+  "are_you_sure":"Bạn có chắc chắn muốn xóa bài viết này không, hành động không thể hoàn tác.",
+  "reason_delete":"Lý do xóa bài (không bắt buộc)",
+  "delete_hint":"tại sao lại muốn xóa",
+  "notifications":"Thông báo",
+  "search_by_name":"tìm kiếm theo tên",
+  "all":"Tất cả",
+  "list":"Danh sách",
+  "detail":"Chi tiết",
+  "posted":"Ngày đăng bài",
+  "items":"vật phẩm"
 }
