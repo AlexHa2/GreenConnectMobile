@@ -98,5 +98,12 @@
   "list":"Danh sách",
   "detail":"Chi tiết",
   "posted":"Ngày đăng bài",
-  "items":"vật phẩm"
+  "items":"vật phẩm",
+  "network_error": "Lỗi kết nối mạng",
+  "server_error": "Máy chủ không phản hồi",
+  "cache_error": "Lỗi bộ nhớ đệm",
+  "unauthorized": "Bạn chưa được xác thực",
+  "not_found": "Không tìm thấy tài nguyên",
+  "unexpected_error": "Đã xảy ra lỗi không xác định"
+
 }

@@ -684,6 +684,42 @@ abstract class S {
   /// In en, this message translates to:
   /// **'items'**
   String get items;
+
+  /// No description provided for @network_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Network connection error'**
+  String get network_error;
+
+  /// No description provided for @server_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Server is not responding'**
+  String get server_error;
+
+  /// No description provided for @cache_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Cache read/write error'**
+  String get cache_error;
+
+  /// No description provided for @unauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not authorized'**
+  String get unauthorized;
+
+  /// No description provided for @not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested resource not found'**
+  String get not_found;
+
+  /// No description provided for @unexpected_error.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred'**
+  String get unexpected_error;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
