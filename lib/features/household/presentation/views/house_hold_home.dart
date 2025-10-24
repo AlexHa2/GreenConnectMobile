@@ -189,7 +189,7 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
                       _buildStatBox(
                         context,
                         "110",
-                        "${S.of(context)!.complete} ",
+                        "${S.of(context)!.completed} ",
                         AppColors.primary,
                       ),
                       _buildStatBox(
@@ -283,7 +283,26 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
           BottomNavItem(
             icon: Icons.search,
             label: "Search",
-            onPressed: () => context.push('/detail-post'),
+            onPressed: () => {
+              context.pushNamed(
+                'detail-post',
+                extra: {
+                  'title': 'Recycling Old Phones',
+                  'description': 'Collected used phones for recycling',
+                  'postedDate': '20/06/2024',
+                  'status': 'accepted',
+                  'pickupTime': 'Morning (8:00 AM - 12:00 PM)',
+                  'pickupAddress': '45 Green Avenue',
+                  'scrapItems': [
+                    {'category': 'Electronics', 'quantity': 3, 'weight': 2.5},
+                    {'category': 'Electronics', 'quantity': 3, 'weight': 2.5},
+                    {'category': 'Electronics', 'quantity': 3, 'weight': 2.5},
+                    {'category': 'Electronics', 'quantity': 3, 'weight': 2.5},
+                    {'category': 'Electronics', 'quantity': 3, 'weight': 2.5},
+                  ],
+                },
+              ),
+            },
           ),
           BottomNavItem(
             icon: Icons.video_call_outlined,

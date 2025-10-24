@@ -63,7 +63,10 @@ final GoRouter greenRouter = GoRouter(
     GoRoute(
       path: '/detail-post',
       name: 'detail-post',
-      builder: (context, state) => const PostDetailsScreen(),
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>;
+        return PostDetailsScreen(initialData: initialData);
+      },
     ),
   ],
 );
