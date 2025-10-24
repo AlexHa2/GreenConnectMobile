@@ -1,3 +1,5 @@
+import 'package:GreenConnectMobile/features/household/presentation/views/widges/delete_post_dialog.dart';
+import 'package:GreenConnectMobile/features/household/presentation/views/widges/notification_bell.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/widges/post_item.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
@@ -79,33 +81,11 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
                   ),
 
                   // Icon bell
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Icon(
-                        Icons.notifications_none,
-                        color: theme.iconTheme.color,
-                        size: spacing.screenPadding * 2,
-                      ),
-                      Positioned(
-                        right: -spacing.screenPadding / 4,
-                        top: -spacing.screenPadding / 4,
-                        child: Container(
-                          padding: EdgeInsets.all(spacing.screenPadding / 4),
-                          decoration: const BoxDecoration(
-                            color: AppColors.danger,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Text(
-                            '3',
-                            style: textTheme.labelSmall?.copyWith(
-                              color: AppColors.background,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  NotificationIconButton(
+                    count: 3,
+                    onPressed: () {
+                      context.go('/notifications');
+                    },
                   ),
                 ],
               ),
@@ -227,14 +207,13 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
                   GradientButton(
                     text: '${S.of(context)!.create_new} ${S.of(context)!.post}',
                     onPressed: () {
-                      context.go('/create-post');
+                      context.push('/create-post');
                     },
                     icon: const Icon(Icons.add),
                   ),
 
                   const SizedBox(height: 24),
 
-                  // ===== My Recycling Post =====
                   Text(
                     S.of(context)!.my_recycling_post,
                     style: textTheme.titleLarge?.copyWith(
@@ -272,8 +251,7 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
                       Radius.circular(spacing.screenPadding / 2),
                     ),
                     onTap: () {
-                      // VIẾT LOGIC CHUYỂN TRANG Ở ĐÂY
-                      print('Người dùng đã nhấn Xem tất cả bài viết');
+                      context.go('/list-post');
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -305,12 +283,22 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
           BottomNavItem(
             icon: Icons.search,
             label: "Search",
-            onPressed: () => setState(() => _currentIndex = 1),
+            onPressed: () => context.push('/detail-post'),
           ),
           BottomNavItem(
             icon: Icons.video_call_outlined,
             label: "Video",
-            onPressed: () => setState(() => _currentIndex = 2),
+            onPressed: () => {
+              showDialog(
+                context: context,
+                builder: (context) => DeletePostDialog(
+                  onDelete: () {
+                    // TODO: call API hoặc xóa bài viết
+                  },
+                  onCancel: () => Navigator.pop(context),
+                ),
+              ),
+            },
           ),
           BottomNavItem(
             icon: Icons.settings,

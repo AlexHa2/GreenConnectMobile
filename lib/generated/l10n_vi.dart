@@ -277,4 +277,32 @@ class SVi extends S {
 
   @override
   String get image => 'hình ảnh';
+
+  @override
+  String get are_you_sure =>
+      'Bạn có chắc chắn muốn xóa bài viết này không, hành động không thể hoàn tác.';
+
+  @override
+  String get reason_delete => 'Lý do xóa bài (không bắt buộc)';
+
+  @override
+  String get delete_hint => 'tại sao lại muốn xóa';
+
+  @override
+  String get search_by_name => 'tìm kiếm theo tên';
+
+  @override
+  String get all => 'Tất cả';
+
+  @override
+  String get list => 'Danh sách';
+
+  @override
+  String get detail => 'Chi tiết';
+
+  @override
+  String get posted => 'Ngày đăng bài';
+
+  @override
+  String get items => 'vật phẩm';
 }
