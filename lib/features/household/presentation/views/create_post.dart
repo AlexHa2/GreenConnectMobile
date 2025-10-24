@@ -73,7 +73,7 @@ class _CreateRecyclingPostPageState extends State<CreateRecyclingPostPage> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/'),
+          onPressed: () => context.pop(),
         ),
       ),
       body: SingleChildScrollView(
@@ -380,7 +380,9 @@ class _CreateRecyclingPostPageState extends State<CreateRecyclingPostPage> {
                     elevation: 3,
                     margin: EdgeInsets.all(spacing.screenPadding),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(spacing.screenPadding),
+                      borderRadius: BorderRadius.circular(
+                        spacing.screenPadding,
+                      ),
                     ),
                     shadowColor: theme.primaryColorDark.withValues(alpha: 0.1),
                     child: Padding(

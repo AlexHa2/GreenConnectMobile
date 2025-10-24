@@ -88,5 +88,15 @@
   "quantity_hint":"1",
   "weight_hint":"1",
   "scrap_item":"scrap item",
-  "image":"image"
+  "image":"image",
+  "are_you_sure":"Are you sure you want to delete this post? This action cannot be undone.",
+  "reason_delete":"Reason for deletion (Optional)",
+  "delete_hint":"Why are you deleting this post?",
+  "notifications":"notifications",
+  "search_by_name":"search by name",
+  "all":"All",
+  "list":"List",
+  "detail":"Detail",
+  "posted":"Posted",
+  "items":"items"
 }
