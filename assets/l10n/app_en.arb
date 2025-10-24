@@ -98,5 +98,11 @@
   "list":"List",
   "detail":"Detail",
   "posted":"Posted",
-  "items":"items"
+  "items":"items",
+  "network_error": "Network connection error",
+  "server_error": "Server is not responding",
+  "cache_error": "Cache read/write error",
+  "unauthorized": "You are not authorized",
+  "not_found": "Requested resource not found",
+  "unexpected_error": "An unexpected error occurred"
 }

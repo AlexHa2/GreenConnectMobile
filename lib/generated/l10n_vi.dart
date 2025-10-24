@@ -305,4 +305,22 @@ class SVi extends S {
 
   @override
   String get items => 'vật phẩm';
+
+  @override
+  String get network_error => 'Lỗi kết nối mạng';
+
+  @override
+  String get server_error => 'Máy chủ không phản hồi';
+
+  @override
+  String get cache_error => 'Lỗi bộ nhớ đệm';
+
+  @override
+  String get unauthorized => 'Bạn chưa được xác thực';
+
+  @override
+  String get not_found => 'Không tìm thấy tài nguyên';
+
+  @override
+  String get unexpected_error => 'Đã xảy ra lỗi không xác định';
 }
