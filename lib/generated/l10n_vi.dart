@@ -113,7 +113,7 @@ class SVi extends S {
   String get back => 'Quay lại';
 
   @override
-  String get complete => 'Hoàn thành';
+  String get completed => 'Hoàn thành';
 
   @override
   String get loading => 'Đang tải...';

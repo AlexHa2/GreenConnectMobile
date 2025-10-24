@@ -4,11 +4,14 @@ import 'package:GreenConnectMobile/features/household/presentation/views/widges/
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
+import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class PostDetailsScreen extends StatelessWidget {
-  const PostDetailsScreen({super.key});
+  final Map<String, dynamic> initialData;
+
+  const PostDetailsScreen({super.key, required this.initialData});
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +19,20 @@ class PostDetailsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final s = S.of(context)!;
     final spacing = theme.extension<AppSpacing>()!;
+
+    final title = initialData['title'] ?? '';
+    final description = initialData['description'] ?? '';
+    final postedDate = initialData['postedDate'] ?? '';
+    final status = (initialData['status'] ?? 'available')
+        .toString()
+        .toLowerCase();
+    final pickupTime = initialData['pickupTime'] ?? '';
+    final pickupAddress = initialData['pickupAddress'] ?? '';
+    final scrapItems = (initialData['scrapItems'] ?? []) as List<dynamic>;
+
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(onPressed: () => Navigator.pop(context)),
+        leading: BackButton(onPressed: () => context.pop()),
         title: Text("${s.post} ${s.detail}"),
         actions: [
           IconButton(
@@ -27,18 +41,11 @@ class PostDetailsScreen extends StatelessWidget {
               context.pushNamed(
                 'update-post',
                 extra: {
-                  'title': 'Recycling Old Phones',
-                  'description': 'Collected used phones for recycling',
-                  'pickupAddress': '45 Green Avenue',
-                  'pickupTime': 'Morning (8:00 AM - 12:00 PM)',
-                  'scrapItems': [
-                    {
-                      'category': 'Electronics',
-                      'quantity': 3,
-                      'weight': 2.5,
-                      'image': null,
-                    },
-                  ],
+                  'title': title,
+                  'description': description,
+                  'pickupAddress': pickupAddress,
+                  'pickupTime': pickupTime,
+                  'scrapItems': scrapItems,
                 },
               );
             },
@@ -50,7 +57,8 @@ class PostDetailsScreen extends StatelessWidget {
                 context: context,
                 builder: (context) => DeletePostDialog(
                   onDelete: () {
-                    // TODO: call API hoặc xóa bài viết
+                    // TODO: Xử lý xóa bài viết
+                    Navigator.pop(context);
                   },
                   onCancel: () => Navigator.pop(context),
                 ),
@@ -59,33 +67,34 @@ class PostDetailsScreen extends StatelessWidget {
           ),
         ],
       ),
+
       body: ListView(
         padding: EdgeInsets.all(spacing.screenPadding),
         children: [
           Text(
-            'Plastic Bottles Collection',
+            title,
             style: textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(height: spacing.screenPadding / 2),
-          Text(
-            'Collection of clean plastic bottles ready for recycling. Mostly water and soft drink bottles.',
-            style: textTheme.bodyMedium,
-          ),
+
+          Text(description, style: textTheme.bodyMedium),
           SizedBox(height: spacing.screenPadding),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${s.posted}: 20/06/2024', style: textTheme.bodyLarge),
+              Text('${s.posted}: $postedDate', style: textTheme.bodyLarge),
               Chip(
                 label: Text(
-                  s.available,
+                  s.translateStatus(status),
                   style: textTheme.labelLarge?.copyWith(
+                    color: theme.scaffoldBackgroundColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                backgroundColor: AppColors.warning,
+                backgroundColor: _getStatusColor(status),
                 padding: EdgeInsets.all(spacing.screenPadding / 2),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(spacing.screenPadding),
@@ -94,13 +103,32 @@ class PostDetailsScreen extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: spacing.screenPadding),
+          SizedBox(height: spacing.screenPadding * 2),
+
+          if (status == 'accepted') ...[
+            Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: spacing.screenPadding * 2,
+              ),
+              child: GradientButton(
+                onPressed: () {
+                  // TODO: Mở chi tiết giao dịch
+                },
+                text: s.transaction_detail,
+                icon: Icon(
+                  Icons.receipt_long_rounded,
+                  color: theme.scaffoldBackgroundColor,
+                ),
+              ),
+            ),
+            SizedBox(height: spacing.screenPadding * 2),
+          ],
 
           CardFieldOnly(
             context: context,
             icon: Icons.schedule_outlined,
             title: s.pickup_time,
-            subtitle: 'Morning ( 8:00 AM - 12:00 PM)',
+            subtitle: pickupTime,
             space: spacing.screenPadding,
           ),
           SizedBox(height: spacing.screenPadding),
@@ -108,9 +136,10 @@ class PostDetailsScreen extends StatelessWidget {
             context: context,
             icon: Icons.location_on_outlined,
             title: s.pickup_address,
-            subtitle: '123 green street, ecosystem',
+            subtitle: pickupAddress,
             space: spacing.screenPadding,
           ),
+
           SizedBox(height: spacing.screenPadding * 2),
 
           Text(
@@ -121,32 +150,59 @@ class PostDetailsScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: spacing.screenPadding),
-          PostItemNoAction(
-            context: context,
-            category: 'Electronics',
-            quantity: 11,
-            weight: 1,
-          ),
-          PostItemNoAction(
-            context: context,
-            category: 'Electronics',
-            quantity: 11,
-            weight: 1,
-          ),
-          PostItemNoAction(
-            context: context,
-            category: 'Electronics',
-            quantity: 11,
-            weight: 1,
-          ),
-          PostItemNoAction(
-            context: context,
-            category: 'Electronics',
-            quantity: 11,
-            weight: 1,
-          ),
+
+          ...scrapItems.map((item) {
+            final map = item as Map<String, dynamic>;
+            return PostItemNoAction(
+              context: context,
+              category: map['category'] ?? '',
+              quantity: map['quantity'] ?? 0,
+              weight: (map['weight'] ?? 0).toDouble(),
+            );
+          }).toList(),
         ],
       ),
+
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: theme.primaryColor,
+        onPressed: () {
+          // TODO: Mở chat/message
+        },
+
+        child: const Icon(Icons.message_rounded, color: Colors.white, size: 28),
+      ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'available':
+        return AppColors.warning;
+      case 'unavailable':
+        return AppColors.warning;
+      case 'completed':
+        return AppColors.primary;
+      case 'accepted':
+        return AppColors.primary;
+      default:
+        return AppColors.textSecondary;
+    }
+  }
+}
+
+extension StatusLocalization on S {
+  String translateStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'available':
+        return available;
+      case 'unavailable':
+        return rejected;
+      case 'completed':
+        return completed;
+      case 'accepted':
+        return accepted;
+      default:
+        return status;
+    }
   }
 }

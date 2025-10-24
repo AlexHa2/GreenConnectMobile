@@ -112,7 +112,7 @@ class SEn extends S {
   String get back => 'Back';
 
   @override
-  String get complete => 'Complete';
+  String get completed => 'Completed';
 
   @override
   String get loading => 'Loading...';

@@ -86,7 +86,7 @@ class ProfileSetupStep2View extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: GradientButton(
-                    text: S.of(context)!.complete,
+                    text: S.of(context)!.completed,
                     onPressed: onComplete,
                   ),
                 ),
