@@ -301,11 +301,11 @@ abstract class S {
   /// **'Back'**
   String get back;
 
-  /// No description provided for @complete.
+  /// No description provided for @completed.
   ///
   /// In en, this message translates to:
-  /// **'Complete'**
-  String get complete;
+  /// **'Completed'**
+  String get completed;
 
   /// No description provided for @loading.
   ///
