@@ -720,6 +720,84 @@ abstract class S {
   /// In en, this message translates to:
   /// **'An unexpected error occurred'**
   String get unexpected_error;
+
+  /// No description provided for @theme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get theme;
+
+  /// No description provided for @mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode'**
+  String get mode;
+
+  /// No description provided for @theme_light.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme light'**
+  String get theme_light;
+
+  /// No description provided for @theme_dark.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme dark'**
+  String get theme_dark;
+
+  /// No description provided for @information.
+  ///
+  /// In en, this message translates to:
+  /// **'Information'**
+  String get information;
+
+  /// No description provided for @security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// No description provided for @help_center.
+  ///
+  /// In en, this message translates to:
+  /// **'Help center'**
+  String get help_center;
+
+  /// No description provided for @change_your_phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Change your phone'**
+  String get change_your_phone;
+
+  /// No description provided for @faq_and_support.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQs and support'**
+  String get faq_and_support;
+
+  /// No description provided for @fullname.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get fullname;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @vi.
+  ///
+  /// In en, this message translates to:
+  /// **'vietnamess'**
+  String get vi;
+
+  /// No description provided for @en.
+  ///
+  /// In en, this message translates to:
+  /// **'english'**
+  String get en;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

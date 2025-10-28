@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
+import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 
 class GradientButton extends StatelessWidget {
@@ -16,11 +17,12 @@ class GradientButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!;
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: AppColors.linearPrimary,
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: BorderRadius.all(Radius.circular(spacing.screenPadding)),
       ),
       child: ElevatedButton(
         onPressed: onPressed,
@@ -45,7 +47,7 @@ class GradientButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  icon!,
+                  Icon(icon!.icon, color: theme.scaffoldBackgroundColor),
                   const SizedBox(width: 8),
                   Text(
                     text,
