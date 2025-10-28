@@ -44,6 +44,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   image_picker: ^1.2.0
   shared_preferences: ^2.5.3 
+  rename: ^3.1.0
 
 dev_dependencies:
   flutter_launcher_icons: "^0.14.4"
