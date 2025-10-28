@@ -9,10 +9,11 @@ final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   scaffoldBackgroundColor: AppColors.background,
   primaryColor: AppColors.primary,
-  
+
   cardColor: AppColors.surface,
   dividerColor: AppColors.border,
   primaryColorDark: AppColors.textPrimary,
+  primaryColorLight: AppColors.background,
 
   // ===== AppBar =====
   appBarTheme: const AppBarTheme(
@@ -100,7 +101,7 @@ final ThemeData lightTheme = ThemeData(
 
 /// Dark Theme
 final ThemeData darkTheme = ThemeData(
-  extensions: <ThemeExtension<dynamic>>[const AppSpacing(screenPadding: 24)],
+  extensions: <ThemeExtension<dynamic>>[const AppSpacing(screenPadding: 12)],
 
   brightness: Brightness.dark,
   scaffoldBackgroundColor: AppColorsDark.background,
@@ -108,7 +109,8 @@ final ThemeData darkTheme = ThemeData(
   cardColor: AppColorsDark.surface,
   dividerColor: AppColorsDark.border,
 
-  primaryColorDark: AppColorsDark.textPrimary,
+  primaryColorLight: AppColorsDark.textPrimary,
+  primaryColorDark: AppColorsDark.background,
 
   appBarTheme: const AppBarTheme(
     backgroundColor: AppColorsDark.surface,

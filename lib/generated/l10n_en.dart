@@ -322,4 +322,43 @@ class SEn extends S {
 
   @override
   String get unexpected_error => 'An unexpected error occurred';
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get mode => 'Mode';
+
+  @override
+  String get theme_light => 'Theme light';
+
+  @override
+  String get theme_dark => 'Theme dark';
+
+  @override
+  String get information => 'Information';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get help_center => 'Help center';
+
+  @override
+  String get change_your_phone => 'Change your phone';
+
+  @override
+  String get faq_and_support => 'FAQs and support';
+
+  @override
+  String get fullname => 'Full name';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get vi => 'vietnamess';
+
+  @override
+  String get en => 'english';
 }

@@ -119,7 +119,7 @@ class SVi extends S {
   String get loading => 'Đang tải...';
 
   @override
-  String get profile => 'Hồ sơ cá nhân';
+  String get profile => 'Hồ sơ';
 
   @override
   String get settings => 'Cài đặt';
@@ -323,4 +323,43 @@ class SVi extends S {
 
   @override
   String get unexpected_error => 'Đã xảy ra lỗi không xác định';
+
+  @override
+  String get theme => 'Chủ đề';
+
+  @override
+  String get mode => 'chế độ';
+
+  @override
+  String get theme_light => 'Chủ đề sáng';
+
+  @override
+  String get theme_dark => 'Chủ đề sáng';
+
+  @override
+  String get information => 'Thông tin';
+
+  @override
+  String get security => 'Bảo mật';
+
+  @override
+  String get help_center => 'Trung tâm hỗ trợ';
+
+  @override
+  String get change_your_phone => 'Thay đổi số sdt';
+
+  @override
+  String get faq_and_support => 'Câu hỏi và hỗ trợ';
+
+  @override
+  String get fullname => 'Họ và tên';
+
+  @override
+  String get language => 'Ngôn ngữ';
+
+  @override
+  String get vi => 'Tiếng việt';
+
+  @override
+  String get en => 'Tiếng anh';
 }
