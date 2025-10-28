@@ -26,19 +26,16 @@ class GreenConnectApp extends ConsumerWidget {
     final settingsState = ref.watch(settingsProvider);
     final theme = Theme.of(context);
     return settingsState.when(
-      // Khi đang load setting ban đầu
       loading: () => const MaterialApp(
         home: Scaffold(body: Center(child: RotatingLeafLoader())),
       ),
 
-      // Khi lỗi
       error: (error, stackTrace) => MaterialApp(
         home: Scaffold(
           body: Center(child: Text('Error loading settings: $error')),
         ),
       ),
 
-      // Khi có data setting
       data: (settings) {
         return ValueListenableBuilder<bool>(
           valueListenable: appRouterObserver.isLoading,
