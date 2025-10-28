@@ -7,8 +7,8 @@ import 'package:GreenConnectMobile/features/household/presentation/views/househo
 import 'package:GreenConnectMobile/features/household/presentation/views/post_detail.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/update_recycling_post.dart';
 import 'package:GreenConnectMobile/features/notification/presentation/views/widgets/notification.dart';
+import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setting.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setup_page.dart';
-import 'package:GreenConnectMobile/features/setting/presentation/views/settings_page.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouterObserver = AppRouterObserver();
@@ -38,9 +38,12 @@ final GoRouter greenRouter = GoRouter(
       builder: (context, state) => const NotificationScreen(),
     ),
     GoRoute(
-      path: '/settings',
-      name: 'settings',
-      builder: (context, state) => const SettingsPage(),
+      path: '/profile-settings',
+      name: 'profile-settings',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>;
+        return ProfileSetting(initialData: initialData);
+      },
     ),
     GoRoute(
       path: '/create-post',

@@ -104,6 +104,20 @@
   "cache_error": "Lỗi bộ nhớ đệm",
   "unauthorized": "Bạn chưa được xác thực",
   "not_found": "Không tìm thấy tài nguyên",
-  "unexpected_error": "Đã xảy ra lỗi không xác định"
-
+  "unexpected_error": "Đã xảy ra lỗi không xác định",
+  "profile":"Hồ sơ",
+  "theme":"Chủ đề",
+  "mode":"chế độ",
+  "theme_light":"Chủ đề sáng",
+  "theme_dark":"Chủ đề sáng",
+  "information":"Thông tin",
+  "security":"Bảo mật",
+  "help_center":"Trung tâm hỗ trợ",
+  "change_your_phone":"Thay đổi số sdt",
+  "faq_and_support":"Câu hỏi và hỗ trợ",
+  "fullname": "Họ và tên",
+  "logout": "Đăng xuất",
+  "language": "Ngôn ngữ",
+  "vi": "Tiếng việt",
+  "en": "Tiếng anh"
 }

@@ -104,5 +104,20 @@
   "cache_error": "Cache read/write error",
   "unauthorized": "You are not authorized",
   "not_found": "Requested resource not found",
-  "unexpected_error": "An unexpected error occurred"
+  "unexpected_error": "An unexpected error occurred",
+  "profile":"Profile",
+  "theme":"Theme",
+  "mode":"Mode",
+  "theme_light":"Theme light",
+  "theme_dark":"Theme dark",
+  "information":"Information",
+  "security":"Security",
+  "help_center":"Help center",
+  "change_your_phone":"Change your phone",
+  "faq_and_support":"FAQs and support",
+  "fullname": "Full name",
+  "logout": "Logout",
+  "language": "Language",
+  "vi": "vietnamess",
+  "en": "english"
 }

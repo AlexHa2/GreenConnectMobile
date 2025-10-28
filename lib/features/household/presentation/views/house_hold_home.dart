@@ -1,4 +1,3 @@
-import 'package:GreenConnectMobile/features/household/presentation/views/widges/delete_post_dialog.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/widges/notification_bell.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/widges/post_item.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
@@ -308,17 +307,20 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
             icon: Icons.video_call_outlined,
             label: "Video",
             onPressed: () => {
-              showDialog(
-                context: context,
-                builder: (context) => DeletePostDialog(
-                  onDelete: () {
-                    // TODO: call API hoặc xóa bài viết
-                  },
-                  onCancel: () => Navigator.pop(context),
-                ),
+              context.push(
+                '/profile-settings',
+                extra: {
+                  'title': 'ha.thanh.phong@example.com',
+                  'imageUrl': 'assets/images/recycling_post.png',
+                  'fullname': 'Hà Thanh Phong',
+                  'address': '45 Green Avenue',
+                  'phonenumber': '0123456789',
+                  'role': 'Collector',
+                },
               ),
             },
           ),
+
           BottomNavItem(
             icon: Icons.settings,
             label: "Settings",
@@ -338,6 +340,21 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
                       'image': null,
                     },
                   ],
+                },
+              ),
+            },
+          ),
+          BottomNavItem(
+            icon: Icons.person,
+            label: "Profile",
+            onPressed: () => {
+              context.push(
+                '/detail-post',
+                extra: {
+                  'postId': "fdsaf",
+                  'title': "Recycling Old Phones",
+                  'content': "Collected used phones for recycling",
+                  'imageUrl': "assets/images/recycling_post.png",
                 },
               ),
             },
