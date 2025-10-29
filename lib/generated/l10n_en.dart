@@ -361,4 +361,120 @@ class SEn extends S {
 
   @override
   String get en => 'english';
+
+  @override
+  String get reward => 'Reward';
+
+  @override
+  String get dashboard => 'Dashboard';
+
+  @override
+  String get keep_making_difference => 'Keep making a difference';
+
+  @override
+  String get this_week => 'This Week';
+
+  @override
+  String get rank => 'Rank';
+
+  @override
+  String get achievement => 'Achievements';
+
+  @override
+  String get view_all => 'View All';
+
+  @override
+  String get redeem_rewards => 'Redeem Rewards';
+
+  @override
+  String get recent_activity => 'Revent Activity';
+
+  @override
+  String get view_all_history => 'View All History';
+
+  @override
+  String get value => 'value';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get transaction_history => 'Transaction History';
+
+  @override
+  String get reward_store => 'Reward Store';
+
+  @override
+  String get your_point => 'Your points';
+
+  @override
+  String get cart_total => 'Cart Total';
+
+  @override
+  String get redeem => 'Redeem';
+
+  @override
+  String get items_redeemed_successfully => 'Items redeemed successfully!';
+
+  @override
+  String get accept_proposed_time => 'Accept Proposed Time';
+
+  @override
+  String get by_complete_transaction =>
+      'By completing this transaction, you’re helping reduce waste';
+
+  @override
+  String get proposed_time => 'Proposed Time';
+
+  @override
+  String get decline => 'Decline';
+
+  @override
+  String get accept => 'Accept';
+
+  @override
+  String get select_meeting_time => 'Select Meeting Time';
+
+  @override
+  String get value_hint => '30';
+
+  @override
+  String get approve_transaction => 'Approve Transaction';
+
+  @override
+  String get slogan_confirm_detail_1 =>
+      'Both parties must confirm the weight and price';
+
+  @override
+  String get slogan_confirm_detail_2 => 'Together we’re making a difference';
+
+  @override
+  String get confirm_details => 'Confirm Details';
+
+  @override
+  String get how_was_your_transaction => 'How was your transaction';
+
+  @override
+  String get rating => 'Rating';
+
+  @override
+  String get your_review => 'Your Review';
+
+  @override
+  String get your_review_hint => 'Write your feedback...';
+
+  @override
+  String get report_an_issue => 'Report an issue';
+
+  @override
+  String get attach_photo => 'Attach Photo';
+
+  @override
+  String get tap_to_upload_photo => 'Tap to upload photo';
+
+  @override
+  String get decribe_your_issue_hint => 'Describe your issue....';
+
+  @override
+  String get submit_feedback => 'Submi Feedback';
 }
