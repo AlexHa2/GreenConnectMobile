@@ -1,8 +1,8 @@
 
 
 
-import 'package:GreenConnectMobile/features/auth/domain/entities/user.dart';
-import 'package:GreenConnectMobile/features/auth/domain/repository/auth_repository.dart';
+import 'package:GreenConnectMobile/features/authentication/domain/entities/user.dart';
+import 'package:GreenConnectMobile/features/authentication/domain/repository/auth_repository.dart';
 
 class LoginUseCase {
   final AuthRepository repository;

@@ -1,4 +1,4 @@
-import 'package:GreenConnectMobile/features/auth/domain/entities/user.dart';
+import 'package:GreenConnectMobile/features/authentication/domain/entities/user.dart';
 
 class UserDto {
   final String id;

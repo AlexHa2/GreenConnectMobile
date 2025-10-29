@@ -111,6 +111,7 @@ final ThemeData darkTheme = ThemeData(
 
   primaryColorLight: AppColorsDark.textPrimary,
   primaryColorDark: AppColorsDark.background,
+  
 
   appBarTheme: const AppBarTheme(
     backgroundColor: AppColorsDark.surface,

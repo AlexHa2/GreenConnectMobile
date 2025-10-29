@@ -25,7 +25,7 @@ class ProfileSetting extends ConsumerWidget {
         const AppSettings(theme: AppTheme.light, languageCode: 'vi');
     final settingsNotifier = ref.read(settingsProvider.notifier);
 
-    final postId = initialData['postId'];
+    // final postId = initialData['postId'];
     final title = initialData['title'];
     final imageUrl = initialData['imageUrl'];
     final fullname = initialData['fullname'];

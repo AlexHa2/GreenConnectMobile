@@ -4,7 +4,6 @@ import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
-import 'package:GreenConnectMobile/shared/widgets/custom_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,7 +15,6 @@ class HouseHoldHome extends StatefulWidget {
 }
 
 class _HouseHoldHomeState extends State<HouseHoldHome> {
-  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +98,6 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
                 children: [
                   SizedBox(height: spacing.screenPadding * 2),
 
-                  // ===== Your Impact Card =====
                   Container(
                     padding: EdgeInsets.all(spacing.screenPadding * 2),
                     decoration: BoxDecoration(
@@ -135,7 +132,7 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
                               ],
                             ),
                             Icon(
-                              Icons.energy_savings_leaf_outlined,
+                              Icons.eco,
                               color: theme.scaffoldBackgroundColor,
                               size: 48,
                             ),
@@ -175,7 +172,6 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
 
                   SizedBox(height: spacing.screenPadding * 2.5),
 
-                  // ===== Stats Row =====
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -270,97 +266,8 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
           ),
         ],
       ),
-      // ===== Bottom Navigation =====
-      bottomNavigationBar: CustomBottomNav(
-        initialIndex: _currentIndex,
-        items: [
-          BottomNavItem(
-            icon: Icons.home,
-            label: "Home",
-            onPressed: () => setState(() => _currentIndex = 0),
-          ),
-          BottomNavItem(
-            icon: Icons.search,
-            label: "Search",
-            onPressed: () => {
-              context.pushNamed(
-                'detail-post',
-                extra: {
-                  'title': 'Recycling Old Phones',
-                  'description': 'Collected used phones for recycling',
-                  'postedDate': '20/06/2024',
-                  'status': 'accepted',
-                  'pickupTime': 'Morning (8:00 AM - 12:00 PM)',
-                  'pickupAddress': '45 Green Avenue',
-                  'scrapItems': [
-                    {'category': 'Electronics', 'quantity': 3, 'weight': 2.5},
-                    {'category': 'Electronics', 'quantity': 3, 'weight': 2.5},
-                    {'category': 'Electronics', 'quantity': 3, 'weight': 2.5},
-                    {'category': 'Electronics', 'quantity': 3, 'weight': 2.5},
-                    {'category': 'Electronics', 'quantity': 3, 'weight': 2.5},
-                  ],
-                },
-              ),
-            },
-          ),
-          BottomNavItem(
-            icon: Icons.video_call_outlined,
-            label: "Video",
-            onPressed: () => {
-              context.push(
-                '/profile-settings',
-                extra: {
-                  'title': 'ha.thanh.phong@example.com',
-                  'imageUrl': 'assets/images/recycling_post.png',
-                  'fullname': 'Hà Thanh Phong',
-                  'address': '45 Green Avenue',
-                  'phonenumber': '0123456789',
-                  'role': 'Collector',
-                },
-              ),
-            },
-          ),
 
-          BottomNavItem(
-            icon: Icons.settings,
-            label: "Settings",
-            onPressed: () => {
-              context.pushNamed(
-                'update-post',
-                extra: {
-                  'title': 'Recycling Old Phones',
-                  'description': 'Collected used phones for recycling',
-                  'pickupAddress': '45 Green Avenue',
-                  'pickupTime': 'Morning (8:00 AM - 12:00 PM)',
-                  'scrapItems': [
-                    {
-                      'category': 'Electronics',
-                      'quantity': 3,
-                      'weight': 2.5,
-                      'image': null,
-                    },
-                  ],
-                },
-              ),
-            },
-          ),
-          BottomNavItem(
-            icon: Icons.person,
-            label: "Profile",
-            onPressed: () => {
-              context.push(
-                '/detail-post',
-                extra: {
-                  'postId': "fdsaf",
-                  'title': "Recycling Old Phones",
-                  'content': "Collected used phones for recycling",
-                  'imageUrl': "assets/images/recycling_post.png",
-                },
-              ),
-            },
-          ),
-        ],
-      ),
+      
     );
   }
 

@@ -29,7 +29,7 @@ class _PostItemState extends State<PostItem>
   @override
   void initState() {
     super.initState();
-    _isExpanded = false; // Mặc định đóng, chỉ mở khi người dùng bấm
+    _isExpanded = false;
   }
 
   bool get _isAccepted => widget.status == "Accepted";
@@ -60,11 +60,9 @@ class _PostItemState extends State<PostItem>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ===== Header Row =====
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Left content
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +131,6 @@ class _PostItemState extends State<PostItem>
                 ],
               ),
 
-              // ===== Expandable Section =====
               if (_isAccepted)
                 AnimatedCrossFade(
                   duration: const Duration(milliseconds: 300),
@@ -188,7 +185,6 @@ class _PostItemState extends State<PostItem>
                   ),
                 ),
 
-              // ===== Expand icon (bottom center) =====
               if (_isAccepted)
                 Center(
                   child: IconButton(

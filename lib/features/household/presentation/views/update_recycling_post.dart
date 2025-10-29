@@ -6,6 +6,7 @@ import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:GreenConnectMobile/shared/widgets/dashed_border_container.dart';
+import 'package:GreenConnectMobile/shared/widgets/lable_field.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -105,31 +106,27 @@ class _UpdateRecyclingPostPageState extends State<UpdateRecyclingPostPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildLabeledField(
-                        context,
+                      LableField(
                         label: S.of(context)!.post_title,
                         controller: _titleController,
                         hint: S.of(context)!.post_title_hint,
                         validatorMsg: "Please enter a title",
                       ),
                       SizedBox(height: spacing.screenPadding),
-                      _buildLabeledField(
-                        context,
+                      LableField(
                         label: S.of(context)!.description,
                         controller: _descriptionController,
                         hint: S.of(context)!.description_hint,
                       ),
                       SizedBox(height: spacing.screenPadding),
-                      _buildLabeledField(
-                        context,
+                      LableField(
                         label: S.of(context)!.pickup_address,
                         controller: _pickupAddressController,
                         hint: S.of(context)!.pickup_addres_hint,
                         validatorMsg: "Please provide a pickup address",
                       ),
                       SizedBox(height: spacing.screenPadding),
-                      _buildLabeledField(
-                        context,
+                      LableField(
                         label: S.of(context)!.pickup_time,
                         controller: _pickupTimeController,
                         hint: S.of(context)!.pickup_time_hint,
@@ -510,36 +507,6 @@ class _UpdateRecyclingPostPageState extends State<UpdateRecyclingPostPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildLabeledField(
-    BuildContext context, {
-    required String label,
-    required TextEditingController controller,
-    required String hint,
-    String? validatorMsg,
-  }) {
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 4),
-        TextFormField(
-          controller: controller,
-          decoration: InputDecoration(hintText: hint),
-          validator: validatorMsg != null
-              ? (value) =>
-                    value == null || value.trim().isEmpty ? validatorMsg : null
-              : null,
-        ),
-      ],
     );
   }
 }
