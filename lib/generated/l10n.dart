@@ -798,6 +798,234 @@ abstract class S {
   /// In en, this message translates to:
   /// **'english'**
   String get en;
+
+  /// No description provided for @reward.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward'**
+  String get reward;
+
+  /// No description provided for @dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboard;
+
+  /// No description provided for @keep_making_difference.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep making a difference'**
+  String get keep_making_difference;
+
+  /// No description provided for @this_week.
+  ///
+  /// In en, this message translates to:
+  /// **'This Week'**
+  String get this_week;
+
+  /// No description provided for @rank.
+  ///
+  /// In en, this message translates to:
+  /// **'Rank'**
+  String get rank;
+
+  /// No description provided for @achievement.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievements'**
+  String get achievement;
+
+  /// No description provided for @view_all.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get view_all;
+
+  /// No description provided for @redeem_rewards.
+  ///
+  /// In en, this message translates to:
+  /// **'Redeem Rewards'**
+  String get redeem_rewards;
+
+  /// No description provided for @recent_activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Revent Activity'**
+  String get recent_activity;
+
+  /// No description provided for @view_all_history.
+  ///
+  /// In en, this message translates to:
+  /// **'View All History'**
+  String get view_all_history;
+
+  /// No description provided for @value.
+  ///
+  /// In en, this message translates to:
+  /// **'value'**
+  String get value;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @transaction_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction History'**
+  String get transaction_history;
+
+  /// No description provided for @reward_store.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward Store'**
+  String get reward_store;
+
+  /// No description provided for @your_point.
+  ///
+  /// In en, this message translates to:
+  /// **'Your points'**
+  String get your_point;
+
+  /// No description provided for @cart_total.
+  ///
+  /// In en, this message translates to:
+  /// **'Cart Total'**
+  String get cart_total;
+
+  /// No description provided for @redeem.
+  ///
+  /// In en, this message translates to:
+  /// **'Redeem'**
+  String get redeem;
+
+  /// No description provided for @items_redeemed_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Items redeemed successfully!'**
+  String get items_redeemed_successfully;
+
+  /// No description provided for @accept_proposed_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept Proposed Time'**
+  String get accept_proposed_time;
+
+  /// No description provided for @by_complete_transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'By completing this transaction, you’re helping reduce waste'**
+  String get by_complete_transaction;
+
+  /// No description provided for @proposed_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposed Time'**
+  String get proposed_time;
+
+  /// No description provided for @decline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get decline;
+
+  /// No description provided for @accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get accept;
+
+  /// No description provided for @select_meeting_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Meeting Time'**
+  String get select_meeting_time;
+
+  /// No description provided for @value_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'30'**
+  String get value_hint;
+
+  /// No description provided for @approve_transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve Transaction'**
+  String get approve_transaction;
+
+  /// No description provided for @slogan_confirm_detail_1.
+  ///
+  /// In en, this message translates to:
+  /// **'Both parties must confirm the weight and price'**
+  String get slogan_confirm_detail_1;
+
+  /// No description provided for @slogan_confirm_detail_2.
+  ///
+  /// In en, this message translates to:
+  /// **'Together we’re making a difference'**
+  String get slogan_confirm_detail_2;
+
+  /// No description provided for @confirm_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Details'**
+  String get confirm_details;
+
+  /// No description provided for @how_was_your_transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'How was your transaction'**
+  String get how_was_your_transaction;
+
+  /// No description provided for @rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get rating;
+
+  /// No description provided for @your_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Review'**
+  String get your_review;
+
+  /// No description provided for @your_review_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your feedback...'**
+  String get your_review_hint;
+
+  /// No description provided for @report_an_issue.
+  ///
+  /// In en, this message translates to:
+  /// **'Report an issue'**
+  String get report_an_issue;
+
+  /// No description provided for @attach_photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach Photo'**
+  String get attach_photo;
+
+  /// No description provided for @tap_to_upload_photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to upload photo'**
+  String get tap_to_upload_photo;
+
+  /// No description provided for @decribe_your_issue_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your issue....'**
+  String get decribe_your_issue_hint;
+
+  /// No description provided for @submit_feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Submi Feedback'**
+  String get submit_feedback;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

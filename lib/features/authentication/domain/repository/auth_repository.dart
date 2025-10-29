@@ -1,6 +1,6 @@
 
 
-import 'package:GreenConnectMobile/features/auth/domain/entities/user.dart';
+import 'package:GreenConnectMobile/features/authentication/domain/entities/user.dart';
 
 abstract class AuthRepository {
   Future<User> login(String email, String password);

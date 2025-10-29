@@ -362,4 +362,121 @@ class SVi extends S {
 
   @override
   String get en => 'Tiếng anh';
+
+  @override
+  String get reward => 'Phần Thưởng';
+
+  @override
+  String get dashboard => 'Thống Kê';
+
+  @override
+  String get keep_making_difference => 'Tiếp tục làm điều khác biệc';
+
+  @override
+  String get this_week => 'Tuần này';
+
+  @override
+  String get rank => 'Thứ hạng';
+
+  @override
+  String get achievement => 'Thành tựu';
+
+  @override
+  String get view_all => 'Xem tất cả';
+
+  @override
+  String get redeem_rewards => 'Đổi thưởng';
+
+  @override
+  String get recent_activity => 'Các hoạt động gần đây';
+
+  @override
+  String get view_all_history => 'Xem tất cả lịch sử';
+
+  @override
+  String get value => 'Giá trị';
+
+  @override
+  String get status => 'Trạng thái';
+
+  @override
+  String get transaction_history => 'Lịch sử giao dịch';
+
+  @override
+  String get reward_store => 'Cửa hàng phần thưởng';
+
+  @override
+  String get your_point => 'Điểm thưởng của bạn';
+
+  @override
+  String get cart_total => 'Tổng giỏ hàng';
+
+  @override
+  String get redeem => 'Phần thưởng';
+
+  @override
+  String get items_redeemed_successfully => 'Đã đổi quà thành công!';
+
+  @override
+  String get accept_proposed_time => 'Chấp nhận thời gian đề xuất';
+
+  @override
+  String get by_complete_transaction =>
+      'Bằng cách hoàn tất giao dịch này, bạn đang giúp giảm thiểu chất thải';
+
+  @override
+  String get proposed_time => 'Thời gian đề xuất';
+
+  @override
+  String get decline => 'Từ chối';
+
+  @override
+  String get accept => 'Chấp nhận';
+
+  @override
+  String get select_meeting_time => 'Chọn ngày gặp mặt';
+
+  @override
+  String get value_hint => '30';
+
+  @override
+  String get approve_transaction => 'Chấp nhận giao dịch';
+
+  @override
+  String get slogan_confirm_detail_1 =>
+      'Cả hai bên phải xác nhận trọng lượng và giá cả';
+
+  @override
+  String get slogan_confirm_detail_2 =>
+      'Cùng nhau chúng ta tạo nên sự khác biệt';
+
+  @override
+  String get confirm_details => 'Xác nhận chi tiết';
+
+  @override
+  String get how_was_your_transaction => 'Giao dịch của bạn thế nào';
+
+  @override
+  String get rating => 'Đánh giá';
+
+  @override
+  String get your_review => 'Đánh giá của bạn';
+
+  @override
+  String get your_review_hint => 'viết đánh giá...';
+
+  @override
+  String get report_an_issue => 'Báo cáo vấn đề';
+
+  @override
+  String get attach_photo => 'Kèm hình ảnh';
+
+  @override
+  String get tap_to_upload_photo => 'Ấn để thêm hình';
+
+  @override
+  String get decribe_your_issue_hint => 'Mô tả vấn đề của bạn....';
+
+  @override
+  String get submit_feedback => 'Nộp đánh giá';
 }
