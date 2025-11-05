@@ -1,5 +1,4 @@
 import 'package:GreenConnectMobile/generated/l10n.dart';
-import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:GreenConnectMobile/shared/widgets/leaf_painter.dart';
@@ -15,6 +14,16 @@ class WelcomePage extends StatefulWidget {
 
 class _WelcomePageState extends State<WelcomePage>
     with SingleTickerProviderStateMixin {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(const AssetImage("assets/images/green_connect_logo.png"), context);
+  }
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -71,7 +80,7 @@ class _WelcomePageState extends State<WelcomePage>
                         Text(
                           S.of(context)!.hello_second,
                           style: theme.textTheme.titleLarge?.copyWith(
-                            color: AppColors.primary,
+                            color: theme.primaryColor,
                             fontSize: 42,
                             fontWeight: FontWeight.bold,
                           ),
@@ -84,6 +93,7 @@ class _WelcomePageState extends State<WelcomePage>
 
                   // ===== Buttons =====
                   GradientButton(
+                    key: const Key('goLogin'),
                     text: S.of(context)!.login,
                     onPressed: () {
                       context.go('/login');
@@ -91,8 +101,12 @@ class _WelcomePageState extends State<WelcomePage>
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
+                    key: const Key('goRegister'),
                     width: double.infinity,
                     child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: theme.primaryColor),
+                      ),
                       onPressed: () => context.go('/register'),
                       child: Text(S.of(context)!.register),
                     ),
