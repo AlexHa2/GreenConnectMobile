@@ -1,0 +1,14 @@
+name: Flutter Integration Test
+
+on: [push, pull_request]
+
+jobs:
+  integration_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.24.0"
+      - run: flutter pub get
+      - run: flutter test integration_test

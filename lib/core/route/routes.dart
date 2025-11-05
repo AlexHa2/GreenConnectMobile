@@ -1,6 +1,7 @@
 import 'package:GreenConnectMobile/core/helper/app_router_observer.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/login_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/register_page.dart';
+import 'package:GreenConnectMobile/features/authentication/presentation/views/welcome_page.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/create_post.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/household_list_post.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/post_detail.dart';
@@ -11,7 +12,6 @@ import 'package:GreenConnectMobile/features/profile/presentation/views/profile_s
 import 'package:GreenConnectMobile/features/reward/presentation/views/list_history_post.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/confirm_transaction_detail.dart';
-import 'package:GreenConnectMobile/features/transaction/presentation/views/transaction_detail.dart';
 import 'package:GreenConnectMobile/shared/layouts/main_layout.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,10 +24,6 @@ final GoRouter greenRouter = GoRouter(
     ShellRoute(
       builder: (context, state, child) => MainLayout(child: child),
       routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) => const TransactionDetails(),
-        ),
         GoRoute(
           path: '/notifications',
           name: 'notifications',
@@ -69,7 +65,7 @@ final GoRouter greenRouter = GoRouter(
         ),
       ],
     ),
-
+    GoRoute(path: '/', builder: (context, state) => const WelcomePage()),
     GoRoute(
       path: '/register',
       name: 'register',
