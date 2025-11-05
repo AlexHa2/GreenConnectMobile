@@ -15,11 +15,62 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController otpController = TextEditingController();
 
+  bool isOtpSent = false;
+  bool isLoading = false;
+
+  /// Giả lập gửi OTP
+  Future<void> _sendOtp() async {
+    print("Sending OTP...");
+    final phone = phoneController.text.trim();
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(S.of(context)!.phone_number_hint)));
+      return;
+    }
+
+    setState(() => isLoading = true);
+    await Future.delayed(const Duration(seconds: 2)); // Giả lập call API
+
+    setState(() {
+      isLoading = false;
+      isOtpSent = true;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${S.of(context)!.otp} sent to $phone')),
+    );
+  }
+
+  /// Giả lập login với OTP
+  void _login() {
+    final otp = otpController.text.trim();
+    final phone = phoneController.text.trim();
+
+    if (otp.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(S.of(context)!.otp_hint)));
+      return;
+    }
+
+    if (phone == '+840987654321' && otp == '123456') {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Welcome back!')));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid phone number or OTP')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
     final spacing = Theme.of(context).extension<AppSpacing>()!;
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
@@ -36,9 +87,10 @@ class _LoginPageState extends State<LoginPage> {
         padding: EdgeInsets.all(spacing.screenPadding),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: size.height * 0.05),
+
+              /// ====== Tiêu đề ======
               Text(
                 S.of(context)!.welcome_login_primary,
                 style: theme.textTheme.headlineMedium?.copyWith(
@@ -54,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 40),
 
-              // Card section
+              /// ====== Card chứa form ======
               Card(
                 color: theme.cardColor,
                 shape: RoundedRectangleBorder(
@@ -67,6 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // ===== Phone field =====
                       Row(
                         children: [
                           Icon(Icons.call, color: theme.primaryColor, size: 20),
@@ -83,6 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                       TextField(
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
+                        enabled: !isOtpSent, // Disable khi đã gửi OTP
                         decoration: InputDecoration(
                           hintText: S.of(context)!.phone_number_hint,
                           filled: true,
@@ -98,63 +152,75 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 20),
 
-                      // OTP
-                      Row(
-                        children: [
-                          Icon(Icons.sms, color: theme.primaryColor, size: 20),
-                          const SizedBox(width: 8),
-                          Text(
-                            "${S.of(context)!.send} ${S.of(context)!.otp}",
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                      if (!isOtpSent)
+                        SizedBox(
+                          key: const Key('sendOtpButton'),
+                          width: double.infinity,
+                          height: 50,
+                          child: GradientButton(
+                            text:
+                                "${S.of(context)!.send} ${S.of(context)!.otp}",
+                            onPressed: () => isLoading ? null : _sendOtp(),
                           ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      TextFormField(
-                        controller: otpController,
-                        keyboardType: TextInputType.number,
-                        validator: (value) => value == null || value.isEmpty
-                            ? S.of(context)!.otp
-                            : null,
-                        decoration: InputDecoration(
-                          hintText: S.of(context)!.otp_hint,
-                          filled: true,
-                          fillColor: theme.inputDecorationTheme.fillColor,
-                          contentPadding:
-                              theme.inputDecorationTheme.contentPadding,
-                          border: theme.inputDecorationTheme.border,
-                          enabledBorder:
-                              theme.inputDecorationTheme.enabledBorder,
-                          focusedBorder:
-                              theme.inputDecorationTheme.focusedBorder,
-                          hintStyle: theme.inputDecorationTheme.hintStyle,
                         ),
-                      ),
 
-                      const SizedBox(height: 24),
-
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: GradientButton(
-                          text: "${S.of(context)!.send} ${S.of(context)!.otp}",
-                          onPressed: () {
-                            // Handle send OTP action
-                          },
+                      if (isOtpSent) ...[
+                        // ===== OTP field =====
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.sms,
+                              color: theme.primaryColor,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              "${S.of(context)!.send} ${S.of(context)!.otp}",
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: otpController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: S.of(context)!.otp_hint,
+                            filled: true,
+                            fillColor: theme.inputDecorationTheme.fillColor,
+                            contentPadding:
+                                theme.inputDecorationTheme.contentPadding,
+                            border: theme.inputDecorationTheme.border,
+                            enabledBorder:
+                                theme.inputDecorationTheme.enabledBorder,
+                            focusedBorder:
+                                theme.inputDecorationTheme.focusedBorder,
+                            hintStyle: theme.inputDecorationTheme.hintStyle,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          key: const Key('loginButton'),
+                          width: double.infinity,
+                          height: 50,
+                          child: GradientButton(
+                            text: S.of(context)!.login,
+                            onPressed: () => isLoading ? null : _login(),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
               ),
 
               const SizedBox(height: 24),
+
+              /// ====== Register link ======
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

@@ -63,7 +63,7 @@ class _BrowseJobsPageState extends State<BrowseJobsPage> {
         elevation: 0,
         leading: IconButton(
           onPressed: () => context.pop(),
-          icon: Icon(
+          icon:  Icon(
             Icons.arrow_back,
             color: AppColors.primary,
           ),
