@@ -157,5 +157,8 @@
   "attach_photo": "Kèm hình ảnh",
   "tap_to_upload_photo": "Ấn để thêm hình",
   "decribe_your_issue_hint": "Mô tả vấn đề của bạn....",
-  "submit_feedback": "Nộp đánh giá"
+  "submit_feedback": "Nộp đánh giá",
+  "message": "Tin nhắn",
+  "message_hint": "Tin nhắn .....",
+  "online": "Đang hoạt động"
 }

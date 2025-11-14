@@ -2,7 +2,7 @@ import 'package:GreenConnectMobile/shared/layouts/nav_type.dart';
 import 'package:flutter/material.dart';
 
 final List<NavConfig> navItemsHousehold = [
-  const NavConfig(icon: Icons.home, label: "Home", routeName: '/'),
+  const NavConfig(icon: Icons.home, label: "Home", routeName: '/household-home'),
   const NavConfig(
     icon: Icons.search,
     label: "Search",

@@ -59,7 +59,7 @@ class NotificationScreen extends StatelessWidget {
         title: Text(S.of(context)!.notifications),
         leading: BackButton(
           color: theme.textTheme.bodyLarge?.color,
-          onPressed: () => context.go('/'),
+          onPressed: () => context.go('/household-home'),
         ),
         actions: [
           IconButton(
@@ -114,7 +114,7 @@ class NotificationScreen extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color:
                                     (item.tagColor ??
-                                    AppColors.primary.withValues(alpha: 0.9)),
+                                    theme.primaryColor.withValues(alpha: 0.9)),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               padding: EdgeInsets.symmetric(
