@@ -1,6 +1,7 @@
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class PostItem extends StatefulWidget {
   final String title;
@@ -159,7 +160,7 @@ class _PostItemState extends State<PostItem>
                           alignment: Alignment.centerRight,
                           child: OutlinedButton.icon(
                             onPressed: () {
-                              // TODO: Navigate to transaction detail
+                              context.push('/confirm-transaction');
                             },
                             icon: const Icon(
                               Icons.receipt_long_outlined,

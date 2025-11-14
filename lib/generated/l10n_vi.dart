@@ -479,4 +479,13 @@ class SVi extends S {
 
   @override
   String get submit_feedback => 'Nộp đánh giá';
+
+  @override
+  String get message => 'Tin nhắn';
+
+  @override
+  String get message_hint => 'Tin nhắn .....';
+
+  @override
+  String get online => 'Đang hoạt động';
 }

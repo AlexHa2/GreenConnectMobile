@@ -477,4 +477,13 @@ class SEn extends S {
 
   @override
   String get submit_feedback => 'Submi Feedback';
+
+  @override
+  String get message => 'Message';
+
+  @override
+  String get message_hint => 'Message .....';
+
+  @override
+  String get online => 'Online';
 }

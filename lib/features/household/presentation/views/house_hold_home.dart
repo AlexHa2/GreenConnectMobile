@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/features/household/presentation/views/widges/message.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/widges/notification_bell.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/widges/post_item.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
@@ -15,7 +16,6 @@ class HouseHoldHome extends StatefulWidget {
 }
 
 class _HouseHoldHomeState extends State<HouseHoldHome> {
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -79,9 +79,16 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
 
                   // Icon bell
                   NotificationIconButton(
-                    count: 3,
+                    count: 1,
                     onPressed: () {
                       context.go('/notifications');
+                    },
+                  ),
+                  SizedBox(width: spacing.screenPadding),
+                  MessageIconButton(
+                    count: 2,
+                    onPressed: () {
+                      context.go('/list-message');
                     },
                   ),
                 ],
@@ -266,8 +273,6 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
           ),
         ],
       ),
-
-      
     );
   }
 

@@ -1026,6 +1026,24 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Submi Feedback'**
   String get submit_feedback;
+
+  /// No description provided for @message.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get message;
+
+  /// No description provided for @message_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Message .....'**
+  String get message_hint;
+
+  /// No description provided for @online.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get online;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

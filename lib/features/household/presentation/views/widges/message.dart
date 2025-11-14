@@ -2,11 +2,11 @@ import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 
-class NotificationIconButton extends StatelessWidget {
+class MessageIconButton extends StatelessWidget {
   final int count;
   final VoidCallback? onPressed;
 
-  const NotificationIconButton({super.key, this.count = 0, this.onPressed});
+  const MessageIconButton({super.key, this.count = 0, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class NotificationIconButton extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           Icon(
-            Icons.notifications_none,
+            Icons.message_outlined,
             color: theme.iconTheme.color,
             size: spacing.screenPadding * 2,
           ),

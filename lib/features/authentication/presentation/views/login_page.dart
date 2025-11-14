@@ -54,10 +54,11 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    if (phone == '+840987654321' && otp == '123456') {
+    if (phone == '0987654321' && otp == '123456') {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Welcome back!')));
+      context.push('/household-home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invalid phone number or OTP')),
