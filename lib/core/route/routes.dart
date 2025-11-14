@@ -3,16 +3,19 @@ import 'package:GreenConnectMobile/features/authentication/presentation/views/lo
 import 'package:GreenConnectMobile/features/authentication/presentation/views/register_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/welcome_page.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/create_post.dart';
+import 'package:GreenConnectMobile/features/household/presentation/views/house_hold_home.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/household_list_post.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/post_detail.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/update_recycling_post.dart';
+import 'package:GreenConnectMobile/features/message/presentation/views/chat_message_detail.dart';
+import 'package:GreenConnectMobile/features/message/presentation/views/message.dart';
 import 'package:GreenConnectMobile/features/notification/presentation/views/widgets/notification.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setting.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setup_page.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/list_history_post.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/confirm_transaction_detail.dart';
-import 'package:GreenConnectMobile/shared/layouts/main_layout.dart';
+import 'package:GreenConnectMobile/shared/layouts/household_layout.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouterObserver = AppRouterObserver();
@@ -22,8 +25,13 @@ final GoRouter greenRouter = GoRouter(
   initialLocation: '/',
   routes: [
     ShellRoute(
-      builder: (context, state, child) => MainLayout(child: child),
+      builder: (context, state, child) => HouseholdLayout(child: child),
       routes: [
+        GoRoute(
+          path: '/household-home',
+          name: 'household-home',
+          builder: (context, state) => const HouseHoldHome(),
+        ),
         GoRoute(
           path: '/notifications',
           name: 'notifications',
@@ -95,6 +103,19 @@ final GoRouter greenRouter = GoRouter(
       path: '/confirm-transaction',
       name: 'confirm-transaction',
       builder: (context, state) => const ConfirmTransaction(),
+    ),
+    GoRoute(
+      path: '/list-message',
+      name: 'list-message',
+      builder: (context, state) => const MessageListScreen(),
+    ),
+    GoRoute(
+      name: 'chat-detail',
+      path: '/chat-detail',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        return ChatDetailScreen(initialData: initialData);
+      },
     ),
   ],
 );

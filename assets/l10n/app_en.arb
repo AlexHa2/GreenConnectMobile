@@ -157,5 +157,8 @@
   "attach_photo": "Attach Photo",
   "tap_to_upload_photo": "Tap to upload photo",
   "decribe_your_issue_hint": "Describe your issue....",
-  "submit_feedback": "Submi Feedback"
+  "submit_feedback": "Submi Feedback",
+  "message": "Message",
+  "message_hint": "Message .....",
+  "online": "Online"
 }

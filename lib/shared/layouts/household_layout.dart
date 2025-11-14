@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:GreenConnectMobile/shared/layouts/nav_items/nav_item_household.dart';
 
-class MainLayout extends StatefulWidget {
+class HouseholdLayout extends StatefulWidget {
   final Widget child;
-  const MainLayout({super.key, required this.child});
+  const HouseholdLayout({super.key, required this.child});
 
   @override
-  State<MainLayout> createState() => _MainLayoutState();
+  State<HouseholdLayout> createState() => _HouseholdLayoutState();
 }
 
-class _MainLayoutState extends State<MainLayout> {
+class _HouseholdLayoutState extends State<HouseholdLayout> {
   late int _currentIndex;
 
   @override
