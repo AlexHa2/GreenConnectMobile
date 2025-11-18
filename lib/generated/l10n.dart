@@ -1044,6 +1044,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Online'**
   String get online;
+
+  /// No description provided for @invalid_phone_number.
+  ///
+  /// In en, this message translates to:
+  /// **'invalid phone number ex:0987654321'**
+  String get invalid_phone_number;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

@@ -5,6 +5,7 @@ import 'package:GreenConnectMobile/features/setting/domain/entities/app_settings
 import 'package:GreenConnectMobile/features/setting/presentation/providers/settings_provider.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_leaf_loading.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -15,6 +16,7 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   await initDependencies();
   FlutterError.demangleStackTrace = (stack) => stack;
+  await Firebase.initializeApp();
   runApp(const ProviderScope(child: GreenConnectApp()));
 }
 
