@@ -488,4 +488,7 @@ class SVi extends S {
 
   @override
   String get online => 'Đang hoạt động';
+
+  @override
+  String get invalid_phone_number => 'Số điện thoại không hợp lệ vd:0987654321';
 }

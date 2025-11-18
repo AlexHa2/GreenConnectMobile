@@ -160,5 +160,6 @@
   "submit_feedback": "Submi Feedback",
   "message": "Message",
   "message_hint": "Message .....",
-  "online": "Online"
+  "online": "Online",
+  "invalid_phone_number":"invalid phone number ex:0987654321"
 }

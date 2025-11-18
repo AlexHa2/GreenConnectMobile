@@ -486,4 +486,7 @@ class SEn extends S {
 
   @override
   String get online => 'Online';
+
+  @override
+  String get invalid_phone_number => 'invalid phone number ex:0987654321';
 }

@@ -99,18 +99,18 @@ class _WelcomePageState extends State<WelcomePage>
                       context.go('/login');
                     },
                   ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    key: const Key('goRegister'),
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: theme.primaryColor),
-                      ),
-                      onPressed: () => context.go('/register'),
-                      child: Text(S.of(context)!.register),
-                    ),
-                  ),
+                  // const SizedBox(height: 10),
+                  // SizedBox(
+                  //   key: const Key('goRegister'),
+                  //   width: double.infinity,
+                  //   child: OutlinedButton(
+                  //     style: OutlinedButton.styleFrom(
+                  //       side: BorderSide(color: theme.primaryColor),
+                  //     ),
+                  //     onPressed: () => context.go('/register'),
+                  //     child: Text(S.of(context)!.register),
+                  //   ),
+                  // ),
 
                   const SizedBox(height: 42),
                 ],
