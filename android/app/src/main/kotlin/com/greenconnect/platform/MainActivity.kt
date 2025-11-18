@@ -1,4 +1,4 @@
-package com.example.green_connect_mb
+package com.greenconnect.platform
 
 import io.flutter.embedding.android.FlutterActivity
 

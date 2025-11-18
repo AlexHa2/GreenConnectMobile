@@ -47,6 +47,11 @@ dependencies:
   rename: ^3.1.0
   table_calendar: ^3.2.0
   flutter_rating_bar: ^4.0.1
+  firebase_auth: ^6.1.2
+  firebase_core: ^4.2.1
+  rename_app: ^1.6.5
+  phone_numbers_parser: ^9.0.16
+  flutter_secure_storage: ^9.2.4
 
 dev_dependencies:
   flutter_launcher_icons: "^0.14.4"
@@ -61,6 +66,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  change_app_package_name: ^1.5.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

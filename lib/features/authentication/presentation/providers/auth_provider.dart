@@ -1,29 +1,35 @@
-import 'package:GreenConnectMobile/core/di/injector.dart';
-import 'package:GreenConnectMobile/features/authentication/domain/entities/user.dart';
-import 'package:GreenConnectMobile/features/authentication/domain/usecases/get_user_usecase.dart';
-import 'package:flutter/material.dart';
+import 'package:GreenConnectMobile/features/authentication/data/datasources/auth_remote_datasource.dart';
+import 'package:GreenConnectMobile/features/authentication/data/repository/auth_repository_impl.dart';
+import 'package:GreenConnectMobile/features/authentication/domain/usecases/login_system_usecase.dart';
+import 'package:GreenConnectMobile/features/authentication/domain/usecases/send_otp_usecase.dart';
+import 'package:GreenConnectMobile/features/authentication/domain/usecases/verify_otp_usecase.dart';
+import 'package:GreenConnectMobile/features/authentication/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:GreenConnectMobile/features/authentication/presentation/viewmodels/states/auth_state.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 
-class AuthNotifier extends StateNotifier<AsyncValue<List<User>>> {
-  final GetUserUseCase getUserUseCase;
+final authRemoteDatasourceProvider = Provider<AuthRemoteDatasource>((ref) {
+  final firebaseAuth = FirebaseAuth.instance;
+  return AuthRemoteDatasource(firebaseAuth: firebaseAuth);
+});
 
-  AuthNotifier(this.getUserUseCase) : super(const AsyncValue.data([]));
+final authRepositoryProvider = Provider<AuthRepositoryImpl>((ref) {
+  final authDatasource = ref.read(authRemoteDatasourceProvider);
+  return AuthRepositoryImpl(authDatasource: authDatasource);
+});
 
-  Future<void> getUser() async {
-    state = const AsyncValue.loading();
-    try {
-      List<User> users = await getUserUseCase();
-      state = AsyncValue.data(users);
-    } catch (e, st) {
-      debugPrint('❌ Exception: $e');
-      debugPrintStack(stackTrace: st);
-      state = AsyncValue.error(e, st);
-    }
-  }
-}
+final loginSystemUsecaseProvider = Provider<LoginSystemUsecase>((ref) {
+  return LoginSystemUsecase(repository: ref.read(authRepositoryProvider));
+});
 
-final authProvider =
-    StateNotifierProvider<AuthNotifier, AsyncValue<List<User>>>(
-      (ref) => AuthNotifier(sl<GetUserUseCase>()),
-    );
+final sendOtpUsecaseProvider = Provider<SendOtpUsecase>((ref) {
+  return SendOtpUsecase(repository: ref.read(authRepositoryProvider));
+});
+
+final verifyOtpUsecaseProvider = Provider<VerifyOtpUsecase>((ref) {
+  return VerifyOtpUsecase(repository: ref.read(authRepositoryProvider));
+});
+
+final authViewModelProvider = NotifierProvider<AuthViewModel, AuthState>(
+  () => AuthViewModel(),
+);

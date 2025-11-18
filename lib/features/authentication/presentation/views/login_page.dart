@@ -1,26 +1,45 @@
+import 'package:GreenConnectMobile/core/helper/validate_std.dart';
+import 'package:GreenConnectMobile/features/authentication/presentation/providers/auth_provider.dart';
+import 'package:GreenConnectMobile/features/authentication/presentation/viewmodels/states/auth_state.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController otpController = TextEditingController();
 
-  bool isOtpSent = false;
   bool isLoading = false;
 
-  /// Giả lập gửi OTP
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  //   ref.listen<AuthState>(authViewModelProvider, (previous, next) {
+  //     setState(() {
+  //       isLoading = next.isLoading;
+  //     });
+
+  //     if (next.errorMessage != null && next.errorMessage!.isNotEmpty) {
+  //       ScaffoldMessenger.of(
+  //         context,
+  //       ).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+  //     }
+  //   });
+  // }
+
   Future<void> _sendOtp() async {
-    print("Sending OTP...");
     final phone = phoneController.text.trim();
     if (phone.isEmpty) {
       ScaffoldMessenger.of(
@@ -28,25 +47,26 @@ class _LoginPageState extends State<LoginPage> {
       ).showSnackBar(SnackBar(content: Text(S.of(context)!.phone_number_hint)));
       return;
     }
+    final formatted = validateAndFormatToE164(phone, isoCode: IsoCode.VN);
+    if (formatted == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.of(context)!.invalid_phone_number)),
+      );
+      return;
+    }
 
-    setState(() => isLoading = true);
-    await Future.delayed(const Duration(seconds: 2)); // Giả lập call API
+    await ref.read(authViewModelProvider.notifier).sendOtp(formatted);
 
-    setState(() {
-      isLoading = false;
-      isOtpSent = true;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${S.of(context)!.otp} sent to $phone')),
-    );
+    final state = ref.read(authViewModelProvider);
+    if (state.verificationId != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${S.of(context)!.otp} sent to $formatted')),
+      );
+    }
   }
 
-  /// Giả lập login với OTP
-  void _login() {
+  Future<void> _verifyAndLogin() async {
     final otp = otpController.text.trim();
-    final phone = phoneController.text.trim();
-
     if (otp.isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -54,23 +74,39 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    if (phone == '0987654321' && otp == '123456') {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Welcome back!')));
-      context.push('/household-home');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid phone number or OTP')),
-      );
+    await ref.read(authViewModelProvider.notifier).verifyOtp(smsCode: otp);
+    final state = ref.read(authViewModelProvider);
+
+    if (state.userCredential != null) {
+      final idToken = await state.userCredential!.user?.getIdToken();
+      if (idToken != null) {
+        await ref.read(authViewModelProvider.notifier).loginSystem(idToken);
+
+        final loginState = ref.read(authViewModelProvider);
+        if (loginState.errorMessage == null) {
+          context.push('/household-home');
+        }
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AuthState>(authViewModelProvider, (previous, next) {
+      if (next.errorMessage != null && next.errorMessage!.isNotEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
+      }
+    });
+
     final theme = Theme.of(context);
     final spacing = Theme.of(context).extension<AppSpacing>()!;
     final size = MediaQuery.of(context).size;
+
+    final authState = ref.watch(authViewModelProvider);
+    final isLoading = authState.isLoading;
+    final isOtpSent = authState.verificationId != null;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -91,7 +127,6 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               SizedBox(height: size.height * 0.05),
 
-              /// ====== Tiêu đề ======
               Text(
                 S.of(context)!.welcome_login_primary,
                 style: theme.textTheme.headlineMedium?.copyWith(
@@ -107,7 +142,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 40),
 
-              /// ====== Card chứa form ======
               Card(
                 color: theme.cardColor,
                 shape: RoundedRectangleBorder(
@@ -120,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // ===== Phone field =====
+                      // Phone field
                       Row(
                         children: [
                           Icon(Icons.call, color: theme.primaryColor, size: 20),
@@ -137,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                       TextField(
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
-                        enabled: !isOtpSent, // Disable khi đã gửi OTP
+                        enabled: !isOtpSent,
                         decoration: InputDecoration(
                           hintText: S.of(context)!.phone_number_hint,
                           filled: true,
@@ -152,9 +186,9 @@ class _LoginPageState extends State<LoginPage> {
                           hintStyle: theme.inputDecorationTheme.hintStyle,
                         ),
                       ),
-
                       const SizedBox(height: 20),
 
+                      // OTP / login buttons
                       if (!isOtpSent)
                         SizedBox(
                           key: const Key('sendOtpButton'),
@@ -166,9 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: () => isLoading ? null : _sendOtp(),
                           ),
                         ),
-
                       if (isOtpSent) ...[
-                        // ===== OTP field =====
                         Row(
                           children: [
                             Icon(
@@ -178,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              "${S.of(context)!.send} ${S.of(context)!.otp}",
+                              S.of(context)!.otp,
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -210,7 +242,8 @@ class _LoginPageState extends State<LoginPage> {
                           height: 50,
                           child: GradientButton(
                             text: S.of(context)!.login,
-                            onPressed: () => isLoading ? null : _login(),
+                            onPressed: () =>
+                                isLoading ? null : _verifyAndLogin(),
                           ),
                         ),
                       ],
@@ -220,8 +253,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
 
               const SizedBox(height: 24),
-
-              /// ====== Register link ======
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
