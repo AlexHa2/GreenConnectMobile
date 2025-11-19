@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/features/authentication/domain/entities/login_entity.dart';
 import 'package:GreenConnectMobile/features/authentication/domain/repository/auth_repository.dart';
 
 class LoginSystemUsecase {
@@ -5,7 +6,7 @@ class LoginSystemUsecase {
 
   LoginSystemUsecase({required this.repository});
 
-  Future<void> call({required String tokenId}) async {
+  Future<LoginEntity> call({required String tokenId}) async {
     return repository.loginSystem(tokenId: tokenId);
   }
 }

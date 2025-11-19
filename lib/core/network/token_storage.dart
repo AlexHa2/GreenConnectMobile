@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:GreenConnectMobile/features/authentication/data/models/user_model.dart';
+import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
+import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class TokenStorageService {

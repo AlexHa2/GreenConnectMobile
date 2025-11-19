@@ -394,14 +394,20 @@ abstract class S {
   /// No description provided for @profile_setup_step1.
   ///
   /// In en, this message translates to:
-  /// **'Step 1 of 2'**
+  /// **'Step 1 of 3'**
   String get profile_setup_step1;
 
   /// No description provided for @profile_setup_step2.
   ///
   /// In en, this message translates to:
-  /// **'Step 2 of 2'**
+  /// **'Step 2 of 3'**
   String get profile_setup_step2;
+
+  /// No description provided for @profile_setup_step3.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 3 of 3'**
+  String get profile_setup_step3;
 
   /// No description provided for @location.
   ///
@@ -1050,6 +1056,336 @@ abstract class S {
   /// In en, this message translates to:
   /// **'invalid phone number ex:0987654321'**
   String get invalid_phone_number;
+
+  /// No description provided for @invalid_otp_message.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP is not invalid'**
+  String get invalid_otp_message;
+
+  /// No description provided for @invalid_phone_number_length.
+  ///
+  /// In en, this message translates to:
+  /// **'phone number must be lager 9 numbers'**
+  String get invalid_phone_number_length;
+
+  /// No description provided for @resend_otp.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend otp'**
+  String get resend_otp;
+
+  /// No description provided for @enter_phone_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number'**
+  String get enter_phone_number;
+
+  /// No description provided for @verification.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification'**
+  String get verification;
+
+  /// No description provided for @enter_the_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code sent to the number'**
+  String get enter_the_code;
+
+  /// No description provided for @didnt_get_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t receive code?'**
+  String get didnt_get_code;
+
+  /// No description provided for @resend.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend'**
+  String get resend;
+
+  /// No description provided for @state_province.
+  ///
+  /// In en, this message translates to:
+  /// **'State province'**
+  String get state_province;
+
+  /// No description provided for @state_province_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'California'**
+  String get state_province_hint;
+
+  /// No description provided for @country.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get country;
+
+  /// No description provided for @country_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'vietnam'**
+  String get country_hint;
+
+  /// No description provided for @ward_commune.
+  ///
+  /// In en, this message translates to:
+  /// **'Ward / Commune'**
+  String get ward_commune;
+
+  /// No description provided for @ward_commune_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'ward'**
+  String get ward_commune_hint;
+
+  /// No description provided for @personal_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Information'**
+  String get personal_information;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'FullName'**
+  String get fullName;
+
+  /// No description provided for @fullName_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Alex ha'**
+  String get fullName_hint;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @date_of_birth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get date_of_birth;
+
+  /// No description provided for @date_of_birth_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'2025-11-19'**
+  String get date_of_birth_hint;
+
+  /// No description provided for @male.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get male;
+
+  /// No description provided for @female.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get female;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// No description provided for @street_address_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter address'**
+  String get street_address_error;
+
+  /// No description provided for @ward_commune_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter ward commune'**
+  String get ward_commune_error;
+
+  /// No description provided for @state_province_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter state province'**
+  String get state_province_error;
+
+  /// No description provided for @zip_code_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter zip code'**
+  String get zip_code_error;
+
+  /// No description provided for @country_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter country error'**
+  String get country_error;
+
+  /// No description provided for @street_address_length_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be less than 50 charactors'**
+  String get street_address_length_error;
+
+  /// No description provided for @ward_commune_length_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be less than 50 charactors'**
+  String get ward_commune_length_error;
+
+  /// No description provided for @state_province_length_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be less than 50 charactors'**
+  String get state_province_length_error;
+
+  /// No description provided for @zip_code_format_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Zip code invalid format ex: 12345-6789'**
+  String get zip_code_format_error;
+
+  /// No description provided for @country_length_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be less than 50 charactors'**
+  String get country_length_error;
+
+  /// No description provided for @an_error_occurred_please_try_again.
+  ///
+  /// In en, this message translates to:
+  /// **'an error occurred please try again'**
+  String get an_error_occurred_please_try_again;
+
+  /// No description provided for @fullName_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter fullname please!'**
+  String get fullName_error;
+
+  /// No description provided for @fullName_length_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be larger than 2 charactors'**
+  String get fullName_length_error;
+
+  /// No description provided for @gender_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose gender'**
+  String get gender_error;
+
+  /// No description provided for @date_of_birth_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose date of birth'**
+  String get date_of_birth_error;
+
+  /// No description provided for @fullname_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name is required'**
+  String get fullname_required;
+
+  /// No description provided for @max_length_255.
+  ///
+  /// In en, this message translates to:
+  /// **'Must not exceed 255 characters'**
+  String get max_length_255;
+
+  /// No description provided for @phone_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is required'**
+  String get phone_required;
+
+  /// No description provided for @phone_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid phone number'**
+  String get phone_invalid;
+
+  /// No description provided for @phone_invalid_format.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid phone number format'**
+  String get phone_invalid_format;
+
+  /// No description provided for @address_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Address is required'**
+  String get address_required;
+
+  /// No description provided for @gender_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a gender'**
+  String get gender_required;
+
+  /// No description provided for @prefer_not_to_say.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer not to say'**
+  String get prefer_not_to_say;
+
+  /// No description provided for @dob_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a date of birth'**
+  String get dob_required;
+
+  /// No description provided for @dob_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid date of birth'**
+  String get dob_invalid;
+
+  /// No description provided for @age_must_be_13.
+  ///
+  /// In en, this message translates to:
+  /// **'Age must be at least 13'**
+  String get age_must_be_13;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @edit_profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get edit_profile;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @please_wait.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait...'**
+  String get please_wait;
+
+  /// No description provided for @profile_updated_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profile_updated_successfully;
+
+  /// No description provided for @error_occurred_while_updating_profile.
+  ///
+  /// In en, this message translates to:
+  /// **'error occurred while updating profile'**
+  String get error_occurred_while_updating_profile;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

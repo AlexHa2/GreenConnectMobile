@@ -2,7 +2,7 @@ import 'package:GreenConnectMobile/core/di/auth_injector.dart';
 import 'package:GreenConnectMobile/core/network/api_client.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/authentication/data/models/login_model.dart';
-import 'package:GreenConnectMobile/features/authentication/data/models/user_model.dart';
+import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
 import 'package:GreenConnectMobile/features/authentication/domain/entities/login_entity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -42,7 +42,6 @@ class AuthRemoteDatasource {
 
   Future<LoginEntity> loginSystem({required String tokenId}) async {
     try {
-      print('Token ID: $tokenId');
       final response = await _apiClient.post(
         _baseUrlAuthSystem,
         data: {'firebaseToken': tokenId},

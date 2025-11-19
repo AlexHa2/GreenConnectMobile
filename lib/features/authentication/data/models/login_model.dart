@@ -1,6 +1,6 @@
 // lib/data/models/login_model.dart
 
-import 'package:GreenConnectMobile/features/authentication/data/models/user_model.dart';
+import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
 import 'package:GreenConnectMobile/features/authentication/domain/entities/login_entity.dart';
 
 class LoginModel extends LoginEntity {

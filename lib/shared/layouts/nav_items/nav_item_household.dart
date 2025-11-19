@@ -2,7 +2,11 @@ import 'package:GreenConnectMobile/shared/layouts/nav_type.dart';
 import 'package:flutter/material.dart';
 
 final List<NavConfig> navItemsHousehold = [
-  const NavConfig(icon: Icons.home, label: "Home", routeName: '/household-home'),
+  const NavConfig(
+    icon: Icons.home,
+    label: "Home",
+    routeName: '/household-home',
+  ),
   const NavConfig(
     icon: Icons.search,
     label: "Search",
@@ -34,8 +38,19 @@ final List<NavConfig> navItemsHousehold = [
     },
   ),
   const NavConfig(
-    icon: Icons.settings,
-    label: "Settings",
+    icon: Icons.person,
+    label: "Profile",
+    routeName: '/detail-post',
+    extra: {
+      'postId': "fdsaf",
+      'title': "Recycling Old Phones",
+      'content': "Collected used phones for recycling",
+      'imageUrl': "assets/images/recycling_post.png",
+    },
+  ),
+  const NavConfig(
+    icon: Icons.video_call,
+    label: "Video Call",
     routeName: '/update-post',
     extra: {
       'title': 'Recycling Old Phones',
@@ -53,14 +68,8 @@ final List<NavConfig> navItemsHousehold = [
     },
   ),
   const NavConfig(
-    icon: Icons.person,
-    label: "Profile",
-    routeName: '/detail-post',
-    extra: {
-      'postId': "fdsaf",
-      'title': "Recycling Old Phones",
-      'content': "Collected used phones for recycling",
-      'imageUrl': "assets/images/recycling_post.png",
-    },
+    icon: Icons.settings,
+    label: "Settings",
+    routeName: '/profile-settings',
   ),
 ];

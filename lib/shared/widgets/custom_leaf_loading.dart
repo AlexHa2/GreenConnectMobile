@@ -18,7 +18,6 @@ class _RotatingLeafLoaderState extends State<RotatingLeafLoader>
   void initState() {
     super.initState();
 
-    // Quay theo chiều kim đồng hồ
     _rotationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 8),

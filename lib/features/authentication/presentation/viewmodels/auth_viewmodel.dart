@@ -6,7 +6,6 @@ import 'package:GreenConnectMobile/features/authentication/presentation/viewmode
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 class AuthViewModel extends Notifier<AuthState> {
   late LoginSystemUsecase _loginSystemUsecase;
   late SendOtpUsecase _sendOtpUsecase;
@@ -79,11 +78,17 @@ class AuthViewModel extends Notifier<AuthState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      await _loginSystemUsecase.call(tokenId: tokenId);
-
-      state = state.copyWith(isLoading: false);
+      final resLogin = await _loginSystemUsecase.call(tokenId: tokenId);
+      state = state.copyWith(
+        isLoading: false,
+        fullName: resLogin.user.fullName,
+      );
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
+  }
+
+  void reset() {
+    state = AuthState();
   }
 }
