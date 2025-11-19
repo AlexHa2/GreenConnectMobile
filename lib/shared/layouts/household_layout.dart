@@ -1,7 +1,8 @@
+import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
+import 'package:GreenConnectMobile/shared/layouts/nav_items/nav_item_household.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:GreenConnectMobile/shared/layouts/nav_items/nav_item_household.dart';
 
 class HouseholdLayout extends StatefulWidget {
   final Widget child;
@@ -35,9 +36,13 @@ class _HouseholdLayoutState extends State<HouseholdLayout> {
               setState(() => _currentIndex = navItems.indexOf(item));
 
               if (item.extra != null) {
-                context.push(item.routeName, extra: item.extra);
+                navigateWithLoading(
+                  context,
+                  route: item.routeName,
+                  extra: item.extra,
+                );
               } else {
-                context.go(item.routeName);
+                navigateWithLoading(context, route: item.routeName);
               }
             },
           );

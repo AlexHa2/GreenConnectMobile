@@ -1,4 +1,6 @@
+import 'package:GreenConnectMobile/features/authentication/domain/entities/login_entity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 abstract class AuthRepository {
   Future<void> sendPhoneNumberOtp({
     required String phoneNumber,
@@ -12,7 +14,7 @@ abstract class AuthRepository {
     required String smsCode,
   });
 
-  Future<void> loginSystem({required String tokenId});
+  Future<LoginEntity> loginSystem({required String tokenId});
 
   String getToken();
 

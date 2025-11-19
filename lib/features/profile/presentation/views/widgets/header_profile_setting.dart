@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 
 class HeaderProfileSetting extends StatelessWidget {
   final String fullname;
-  final String role;
+  final List<String> roles;
   final String title;
   final String imageUrl;
   const HeaderProfileSetting({
     super.key,
     required this.fullname,
-    required this.role,
+    required this.roles,
     required this.title,
     required this.imageUrl,
   });
@@ -25,7 +25,7 @@ class HeaderProfileSetting extends StatelessWidget {
           alignment: Alignment.bottomRight,
           children: [
             CircleAvatar(
-              radius: baseSpacing * 4.5, // 54
+              radius: baseSpacing * 4.5,
               backgroundColor: theme.primaryColor.withValues(alpha: 0.1),
               backgroundImage: AssetImage(imageUrl),
             ),
@@ -59,11 +59,14 @@ class HeaderProfileSetting extends StatelessWidget {
         Wrap(
           alignment: WrapAlignment.center,
           spacing: baseSpacing / 2,
+          runSpacing: baseSpacing / 3,
           children: [
-            Chip(
-              label: Text(role),
-              backgroundColor: theme.primaryColor.withValues(alpha: 0.1),
-              side: BorderSide(color: theme.primaryColor, width: 1.0),
+            ...roles.map(
+              (r) => Chip(
+                label: Text(r),
+                backgroundColor: theme.primaryColor.withValues(alpha: 0.1),
+                side: BorderSide(color: theme.primaryColor, width: 1.0),
+              ),
             ),
             Chip(
               label: Row(

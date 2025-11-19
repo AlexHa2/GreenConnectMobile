@@ -1,6 +1,9 @@
+import 'package:GreenConnectMobile/core/di/injector.dart';
+import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/widges/message.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/widges/notification_bell.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/widges/post_item.dart';
+import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -16,12 +19,31 @@ class HouseHoldHome extends StatefulWidget {
 }
 
 class _HouseHoldHomeState extends State<HouseHoldHome> {
+  UserModel? user;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUser();
+  }
+
+  void loadUser() async {
+    final tokenStorage = sl<TokenStorageService>();
+    UserModel? fetchedUser = await tokenStorage.getUserData();
+    setState(() {
+      user = fetchedUser;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final spacing = Theme.of(context).extension<AppSpacing>()!;
     const logo = 'assets/images/user_image.png';
+    if (user == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -44,7 +66,9 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
                       children: [
                         CircleAvatar(
                           radius: spacing.screenPadding * 1.5,
-                          backgroundImage: const AssetImage(logo),
+                          backgroundImage: user!.avatarUrl != null
+                              ? NetworkImage(user!.avatarUrl!)
+                              : const AssetImage(logo) as ImageProvider,
                         ),
                         SizedBox(width: spacing.screenPadding),
 
@@ -54,7 +78,7 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "Hà Thanh Phong Hà Thanh Phong Hà Thanh Phong Hà Thanh Phong",
+                                user?.fullName ?? "",
                                 style: textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),

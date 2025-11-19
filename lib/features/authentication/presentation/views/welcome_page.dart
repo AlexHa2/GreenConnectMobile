@@ -1,35 +1,76 @@
+import 'package:GreenConnectMobile/core/di/injector.dart';
+import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
+import 'package:GreenConnectMobile/core/network/token_storage.dart';
+import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:GreenConnectMobile/shared/widgets/leaf_painter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class WelcomePage extends StatefulWidget {
+class WelcomePage extends ConsumerStatefulWidget {
   const WelcomePage({super.key});
 
   @override
-  State<WelcomePage> createState() => _WelcomePageState();
+  ConsumerState<WelcomePage> createState() => _WelcomePageState();
 }
 
-class _WelcomePageState extends State<WelcomePage>
+class _WelcomePageState extends ConsumerState<WelcomePage>
     with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    loadUser();
+  }
+
+  void loadUser() async {
+    final tokenStorage = sl<TokenStorageService>();
+    UserModel? fetchedUser = await tokenStorage.getUserData();
+    if (fetchedUser == null) return;
+
+    final rolePriority = [
+      'Household',
+      'IndividualCollector',
+      'BusinessCollector',
+    ];
+
+    final matchedRole = rolePriority.firstWhere(
+      (r) => fetchedUser.roles.contains(r),
+      orElse: () => '',
+    );
+    if (!mounted) return;
+    switch (matchedRole) {
+      case 'IndividualCollector':
+        navigateWithLoading(context, route: '/individual-home');
+        break;
+      case 'BusinessCollector':
+        navigateWithLoading(context, route: '/business-home');
+        break;
+      case 'Household':
+        navigateWithLoading(context, route: '/household-home');
+        break;
+      default:
+        navigateWithLoading(context, route: '/');
+        break;
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    precacheImage(const AssetImage("assets/images/green_connect_logo.png"), context);
+    precacheImage(
+      const AssetImage("assets/images/green_connect_logo.png"),
+      context,
+    );
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final spacing = Theme.of(context).extension<AppSpacing>()!;
     const logo = 'assets/images/green_connect_logo.png';
-
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
@@ -99,6 +140,7 @@ class _WelcomePageState extends State<WelcomePage>
                       context.go('/login');
                     },
                   ),
+
                   // const SizedBox(height: 10),
                   // SizedBox(
                   //   key: const Key('goRegister'),
@@ -111,7 +153,6 @@ class _WelcomePageState extends State<WelcomePage>
                   //     child: Text(S.of(context)!.register),
                   //   ),
                   // ),
-
                   const SizedBox(height: 42),
                 ],
               ),

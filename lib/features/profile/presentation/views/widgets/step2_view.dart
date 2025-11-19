@@ -1,123 +1,205 @@
-import 'package:GreenConnectMobile/features/profile/domain/entities/address.dart';
+import 'package:GreenConnectMobile/core/helper/pick_date.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
-import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:flutter/material.dart';
 
-class ProfileSetupStep2View extends StatelessWidget {
+class ProfileSetupStep2View extends StatefulWidget {
+  final Function(String fullName, String gender, DateTime dob) onNext;
   final VoidCallback onBack;
-  final VoidCallback onComplete;
-  final Address addressData;
 
   const ProfileSetupStep2View({
     super.key,
+    required this.onNext,
     required this.onBack,
-    required this.onComplete,
-    required this.addressData,
   });
+
+  @override
+  State<ProfileSetupStep2View> createState() => _ProfileSetupStep2ViewState();
+}
+
+class _ProfileSetupStep2ViewState extends State<ProfileSetupStep2View> {
+  final nameController = TextEditingController();
+  final dobController = TextEditingController();
+
+  String? genderValue;
+  DateTime? selectedDate;
+
+  // Error fields
+  String? fullNameError;
+  String? genderError;
+  String? dobError;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final spacing = Theme.of(context).extension<AppSpacing>()!;
+
     return Card(
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.border),
+        borderRadius: BorderRadius.circular(spacing.screenPadding),
+        side: BorderSide(color: theme.dividerColor),
       ),
       child: Padding(
         padding: EdgeInsets.all(spacing.screenPadding * 2),
-        child: Column(
-          children: [
-            const SizedBox(height: 12),
-            Text(
-              S.of(context)!.all_set,
-              style: theme.textTheme.titleLarge!.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              S.of(context)!.all_set_message,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 20),
-
-            // Info Box
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.inputBackground,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              child: Column(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
                 children: [
-                  _infoRow(
-                    "${S.of(context)!.location}:",
-                    addressData.city,
-                    theme,
-                  ),
-                  _infoRow(
-                    "${S.of(context)!.street_address}:",
-                    addressData.street,
-                    theme,
-                  ),
-                  _infoRow(
-                    "${S.of(context)!.zip_code}:",
-                    addressData.zipCode,
-                    theme,
+                  Icon(Icons.person, color: theme.colorScheme.primary),
+                  const SizedBox(width: 8),
+                  Text(
+                    S.of(context)!.personal_information,
+                    style: theme.textTheme.titleLarge,
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: onBack,
-                    child: Text(S.of(context)!.back),
-                  ),
+              const SizedBox(height: 20),
+
+              // Full Name
+              Text(S.of(context)!.fullName, style: theme.textTheme.bodyLarge),
+              SizedBox(height: spacing.screenPadding / 2),
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  hintText: S.of(context)!.fullName_hint,
+                  errorText: fullNameError,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: GradientButton(
-                    text: S.of(context)!.completed,
-                    onPressed: onComplete,
+              ),
+              SizedBox(height: spacing.screenPadding),
+
+              // Gender
+              Text(S.of(context)!.gender, style: theme.textTheme.bodyLarge),
+              SizedBox(height: spacing.screenPadding / 2),
+              DropdownButtonFormField<String>(
+                initialValue: genderValue,
+                decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
                   ),
+                  errorText: genderError,
                 ),
-              ],
-            ),
-          ],
+                items: [
+                  DropdownMenuItem(
+                    value: "Male",
+                    child: Text(S.of(context)!.male),
+                  ),
+                  DropdownMenuItem(
+                    value: "Female",
+                    child: Text(S.of(context)!.female),
+                  ),
+                  DropdownMenuItem(
+                    value: "Other",
+                    child: Text(S.of(context)!.other),
+                  ),
+                ],
+                onChanged: (value) {
+                  setState(() => genderValue = value);
+                },
+              ),
+              SizedBox(height: spacing.screenPadding),
+
+              // Date of Birth
+              Text(
+                S.of(context)!.date_of_birth,
+                style: theme.textTheme.bodyLarge,
+              ),
+              SizedBox(height: spacing.screenPadding / 2),
+              TextField(
+                controller: dobController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  hintText: S.of(context)!.date_of_birth_hint,
+                  suffixIcon: const Icon(Icons.calendar_today),
+                  isDense: true,
+                  errorText: dobError,
+                ),
+                onTap: () =>
+                    pickDate(context, selectedDate, dobController, setState),
+              ),
+              SizedBox(height: spacing.screenPadding * 3),
+
+              // Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: OutlinedButton(
+                        onPressed: widget.onBack,
+                        child: Text(S.of(context)!.back),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: GradientButton(
+                        text: S.of(context)!.next,
+                        onPressed: () {
+                          if (validateFields()) {
+                            widget.onNext(
+                              nameController.text.trim(),
+                              genderValue!,
+                              selectedDate!,
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _infoRow(String label, String value, ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: theme.textTheme.bodyMedium!.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          Text(
-            value,
-            style: theme.textTheme.bodyLarge!.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
+  /// ===========================
+  /// VALIDATION LOGIC
+  /// ===========================
+  bool validateFields() {
+    bool isValid = true;
+    final t = S.of(context)!;
+
+    setState(() {
+      // Full Name
+      if (nameController.text.trim().isEmpty) {
+        fullNameError = t.fullName_error;
+        isValid = false;
+      } else if (nameController.text.trim().length < 2) {
+        fullNameError = t.fullName_length_error;
+        isValid = false;
+      } else {
+        fullNameError = null;
+      }
+
+      // Gender
+      if (genderValue == null) {
+        genderError = t.gender_error;
+        isValid = false;
+      } else {
+        genderError = null;
+      }
+
+      // Date of Birth
+      if (selectedDate == null) {
+        dobError = t.date_of_birth_error;
+        isValid = false;
+      } else {
+        dobError = null;
+      }
+    });
+
+    return isValid;
   }
 }

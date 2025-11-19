@@ -1,4 +1,4 @@
-import 'package:GreenConnectMobile/features/authentication/domain/entities/user_entity.dart';
+import 'package:GreenConnectMobile/features/profile/domain/entities/user_entity.dart';
 
 class LoginEntity {
   final String accessToken;

@@ -1,5 +1,5 @@
 class UserEntity {
-  final String id;
+  final String userId;
   final String fullName;
   final String phoneNumber;
   final int pointBalance;
@@ -8,7 +8,7 @@ class UserEntity {
   final String? avatarUrl;
 
   UserEntity({
-    required this.id,
+    required this.userId,
     required this.fullName,
     required this.phoneNumber,
     required this.pointBalance,
