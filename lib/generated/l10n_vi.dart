@@ -158,16 +158,19 @@ class SVi extends S {
   String get profile_setup => 'Thiết lập hồ sơ';
 
   @override
-  String get profile_setup_step1 => 'Bước 1 trong 2';
+  String get profile_setup_step1 => 'Bước 1 trong 3';
 
   @override
-  String get profile_setup_step2 => 'Bước 2 trong 2';
+  String get profile_setup_step2 => 'Bước 2 trong 3';
+
+  @override
+  String get profile_setup_step3 => 'Bước 3 trong 3';
 
   @override
   String get location => 'Vị trí của bạn';
 
   @override
-  String get street_address => 'Tên đường';
+  String get street_address => 'Địa chỉ';
 
   @override
   String get street_address_hint => 'nam kỳ khởi nghĩa';
@@ -491,4 +494,171 @@ class SVi extends S {
 
   @override
   String get invalid_phone_number => 'Số điện thoại không hợp lệ vd:0987654321';
+
+  @override
+  String get invalid_otp_message => 'OTP không hợp lệ';
+
+  @override
+  String get invalid_phone_number_length => 'Std phải lớn hơn 9 chữ số';
+
+  @override
+  String get resend_otp => 'Gửi lại otp';
+
+  @override
+  String get enter_phone_number => 'Enter your phone number';
+
+  @override
+  String get verification => 'Xác thực số điện thoại';
+
+  @override
+  String get enter_the_code => 'Nhập mã được gửi vào SDT';
+
+  @override
+  String get didnt_get_code => 'Bạn chưa nhận được code?';
+
+  @override
+  String get resend => 'Gửi lại';
+
+  @override
+  String get state_province => 'Tỉnh';
+
+  @override
+  String get state_province_hint => 'Bình Dương';
+
+  @override
+  String get country => 'Quốc gia';
+
+  @override
+  String get country_hint => 'Việt Nam';
+
+  @override
+  String get ward_commune => 'Phường / Xã';
+
+  @override
+  String get ward_commune_hint => 'xã thuận an';
+
+  @override
+  String get personal_information => 'Thông tin cá nhân';
+
+  @override
+  String get fullName => 'Họ và tên';
+
+  @override
+  String get fullName_hint => 'Alex ha';
+
+  @override
+  String get gender => 'Giới tính';
+
+  @override
+  String get date_of_birth => 'Ngày sinh';
+
+  @override
+  String get date_of_birth_hint => '2025-11-19';
+
+  @override
+  String get male => 'Nam';
+
+  @override
+  String get female => 'Nữ';
+
+  @override
+  String get other => 'Khác';
+
+  @override
+  String get street_address_error => 'Nhập tên đường';
+
+  @override
+  String get ward_commune_error => 'Nhập tên phường/xã';
+
+  @override
+  String get state_province_error => 'Nhập tên tỉnh';
+
+  @override
+  String get zip_code_error => 'Nhập mã zip của tỉnh';
+
+  @override
+  String get country_error => 'Nhập tên quốc gia';
+
+  @override
+  String get street_address_length_error => 'Phải nhỏ hơn 50 ký tự';
+
+  @override
+  String get ward_commune_length_error => 'Phải nhỏ hơn 50 ký tự';
+
+  @override
+  String get state_province_length_error => 'Phải nhỏ hơn 50 ký tự';
+
+  @override
+  String get zip_code_format_error => 'mã zip không phù hợp vd: 12345-6789';
+
+  @override
+  String get country_length_error => 'Phải nhỏ hơn 50 ký tự';
+
+  @override
+  String get an_error_occurred_please_try_again =>
+      'Lỗi khi thực hiện tác vụ và điều hướng';
+
+  @override
+  String get fullName_error => 'Nhập họ tên đầy đủ';
+
+  @override
+  String get fullName_length_error => 'Phải lớn hơn hai ký tự';
+
+  @override
+  String get gender_error => 'Chọn giới tính';
+
+  @override
+  String get date_of_birth_error => 'Chọn ngày sinh';
+
+  @override
+  String get fullname_required => 'Họ và tên không được để trống';
+
+  @override
+  String get max_length_255 => 'Không được vượt quá 255 ký tự';
+
+  @override
+  String get phone_required => 'Số điện thoại không được để trống';
+
+  @override
+  String get phone_invalid => 'Số điện thoại không hợp lệ';
+
+  @override
+  String get phone_invalid_format => 'Định dạng số điện thoại không đúng';
+
+  @override
+  String get address_required => 'Địa chỉ không được để trống';
+
+  @override
+  String get gender_required => 'Vui lòng chọn giới tính';
+
+  @override
+  String get prefer_not_to_say => 'Không muốn trả lời';
+
+  @override
+  String get dob_required => 'Vui lòng chọn ngày sinh';
+
+  @override
+  String get dob_invalid => 'Ngày sinh không hợp lệ';
+
+  @override
+  String get age_must_be_13 => 'Tuổi phải từ 13 trở lên';
+
+  @override
+  String get error => 'Lỗi';
+
+  @override
+  String get edit_profile => 'Chỉnh sửa thông tin';
+
+  @override
+  String get save => 'Lưu';
+
+  @override
+  String get please_wait => 'Vui lòng chờ...';
+
+  @override
+  String get profile_updated_successfully => 'Hồ sơ của bạn đã được cập nhập';
+
+  @override
+  String get error_occurred_while_updating_profile =>
+      'Có lỗi khi cập nhập hồ sơ';
 }

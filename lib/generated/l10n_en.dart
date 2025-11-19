@@ -157,10 +157,13 @@ class SEn extends S {
   String get profile_setup => 'Profile Setup';
 
   @override
-  String get profile_setup_step1 => 'Step 1 of 2';
+  String get profile_setup_step1 => 'Step 1 of 3';
 
   @override
-  String get profile_setup_step2 => 'Step 2 of 2';
+  String get profile_setup_step2 => 'Step 2 of 3';
+
+  @override
+  String get profile_setup_step3 => 'Step 3 of 3';
 
   @override
   String get location => 'Your location';
@@ -489,4 +492,172 @@ class SEn extends S {
 
   @override
   String get invalid_phone_number => 'invalid phone number ex:0987654321';
+
+  @override
+  String get invalid_otp_message => 'OTP is not invalid';
+
+  @override
+  String get invalid_phone_number_length =>
+      'phone number must be lager 9 numbers';
+
+  @override
+  String get resend_otp => 'Resend otp';
+
+  @override
+  String get enter_phone_number => 'Enter your phone number';
+
+  @override
+  String get verification => 'Verification';
+
+  @override
+  String get enter_the_code => 'Enter the code sent to the number';
+
+  @override
+  String get didnt_get_code => 'Didn\'t receive code?';
+
+  @override
+  String get resend => 'Resend';
+
+  @override
+  String get state_province => 'State province';
+
+  @override
+  String get state_province_hint => 'California';
+
+  @override
+  String get country => 'Country';
+
+  @override
+  String get country_hint => 'vietnam';
+
+  @override
+  String get ward_commune => 'Ward / Commune';
+
+  @override
+  String get ward_commune_hint => 'ward';
+
+  @override
+  String get personal_information => 'Personal Information';
+
+  @override
+  String get fullName => 'FullName';
+
+  @override
+  String get fullName_hint => 'Alex ha';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get date_of_birth => 'Date of Birth';
+
+  @override
+  String get date_of_birth_hint => '2025-11-19';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get street_address_error => 'Enter address';
+
+  @override
+  String get ward_commune_error => 'Enter ward commune';
+
+  @override
+  String get state_province_error => 'Enter state province';
+
+  @override
+  String get zip_code_error => 'Enter zip code';
+
+  @override
+  String get country_error => 'Enter country error';
+
+  @override
+  String get street_address_length_error => 'Must be less than 50 charactors';
+
+  @override
+  String get ward_commune_length_error => 'Must be less than 50 charactors';
+
+  @override
+  String get state_province_length_error => 'Must be less than 50 charactors';
+
+  @override
+  String get zip_code_format_error => 'Zip code invalid format ex: 12345-6789';
+
+  @override
+  String get country_length_error => 'Must be less than 50 charactors';
+
+  @override
+  String get an_error_occurred_please_try_again =>
+      'an error occurred please try again';
+
+  @override
+  String get fullName_error => 'Enter fullname please!';
+
+  @override
+  String get fullName_length_error => 'Must be larger than 2 charactors';
+
+  @override
+  String get gender_error => 'Choose gender';
+
+  @override
+  String get date_of_birth_error => 'Choose date of birth';
+
+  @override
+  String get fullname_required => 'Full name is required';
+
+  @override
+  String get max_length_255 => 'Must not exceed 255 characters';
+
+  @override
+  String get phone_required => 'Phone number is required';
+
+  @override
+  String get phone_invalid => 'Invalid phone number';
+
+  @override
+  String get phone_invalid_format => 'Invalid phone number format';
+
+  @override
+  String get address_required => 'Address is required';
+
+  @override
+  String get gender_required => 'Please select a gender';
+
+  @override
+  String get prefer_not_to_say => 'Prefer not to say';
+
+  @override
+  String get dob_required => 'Please select a date of birth';
+
+  @override
+  String get dob_invalid => 'Invalid date of birth';
+
+  @override
+  String get age_must_be_13 => 'Age must be at least 13';
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get edit_profile => 'Edit Profile';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get please_wait => 'Please wait...';
+
+  @override
+  String get profile_updated_successfully => 'Profile updated successfully';
+
+  @override
+  String get error_occurred_while_updating_profile =>
+      'error occurred while updating profile';
 }

@@ -40,10 +40,7 @@ final GoRouter greenRouter = GoRouter(
         GoRoute(
           path: '/profile-settings',
           name: 'profile-settings',
-          builder: (context, state) {
-            final initialData = state.extra as Map<String, dynamic>? ?? {};
-            return ProfileSetting(initialData: initialData);
-          },
+          builder: (context, state) => const ProfileSetting(),
         ),
         GoRoute(
           path: '/list-post',

@@ -1,9 +1,9 @@
 // lib/data/models/user_model.dart
-import 'package:GreenConnectMobile/features/authentication/domain/entities/user_entity.dart';
+import 'package:GreenConnectMobile/features/profile/domain/entities/user_entity.dart';
 
 class UserModel extends UserEntity {
   UserModel({
-    required super.id,
+    required super.userId,
     required super.fullName,
     required super.phoneNumber,
     required super.pointBalance,
@@ -12,9 +12,10 @@ class UserModel extends UserEntity {
     super.avatarUrl,
   });
 
+  @override
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'] ?? '',
+      userId: json['id'] ?? '',
       fullName: json['fullName'] ?? '',
       phoneNumber: json['phoneNumber'] ?? '',
       pointBalance: json['pointBalance'] ?? 0,
@@ -26,7 +27,7 @@ class UserModel extends UserEntity {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'userId': userId,
       'fullName': fullName,
       'phoneNumber': phoneNumber,
       'pointBalance': pointBalance,
@@ -34,5 +35,17 @@ class UserModel extends UserEntity {
       'roles': roles,
       'avatarUrl': avatarUrl,
     };
+  }
+
+  UserEntity toEntity() {
+    return UserEntity(
+      userId: userId,
+      fullName: fullName,
+      phoneNumber: phoneNumber,
+      pointBalance: pointBalance,
+      rank: rank,
+      roles: roles,
+      avatarUrl: avatarUrl,
+    );
   }
 }
