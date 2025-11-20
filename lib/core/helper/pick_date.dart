@@ -7,7 +7,7 @@ Future<void> pickDate(
   BuildContext context,
   DateTime? selectedDate,
   TextEditingController dobController,
-  void Function(void Function()) setState,
+  Function(DateTime) onSelectedDate,
 ) async {
   final now = DateTime.now();
   final DateTime? date = await showDatePicker(
@@ -18,9 +18,7 @@ Future<void> pickDate(
   );
 
   if (date != null) {
-    setState(() {
-      selectedDate = date;
-      dobController.text = "${date.year}-${date.month}-${date.day}";
-    });
+    dobController.text = "${date.year}-${date.month}-${date.day}";
+    onSelectedDate(date);
   }
 }

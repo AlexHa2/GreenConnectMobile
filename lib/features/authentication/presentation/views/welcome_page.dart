@@ -31,9 +31,9 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
     if (fetchedUser == null) return;
 
     final rolePriority = [
-      'Household',
       'IndividualCollector',
       'BusinessCollector',
+      'Household',
     ];
 
     final matchedRole = rolePriority.firstWhere(
