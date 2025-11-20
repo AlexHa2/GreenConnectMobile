@@ -120,8 +120,14 @@ class _ProfileSetupStep2ViewState extends State<ProfileSetupStep2View> {
                   isDense: true,
                   errorText: dobError,
                 ),
-                onTap: () =>
-                    pickDate(context, selectedDate, dobController, setState),
+                onTap: () {
+                  pickDate(
+                    context,
+                    selectedDate,
+                    dobController,
+                    (date) => setState(() => selectedDate = date),
+                  );
+                },
               ),
               SizedBox(height: spacing.screenPadding * 3),
 
