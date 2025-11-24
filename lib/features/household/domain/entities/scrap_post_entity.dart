@@ -1,6 +1,7 @@
+// scrap_post_entity.dart
 import 'package:GreenConnectMobile/features/household/domain/entities/household_entity.dart';
 import 'package:GreenConnectMobile/features/household/domain/entities/location_entity.dart';
-import 'package:GreenConnectMobile/features/household/domain/entities/scrap_post_detai_entity.dart';
+import 'package:GreenConnectMobile/features/household/domain/entities/scrap_post_detail_entity.dart';
 
 class ScrapPostEntity {
   final String? scrapPostId;
@@ -8,13 +9,12 @@ class ScrapPostEntity {
   final String description;
   final String address;
   final String availableTimeRange;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   final String? status;
-  final String updatedAt;
-  final String? createdAt;
-  final String? householdId;
-  final HouseholdEntity? household;
-  final LocationEntity location;
   final bool mustTakeAll;
+  final LocationEntity location;
+  final HouseholdEntity? household;
   final List<ScrapPostDetailEntity> scrapPostDetails;
 
   ScrapPostEntity({
@@ -23,13 +23,12 @@ class ScrapPostEntity {
     required this.description,
     required this.address,
     required this.availableTimeRange,
-    this.status,
-    required this.updatedAt,
     this.createdAt,
-    this.householdId,
-    this.household,
-    required this.location,
+    this.updatedAt,
+    this.status,
     required this.mustTakeAll,
+    required this.location,
+    this.household,
     required this.scrapPostDetails,
   });
 }

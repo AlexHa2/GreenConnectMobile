@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
+
 import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -20,6 +20,16 @@ class TokenStorageService {
     // 2. parse UserModel to JSON String saving
     final userJsonString = jsonEncode(user.toJson());
     await _storage.write(key: _keyUserData, value: userJsonString);
+  }
+
+  /// update fullname data only
+  Future<void> updateFullName(String fullName) async {
+    final user = await getUserData();
+    if (user != null) {
+      final updatedUser = user.copyWith(fullName: fullName);
+      final userJsonString = jsonEncode(updatedUser.toJson());
+      await _storage.write(key: _keyUserData, value: userJsonString);
+    }
   }
 
   // --- read data ---
@@ -54,6 +64,6 @@ class TokenStorageService {
     await _storage.delete(key: _keyAccessToken);
     await _storage.delete(key: _keyUserData);
     // await _storage.deleteAll();
-    print("Đã xoá toàn bộ dữ liệu xác thực (secure)!");
+    print("Delete all (secure)!");
   }
 }

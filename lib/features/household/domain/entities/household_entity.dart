@@ -1,3 +1,4 @@
+// household_entity.dart
 class HouseholdEntity {
   final String id;
   final String fullName;

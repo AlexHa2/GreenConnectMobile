@@ -53,7 +53,8 @@ dependencies:
   phone_numbers_parser: ^9.0.16
   flutter_secure_storage: ^9.2.4
   pinput: ^5.0.2
-  overlay_support: ^2.1.0
+  overlay_support: "^2.1.0"
+  geocoding: ^4.0.0
 
 dev_dependencies:
   flutter_launcher_icons: "^0.14.4"

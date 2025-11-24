@@ -89,13 +89,48 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     final state = ref.read(authViewModelProvider);
 
+    // if (state.errorMessage != null) {
+    //   if (state.errorMessage!.toLowerCase().contains('invalid phone')) {
+    //     setState(() => _phoneApiError = state.errorMessage);
+    //   } else {
+    //     CustomToast.show(context, state.errorMessage!, type: ToastType.error);
+    //   }
+    // } else if (state.verificationId != null) {
+    //   CustomToast.show(
+    //     context,
+    //     "${S.of(context)!.send} ${S.of(context)!.otp} $formatted",
+    //     type: ToastType.success,
+    //   );
+    //   startCountdown();
+    // }
     if (state.errorMessage != null) {
-      if (state.errorMessage!.toLowerCase().contains('invalid phone')) {
-        setState(() => _phoneApiError = state.errorMessage);
+      final error = state.errorMessage!.toLowerCase();
+
+      if (error.contains("invalid-phone")) {
+        setState(() => _phoneApiError = S.of(context)!.invalid_phone_number);
+      } else if (error.contains("too-many-requests")) {
+        CustomToast.show(
+          context,
+          S.of(context)!.too_many_request_error,
+          type: ToastType.error,
+        );
+      } else if (error.contains("network") ||
+          error.contains("network-request-failed")) {
+        CustomToast.show(
+          context,
+          S.of(context)!.network_error_message,
+          type: ToastType.error,
+        );
       } else {
-        CustomToast.show(context, state.errorMessage!, type: ToastType.error);
+        CustomToast.show(
+          context,
+          S.of(context)!.unknown_error,
+          type: ToastType.error,
+        );
       }
-    } else if (state.verificationId != null) {
+      return;
+    }
+    if (state.verificationId != null) {
       CustomToast.show(
         context,
         "${S.of(context)!.send} ${S.of(context)!.otp} $formatted",
@@ -170,7 +205,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
-          // GỌI HÀM XỬ LÝ BACK TẠI ĐÂY
           onPressed: _handleBackNavigation,
         ),
         title: Text(S.of(context)!.back, style: theme.textTheme.titleLarge),

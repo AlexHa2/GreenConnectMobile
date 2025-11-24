@@ -96,12 +96,14 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
                       final newState = ref.read(profileViewModelProvider);
                       if (!mounted) return;
                       if (newState.user!.fullName.isNotEmpty) {
+                        if (!mounted || !context.mounted) return;
                         CustomToast.show(
                           context,
                           s.profile_updated_successfully,
                           type: ToastType.success,
                         );
                       } else {
+                        if (!mounted || !context.mounted) return;
                         CustomToast.show(
                           context,
                           s.error_occurred_while_updating_profile,
@@ -131,7 +133,7 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
                 CardInforProfileSetting(
                   icon: Icons.wc_outlined,
                   label: "${s.gender}:",
-                  value: user?.gender ?? "",
+                  value: user?.gender == "Male" ? s.male : s.female,
                 ),
                 CardInforProfileSetting(
                   icon: Icons.cake_outlined,

@@ -427,10 +427,6 @@ class _UpdateRecyclingPostPageState extends State<UpdateRecyclingPostPage> {
                                               initialCategory: item['category'],
                                               initialQuantity: item['quantity'],
                                               initialWeight: item['weight'],
-                                              initialImages:
-                                                  item['image'] != null
-                                                  ? [item['image']]
-                                                  : [],
                                             ),
                                       );
 

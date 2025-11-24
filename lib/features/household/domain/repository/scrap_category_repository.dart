@@ -1,0 +1,11 @@
+import 'package:GreenConnectMobile/core/common/paginate/paginate_entity.dart';
+import 'package:GreenConnectMobile/features/household/domain/entities/scrap_category_entity.dart';
+
+abstract class ScrapCategoryRepository {
+  Future<PaginatedResponseEntity<ScrapCategoryEntity>> getScrapCategories({
+    required int pageNumber,
+    required int pageSize,
+  });
+
+  Future<ScrapCategoryEntity> getScrapCategoryDetail(int id);
+}

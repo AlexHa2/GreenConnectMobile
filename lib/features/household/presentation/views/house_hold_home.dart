@@ -1,5 +1,9 @@
 import 'package:GreenConnectMobile/core/di/injector.dart';
+import 'package:GreenConnectMobile/core/enum/post_status.dart';
+import 'package:GreenConnectMobile/core/helper/post_status_helper.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
+import 'package:GreenConnectMobile/features/household/presentation/providers/scrap_post_providers.dart';
+import 'package:GreenConnectMobile/features/household/presentation/views/widges/empty_post.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/widges/message.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/widges/notification_bell.dart';
 import 'package:GreenConnectMobile/features/household/presentation/views/widges/post_item.dart';
@@ -9,22 +13,33 @@ import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class HouseHoldHome extends StatefulWidget {
-  const HouseHoldHome({super.key});
+class HouseHoldHome extends ConsumerStatefulWidget {
+  final Map<String, dynamic> initialData;
+  const HouseHoldHome({super.key, required this.initialData});
 
   @override
-  State<HouseHoldHome> createState() => _HouseHoldHomeState();
+  ConsumerState<HouseHoldHome> createState() => _HouseHoldHomeState();
 }
 
-class _HouseHoldHomeState extends State<HouseHoldHome> {
+class _HouseHoldHomeState extends ConsumerState<HouseHoldHome>
+    with WidgetsBindingObserver {
   UserModel? user;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     loadUser();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref
+          .read(scrapPostViewModelProvider.notifier)
+          .fetchMyPosts(page: 1, size: 2);
+    });
   }
 
   void loadUser() async {
@@ -36,14 +51,40 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref
+          .read(scrapPostViewModelProvider.notifier)
+          .fetchMyPosts(page: 1, size: 2);
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final spacing = Theme.of(context).extension<AppSpacing>()!;
     const logo = 'assets/images/user_image.png';
+
+    final postState = ref.watch(scrapPostViewModelProvider);
+    final posts = postState.listData?.data ?? [];
+    final latestThree = posts.take(3).toList();
+
+    final String nameAffterSetupProfile =
+        widget.initialData["fullName"] ?? "Unknown";
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
     }
+    final userName = (user?.fullName ?? '').trim();
+    final setupName = (nameAffterSetupProfile).trim();
+
+    final displayName = userName.isNotEmpty ? userName : setupName;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -78,7 +119,7 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                user?.fullName ?? "",
+                                displayName,
                                 style: textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -249,48 +290,72 @@ class _HouseHoldHomeState extends State<HouseHoldHome> {
                   ),
                   SizedBox(height: spacing.screenPadding * 2),
 
-                  const PostItem(
-                    title: "Plastic Bottles Collection",
-                    desc: "he li a meo meo meo",
-                    time: "9 AM - 5 PM",
-                    status: "Accepted",
-                    color: AppColors.primary,
-                  ),
-                  const PostItem(
-                    title: "Plastic Bottles Collection",
-                    desc: "he li a meo meo meo",
-                    time: "9 AM - 5 PM",
-                    status: "Available",
-                    color: AppColors.warning,
-                  ),
-                  const PostItem(
-                    title: "Plastic Bottles Collection",
-                    desc: "he li a meo meo meo",
-                    time: "9 AM - 5 PM",
-                    status: "Rejected",
-                    color: AppColors.danger,
-                  ),
-
-                  SizedBox(height: spacing.screenPadding),
-                  InkWell(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(spacing.screenPadding / 2),
+                  if (postState.isLoadingList) ...[
+                    const Center(child: CircularProgressIndicator()),
+                  ] else if (postState.errorMessage != null) ...[
+                    Text(
+                      textAlign: TextAlign.center,
+                      S.of(context)!.error_general,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: AppColors.danger,
+                      ),
                     ),
-                    onTap: () {
-                      context.go('/list-post');
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Text(
-                          S.of(context)!.see_all_posts,
-                          style: textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                  ] else if (latestThree.isEmpty) ...[
+                    const EmptyPost(),
+                  ] else ...[
+                    for (var p in latestThree)
+                      PostItem(
+                        title: p.title,
+                        desc: p.description,
+                        time: p.availableTimeRange,
+                        rawStatus: p.status ?? "unknown",
+                        localizedStatus: PostStatusHelper.getLocalizedStatus(
+                          context,
+                          p.status as PostStatus,
+                        ),
+                        onTapDetails: () {
+                          context.push(
+                            '/detail-post',
+                            extra: {'postId': p.scrapPostId},
+                          );
+                        },
+                        onGoToTransaction: () {
+                          context.push(
+                            '/transaction',
+                            extra: {'postId': p.scrapPostId},
+                          );
+                        },
+                        timeCreated: p.createdAt.toString(),
+                      ),
+
+                    SizedBox(height: spacing.screenPadding / 2),
+
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          context.go('/list-post');
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              S.of(context)!.see_all_posts,
+                              style: textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.primaryColor,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.arrow_forward,
+                              size: 16,
+                              color: theme.primaryColor,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),

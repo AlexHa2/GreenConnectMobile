@@ -1,12 +1,16 @@
 import 'package:GreenConnectMobile/features/household/domain/entities/scrap_category_entity.dart';
+class ScrapCategoryModel {
+  final int scrapCategoryId;
+  final String categoryName;
+  final String? description;
 
-class ScrapCategoryModel extends ScrapCategoryEntity {
   ScrapCategoryModel({
-    required super.scrapCategoryId,
-    required super.categoryName,
-    required super.description,
+    required this.scrapCategoryId,
+    required this.categoryName,
+    this.description,
   });
 
+  /// ⬇ From JSON
   factory ScrapCategoryModel.fromJson(Map<String, dynamic> json) {
     return ScrapCategoryModel(
       scrapCategoryId: json['scrapCategoryId'],
@@ -15,12 +19,16 @@ class ScrapCategoryModel extends ScrapCategoryEntity {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'scrapCategoryId': scrapCategoryId,
-    'categoryName': categoryName,
-    'description': description,
-  };
+  /// ⬆ To JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'scrapCategoryId': scrapCategoryId,
+      'categoryName': categoryName,
+      'description': description,
+    };
+  }
 
+  /// Model -> Entity
   ScrapCategoryEntity toEntity() {
     return ScrapCategoryEntity(
       scrapCategoryId: scrapCategoryId,

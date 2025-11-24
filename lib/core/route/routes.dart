@@ -30,7 +30,10 @@ final GoRouter greenRouter = GoRouter(
         GoRoute(
           path: '/household-home',
           name: 'household-home',
-          builder: (context, state) => const HouseHoldHome(),
+          builder: (context, state) {
+            final initialData = state.extra as Map<String, dynamic>? ?? {};
+            return HouseHoldHome(initialData: initialData);
+          },
         ),
         GoRoute(
           path: '/notifications',
@@ -42,33 +45,33 @@ final GoRouter greenRouter = GoRouter(
           name: 'profile-settings',
           builder: (context, state) => const ProfileSetting(),
         ),
-        GoRoute(
-          path: '/list-post',
-          name: 'list-post',
-          builder: (context, state) => const HouseholdListPostScreen(),
-        ),
-        GoRoute(
-          path: '/detail-post',
-          name: 'detail-post',
-          builder: (context, state) {
-            final initialData = state.extra as Map<String, dynamic>? ?? {};
-            return PostDetailsScreen(initialData: initialData);
-          },
-        ),
-        GoRoute(
-          path: '/create-post',
-          name: 'create-post',
-          builder: (context, state) => const CreateRecyclingPostPage(),
-        ),
-        GoRoute(
-          path: '/update-post',
-          name: 'update-post',
-          builder: (context, state) {
-            final initialData = state.extra as Map<String, dynamic>? ?? {};
-            return UpdateRecyclingPostPage(initialData: initialData);
-          },
-        ),
       ],
+    ),
+    GoRoute(
+      path: '/list-post',
+      name: 'list-post',
+      builder: (context, state) => const HouseholdListPostScreen(),
+    ),
+    GoRoute(
+      path: '/detail-post',
+      name: 'detail-post',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        return PostDetailsScreen(initialData: initialData);
+      },
+    ),
+    GoRoute(
+      path: '/create-post',
+      name: 'create-post',
+      builder: (context, state) => const CreateRecyclingPostPage(),
+    ),
+    GoRoute(
+      path: '/update-post',
+      name: 'update-post',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        return UpdateRecyclingPostPage(initialData: initialData);
+      },
     ),
     GoRoute(path: '/', builder: (context, state) => const WelcomePage()),
     GoRoute(
