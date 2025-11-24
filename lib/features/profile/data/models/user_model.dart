@@ -48,4 +48,28 @@ class UserModel extends UserEntity {
       avatarUrl: avatarUrl,
     );
   }
+
+  UserModel copyWith({
+    String? profileId,
+    String? userId,
+    String? fullName,
+    String? phoneNumber,
+    String? dateOfBirth,
+    String? address,
+    String? gender,
+    int? pointBalance,
+    String? rank,
+    List<String>? roles,
+    String? avatarUrl,
+  }) {
+    return UserModel(
+      userId: userId ?? this.userId,
+      fullName: fullName ?? this.fullName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      pointBalance: pointBalance ?? this.pointBalance,
+      rank: rank ?? this.rank,
+      roles: roles ?? this.roles,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+    );
+  }
 }

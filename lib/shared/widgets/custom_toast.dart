@@ -19,21 +19,25 @@ class CustomToast {
     final theme = Theme.of(context);
     switch (type) {
       case ToastType.success:
-        bgColor = theme.primaryColor.withAlpha(50);
+        bgColor = theme.scaffoldBackgroundColor;
         iconColor = theme.primaryColor;
         icon = Icons.check_circle;
         break;
       case ToastType.error:
-        bgColor = AppColors.danger.withAlpha(50);
+        bgColor = theme.scaffoldBackgroundColor;
         iconColor = AppColors.danger;
         icon = Icons.error_outline;
         break;
       case ToastType.warning:
-        bgColor = AppColors.warning.withAlpha(50);
+        bgColor = theme.scaffoldBackgroundColor;
         iconColor = AppColors.warning;
         icon = Icons.warning_amber_rounded;
         break;
       case ToastType.info:
+        bgColor = theme.scaffoldBackgroundColor;
+        iconColor = theme.colorScheme.onSurface;
+        icon = Icons.info_outline;
+        break;
       default:
         bgColor = theme.scaffoldBackgroundColor;
         iconColor = isDark ? theme.primaryColorLight : theme.primaryColorDark;
@@ -56,14 +60,14 @@ class CustomToast {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                     spreadRadius: 1,
                   ),
                 ],
                 border: type != ToastType.info
-                    ? Border.all(color: iconColor.withOpacity(0.1))
+                    ? Border.all(color: iconColor.withValues(alpha: 0.1))
                     : null,
               ),
               child: Row(
@@ -86,7 +90,7 @@ class CustomToast {
                     onTap: () => OverlaySupportEntry.of(context)?.dismiss(),
                     child: Icon(
                       Icons.close,
-                      color: iconColor.withOpacity(0.5),
+                      color: iconColor.withValues(alpha: 0.5),
                       size: 18,
                     ),
                   ),

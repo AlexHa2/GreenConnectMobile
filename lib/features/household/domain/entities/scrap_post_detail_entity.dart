@@ -1,3 +1,4 @@
+// scrap_post_detail_entity.dart
 import 'package:GreenConnectMobile/features/household/domain/entities/scrap_category_entity.dart';
 
 class ScrapPostDetailEntity {

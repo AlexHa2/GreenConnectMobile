@@ -3,7 +3,9 @@ import 'package:GreenConnectMobile/features/profile/data/models/user_update_mode
 import 'package:GreenConnectMobile/features/profile/domain/entities/user_update_entity.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/providers/profile_providers.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
+import 'package:GreenConnectMobile/shared/widgets/app_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -171,100 +173,77 @@ class _UpdateProfileDialogState extends ConsumerState<UpdateProfileDialog> {
     final s = S.of(context)!;
     final spacing = Theme.of(context).extension<AppSpacing>()!;
     final theme = Theme.of(context);
+
     return AlertDialog(
+      backgroundColor: theme.scaffoldBackgroundColor,
       title: Text(s.edit_profile),
       content: SingleChildScrollView(
         child: SizedBox(
-          width: double.infinity,
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Fullname
-                Text(S.of(context)!.fullName, style: theme.textTheme.bodyLarge),
-                SizedBox(height: spacing.screenPadding / 2),
-                TextFormField(
+                AppInputField(
+                  label: s.fullName,
                   controller: _fullNameCtrl,
-                  decoration: InputDecoration(hintText: s.fullName_hint),
+                  hint: s.fullName_hint,
                   validator: _validateFullName,
                 ),
+
                 SizedBox(height: spacing.screenPadding),
 
-                // Address
-                Text(
-                  S.of(context)!.street_address,
-                  style: theme.textTheme.bodyLarge,
-                ),
-                SizedBox(height: spacing.screenPadding / 2),
-                TextFormField(
+                AppInputField(
+                  label: s.street_address,
                   controller: _addressCtrl,
-                  decoration: InputDecoration(hintText: s.street_address_hint),
+                  hint: s.street_address_hint,
                   validator: _validateAddress,
                 ),
+
                 SizedBox(height: spacing.screenPadding),
 
-                // Gender
-                Text(S.of(context)!.gender, style: theme.textTheme.bodyLarge),
-                SizedBox(height: spacing.screenPadding / 2),
+                ///
+                Text(
+                  s.gender,
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 DropdownButtonFormField<String>(
                   initialValue: _gender,
-                  decoration: InputDecoration(
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 12,
-                    ),
-                    errorText: _validateGender(_gender),
-                  ),
+                  decoration: const InputDecoration(isDense: true),
                   items: [
-                    DropdownMenuItem(
-                      value: "Male",
-                      child: Text(S.of(context)!.male),
-                    ),
-                    DropdownMenuItem(
-                      value: "Female",
-                      child: Text(S.of(context)!.female),
-                    ),
-                    DropdownMenuItem(
-                      value: "Other",
-                      child: Text(S.of(context)!.other),
-                    ),
+                    DropdownMenuItem(value: "Male", child: Text(s.male)),
+                    DropdownMenuItem(value: "Female", child: Text(s.female)),
+                    DropdownMenuItem(value: "Other", child: Text(s.other)),
                   ],
                   onChanged: (value) {
                     setState(() {
                       _gender = value ?? "Other";
                     });
                   },
+                  validator: (_) => _validateGender(_gender),
                 ),
 
                 SizedBox(height: spacing.screenPadding),
 
-                // DOB
-                Text(
-                  S.of(context)!.date_of_birth,
-                  style: theme.textTheme.bodyLarge,
-                ),
-                SizedBox(height: spacing.screenPadding / 2),
-                TextFormField(
+                /// DOB
+                AppInputField(
+                  label: s.date_of_birth,
                   controller: _dobCtrl,
+                  hint: s.date_of_birth_hint,
                   readOnly: true,
-                  decoration: InputDecoration(
-                    hintText: S.of(context)!.date_of_birth_hint,
-                    suffixIcon: const Icon(Icons.calendar_today),
-                    isDense: true,
-                    errorText: _validateDob(_dobCtrl.text),
-                  ),
+                  suffixIcon: const Icon(Icons.calendar_today),
+                  validator: (v) => _validateDob(v ?? ""),
                   onTap: _pickDob,
                 ),
 
+                /// GLOBAL ERROR IF ANY
                 if (_error != null) ...[
                   SizedBox(height: spacing.screenPadding),
                   Text(
                     _error!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                    style: TextStyle(color: theme.colorScheme.error),
                   ),
                 ],
               ],
@@ -272,12 +251,17 @@ class _UpdateProfileDialogState extends ConsumerState<UpdateProfileDialog> {
           ),
         ),
       ),
+
+      /// ACTION BUTTONS
       actions: [
         TextButton(
           onPressed: _loading ? null : () => Navigator.pop(context),
           child: Text(s.cancel),
         ),
         ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.warningUpdate,
+          ),
           onPressed: _loading ? null : _submit,
           icon: _loading
               ? const SizedBox(

@@ -193,6 +193,7 @@ class _ProfileSetupPageState extends ConsumerState<ProfileSetupPage> {
                         navigateWithLoading(
                           context,
                           route: '/household-home',
+                          extra: {"fullName": fullName!},
                           asyncTask: () async {
                             await viewModel.updateMe(
                               UserUpdateModel(

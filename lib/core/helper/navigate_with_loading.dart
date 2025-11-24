@@ -9,7 +9,7 @@ Future<void> navigateWithLoading<T>(
   BuildContext context, {
   Future<void> Function()? asyncTask,
   required String route,
-  T? extra, // extra kiểu generic
+  T? extra,
 }) async {
   appLoading.value = true;
 

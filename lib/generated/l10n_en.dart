@@ -175,6 +175,10 @@ class SEn extends S {
   String get street_address_hint => '123 Green Street';
 
   @override
+  String get street_address_location_hint =>
+      '600 Brasher Rd, Morgan City, St. Mary Parish, Louisiana, 70380 United States';
+
+  @override
   String get city => 'City';
 
   @override
@@ -491,7 +495,7 @@ class SEn extends S {
   String get online => 'Online';
 
   @override
-  String get invalid_phone_number => 'invalid phone number ex:0987654321';
+  String get invalid_phone_number => 'Invalid phone number';
 
   @override
   String get invalid_otp_message => 'OTP is not invalid';
@@ -660,4 +664,148 @@ class SEn extends S {
   @override
   String get error_occurred_while_updating_profile =>
       'error occurred while updating profile';
+
+  @override
+  String get error_required => 'This field is required';
+
+  @override
+  String get error_invalid_length => 'Too short';
+
+  @override
+  String get error_post_title_min => 'Title must be at least 3 characters';
+
+  @override
+  String get error_description_min =>
+      'Description must be at least 10 characters';
+
+  @override
+  String get error_pickup_address_min =>
+      'Address must be at least 5 characters';
+
+  @override
+  String get error_number_invalid => 'Enter a valid number';
+
+  @override
+  String get error_quantity_invalid => 'Quantity must be greater than 0';
+
+  @override
+  String get error_weight_invalid => 'Weight must be greater than 0';
+
+  @override
+  String get error_select_category => 'Please select a category';
+
+  @override
+  String get error_scrap_item_empty =>
+      'Please add at least one scrap item to continue';
+
+  @override
+  String get success_post_created => 'Post created successfully!';
+
+  @override
+  String get too_many_request_error =>
+      'You have sent too many requests. Please try again later.';
+
+  @override
+  String get network_error_message =>
+      'Network error, please check your connection.';
+
+  @override
+  String get unknown_error => 'Unexpected error occurred. Please try again.';
+
+  @override
+  String get error_general => 'Unsuccessful!';
+
+  @override
+  String get error_invalid_address => 'Please search and confirm address!';
+
+  @override
+  String get take_all => 'Must take all';
+
+  @override
+  String get take_all_description => 'Collector must take all items';
+
+  @override
+  String get address_not_found => 'Address not found!!!';
+
+  @override
+  String get address_invalid => 'Address is invalid';
+
+  @override
+  String get address_found => 'Address was found';
+
+  @override
+  String get error_invalid_number => 'Must be large than 0';
+
+  @override
+  String get error_no_internet =>
+      'No internet connection. Please check your network.';
+
+  @override
+  String get error_session_expired => 'Session expired. Please log in again.';
+
+  @override
+  String get error_server_error => 'Server error. Please try again later.';
+
+  @override
+  String get error_unknown => 'An unexpected error occurred.';
+
+  @override
+  String get error_category_exists => 'Category is existed, choose another';
+
+  @override
+  String get no_post_found => 'no post found';
+
+  @override
+  String get open => 'Open';
+
+  @override
+  String get partially_booked => 'Partially Booked';
+
+  @override
+  String get fully_booked => 'Fully Booked';
+
+  @override
+  String get canceled => 'Canceled';
+
+  @override
+  String get unknown_status => 'Unknown Status';
+
+  @override
+  String get you_have_no_recycling_posts => 'You have no posts yet';
+
+  @override
+  String get start_sharing_recycling_posts => 'Start sharing recycling posts';
+
+  @override
+  String get view_details => 'View detail';
+
+  @override
+  String get go_to_transaction => 'Go transaction';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get error_scrap_category => 'Only one material type per post';
+
+  @override
+  String get just_now => 'just now';
+
+  @override
+  String get minutes_ago => 'minutes ago';
+
+  @override
+  String get hours_ago => 'hours ago';
+
+  @override
+  String get yesterday => 'yesterday';
+
+  @override
+  String get days_ago => 'days ago';
+
+  @override
+  String get booked => 'Booked';
+
+  @override
+  String get collected => 'Collected';
 }
