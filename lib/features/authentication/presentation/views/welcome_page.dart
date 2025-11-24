@@ -1,7 +1,3 @@
-import 'package:GreenConnectMobile/core/di/injector.dart';
-import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
-import 'package:GreenConnectMobile/core/network/token_storage.dart';
-import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
@@ -22,39 +18,6 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
   @override
   void initState() {
     super.initState();
-    loadUser();
-  }
-
-  void loadUser() async {
-    final tokenStorage = sl<TokenStorageService>();
-    UserModel? fetchedUser = await tokenStorage.getUserData();
-    if (fetchedUser == null) return;
-
-    final rolePriority = [
-      'IndividualCollector',
-      'BusinessCollector',
-      'Household',
-    ];
-
-    final matchedRole = rolePriority.firstWhere(
-      (r) => fetchedUser.roles.contains(r),
-      orElse: () => '',
-    );
-    if (!mounted) return;
-    switch (matchedRole) {
-      case 'IndividualCollector':
-        navigateWithLoading(context, route: '/individual-home');
-        break;
-      case 'BusinessCollector':
-        navigateWithLoading(context, route: '/business-home');
-        break;
-      case 'Household':
-        navigateWithLoading(context, route: '/household-home');
-        break;
-      default:
-        navigateWithLoading(context, route: '/');
-        break;
-    }
   }
 
   @override

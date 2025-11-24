@@ -1,3 +1,5 @@
+import 'package:GreenConnectMobile/core/di/auth_injector.dart';
+import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/profile/data/models/user_update_model.dart';
 import 'package:GreenConnectMobile/features/profile/data/models/verification_model.dart';
 import 'package:GreenConnectMobile/features/profile/domain/usecases/get_me_usecase.dart';
@@ -11,7 +13,6 @@ class ProfileViewModel extends Notifier<ProfileState> {
   late final GetMeUseCase _getMeUseCase;
   late final UpdateMeUseCase _updateMeUseCase;
   late final VerifyUserUseCase _verifyUserUseCase;
-
   @override
   ProfileState build() {
     _getMeUseCase = ref.read(getMeUsecaseProvider);
@@ -36,9 +37,10 @@ class ProfileViewModel extends Notifier<ProfileState> {
   // PUT /me
   Future<void> updateMe(UserUpdateModel update) async {
     state = state.copyWith(isLoading: true);
-
+    TokenStorageService tokenStorage = sl<TokenStorageService>();
     try {
       final updated = await _updateMeUseCase(update);
+      await tokenStorage.updateFullName(updated.fullName);
       state = state.copyWith(isLoading: false, user: updated);
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());

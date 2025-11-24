@@ -7,9 +7,9 @@ import 'package:GreenConnectMobile/features/profile/domain/entities/verification
 
 class ProfileRemoteDatasource {
   final ApiClient _apiClient = sl<ApiClient>();
-  final String verifyUrl = '/v1/users/verification';
-  final String getMeUrl = '/v1/users/me';
-  final String updateMeUrl = '/v1/users/me';
+  final String verifyUrl = '/v1/profile/verification';
+  final String getMeUrl = '/v1/profile/me';
+  final String updateMeUrl = '/v1/profile/me';
 
   Future<String> verifyUser({required VerificationEntity verify}) async {
     try {

@@ -10,6 +10,11 @@ final ThemeData lightTheme = ThemeData(
   scaffoldBackgroundColor: AppColors.background,
   primaryColor: AppColors.primary,
 
+  colorScheme: const ColorScheme.light(
+    primary: AppColors.primary,
+    onSurface: Colors.black,
+  ),
+
   cardColor: AppColors.surface,
   dividerColor: AppColors.border,
   primaryColorDark: AppColors.textPrimary,
@@ -103,6 +108,10 @@ final ThemeData lightTheme = ThemeData(
 final ThemeData darkTheme = ThemeData(
   extensions: <ThemeExtension<dynamic>>[const AppSpacing(screenPadding: 12)],
 
+  colorScheme: const ColorScheme.dark(
+    primary: AppColors.primary,
+    onSurface: Colors.white,
+  ),
   brightness: Brightness.dark,
   scaffoldBackgroundColor: AppColorsDark.background,
   primaryColor: AppColorsDark.primary,
@@ -111,7 +120,6 @@ final ThemeData darkTheme = ThemeData(
 
   primaryColorLight: AppColorsDark.textPrimary,
   primaryColorDark: AppColorsDark.background,
-  
 
   appBarTheme: const AppBarTheme(
     backgroundColor: AppColorsDark.surface,

@@ -1,4 +1,3 @@
-import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/full_image_viewer.dart';
@@ -7,21 +6,18 @@ import 'package:flutter/material.dart';
 class PostItemNoAction extends StatelessWidget {
   final BuildContext context;
   final String category;
-  final int quantity;
-  final double weight;
+  final String packageInformation;
   const PostItemNoAction({
     super.key,
     required this.context,
     required this.category,
-    required this.quantity,
-    required this.weight,
+    required this.packageInformation,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = Theme.of(context).textTheme;
-    final s = S.of(context)!;
     final spacing = theme.extension<AppSpacing>()!;
     const logo = "assets/images/green_connect_logo.png";
     return Card(
@@ -53,17 +49,8 @@ class PostItemNoAction extends StatelessWidget {
                     TextSpan(
                       style: textTheme.bodyMedium,
                       children: [
-                        TextSpan(text: '${s.quantity}: '),
                         TextSpan(
-                          text: '$quantity',
-                          style: textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const TextSpan(text: '   '),
-                        TextSpan(text: '${s.weight}: '),
-                        TextSpan(
-                          text: '${weight}kg',
+                          text: packageInformation,
                           style: textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),

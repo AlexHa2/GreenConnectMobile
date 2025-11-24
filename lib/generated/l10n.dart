@@ -427,6 +427,12 @@ abstract class S {
   /// **'123 Green Street'**
   String get street_address_hint;
 
+  /// No description provided for @street_address_location_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'600 Brasher Rd, Morgan City, St. Mary Parish, Louisiana, 70380 United States'**
+  String get street_address_location_hint;
+
   /// No description provided for @city.
   ///
   /// In en, this message translates to:
@@ -1054,7 +1060,7 @@ abstract class S {
   /// No description provided for @invalid_phone_number.
   ///
   /// In en, this message translates to:
-  /// **'invalid phone number ex:0987654321'**
+  /// **'Invalid phone number'**
   String get invalid_phone_number;
 
   /// No description provided for @invalid_otp_message.
@@ -1386,6 +1392,282 @@ abstract class S {
   /// In en, this message translates to:
   /// **'error occurred while updating profile'**
   String get error_occurred_while_updating_profile;
+
+  /// No description provided for @error_required.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get error_required;
+
+  /// No description provided for @error_invalid_length.
+  ///
+  /// In en, this message translates to:
+  /// **'Too short'**
+  String get error_invalid_length;
+
+  /// No description provided for @error_post_title_min.
+  ///
+  /// In en, this message translates to:
+  /// **'Title must be at least 3 characters'**
+  String get error_post_title_min;
+
+  /// No description provided for @error_description_min.
+  ///
+  /// In en, this message translates to:
+  /// **'Description must be at least 10 characters'**
+  String get error_description_min;
+
+  /// No description provided for @error_pickup_address_min.
+  ///
+  /// In en, this message translates to:
+  /// **'Address must be at least 5 characters'**
+  String get error_pickup_address_min;
+
+  /// No description provided for @error_number_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid number'**
+  String get error_number_invalid;
+
+  /// No description provided for @error_quantity_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity must be greater than 0'**
+  String get error_quantity_invalid;
+
+  /// No description provided for @error_weight_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight must be greater than 0'**
+  String get error_weight_invalid;
+
+  /// No description provided for @error_select_category.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a category'**
+  String get error_select_category;
+
+  /// No description provided for @error_scrap_item_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please add at least one scrap item to continue'**
+  String get error_scrap_item_empty;
+
+  /// No description provided for @success_post_created.
+  ///
+  /// In en, this message translates to:
+  /// **'Post created successfully!'**
+  String get success_post_created;
+
+  /// No description provided for @too_many_request_error.
+  ///
+  /// In en, this message translates to:
+  /// **'You have sent too many requests. Please try again later.'**
+  String get too_many_request_error;
+
+  /// No description provided for @network_error_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error, please check your connection.'**
+  String get network_error_message;
+
+  /// No description provided for @unknown_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error occurred. Please try again.'**
+  String get unknown_error;
+
+  /// No description provided for @error_general.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsuccessful!'**
+  String get error_general;
+
+  /// No description provided for @error_invalid_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Please search and confirm address!'**
+  String get error_invalid_address;
+
+  /// No description provided for @take_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Must take all'**
+  String get take_all;
+
+  /// No description provided for @take_all_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Collector must take all items'**
+  String get take_all_description;
+
+  /// No description provided for @address_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Address not found!!!'**
+  String get address_not_found;
+
+  /// No description provided for @address_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Address is invalid'**
+  String get address_invalid;
+
+  /// No description provided for @address_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Address was found'**
+  String get address_found;
+
+  /// No description provided for @error_invalid_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be large than 0'**
+  String get error_invalid_number;
+
+  /// No description provided for @error_no_internet.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Please check your network.'**
+  String get error_no_internet;
+
+  /// No description provided for @error_session_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired. Please log in again.'**
+  String get error_session_expired;
+
+  /// No description provided for @error_server_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error. Please try again later.'**
+  String get error_server_error;
+
+  /// No description provided for @error_unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred.'**
+  String get error_unknown;
+
+  /// No description provided for @error_category_exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Category is existed, choose another'**
+  String get error_category_exists;
+
+  /// No description provided for @no_post_found.
+  ///
+  /// In en, this message translates to:
+  /// **'no post found'**
+  String get no_post_found;
+
+  /// No description provided for @open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
+
+  /// No description provided for @partially_booked.
+  ///
+  /// In en, this message translates to:
+  /// **'Partially Booked'**
+  String get partially_booked;
+
+  /// No description provided for @fully_booked.
+  ///
+  /// In en, this message translates to:
+  /// **'Fully Booked'**
+  String get fully_booked;
+
+  /// No description provided for @canceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceled'**
+  String get canceled;
+
+  /// No description provided for @unknown_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Status'**
+  String get unknown_status;
+
+  /// No description provided for @you_have_no_recycling_posts.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no posts yet'**
+  String get you_have_no_recycling_posts;
+
+  /// No description provided for @start_sharing_recycling_posts.
+  ///
+  /// In en, this message translates to:
+  /// **'Start sharing recycling posts'**
+  String get start_sharing_recycling_posts;
+
+  /// No description provided for @view_details.
+  ///
+  /// In en, this message translates to:
+  /// **'View detail'**
+  String get view_details;
+
+  /// No description provided for @go_to_transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Go transaction'**
+  String get go_to_transaction;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @error_scrap_category.
+  ///
+  /// In en, this message translates to:
+  /// **'Only one material type per post'**
+  String get error_scrap_category;
+
+  /// No description provided for @just_now.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get just_now;
+
+  /// No description provided for @minutes_ago.
+  ///
+  /// In en, this message translates to:
+  /// **'minutes ago'**
+  String get minutes_ago;
+
+  /// No description provided for @hours_ago.
+  ///
+  /// In en, this message translates to:
+  /// **'hours ago'**
+  String get hours_ago;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'yesterday'**
+  String get yesterday;
+
+  /// No description provided for @days_ago.
+  ///
+  /// In en, this message translates to:
+  /// **'days ago'**
+  String get days_ago;
+
+  /// No description provided for @booked.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get booked;
+
+  /// No description provided for @collected.
+  ///
+  /// In en, this message translates to:
+  /// **'Collected'**
+  String get collected;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

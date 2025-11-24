@@ -1,3 +1,4 @@
+// location_entity.dart
 class LocationEntity {
   final double longitude;
   final double latitude;

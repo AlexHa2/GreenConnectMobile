@@ -10,7 +10,7 @@ final List<NavConfig> navItemsHousehold = [
   const NavConfig(
     icon: Icons.search,
     label: "Search",
-    routeName: '/list-post',
+    routeName: '/detail-post',
     extra: {
       'title': 'Recycling Old Phones',
       'description': 'Collected used phones for recycling',

@@ -176,6 +176,10 @@ class SVi extends S {
   String get street_address_hint => 'nam kỳ khởi nghĩa';
 
   @override
+  String get street_address_location_hint =>
+      '72 Lê Thánh Tôn, Bến Nghé, Quận 1, TP. Hồ Chí Minh';
+
+  @override
   String get city => 'Thành Phố';
 
   @override
@@ -493,7 +497,7 @@ class SVi extends S {
   String get online => 'Đang hoạt động';
 
   @override
-  String get invalid_phone_number => 'Số điện thoại không hợp lệ vd:0987654321';
+  String get invalid_phone_number => 'Số điện thoại không hợp lệ';
 
   @override
   String get invalid_otp_message => 'OTP không hợp lệ';
@@ -661,4 +665,149 @@ class SVi extends S {
   @override
   String get error_occurred_while_updating_profile =>
       'Có lỗi khi cập nhập hồ sơ';
+
+  @override
+  String get error_required => 'Trường này là bắt buộc';
+
+  @override
+  String get error_invalid_length => 'Quá ngắn';
+
+  @override
+  String get error_post_title_min => 'Tiêu đề phải có ít nhất 3 ký tự';
+
+  @override
+  String get error_description_min => 'Mô tả phải có ít nhất 10 ký tự';
+
+  @override
+  String get error_pickup_address_min => 'Địa chỉ phải có ít nhất 5 ký tự';
+
+  @override
+  String get error_number_invalid => 'Nhập một số hợp lệ';
+
+  @override
+  String get error_quantity_invalid => 'Số lượng phải lớn hơn 0';
+
+  @override
+  String get error_weight_invalid => 'Khối lượng phải lớn hơn 0';
+
+  @override
+  String get error_select_category => 'Vui lòng chọn một danh mục';
+
+  @override
+  String get error_scrap_item_empty =>
+      'Vui lòng thêm ít nhất một mục phế liệu để tiếp tục';
+
+  @override
+  String get success_post_created => 'Bài đăng đã được tạo thành công!';
+
+  @override
+  String get too_many_request_error =>
+      'Bạn đã thực hiện quá nhiều yêu cầu. Vui lòng thử lại sau.';
+
+  @override
+  String get network_error_message =>
+      'Lỗi mạng. Vui lòng kiểm tra kết nối Internet.';
+
+  @override
+  String get unknown_error => 'Đã xảy ra lỗi. Vui lòng thử lại.';
+
+  @override
+  String get error_general => 'Không thành công!';
+
+  @override
+  String get error_invalid_address => 'Hãy tìm kiếm địa chỉ và xác nhận hợp lệ';
+
+  @override
+  String get take_all => 'Phải lấy tất cả';
+
+  @override
+  String get take_all_description => 'Người thu gôm phải lấy tất cả vật phẩm';
+
+  @override
+  String get address_not_found => 'Không tìm thây địa chỉ trên';
+
+  @override
+  String get address_invalid => 'Địa chỉ không hợp lệ';
+
+  @override
+  String get address_found => 'Địa chỉ hợp lệ';
+
+  @override
+  String get error_invalid_number => 'phải lớn hơn không';
+
+  @override
+  String get error_no_internet =>
+      'Không có kết nối Internet. Vui lòng kiểm tra lại mạng.';
+
+  @override
+  String get error_session_expired =>
+      'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
+
+  @override
+  String get error_server_error => 'Lỗi máy chủ. Vui lòng thử lại sau.';
+
+  @override
+  String get error_unknown => 'Đã xảy ra lỗi không xác định.';
+
+  @override
+  String get error_category_exists => 'Loại này đã có!, chọn loại khác';
+
+  @override
+  String get no_post_found => 'Chưa có bài đăng';
+
+  @override
+  String get open => 'Đang mở';
+
+  @override
+  String get partially_booked => 'Đã đặt một phần';
+
+  @override
+  String get fully_booked => 'Đã đặt hết';
+
+  @override
+  String get canceled => 'Đã hủy';
+
+  @override
+  String get unknown_status => 'Không xác định';
+
+  @override
+  String get you_have_no_recycling_posts => 'Bạn vẫn chưa có bài đăng nào';
+
+  @override
+  String get start_sharing_recycling_posts =>
+      'Bắt đầu chia sẻ bài đăng tái chế nào';
+
+  @override
+  String get view_details => 'Xem chi tiết';
+
+  @override
+  String get go_to_transaction => 'Giao dịch';
+
+  @override
+  String get retry => 'Thử lại';
+
+  @override
+  String get error_scrap_category =>
+      'Chỉ có một loại tài liệu cho mỗi bài đăng';
+
+  @override
+  String get just_now => 'mới đây';
+
+  @override
+  String get minutes_ago => 'phút trước';
+
+  @override
+  String get hours_ago => 'một giờ trước';
+
+  @override
+  String get yesterday => 'hôm qua';
+
+  @override
+  String get days_ago => 'một ngày trước';
+
+  @override
+  String get booked => 'Đã được đặt';
+
+  @override
+  String get collected => 'đã thu thập';
 }

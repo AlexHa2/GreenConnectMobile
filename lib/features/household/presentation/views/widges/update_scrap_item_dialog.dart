@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -11,7 +10,7 @@ class UpdateScrapItemDialog extends StatefulWidget {
   final String? initialCategory;
   final int? initialQuantity;
   final double? initialWeight;
-  final List<File>? initialImages;
+  final File? initialImage;
   final List<String> categories;
 
   const UpdateScrapItemDialog({
@@ -19,7 +18,7 @@ class UpdateScrapItemDialog extends StatefulWidget {
     this.initialCategory,
     this.initialQuantity,
     this.initialWeight,
-    this.initialImages,
+    this.initialImage,
     required this.categories,
   });
 
@@ -34,292 +33,216 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
   late String? _selectedCategory;
   late TextEditingController _quantityController;
   late TextEditingController _weightController;
-
-  late List<File> _images;
+  File? _image;
 
   @override
   void initState() {
     super.initState();
-    _selectedCategory =
-        widget.initialCategory ??
-        (widget.categories.isNotEmpty ? widget.categories.first : null);
+    _selectedCategory = widget.initialCategory;
     _quantityController = TextEditingController(
       text: widget.initialQuantity?.toString() ?? "1",
     );
     _weightController = TextEditingController(
       text: widget.initialWeight?.toString() ?? "1.0",
     );
-    _images = List<File>.from(widget.initialImages ?? []);
+    _image = widget.initialImage;
   }
 
   Future<void> _pickImage() async {
-    if (_images.length >= 3) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("You can upload up to 3 images.")),
-      );
-      return;
-    }
-
     final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() => _images.add(File(picked.path)));
-    }
+    if (picked != null) setState(() => _image = File(picked.path));
   }
 
   @override
   Widget build(BuildContext context) {
     final spacing = Theme.of(context).extension<AppSpacing>()!;
     final theme = Theme.of(context);
+
     return Dialog(
-      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: double.infinity),
-        child: Padding(
-          padding: EdgeInsets.all(spacing.screenPadding * 2),
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: spacing.screenPadding * 2,
+        vertical: spacing.screenPadding,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(spacing.screenPadding),
+      ),
+      backgroundColor: theme.cardColor,
+      child: Padding(
+        padding: EdgeInsets.all(spacing.screenPadding * 2),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "${S.of(context)!.update} ${S.of(context)!.scrap_item}",
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.close),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: spacing.screenPadding * 2),
-
                   Text(
-                    S.of(context)!.category,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    "${S.of(context)!.update} ${S.of(context)!.scrap_item}",
+                    style: theme.textTheme.titleLarge,
                   ),
-                  SizedBox(height: spacing.screenPadding / 2),
-                  DropdownButtonFormField<String>(
-                    initialValue: _selectedCategory,
-                    items: widget.categories
-                        .map(
-                          (cat) =>
-                              DropdownMenuItem(value: cat, child: Text(cat)),
-                        )
-                        .toList(),
-                    onChanged: (val) => setState(() => _selectedCategory = val),
-                    decoration: const InputDecoration(),
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return "Please select a category";
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: spacing.screenPadding),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              S.of(context)!.quantity,
-                              style: Theme.of(context).textTheme.bodyLarge!
-                                  .copyWith(fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(height: spacing.screenPadding / 2),
-                            TextFormField(
-                              controller: _quantityController,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(hintText: "10"),
-                              validator: (val) {
-                                if (val == null ||
-                                    int.tryParse(val) == null ||
-                                    int.parse(val) <= 0) {
-                                  return "Invalid quantity";
-                                }
-                                return null;
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: spacing.screenPadding),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              S.of(context)!.weight,
-                              style: Theme.of(context).textTheme.bodyLarge!
-                                  .copyWith(fontWeight: FontWeight.w600),
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _weightController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                hintText: S.of(context)!.weight_hint,
-                              ),
-                              validator: (val) {
-                                if (val == null ||
-                                    double.tryParse(val) == null ||
-                                    double.parse(val) <= 0) {
-                                  return "Invalid weight";
-                                }
-                                return null;
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: spacing.screenPadding),
-
-                  Text(
-                    "${S.of(context)!.update} ${S.of(context)!.image}",
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: DashedBorderContainer(
-                      padding: EdgeInsets.all(spacing.screenPadding * 2),
-                      width: double.infinity,
-                      color: theme.primaryColor,
-                      strokeWidth: 2,
-                      dashWidth: 5,
-                      dashSpace: 3,
-                      borderRadius: 8,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.upload_file,
-                            size: spacing.screenPadding * 2,
-                            color: theme.primaryColor,
-                          ),
-                          SizedBox(height: spacing.screenPadding / 2),
-                          Text(S.of(context)!.upload),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  if (_images.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: _images
-                          .asMap()
-                          .entries
-                          .map(
-                            (entry) => Stack(
-                              alignment: Alignment.topRight,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.file(
-                                    entry.value,
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () => setState(() {
-                                    _images.removeAt(entry.key);
-                                  }),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: theme.scaffoldBackgroundColor,
-                                    ),
-                                    child: const Icon(
-                                      Icons.close,
-                                      size: 20,
-                                      color: AppColors.danger,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ],
-
-                  SizedBox(height: spacing.screenPadding * 2),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: theme.dividerColor),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              spacing.screenPadding,
-                            ),
-                            side: BorderSide(
-                              color: theme.primaryColorDark.withValues(
-                                alpha: 0.5,
-                              ),
-                            ),
-                          ),
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(
-                          S.of(context)!.cancel,
-                          style: theme.textTheme.bodyLarge!.copyWith(),
-                        ),
-                      ),
-
-                      SizedBox(width: spacing.screenPadding),
-
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.warningUpdate,
-                        ),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            Navigator.pop(context, {
-                              "category": _selectedCategory,
-                              "quantity": int.parse(
-                                _quantityController.text.trim(),
-                              ),
-                              "weight": double.parse(
-                                _weightController.text.trim(),
-                              ),
-                              "images": _images,
-                            });
-                          }
-                        },
-                        child: Text(S.of(context)!.update),
-                      ),
-                    ],
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
                   ),
                 ],
               ),
-            ),
+
+              SizedBox(height: spacing.screenPadding),
+
+              _buildLabel(context, S.of(context)!.category),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedCategory,
+                items: widget.categories
+                    .map(
+                      (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
+                    )
+                    .toList(),
+                onChanged: (val) => setState(() => _selectedCategory = val),
+                decoration: InputDecoration(hintText: S.of(context)!.category),
+                validator: (val) =>
+                    val == null ? S.of(context)!.error_required : null,
+              ),
+
+              SizedBox(height: spacing.screenPadding),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildNumberInput(
+                      context,
+                      S.of(context)!.quantity,
+                      _quantityController,
+                      "10",
+                    ),
+                  ),
+                  SizedBox(width: spacing.screenPadding),
+                  Expanded(
+                    child: _buildNumberInput(
+                      context,
+                      S.of(context)!.weight,
+                      _weightController,
+                      "1.0",
+                      isDouble: true,
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: spacing.screenPadding),
+
+              _buildLabel(context, S.of(context)!.upload),
+              GestureDetector(
+                onTap: _pickImage,
+                child: DashedBorderContainer(
+                  color: theme.primaryColor,
+                  padding: EdgeInsets.all(spacing.screenPadding * 2),
+                  width: double.infinity,
+                  borderRadius: spacing.screenPadding,
+                  child: Center(
+                    child: Text(
+                      S.of(context)!.upload,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                ),
+              ),
+
+              if (_image != null) ...[
+                SizedBox(height: spacing.screenPadding),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(spacing.screenPadding),
+                  child: Image.file(
+                    _image!,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: const Icon(Icons.delete, color: AppColors.danger),
+                    onPressed: () => setState(() => _image = null),
+                  ),
+                ),
+              ],
+
+              SizedBox(height: spacing.screenPadding * 2),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(S.of(context)!.cancel),
+                  ),
+                  SizedBox(width: spacing.screenPadding),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.primaryColor,
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        Navigator.pop(context, {
+                          "category": _selectedCategory,
+                          "quantity": int.parse(_quantityController.text),
+                          "weight": double.parse(_weightController.text),
+                          "image": _image,
+                        });
+                      }
+                    },
+                    child: Text(S.of(context)!.update),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLabel(BuildContext ctx, String text) {
+    return Text(
+      text,
+      style: Theme.of(
+        ctx,
+      ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+    );
+  }
+
+  Widget _buildNumberInput(
+    BuildContext context,
+    String label,
+    TextEditingController controller,
+    String hint, {
+    bool isDouble = false,
+  }) {
+    final spacing = Theme.of(context).extension<AppSpacing>()!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildLabel(context, label),
+        SizedBox(height: spacing.screenPadding / 2),
+        TextFormField(
+          controller: controller,
+          textAlign: TextAlign.center,
+          decoration: const InputDecoration(isDense: true),
+          keyboardType: TextInputType.number,
+          validator: (val) {
+            if (val == null) return S.of(context)!.error_required;
+            return isDouble
+                ? (double.tryParse(val) == null
+                      ? S.of(context)!.error_required
+                      : null)
+                : (int.tryParse(val) == null
+                      ? S.of(context)!.error_required
+                      : null);
+          },
+        ),
+      ],
     );
   }
 }
