@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -10,7 +11,7 @@ class UpdateScrapItemDialog extends StatefulWidget {
   final String? initialCategory;
   final int? initialQuantity;
   final double? initialWeight;
-  final File? initialImage;
+  final String? initialImageUrl;
   final List<String> categories;
 
   const UpdateScrapItemDialog({
@@ -18,8 +19,8 @@ class UpdateScrapItemDialog extends StatefulWidget {
     this.initialCategory,
     this.initialQuantity,
     this.initialWeight,
-    this.initialImage,
     required this.categories,
+    this.initialImageUrl,
   });
 
   @override
@@ -33,7 +34,10 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
   late String? _selectedCategory;
   late TextEditingController _quantityController;
   late TextEditingController _weightController;
-  File? _image;
+
+  // Logic: Tách biệt ảnh cũ (URL) và ảnh mới (File)
+  String? _currentImageUrl;
+  File? _newPickedFile;
 
   @override
   void initState() {
@@ -45,12 +49,25 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
     _weightController = TextEditingController(
       text: widget.initialWeight?.toString() ?? "1.0",
     );
-    _image = widget.initialImage;
+    _currentImageUrl = widget.initialImageUrl;
   }
 
   Future<void> _pickImage() async {
     final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) setState(() => _image = File(picked.path));
+    if (picked != null) {
+      setState(() {
+        _newPickedFile = File(picked.path);
+        // Khi chọn ảnh mới, ta ưu tiên hiển thị ảnh mới,
+        // nhưng vẫn giữ _currentImageUrl để tham khảo nếu cần (hoặc set null tùy logic business)
+      });
+    }
+  }
+
+  void _removeImage() {
+    setState(() {
+      _newPickedFile = null;
+      _currentImageUrl = null;
+    });
   }
 
   @override
@@ -67,139 +84,288 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
         borderRadius: BorderRadius.circular(spacing.screenPadding),
       ),
       backgroundColor: theme.cardColor,
-      child: Padding(
-        padding: EdgeInsets.all(spacing.screenPadding * 2),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "${S.of(context)!.update} ${S.of(context)!.scrap_item}",
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: spacing.screenPadding),
-
-              _buildLabel(context, S.of(context)!.category),
-              DropdownButtonFormField<String>(
-                initialValue: _selectedCategory,
-                items: widget.categories
-                    .map(
-                      (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
-                    )
-                    .toList(),
-                onChanged: (val) => setState(() => _selectedCategory = val),
-                decoration: InputDecoration(hintText: S.of(context)!.category),
-                validator: (val) =>
-                    val == null ? S.of(context)!.error_required : null,
-              ),
-
-              SizedBox(height: spacing.screenPadding),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildNumberInput(
-                      context,
-                      S.of(context)!.quantity,
-                      _quantityController,
-                      "10",
+      child: SingleChildScrollView(
+        // Thêm scroll để tránh overflow khi bàn phím hiện
+        child: Padding(
+          padding: EdgeInsets.all(spacing.screenPadding * 2),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                //Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "${S.of(context)!.update} ${S.of(context)!.scrap_item}",
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: spacing.screenPadding),
-                  Expanded(
-                    child: _buildNumberInput(
-                      context,
-                      S.of(context)!.weight,
-                      _weightController,
-                      "1.0",
-                      isDouble: true,
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
                     ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: spacing.screenPadding),
-
-              _buildLabel(context, S.of(context)!.upload),
-              GestureDetector(
-                onTap: _pickImage,
-                child: DashedBorderContainer(
-                  color: theme.primaryColor,
-                  padding: EdgeInsets.all(spacing.screenPadding * 2),
-                  width: double.infinity,
-                  borderRadius: spacing.screenPadding,
-                  child: Center(
-                    child: Text(
-                      S.of(context)!.upload,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ),
+                  ],
                 ),
-              ),
 
-              if (_image != null) ...[
+                SizedBox(height: spacing.screenPadding * 1.5),
+
+                // Category Dropdown
+                _buildLabel(context, S.of(context)!.category),
+                SizedBox(height: spacing.screenPadding / 2),
+                DropdownButtonFormField<String>(
+                  initialValue: _selectedCategory,
+                  items: widget.categories
+                      .map(
+                        (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
+                      )
+                      .toList(),
+                  onChanged: (val) => setState(() => _selectedCategory = val),
+                  decoration: InputDecoration(
+                    hintText: S.of(context)!.category,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  validator: (val) =>
+                      val == null ? S.of(context)!.error_required : null,
+                ),
+
                 SizedBox(height: spacing.screenPadding),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(spacing.screenPadding),
-                  child: Image.file(
-                    _image!,
-                    height: 140,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+
+                // Quantity & Weight Row
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildNumberInput(
+                        context,
+                        S.of(context)!.quantity,
+                        _quantityController,
+                        "10",
+                      ),
+                    ),
+                    SizedBox(width: spacing.screenPadding),
+                    Expanded(
+                      child: _buildNumberInput(
+                        context,
+                        S.of(context)!.weight,
+                        _weightController,
+                        "1.0",
+                        isDouble: true,
+                        suffixText: "kg",
+                      ),
+                    ),
+                  ],
                 ),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    icon: const Icon(Icons.delete, color: AppColors.danger),
-                    onPressed: () => setState(() => _image = null),
-                  ),
+
+                SizedBox(height: spacing.screenPadding * 1.5),
+
+                // --- IMPROVED IMAGE SECTION ---
+                _buildLabel(context, S.of(context)!.image), // "Hình ảnh"
+                SizedBox(height: spacing.screenPadding / 2),
+                _buildImageSection(context, theme, spacing),
+
+                // -----------------------------
+                SizedBox(height: spacing.screenPadding * 2),
+
+                // Action Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        S.of(context)!.cancel,
+                        style: TextStyle(
+                          color: theme.textTheme.bodyMedium?.color,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: spacing.screenPadding),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            AppColors.warningUpdate, // Màu cam/vàng update
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          // Logic trả về dữ liệu
+                          // Ưu tiên trả về file mới, nếu không có thì trả về url cũ (hoặc null nếu đã xóa hết)
+                          dynamic imageResult;
+                          if (_newPickedFile != null) {
+                            imageResult =
+                                _newPickedFile!.path; // Trả về Path String
+                          } else {
+                            imageResult =
+                                _currentImageUrl; // Trả về URL cũ hoặc null
+                          }
+
+                          Navigator.pop(context, {
+                            "category": _selectedCategory,
+                            "quantity": int.parse(_quantityController.text),
+                            "weight": double.parse(_weightController.text),
+                            "image": imageResult,
+                          });
+                        }
+                      },
+                      child: Text(S.of(context)!.update),
+                    ),
+                  ],
                 ),
               ],
-
-              SizedBox(height: spacing.screenPadding * 2),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(S.of(context)!.cancel),
-                  ),
-                  SizedBox(width: spacing.screenPadding),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.primaryColor,
-                    ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        Navigator.pop(context, {
-                          "category": _selectedCategory,
-                          "quantity": int.parse(_quantityController.text),
-                          "weight": double.parse(_weightController.text),
-                          "image": _image,
-                        });
-                      }
-                    },
-                    child: Text(S.of(context)!.update),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildImageSection(
+    BuildContext context,
+    ThemeData theme,
+    AppSpacing spacing,
+  ) {
+    bool hasImage =
+        _newPickedFile != null ||
+        (_currentImageUrl != null && _currentImageUrl!.isNotEmpty);
+    final spacing = Theme.of(context).extension<AppSpacing>()!;
+    return GestureDetector(
+      onTap: _pickImage,
+      child: Container(
+        height: 160,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(spacing.screenPadding),
+          color: theme.cardColor,
+          border: hasImage ? null : Border.all(color: Colors.transparent),
+        ),
+        child: hasImage
+            ? Stack(
+                fit: StackFit.expand,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(spacing.screenPadding),
+                    child: _newPickedFile != null
+                        ? Image.file(_newPickedFile!, fit: BoxFit.cover)
+                        : Image.network(
+                            _currentImageUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (ctx, err, stack) => Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                color: theme.disabledColor,
+                              ),
+                            ),
+                          ),
+                  ),
+
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    left: 0,
+                    height: 50,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(12),
+                        ),
+                        gradient: LinearGradient(
+                          colors: [
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                            Colors.transparent,
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Layer 3: Controls (Edit & Delete)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Edit Button
+                        _buildCircleActionBtn(
+                          icon: Icons.edit_rounded,
+                          color: theme.scaffoldBackgroundColor,
+                          bgColor: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.6,
+                          ),
+                          onTap: _pickImage,
+                        ),
+                        const SizedBox(width: 8),
+                        // Delete Button
+                        _buildCircleActionBtn(
+                          icon: Icons.delete_outline_rounded,
+                          color: AppColors.danger,
+                          bgColor: theme.scaffoldBackgroundColor,
+                          onTap: _removeImage,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            : DashedBorderContainer(
+                color: theme.primaryColor.withValues(alpha: 0.5),
+                padding: EdgeInsets.all(spacing.screenPadding),
+                borderRadius: 12,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.add_photo_alternate_outlined,
+                      size: 32,
+                      color: theme.primaryColor,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      S.of(context)!.upload,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.primaryColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildCircleActionBtn({
+    required IconData icon,
+    required Color color,
+    required Color bgColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
+        child: Icon(icon, size: 18, color: color),
       ),
     );
   }
@@ -207,9 +373,10 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
   Widget _buildLabel(BuildContext ctx, String text) {
     return Text(
       text,
-      style: Theme.of(
-        ctx,
-      ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+      style: Theme.of(ctx).textTheme.bodyLarge?.copyWith(
+        fontWeight: FontWeight.w600,
+        color: Theme.of(ctx).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
+      ),
     );
   }
 
@@ -219,6 +386,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
     TextEditingController controller,
     String hint, {
     bool isDouble = false,
+    String? suffixText,
   }) {
     final spacing = Theme.of(context).extension<AppSpacing>()!;
     return Column(
@@ -229,17 +397,29 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
         TextFormField(
           controller: controller,
           textAlign: TextAlign.center,
-          decoration: const InputDecoration(isDense: true),
-          keyboardType: TextInputType.number,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            hintText: hint,
+            suffixText: suffixText,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 14,
+            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          ),
           validator: (val) {
-            if (val == null) return S.of(context)!.error_required;
-            return isDouble
-                ? (double.tryParse(val) == null
-                      ? S.of(context)!.error_required
-                      : null)
-                : (int.tryParse(val) == null
-                      ? S.of(context)!.error_required
-                      : null);
+            if (val == null || val.isEmpty) {
+              return S.of(context)!.error_required;
+            }
+            if (isDouble) {
+              return double.tryParse(val) == null
+                  ? S.of(context)!.error_all_field
+                  : null;
+            } else {
+              return int.tryParse(val) == null
+                  ? S.of(context)!.error_all_field
+                  : null;
+            }
           },
         ),
       ],

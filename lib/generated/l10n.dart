@@ -1668,6 +1668,30 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Collected'**
   String get collected;
+
+  /// No description provided for @successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'successfully'**
+  String get successfully;
+
+  /// No description provided for @error_delete_post.
+  ///
+  /// In en, this message translates to:
+  /// **'This post cannot be deleted(processing or completed).'**
+  String get error_delete_post;
+
+  /// No description provided for @must_take_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Must take all'**
+  String get must_take_all;
+
+  /// No description provided for @must_take_all_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Collectors must take all items listed below.'**
+  String get must_take_all_desc;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

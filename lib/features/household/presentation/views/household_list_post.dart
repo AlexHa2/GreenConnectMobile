@@ -148,7 +148,7 @@ class _HouseholdListPostScreenState
         title: Text("${s.list} ${s.post}"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go("/"),
+          onPressed: () => context.go('/household-home'),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -261,7 +261,7 @@ class _HouseholdListPostScreenState
                         final localizedStatus =
                             PostStatusHelper.getLocalizedStatus(
                               context,
-                              rawStatus as PostStatus,
+                              PostStatus.parseStatus(rawStatus),
                             );
 
                         final time = post.availableTimeRange;
@@ -304,11 +304,11 @@ class _HouseholdListPostScreenState
   Widget _buildStatusFilter(BuildContext context, String status) {
     final color = PostStatusHelper.getStatusColor(
       context,
-      status as PostStatus,
+      PostStatus.parseStatus(status),
     );
     final label = PostStatusHelper.getLocalizedStatus(
       context,
-      status as PostStatus,
+      PostStatus.parseStatus(status),
     );
     return _buildFilterButton(
       label: label,

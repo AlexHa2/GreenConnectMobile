@@ -808,4 +808,18 @@ class SEn extends S {
 
   @override
   String get collected => 'Collected';
+
+  @override
+  String get successfully => 'successfully';
+
+  @override
+  String get error_delete_post =>
+      'This post cannot be deleted(processing or completed).';
+
+  @override
+  String get must_take_all => 'Must take all';
+
+  @override
+  String get must_take_all_desc =>
+      'Collectors must take all items listed below.';
 }

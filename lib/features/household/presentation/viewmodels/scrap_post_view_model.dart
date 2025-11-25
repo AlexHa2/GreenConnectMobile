@@ -2,6 +2,7 @@ import 'package:GreenConnectMobile/core/error/failure.dart';
 import 'package:GreenConnectMobile/features/household/domain/entities/scrap_post_detail_entity.dart';
 import 'package:GreenConnectMobile/features/household/domain/entities/scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/household/domain/entities/update_scrap_post_entity.dart';
+import 'package:GreenConnectMobile/features/household/domain/usecases/create_scrap_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/household/domain/usecases/delete_scrap_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/household/domain/usecases/get_my_scrap_post_usecases.dart';
 import 'package:GreenConnectMobile/features/household/domain/usecases/get_scrap_post_detail_usecases.dart';
@@ -22,6 +23,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
   late ToggleScrapPostUsecase _togglePost;
   late UpdateScrapDetailUsecase _updateDetail;
   late DeleteScrapDetailUsecase _deleteDetail;
+  late CreateScrapDetailUsecase _createDetail;
   @override
   ScrapPostState build() {
     _getMyPosts = ref.read(getMyScrapPostsUsecaseProvider);
@@ -31,6 +33,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
     _togglePost = ref.read(toggleScrapPostUsecaseProvider);
     _updateDetail = ref.read(updateScrapDetailUsecaseProvider);
     _deleteDetail = ref.read(deleteScrapDetailUsecaseProvider);
+    _createDetail = ref.read(createScrapDetailUsecaseProvider);
     return ScrapPostState();
   }
 
@@ -131,7 +134,34 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
       state = state.copyWith(isLoadingDetail: false);
       return true;
     } catch (e) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR UPDATE POST SYSTEM: ${e.message}');
+      }
       debugPrint('❌ ERROR DELETE POST: $e');
+      state = state.copyWith(
+        isLoadingDetail: false,
+        errorMessage: e.toString(),
+      );
+      return false;
+    }
+  }
+
+  /// Create Detail
+  Future<bool> createDetail({
+    required String postId,
+    required ScrapPostDetailEntity detail,
+  }) async {
+    state = state.copyWith(isLoadingDetail: true, errorMessage: null);
+    try {
+      await _createDetail(postId: postId, detail: detail);
+
+      state = state.copyWith(isLoadingDetail: false);
+      return true;
+    } catch (e, stacktrace) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR CREATE DETAIL SYSTEM: ${e.message}');
+      }
+      debugPrint('📌 STACK TRACE: $stacktrace');
       state = state.copyWith(
         isLoadingDetail: false,
         errorMessage: e.toString(),
