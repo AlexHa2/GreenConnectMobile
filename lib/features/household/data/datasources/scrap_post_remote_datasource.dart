@@ -76,7 +76,7 @@ class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
 
   @override
   Future<bool> toggleScrapPost(String postId) async {
-    final res = await _apiClient.post('$_baseUrl/$postId/toggle');
+    final res = await _apiClient.patch('$_baseUrl/$postId/toggle');
     if (res.statusCode == 200) {
       return true;
     }

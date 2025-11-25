@@ -269,9 +269,14 @@
   "error_scrap_category":"Chỉ có một loại tài liệu cho mỗi bài đăng",
   "just_now":"mới đây",
   "minutes_ago":"phút trước",
-  "hours_ago":"một giờ trước",
+  "hours_ago":"giờ trước",
   "yesterday":"hôm qua",
-  "days_ago":"một ngày trước",
+  "days_ago":"ngày trước",
   "booked":"Đã được đặt",
-  "collected":"đã thu thập"
+  "collected":"đã thu thập",
+  "successfully":"thành công!!!",
+  "error_delete_post":"Bài viết này không thể bị xóa (đang thực hiện hoặc đã hoàn thành).",
+  "must_take_all":"Phải lấy hết",
+  "must_take_all_desc":"Người thu gôm phải lấy hết những gì có trong danh sách"
+  
 }

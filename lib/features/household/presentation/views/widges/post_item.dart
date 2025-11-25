@@ -31,7 +31,7 @@ class PostItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isAccepted = PostStatusHelper.showTransactionAction(rawStatus);
-    final statusColor = PostStatusHelper.getStatusColor(context, rawStatus as PostStatus);
+    final statusColor = PostStatusHelper.getStatusColor(context, PostStatus.parseStatus(rawStatus));
     final createdAgo = TimeAgoHelper.format(
       context,
       DateTime.parse(timeCreated),

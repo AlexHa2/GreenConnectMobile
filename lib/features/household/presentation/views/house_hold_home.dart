@@ -146,14 +146,14 @@ class _HouseHoldHomeState extends ConsumerState<HouseHoldHome>
                   NotificationIconButton(
                     count: 1,
                     onPressed: () {
-                      context.go('/notifications');
+                      context.push('/notifications');
                     },
                   ),
                   SizedBox(width: spacing.screenPadding),
                   MessageIconButton(
                     count: 2,
                     onPressed: () {
-                      context.go('/list-message');
+                      context.push('/list-message');
                     },
                   ),
                 ],
@@ -311,7 +311,9 @@ class _HouseHoldHomeState extends ConsumerState<HouseHoldHome>
                         rawStatus: p.status ?? "unknown",
                         localizedStatus: PostStatusHelper.getLocalizedStatus(
                           context,
-                          p.status as PostStatus,
+                          PostStatus.parseStatus(
+                            p.status ?? PostStatus.open.toString(),
+                          ),
                         ),
                         onTapDetails: () {
                           context.push(
@@ -333,7 +335,7 @@ class _HouseHoldHomeState extends ConsumerState<HouseHoldHome>
                     Center(
                       child: TextButton(
                         onPressed: () {
-                          context.go('/list-post');
+                          context.push('/list-post');
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,

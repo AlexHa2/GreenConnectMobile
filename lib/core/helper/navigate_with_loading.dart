@@ -20,7 +20,7 @@ Future<void> navigateWithLoading<T>(
 
     if (!context.mounted) return;
 
-    GoRouter.of(context).go(route, extra: extra);
+    GoRouter.of(context).push(route, extra: extra);
   } catch (e) {
     CustomToast.show(
       context,
