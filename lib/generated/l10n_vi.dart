@@ -797,17 +797,31 @@ class SVi extends S {
   String get minutes_ago => 'phút trước';
 
   @override
-  String get hours_ago => 'một giờ trước';
+  String get hours_ago => 'giờ trước';
 
   @override
   String get yesterday => 'hôm qua';
 
   @override
-  String get days_ago => 'một ngày trước';
+  String get days_ago => 'ngày trước';
 
   @override
   String get booked => 'Đã được đặt';
 
   @override
   String get collected => 'đã thu thập';
+
+  @override
+  String get successfully => 'thành công!!!';
+
+  @override
+  String get error_delete_post =>
+      'Bài viết này không thể bị xóa (đang thực hiện hoặc đã hoàn thành).';
+
+  @override
+  String get must_take_all => 'Phải lấy hết';
+
+  @override
+  String get must_take_all_desc =>
+      'Người thu gôm phải lấy hết những gì có trong danh sách';
 }

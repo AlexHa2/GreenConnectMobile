@@ -274,6 +274,9 @@
   "yesterday":"yesterday",
   "days_ago":"days ago",
   "booked":"Booked",
-  "collected":"Collected"
-
+  "collected":"Collected",
+  "successfully":"successfully",
+  "error_delete_post":"This post cannot be deleted(processing or completed).",
+  "must_take_all":"Must take all",
+  "must_take_all_desc":"Collectors must take all items listed below."
 }

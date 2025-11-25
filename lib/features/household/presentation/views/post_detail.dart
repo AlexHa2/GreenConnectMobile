@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/enum/post_status.dart';
 import 'package:GreenConnectMobile/core/helper/post_status_helper.dart';
 import 'package:GreenConnectMobile/core/helper/time_ago_helper.dart';
 import 'package:GreenConnectMobile/features/household/domain/entities/scrap_post_entity.dart';
@@ -8,6 +9,7 @@ import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
+import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -91,53 +93,74 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
         : '';
 
     // --- Status Helper ---
-    final statusColor = PostStatusHelper.getStatusColor(context, status);
-    final statusText = PostStatusHelper.getLocalizedStatus(context, status);
+    final statusColor = PostStatusHelper.getStatusColor(
+      context,
+      PostStatus.parseStatus(status),
+    );
+    final statusText = PostStatusHelper.getLocalizedStatus(
+      context,
+      PostStatus.parseStatus(status),
+    );
+    final mustTakeAll = hasEntity
+        ? entity.mustTakeAll
+        : (widget.initialData['mustTakeAll'] ?? false);
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(onPressed: () => context.pop()),
+        leading: BackButton(onPressed: () => context.push('/list-post')),
         title: Text(s.detail),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_rounded),
-            onPressed: () {
-              context.pushNamed(
-                'update-post',
-                extra: hasEntity
-                    ? {
-                        'id': entity.scrapPostId,
-                        'title': entity.title,
-                        'description': entity.description,
-                        'address': entity.address,
-                        'availableTimeRange': entity.availableTimeRange,
-                        'items': entity.scrapPostDetails,
+          if (PostStatus.parseStatus(status) == PostStatus.open)
+            IconButton(
+              icon: const Icon(Icons.edit_rounded),
+              onPressed: () {
+                context.push(
+                  '/update-post',
+                  extra: hasEntity
+                      ? {
+                          'id': entity.scrapPostId,
+                          'title': entity.title,
+                          'description': entity.description,
+                          'address': entity.address,
+                          'availableTimeRange': entity.availableTimeRange,
+                          'items': entity.scrapPostDetails,
+                          'mustTakeAll': entity.mustTakeAll,
+                        }
+                      : widget.initialData,
+                );
+              },
+            ),
+
+          if (PostStatus.parseStatus(status) == PostStatus.open)
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: AppColors.danger),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (dialogContext) => DeletePostDialog(
+                    onDelete: () async {
+                      Navigator.pop(dialogContext);
+                      final success = await ref
+                          .read(scrapPostViewModelProvider.notifier)
+                          .deletePost(scrapPostId);
+                      if (success && context.mounted) {
+                        context.go('/list-post');
+                      } else {
+                        if (context.mounted) {
+                          CustomToast.show(
+                            context,
+                            s.error_delete_post,
+                            type: ToastType.error,
+                          );
+                        }
                       }
-                    : widget.initialData,
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: AppColors.danger),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (dialogContext) => DeletePostDialog(
-                  onDelete: () async {
-                    Navigator.pop(dialogContext);
-                    final success = await ref
-                        .read(scrapPostViewModelProvider.notifier)
-                        .deletePost(scrapPostId);
-                    if (success && context.mounted) {
-                      context.pop();
-                    }
-                  },
-                  onCancel: () => Navigator.pop(dialogContext),
-                ),
-              );
-            },
-          ),
+                    },
+                    onCancel: () => Navigator.pop(dialogContext),
+                  ),
+                );
+              },
+            ),
         ],
       ),
       body: RefreshIndicator(
@@ -325,6 +348,54 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
             ),
 
             SizedBox(height: spacing.screenPadding * 2),
+            if (mustTakeAll)
+              Container(
+                margin: EdgeInsets.only(bottom: spacing.screenPadding),
+                padding: EdgeInsets.symmetric(
+                  horizontal: spacing.screenPadding, 
+                  vertical: spacing.screenPadding,
+                ),
+                decoration: BoxDecoration(
+                  color: theme.primaryColor.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: theme.primaryColor.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.all_inclusive_rounded,
+                      color: theme.primaryColor,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            s.must_take_all,
+                            style: textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.primaryColor,
+                            ),
+                          ),
+                          Text(
+                            s.must_take_all_desc, // VD: "Collectors must take all items listed below."
+                            style: textTheme.bodySmall?.copyWith(
+                              color: theme.primaryColor.withValues(alpha: 0.8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            // ---------------------------------------------------------
+
+            SizedBox(height: spacing.screenPadding),
 
             if (status.toString().toLowerCase() == 'partiallybooked' ||
                 status.toString().toLowerCase() == 'fullybooked') ...[
@@ -365,7 +436,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
             else if (hasEntity)
               ...entity.scrapPostDetails.map((detail) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
+                  padding: EdgeInsets.only(bottom: spacing.screenPadding / 2),
                   child: PostItemNoAction(
                     context: context,
                     category: detail.scrapCategory?.categoryName ?? 'Unknown',

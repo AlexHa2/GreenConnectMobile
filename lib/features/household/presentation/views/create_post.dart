@@ -231,7 +231,7 @@ class _CreateRecyclingPostPageState
                       initialCategory: data['category'],
                       initialQuantity: data['quantity'],
                       initialWeight: data['weight'],
-                      initialImage: data['image'],
+                      initialImageUrl: data['image'],
                     ),
                   );
 
