@@ -110,6 +110,9 @@ class _HouseHoldHomeState extends ConsumerState<HouseHoldHome>
                           backgroundImage: user!.avatarUrl != null
                               ? NetworkImage(user!.avatarUrl!)
                               : const AssetImage(logo) as ImageProvider,
+                          backgroundColor: theme.primaryColor.withValues(
+                            alpha: 0.4,
+                          ),
                         ),
                         SizedBox(width: spacing.screenPadding),
 

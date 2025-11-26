@@ -1692,6 +1692,132 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Collectors must take all items listed below.'**
   String get must_take_all_desc;
+
+  /// No description provided for @cannot_get_uploadurl.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot get upload URL'**
+  String get cannot_get_uploadurl;
+
+  /// No description provided for @error_occurred_while_updating_avatar.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while updating avatar'**
+  String get error_occurred_while_updating_avatar;
+
+  /// No description provided for @avatar_updated_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar updated successfully'**
+  String get avatar_updated_successfully;
+
+  /// No description provided for @upgrade_to_collector.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Collector'**
+  String get upgrade_to_collector;
+
+  /// No description provided for @account_verification.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Verification'**
+  String get account_verification;
+
+  /// No description provided for @cccd_guide_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Please upload high-quality images of your ID card for verification.'**
+  String get cccd_guide_text;
+
+  /// No description provided for @front_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Front Side'**
+  String get front_image;
+
+  /// No description provided for @back_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Back Side'**
+  String get back_image;
+
+  /// No description provided for @upload_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Image'**
+  String get upload_image;
+
+  /// No description provided for @submit_verification.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Verification'**
+  String get submit_verification;
+
+  /// No description provided for @cccd_upload_warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Please upload both sides of your ID!'**
+  String get cccd_upload_warning;
+
+  /// No description provided for @cccd_submit_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting verification request...'**
+  String get cccd_submit_success;
+
+  /// No description provided for @cccd_warning_rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not cover your face, avoid blur, and do not take angled shots.\nVerification time: 24 - 48 hours.'**
+  String get cccd_warning_rules;
+
+  /// No description provided for @buyer_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Buyer type'**
+  String get buyer_type;
+
+  /// No description provided for @buyer_type_individual.
+  ///
+  /// In en, this message translates to:
+  /// **'Individual'**
+  String get buyer_type_individual;
+
+  /// No description provided for @buyer_type_business.
+  ///
+  /// In en, this message translates to:
+  /// **'Business'**
+  String get buyer_type_business;
+
+  /// No description provided for @send_verification_info.
+  ///
+  /// In en, this message translates to:
+  /// **'send verification info successfully'**
+  String get send_verification_info;
+
+  /// No description provided for @login_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Login unsuccessful, try it again'**
+  String get login_error;
+
+  /// No description provided for @individual_collector.
+  ///
+  /// In en, this message translates to:
+  /// **'Individual Collector'**
+  String get individual_collector;
+
+  /// No description provided for @business_collector.
+  ///
+  /// In en, this message translates to:
+  /// **'Business Collector'**
+  String get business_collector;
+
+  /// No description provided for @household_role.
+  ///
+  /// In en, this message translates to:
+  /// **'Household'**
+  String get household_role;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

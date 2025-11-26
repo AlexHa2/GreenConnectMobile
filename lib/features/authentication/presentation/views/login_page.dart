@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
 import 'package:GreenConnectMobile/core/helper/validate_std.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/providers/auth_provider.dart';
@@ -89,20 +90,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     final state = ref.read(authViewModelProvider);
 
-    // if (state.errorMessage != null) {
-    //   if (state.errorMessage!.toLowerCase().contains('invalid phone')) {
-    //     setState(() => _phoneApiError = state.errorMessage);
-    //   } else {
-    //     CustomToast.show(context, state.errorMessage!, type: ToastType.error);
-    //   }
-    // } else if (state.verificationId != null) {
-    //   CustomToast.show(
-    //     context,
-    //     "${S.of(context)!.send} ${S.of(context)!.otp} $formatted",
-    //     type: ToastType.success,
-    //   );
-    //   startCountdown();
-    // }
     if (state.errorMessage != null) {
       final error = state.errorMessage!.toLowerCase();
 
@@ -140,6 +127,42 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
+  bool _handleLoginError(dynamic state) {
+    if (state.errorMessage == null && state.errorCode == null) return false;
+
+    if (state.errorCode == 403) {
+      CustomToast.show(context, state.errorMessage!, type: ToastType.error);
+    } else {
+      CustomToast.show(
+        context,
+        S.of(context)!.login_error,
+        type: ToastType.error,
+      );
+    }
+    return true;
+  }
+
+  void _navigateByRoles(dynamic loginState) {
+    final userRoles = loginState.userRoles ?? [];
+
+    final isCollector =
+        Role.hasRole(userRoles, Role.businessCollector) ||
+        Role.hasRole(userRoles, Role.individualCollector);
+
+    if (isCollector) {
+      GoRouter.of(context).go('/household-home');
+      return;
+    }
+    final isHousehold = Role.hasRole(userRoles, Role.household);
+    if (isHousehold) {
+      bool needSetup = loginState.fullName?.trim().isEmpty ?? true;
+      GoRouter.of(context).go(needSetup ? '/setup-profile' : '/household-home');
+      return;
+    }
+
+    GoRouter.of(context).go('/setup-profile');
+  }
+
   Future<void> _verifyAndLogin() async {
     appLoading.value = true;
     setState(() => _otpApiError = null);
@@ -151,38 +174,29 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       await ref.read(authViewModelProvider.notifier).verifyOtp(smsCode: otp);
       if (!mounted) return;
 
-      final state = ref.read(authViewModelProvider);
+      final otpState = ref.read(authViewModelProvider);
 
-      if (state.errorMessage != null) {
-        if (state.errorMessage!.contains('invalid-verification-code') ||
-            state.errorMessage!.contains('code mismatch')) {
+      if (otpState.errorMessage != null) {
+        final err = otpState.errorMessage!;
+        if (err.contains('invalid-verification-code') ||
+            err.contains('code mismatch')) {
           setState(() => _otpApiError = S.of(context)!.invalid_otp_message);
         } else {
-          CustomToast.show(context, state.errorMessage!, type: ToastType.error);
+          CustomToast.show(context, err, type: ToastType.error);
         }
         return;
       }
 
-      if (state.userCredential != null) {
-        final idToken = await state.userCredential!.user?.getIdToken();
-        if (idToken != null) {
-          await ref.read(authViewModelProvider.notifier).loginSystem(idToken);
-          if (!mounted) return;
+      final idToken = await otpState.userCredential?.user?.getIdToken();
+      if (idToken == null) return;
 
-          final loginState = ref.watch(authViewModelProvider);
-          if (loginState.errorMessage != null) {
-            CustomToast.show(
-              context,
-              loginState.errorMessage!,
-              type: ToastType.error,
-            );
-          } else if (loginState.fullName!.trim().isNotEmpty) {
-            GoRouter.of(context).go('/household-home');
-          } else {
-            GoRouter.of(context).go('/setup-profile');
-          }
-        }
-      }
+      await ref.read(authViewModelProvider.notifier).loginSystem(idToken);
+      if (!mounted) return;
+
+      final loginState = ref.read(authViewModelProvider);
+      if (_handleLoginError(loginState)) return;
+
+      _navigateByRoles(loginState);
     } finally {
       appLoading.value = false;
     }

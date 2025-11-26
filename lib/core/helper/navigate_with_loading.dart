@@ -7,7 +7,7 @@ final appLoading = ValueNotifier<bool>(false);
 
 Future<void> navigateWithLoading<T>(
   BuildContext context, {
-  Future<void> Function()? asyncTask,
+  Future<T> Function()? asyncTask,
   required String route,
   T? extra,
 }) async {

@@ -1,9 +1,11 @@
+import 'package:GreenConnectMobile/core/error/failure.dart';
 import 'package:GreenConnectMobile/features/authentication/domain/usecases/login_system_usecase.dart';
 import 'package:GreenConnectMobile/features/authentication/domain/usecases/send_otp_usecase.dart';
 import 'package:GreenConnectMobile/features/authentication/domain/usecases/verify_otp_usecase.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/providers/auth_provider.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/viewmodels/states/auth_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthViewModel extends Notifier<AuthState> {
@@ -49,7 +51,6 @@ class AuthViewModel extends Notifier<AuthState> {
       },
     );
   }
-  
 
   // -------------------------------------------------------------------------
 
@@ -83,9 +84,20 @@ class AuthViewModel extends Notifier<AuthState> {
       state = state.copyWith(
         isLoading: false,
         fullName: resLogin.user.fullName,
+        userRoles: resLogin.user.roles,
       );
-    } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+    } catch (e, stack) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR LOGIN SYSTEM: ${e.message}');
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: e.toString(),
+          errorCode: e.statusCode,
+        );
+      } else {
+        state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      }
+      debugPrint('📌 STACK TRACE: $stack');
     }
   }
 

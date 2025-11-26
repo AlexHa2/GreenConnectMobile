@@ -10,7 +10,7 @@ class ProfileRemoteDatasource {
   final String verifyUrl = '/v1/profile/verification';
   final String getMeUrl = '/v1/profile/me';
   final String updateMeUrl = '/v1/profile/me';
-
+  final String updateAvatarUrl = '/v1/profile/avatar';
   Future<String> verifyUser({required VerificationEntity verify}) async {
     try {
       final response = await _apiClient.post(
@@ -53,5 +53,16 @@ class ProfileRemoteDatasource {
     } catch (e) {
       throw Exception('Update user info failed: $e');
     }
+  }
+
+  Future<bool> updateAvatar({required String avatarUrl}) async {
+    final resUpdateProfile = await _apiClient.post(
+      updateAvatarUrl,
+      data: {"fileName": avatarUrl},
+    );
+    if (resUpdateProfile.statusCode == 200) {
+      return true;
+    }
+    return false;
   }
 }

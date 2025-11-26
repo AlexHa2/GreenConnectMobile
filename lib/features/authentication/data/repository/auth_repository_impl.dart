@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/error/exception_mapper.dart';
 import 'package:GreenConnectMobile/features/authentication/data/datasources/auth_remote_datasource.dart';
 import 'package:GreenConnectMobile/features/authentication/domain/entities/login_entity.dart';
 import 'package:GreenConnectMobile/features/authentication/domain/repository/auth_repository.dart';
@@ -46,6 +47,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<LoginEntity> loginSystem({required String tokenId}) async {
-    return authDatasource.loginSystem(tokenId: tokenId);
+    return guard(() async {
+      return await authDatasource.loginSystem(tokenId: tokenId);
+    });
   }
 }

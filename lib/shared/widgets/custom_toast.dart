@@ -15,7 +15,7 @@ class CustomToast {
     Color iconColor;
     IconData icon;
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // final isDark = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
     switch (type) {
       case ToastType.success:
@@ -36,11 +36,6 @@ class CustomToast {
       case ToastType.info:
         bgColor = theme.scaffoldBackgroundColor;
         iconColor = theme.colorScheme.onSurface;
-        icon = Icons.info_outline;
-        break;
-      default:
-        bgColor = theme.scaffoldBackgroundColor;
-        iconColor = isDark ? theme.primaryColorLight : theme.primaryColorDark;
         icon = Icons.info_outline;
         break;
     }

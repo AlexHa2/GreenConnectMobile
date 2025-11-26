@@ -822,4 +822,70 @@ class SEn extends S {
   @override
   String get must_take_all_desc =>
       'Collectors must take all items listed below.';
+
+  @override
+  String get cannot_get_uploadurl => 'Cannot get upload URL';
+
+  @override
+  String get error_occurred_while_updating_avatar =>
+      'An error occurred while updating avatar';
+
+  @override
+  String get avatar_updated_successfully => 'Avatar updated successfully';
+
+  @override
+  String get upgrade_to_collector => 'Upgrade to Collector';
+
+  @override
+  String get account_verification => 'Account Verification';
+
+  @override
+  String get cccd_guide_text =>
+      'Please upload high-quality images of your ID card for verification.';
+
+  @override
+  String get front_image => 'Front Side';
+
+  @override
+  String get back_image => 'Back Side';
+
+  @override
+  String get upload_image => 'Upload Image';
+
+  @override
+  String get submit_verification => 'Submit Verification';
+
+  @override
+  String get cccd_upload_warning => 'Please upload both sides of your ID!';
+
+  @override
+  String get cccd_submit_success => 'Submitting verification request...';
+
+  @override
+  String get cccd_warning_rules =>
+      'Do not cover your face, avoid blur, and do not take angled shots.\nVerification time: 24 - 48 hours.';
+
+  @override
+  String get buyer_type => 'Buyer type';
+
+  @override
+  String get buyer_type_individual => 'Individual';
+
+  @override
+  String get buyer_type_business => 'Business';
+
+  @override
+  String get send_verification_info => 'send verification info successfully';
+
+  @override
+  String get login_error => 'Login unsuccessful, try it again';
+
+  @override
+  String get individual_collector => 'Individual Collector';
+
+  @override
+  String get business_collector => 'Business Collector';
+
+  @override
+  String get household_role => 'Household';
 }
