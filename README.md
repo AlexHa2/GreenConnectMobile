@@ -1,17 +1,20 @@
-# 🌱 Green Connect Mobile
+<p align="center">
+  <img src="./assets/images/green_connect_logo.png" alt="Green Connect Logo" width="120"/>
+</p>
 
-**_Green Connect_** is a mobile platform for recycling exchange, allowing users to sell, trade, or donate recyclable waste.
-It connects the following user types:
+<h1 align="center">🌱 Green Connect Mobile</h1>
 
--♻️ Collector – individuals or organizations collecting recyclables
+<p align="left">
+  <i><b>Green Connect</b> is a mobile platform for recycling exchange, allowing users to sell, trade, or donate recyclable waste.</i>
+</p>
 
--🏭 Scrap Yard – recycling collection points or dealers
+<p align="left">
+  👥 <b>Connects:</b> ♻️ Collectors • 🏭 Scrap Yards • 🏠 Households • 🏢 Facilities
+</p>
 
--🏠 Household – families generating recyclable waste
-
--🏢 Facility – recycling or processing facilities
-
-The app is built with **Flutter**, following Clean Architecture and Riverpod for scalable state management.
+<p align="left">
+  📱 Built with <b>Flutter</b> — Clean Architecture + Riverpod for scalable state management.
+</p>
 
 ## 📂 Folder Structure
 
