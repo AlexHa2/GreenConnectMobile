@@ -41,21 +41,17 @@ class AuthRemoteDatasource {
   }
 
   Future<LoginEntity> loginSystem({required String tokenId}) async {
-    try {
-      final response = await _apiClient.post(
-        _baseUrlAuthSystem,
-        data: {'firebaseToken': tokenId},
-      );
+    final response = await _apiClient.post(
+      _baseUrlAuthSystem,
+      data: {'firebaseToken': tokenId},
+    );
 
-      final loginModel = LoginModel.fromJson(response.data);
-      await _tokenStorage.saveAuthData(
-        accessToken: loginModel.accessToken,
-        user: loginModel.user as UserModel,
-      );
-      return loginModel;
-    } catch (e) {
-      throw Exception("Login to system failed: $e");
-    }
+    final loginModel = LoginModel.fromJson(response.data);
+    await _tokenStorage.saveAuthData(
+      accessToken: loginModel.accessToken,
+      user: loginModel.user as UserModel,
+    );
+    return loginModel;
   }
 
   Future<void> logout() async {

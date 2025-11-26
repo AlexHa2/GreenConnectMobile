@@ -11,7 +11,6 @@ Future<void> initDependencies() async {
   // Core
   sl.registerLazySingleton(() => TokenStorageService());
   sl.registerLazySingleton(() => ApiClient(sl<TokenStorageService>()));
-
   // Modules
   await initAuthModule();
   await initSettingsModule();

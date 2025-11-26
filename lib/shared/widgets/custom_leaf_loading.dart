@@ -23,7 +23,6 @@ class _RotatingLeafLoaderState extends State<RotatingLeafLoader>
       duration: const Duration(seconds: 8),
     )..repeat();
 
-    // Hiệu ứng "thở"
     _scaleController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),

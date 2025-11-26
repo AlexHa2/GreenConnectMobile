@@ -11,7 +11,8 @@ import 'package:GreenConnectMobile/features/message/presentation/views/chat_mess
 import 'package:GreenConnectMobile/features/message/presentation/views/message.dart';
 import 'package:GreenConnectMobile/features/notification/presentation/views/widgets/notification.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setting.dart';
-import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setup_page.dart';
+import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setup.dart';
+import 'package:GreenConnectMobile/features/profile/presentation/views/upgrade_verification.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/list_history_post.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/confirm_transaction_detail.dart';
@@ -46,6 +47,11 @@ final GoRouter greenRouter = GoRouter(
           builder: (context, state) => const ProfileSetting(),
         ),
       ],
+    ),
+    GoRoute(
+      path: '/upgrade-verification',
+      name: 'upgrade-verification',
+      builder: (context, state) => const UpgradeVerificationScreen(),
     ),
     GoRoute(
       path: '/list-post',

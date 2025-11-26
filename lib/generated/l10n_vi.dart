@@ -824,4 +824,70 @@ class SVi extends S {
   @override
   String get must_take_all_desc =>
       'Người thu gôm phải lấy hết những gì có trong danh sách';
+
+  @override
+  String get cannot_get_uploadurl => 'Không thể lấy URL tải lên';
+
+  @override
+  String get error_occurred_while_updating_avatar =>
+      'Đã xảy ra lỗi trong quá trình cập nhật ảnh đại diện';
+
+  @override
+  String get avatar_updated_successfully => 'Cập nhật ảnh đại diện thành công';
+
+  @override
+  String get upgrade_to_collector => 'Nâng cấp lên người thu gom';
+
+  @override
+  String get account_verification => 'Xác thực tài khoản';
+
+  @override
+  String get cccd_guide_text =>
+      'Vui lòng chụp rõ nét căn cước công dân/CMND của bạn để xác thực.';
+
+  @override
+  String get front_image => 'Ảnh mặt trước';
+
+  @override
+  String get back_image => 'Ảnh mặt sau';
+
+  @override
+  String get upload_image => 'Tải ảnh lên';
+
+  @override
+  String get submit_verification => 'Gửi xác thực';
+
+  @override
+  String get cccd_upload_warning => 'Vui lòng tải đủ 2 mặt CCCD!';
+
+  @override
+  String get cccd_submit_success => 'Đang gửi yêu cầu xác thực...';
+
+  @override
+  String get cccd_warning_rules =>
+      'Không che mặt, không bị mờ, không chụp nghiêng/góc khuất.\nThời gian xác minh: trong vòng 24 - 48 giờ.';
+
+  @override
+  String get buyer_type => 'Loại người thu gom';
+
+  @override
+  String get buyer_type_individual => 'Cá nhân';
+
+  @override
+  String get buyer_type_business => 'Doanh nghiệp';
+
+  @override
+  String get send_verification_info => 'gửi thông tin xác thực thành công';
+
+  @override
+  String get login_error => 'Đăng nhập không thành công, thử lại sau nhé';
+
+  @override
+  String get individual_collector => 'Người thu gom cá nhân';
+
+  @override
+  String get business_collector => 'Doanh nghiệp thu gom';
+
+  @override
+  String get household_role => 'Hộ dân';
 }
