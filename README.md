@@ -2,14 +2,17 @@
   <img src="./assets/images/green_connect_logo.png" alt="Green Connect Logo" width="120"/>
 </p>
 
-<h1 align="center">🌱 Green Connect Mobile</h1>
+<h1 align="center">
+  <img src="./assets/images/leaf_2.png" alt="Leaf Icon" width="30" />
+  Green Connect Mobile
+</h1>
 
 <p align="left">
   <i><b>Green Connect</b> is a mobile platform for recycling exchange, allowing users to sell, trade, or donate recyclable waste.</i>
 </p>
 
 <p align="left">
-  👥 <b>Connects:</b> ♻️ Collectors • 🏭 Scrap Yards • 🏠 Households • 🏢 Facilities
+  👥 <b>Connects:</b> ♻️ Collectors  • 🏠 Households 
 </p>
 
 <p align="left">
