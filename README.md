@@ -7,6 +7,12 @@
   Green Connect Mobile
 </h1>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/tests-passed-brightgreen" />
+  <img src="https://img.shields.io/badge/platform-flutter-blue" />
+  <img src="https://img.shields.io/badge/architecture-clean--architecture-success" />
+</p>
+
 <p align="left">
   <i><b>Green Connect</b> is a mobile platform for recycling exchange, allowing users to sell, trade, or donate recyclable waste.</i>
 </p>
