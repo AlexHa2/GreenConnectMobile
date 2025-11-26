@@ -8,7 +8,7 @@
 </h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/tests-passed-brightgreen" />
+  [![Tests](https://github.com/AlexHa2/GreenConnectMobile/actions/workflows/tests.yml/badge.svg)](https://github.com/AlexHa2/GreenConnectMobile/actions)
   <img src="https://img.shields.io/badge/platform-flutter-blue" />
   <img src="https://img.shields.io/badge/architecture-clean--architecture-success" />
 </p>
