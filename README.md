@@ -8,7 +8,9 @@
 </h1>
 
 <p align="center">
-  [![Flutter Integration Test](https://github.com/AlexHa2/GreenConnectMobile/actions/workflows/flutter_integration_test.yml/badge.svg)](https://github.com/AlexHa2/GreenConnectMobile/actions/workflows/flutter_integration_test.yml)
+  <a href="https://github.com/AlexHa2/GreenConnectMobile/actions/workflows/flutter_integration_test.yml">
+    <img src="https://github.com/AlexHa2/GreenConnectMobile/actions/workflows/flutter_integration_test.yml/badge.svg" alt="Flutter Integration Test" />
+  </a>
   <img src="https://img.shields.io/badge/platform-flutter-blue" />
   <img src="https://img.shields.io/badge/architecture-clean--architecture-success" />
 </p>
