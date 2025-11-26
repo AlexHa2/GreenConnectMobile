@@ -73,6 +73,7 @@ class _CreateRecyclingPostPageState
       setState(() => _selectedImage = File(pickedFile.path));
     }
   }
+  
 
   void _handleAddItem() {
     if (!_itemFormKey.currentState!.validate() || _selectedCategoryId == null) {

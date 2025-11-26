@@ -23,4 +23,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<ProfileEntity> updateMe(UserUpdateEntity update) {
     return profileDataSource.updateMe(update: update);
   }
+  
+  @override
+  Future<bool> updateAvatar(String avatarUrl) {
+    return profileDataSource.updateAvatar(avatarUrl: avatarUrl);
+  }
+  
 }

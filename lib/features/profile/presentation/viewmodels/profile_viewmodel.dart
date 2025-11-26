@@ -4,6 +4,7 @@ import 'package:GreenConnectMobile/features/profile/data/models/user_update_mode
 import 'package:GreenConnectMobile/features/profile/data/models/verification_model.dart';
 import 'package:GreenConnectMobile/features/profile/domain/usecases/get_me_usecase.dart';
 import 'package:GreenConnectMobile/features/profile/domain/usecases/update_me_usecase.dart';
+import 'package:GreenConnectMobile/features/profile/domain/usecases/upload_user_avatar.dart';
 import 'package:GreenConnectMobile/features/profile/domain/usecases/verify_user_usecase.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/providers/profile_providers.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/viewmodels/states/profile_state.dart';
@@ -13,11 +14,13 @@ class ProfileViewModel extends Notifier<ProfileState> {
   late final GetMeUseCase _getMeUseCase;
   late final UpdateMeUseCase _updateMeUseCase;
   late final VerifyUserUseCase _verifyUserUseCase;
+  late final UpdateMeAvatarUseCase _updateMeAvatarUseCase;
   @override
   ProfileState build() {
     _getMeUseCase = ref.read(getMeUsecaseProvider);
     _updateMeUseCase = ref.read(updateMeUsecaseProvider);
     _verifyUserUseCase = ref.read(verifyUserUsecaseProvider);
+    _updateMeAvatarUseCase = ref.read(updateMeAvatarUsecaseProvider);
 
     return ProfileState();
   }
@@ -25,7 +28,6 @@ class ProfileViewModel extends Notifier<ProfileState> {
   // GET /me
   Future<void> getMe() async {
     state = state.copyWith(isLoading: true);
-
     try {
       final user = await _getMeUseCase();
       state = state.copyWith(isLoading: false, user: user);
@@ -54,6 +56,17 @@ class ProfileViewModel extends Notifier<ProfileState> {
     try {
       await _verifyUserUseCase(verify);
       state = state.copyWith(isLoading: false, verified: true);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+    }
+  }
+
+  // PUT /me/avatar
+  Future<void> updateAvatar(String avatarUrl) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      await _updateMeAvatarUseCase(avatarUrl);
+      state = state.copyWith(isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }

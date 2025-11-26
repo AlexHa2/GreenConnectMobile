@@ -6,4 +6,5 @@ abstract class ProfileRepository {
   Future<String> verifyUser(VerificationEntity verify);
   Future<ProfileEntity> getMe();
   Future<ProfileEntity> updateMe(UserUpdateEntity update);
+  Future<bool> updateAvatar(String avatarUrl);
 }
