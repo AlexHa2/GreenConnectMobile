@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://github.com/AlexHa2/GreenConnectMobile/actions/workflows/flutter_integration_test.yml">
-    <img src="https://github.com/AlexHa2/GreenConnectMobile/actions/workflows/flutter_integration_test.yml/badge.svg" alt="Flutter Integration Test" />
+    <img src="https://github.com/AlexHa2/GreenConnectMobile/actions/workflows/flutter_integration_test.yml/badge.svg" alt="Green Connect Integration Test" />
   </a>
   <img src="https://img.shields.io/badge/platform-flutter-blue" />
   <img src="https://img.shields.io/badge/architecture-clean--architecture-success" />
