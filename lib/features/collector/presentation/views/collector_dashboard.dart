@@ -1,5 +1,5 @@
 import 'package:GreenConnectMobile/features/collector/presentation/views/widgets/nearby_opportunities_map.dart';
-import 'package:GreenConnectMobile/features/household/presentation/views/widges/notification_bell.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/notification_bell.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';

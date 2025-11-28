@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
+import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/layouts/nav_items/nav_item_household.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_bottom_nav.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ class _HouseholdLayoutState extends State<HouseholdLayout> {
         items: navItems.map((item) {
           return BottomNavItem(
             icon: item.icon,
-            label: item.label,
+            label: _getLableWithLocalization(item.label),
             onPressed: () {
               setState(() => _currentIndex = navItems.indexOf(item));
 
@@ -57,5 +58,21 @@ class _HouseholdLayoutState extends State<HouseholdLayout> {
       (item) => location.startsWith(item.routeName),
     );
     return index >= 0 ? index : 0;
+  }
+
+  String _getLableWithLocalization(String label) {
+    final s = S.of(context)!;
+    switch (label) {
+      case "Home":
+        return s.home;
+      case "Transactions":
+        return s.transactions;
+      case "Rewards":
+        return s.rewards;
+      case "Profile":
+        return s.profile;
+      default:
+        return label;
+    }
   }
 }

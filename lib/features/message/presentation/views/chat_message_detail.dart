@@ -1,7 +1,7 @@
 import 'package:GreenConnectMobile/features/message/presentation/views/chat_class.dart';
-import 'package:GreenConnectMobile/features/message/presentation/views/widges/chat_app_bar.dart';
-import 'package:GreenConnectMobile/features/message/presentation/views/widges/chat_input_area.dart';
-import 'package:GreenConnectMobile/features/message/presentation/views/widges/chat_message_list.dart';
+import 'package:GreenConnectMobile/features/message/presentation/views/widgets/chat_app_bar.dart';
+import 'package:GreenConnectMobile/features/message/presentation/views/widgets/chat_input_area.dart';
+import 'package:GreenConnectMobile/features/message/presentation/views/widgets/chat_message_list.dart';
 import 'package:flutter/material.dart';
 
 class ChatDetailScreen extends StatelessWidget {

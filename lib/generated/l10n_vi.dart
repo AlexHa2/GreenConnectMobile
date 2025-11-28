@@ -167,7 +167,7 @@ class SVi extends S {
   String get profile_setup_step3 => 'Bước 3 trong 3';
 
   @override
-  String get location => 'Vị trí của bạn';
+  String get location => 'Địa điểm';
 
   @override
   String get street_address => 'Địa chỉ';
@@ -235,7 +235,7 @@ class SVi extends S {
   String get recycling => 'tái chế';
 
   @override
-  String get post_title => 'Tiêu đề bài viết';
+  String get post_title => 'Tiêu đề bài đăng';
 
   @override
   String get description => 'Mô tả';
@@ -890,4 +890,557 @@ class SVi extends S {
 
   @override
   String get household_role => 'Hộ dân';
+
+  @override
+  String get view_offers => 'Xem danh sách người cung cấp ';
+
+  @override
+  String get all_offers => 'Tất cả đề nghị';
+
+  @override
+  String get post_offers => 'Đề nghị của bài đăng';
+
+  @override
+  String get no_offers_found => 'Không có đề nghị nào';
+
+  @override
+  String no_offers_yet(Object status) {
+    return 'Chưa có đề nghị $status';
+  }
+
+  @override
+  String get no_offers_available => 'Hiện tại chưa có đề nghị nào';
+
+  @override
+  String get something_went_wrong => 'Đã có lỗi xảy ra';
+
+  @override
+  String get try_again => 'Thử lại';
+
+  @override
+  String get pending => 'Đang chờ';
+
+  @override
+  String items_count(Object count) {
+    return '$count vật phẩm';
+  }
+
+  @override
+  String items_count_plural(Object count) {
+    return '$count vật phẩm';
+  }
+
+  @override
+  String schedules_count(Object count) {
+    return '$count lịch hẹn';
+  }
+
+  @override
+  String schedules_count_plural(Object count) {
+    return '$count lịch hẹn';
+  }
+
+  @override
+  String get pricing_details => 'Chi tiết giá:';
+
+  @override
+  String get unknown => 'Không rõ';
+
+  @override
+  String more_items(Object count) {
+    return '+$count vật phẩm khác';
+  }
+
+  @override
+  String minutes_short(Object count) {
+    return '$count phút trước';
+  }
+
+  @override
+  String hours_short(Object count) {
+    return '$count giờ trước';
+  }
+
+  @override
+  String days_short(Object count) {
+    return '$count ngày trước';
+  }
+
+  @override
+  String get per_unit => 'VND';
+
+  @override
+  String get offer_details => 'Chi tiết đề nghị';
+
+  @override
+  String get collector_information => 'Thông tin người thu gom';
+
+  @override
+  String get pricing_information => 'Thông tin giá cả';
+
+  @override
+  String get schedule_proposals => 'Lịch đề xuất';
+
+  @override
+  String get post_information => 'Thông tin bài đăng';
+
+  @override
+  String get no_pricing_info => 'Không có thông tin giá cả';
+
+  @override
+  String get no_schedules => 'Chưa có lịch đề xuất';
+
+  @override
+  String get no_post_info => 'Thông tin bài đăng không khả dụng';
+
+  @override
+  String get contact_collector => 'Liên hệ người thu gom';
+
+  @override
+  String get accept_offer => 'Chấp nhận đề nghị';
+
+  @override
+  String get reject_offer => 'Từ chối đề nghị';
+
+  @override
+  String get cancel_offer => 'Hủy đề nghị';
+
+  @override
+  String get restore_offer => 'Khôi phục đề nghị';
+
+  @override
+  String get confirm_accept => 'Xác nhận chấp nhận';
+
+  @override
+  String get confirm_reject => 'Xác nhận từ chối';
+
+  @override
+  String get confirm_cancel => 'Xác nhận hủy';
+
+  @override
+  String get accept_offer_message =>
+      'Bạn có chắc chắn muốn chấp nhận đề nghị này?';
+
+  @override
+  String get reject_offer_message =>
+      'Bạn có chắc chắn muốn từ chối đề nghị này?';
+
+  @override
+  String get cancel_offer_message => 'Bạn có chắc chắn muốn hủy đề nghị này?';
+
+  @override
+  String get restore_offer_message =>
+      'Bạn có chắc chắn muốn khôi phục đề nghị này?';
+
+  @override
+  String get offer_accepted_success => 'Chấp nhận đề nghị thành công';
+
+  @override
+  String get offer_rejected_success => 'Từ chối đề nghị thành công';
+
+  @override
+  String get offer_canceled_success => 'Hủy đề nghị thành công';
+
+  @override
+  String get offer_restored_success => 'Khôi phục đề nghị thành công';
+
+  @override
+  String get action_failed => 'Thao tác thất bại';
+
+  @override
+  String member_since(Object date) {
+    return 'Thành viên từ $date';
+  }
+
+  @override
+  String get response_message => 'Phản hồi';
+
+  @override
+  String get no_response => 'Chưa có phản hồi';
+
+  @override
+  String get total_amount => 'Tổng giá trị';
+
+  @override
+  String estimated_total(Object amount) {
+    return 'Ước tính: $amount VND';
+  }
+
+  @override
+  String get post_description => 'Mô tả';
+
+  @override
+  String get posted_at => 'Đăng lúc';
+
+  @override
+  String get offer_created_at => 'Đề nghị được tạo';
+
+  @override
+  String get scheduleListTitle => 'Lịch hẹn';
+
+  @override
+  String get scheduleStatusAll => 'Tất cả';
+
+  @override
+  String get scheduleStatusPending => 'Chờ xử lý';
+
+  @override
+  String get scheduleStatusAccepted => 'Đã chấp nhận';
+
+  @override
+  String get scheduleStatusRejected => 'Đã từ chối';
+
+  @override
+  String get scheduleStatusCanceled => 'Đã hủy';
+
+  @override
+  String get scheduleEmptyMessage => 'Không tìm thấy lịch hẹn';
+
+  @override
+  String get scheduleCreatedAt => 'Tạo lúc';
+
+  @override
+  String get scheduleDetailTitle => 'Chi tiết lịch hẹn';
+
+  @override
+  String get scheduleProposedTime => 'Thời gian đề xuất';
+
+  @override
+  String get scheduleResponseMessage => 'Tin nhắn phản hồi';
+
+  @override
+  String get scheduleNoResponse => 'Chưa có phản hồi';
+
+  @override
+  String get scheduleAcceptButton => 'Chấp nhận';
+
+  @override
+  String get scheduleRejectButton => 'Từ chối';
+
+  @override
+  String get scheduleCancelButton => 'Hủy';
+
+  @override
+  String get scheduleRestoreButton => 'Khôi phục';
+
+  @override
+  String get scheduleRescheduleButton => 'Đổi lịch';
+
+  @override
+  String get scheduleConfirmAccept => 'Xác nhận chấp nhận lịch hẹn';
+
+  @override
+  String get scheduleConfirmReject => 'Xác nhận từ chối lịch hẹn';
+
+  @override
+  String get scheduleConfirmCancel => 'Xác nhận hủy lịch hẹn';
+
+  @override
+  String get scheduleAcceptMessage =>
+      'Bạn có chắc chắn muốn chấp nhận lịch hẹn này?';
+
+  @override
+  String get scheduleRejectMessage =>
+      'Bạn có chắc chắn muốn từ chối lịch hẹn này?';
+
+  @override
+  String get scheduleCancelMessage => 'Bạn có chắc chắn muốn hủy lịch hẹn này?';
+
+  @override
+  String get scheduleAcceptSuccess => 'Chấp nhận lịch hẹn thành công';
+
+  @override
+  String get scheduleRejectSuccess => 'Từ chối lịch hẹn thành công';
+
+  @override
+  String get scheduleAcceptNote =>
+      'Dùng nút \'Chấp nhận đề nghị\' bên dưới để chấp nhận lịch hẹn';
+
+  @override
+  String get scheduleRejectShort => 'Từ chối';
+
+  @override
+  String get scheduleCancelSuccess => 'Hủy lịch hẹn thành công';
+
+  @override
+  String get scheduleRestoreSuccess => 'Khôi phục lịch hẹn thành công';
+
+  @override
+  String get scheduleUpdateSuccess => 'Cập nhật lịch hẹn thành công';
+
+  @override
+  String get schedule_hint_swipe_to_reject =>
+      'Dùng nút \'Chấp nhận đề nghị\' bên dưới để chấp nhận lịch hẹn';
+
+  @override
+  String get transactions => 'Giao dịch';
+
+  @override
+  String get my_transactions => 'Giao dịch của tôi';
+
+  @override
+  String get transaction_details => 'Chi tiết giao dịch';
+
+  @override
+  String get transaction_id => 'Mã giao dịch';
+
+  @override
+  String get transaction_status => 'Trạng thái';
+
+  @override
+  String get scheduled_time => 'Thời gian hẹn';
+
+  @override
+  String get check_in_time => 'Thời gian check-in';
+
+  @override
+  String get completed_time => 'Thời gian hoàn thành';
+
+  @override
+  String get collector_info => 'Thông tin người thu gom';
+
+  @override
+  String get household_info => 'Thông tin hộ gia đình';
+
+  @override
+  String get transaction_items => 'Danh sách vật phẩm';
+
+  @override
+  String get total_weight => 'Tổng khối lượng';
+
+  @override
+  String get total_value => 'Tổng giá trị';
+
+  @override
+  String get collector_note => 'Ghi chú người thu gom';
+
+  @override
+  String get household_note => 'Ghi chú hộ gia đình';
+
+  @override
+  String get check_in => 'Check In';
+
+  @override
+  String get input_details => 'Nhập chi tiết';
+
+  @override
+  String get process_transaction => 'Xử lý giao dịch';
+
+  @override
+  String get cancel_transaction => 'Hủy giao dịch';
+
+  @override
+  String get provide_feedback => 'Đánh giá';
+
+  @override
+  String get transaction_feedbacks => 'Đánh giá';
+
+  @override
+  String get in_progress => 'Đang thực hiện';
+
+  @override
+  String get awaiting_confirmation => 'Chờ xác nhận';
+
+  @override
+  String get cancelled => 'Đã hủy';
+
+  @override
+  String get check_in_success => 'Check-in thành công';
+
+  @override
+  String get check_in_confirm => 'Xác nhận Check-in';
+
+  @override
+  String get check_in_message =>
+      'Bạn có chắc chắn muốn check-in tại vị trí này?';
+
+  @override
+  String get input_details_title => 'Nhập thông tin giao dịch';
+
+  @override
+  String get enter_weight => 'Nhập khối lượng (kg)';
+
+  @override
+  String get enter_value => 'Nhập giá trị (\$)';
+
+  @override
+  String get enter_note => 'Nhập ghi chú (Tùy chọn)';
+
+  @override
+  String get details_saved => 'Lưu thông tin thành công';
+
+  @override
+  String get approve_confirm => 'Phê duyệt giao dịch';
+
+  @override
+  String get reject_confirm => 'Từ chối giao dịch';
+
+  @override
+  String get approve_message =>
+      'Bạn có chắc chắn muốn phê duyệt giao dịch này?';
+
+  @override
+  String get reject_message => 'Bạn có chắc chắn muốn từ chối giao dịch này?';
+
+  @override
+  String get transaction_approved => 'Phê duyệt giao dịch thành công';
+
+  @override
+  String get transaction_rejected => 'Từ chối giao dịch thành công';
+
+  @override
+  String get cancel_confirm => 'Hủy giao dịch';
+
+  @override
+  String get cancel_message => 'Bạn có chắc chắn muốn hủy giao dịch này?';
+
+  @override
+  String get transaction_cancelled => 'Hủy giao dịch thành công';
+
+  @override
+  String get feedback_submitted => 'Gửi đánh giá thành công';
+
+  @override
+  String get no_transactions_found => 'Không tìm thấy giao dịch';
+
+  @override
+  String get pull_to_refresh => 'Kéo để làm mới';
+
+  @override
+  String get refreshing => 'Đang làm mới...';
+
+  @override
+  String get scrap_type => 'Loại phế liệu';
+
+  @override
+  String get price_per_unit => 'Giá đơn vị';
+
+  @override
+  String get total_price => 'Tổng giá';
+
+  @override
+  String get provided_by => 'Đánh giá bởi';
+
+  @override
+  String get at_time => 'lúc';
+
+  @override
+  String get kg => 'kg';
+
+  @override
+  String get error_weight_required => 'Vui lòng nhập khối lượng';
+
+  @override
+  String get error_value_required => 'Vui lòng nhập giá trị';
+
+  @override
+  String get error_check_in_failed => 'Check-in thất bại';
+
+  @override
+  String get error_input_details_failed => 'Nhập thông tin thất bại';
+
+  @override
+  String get error_process_failed => 'Xử lý giao dịch thất bại';
+
+  @override
+  String get error_cancel_failed => 'Hủy giao dịch thất bại';
+
+  @override
+  String get error_feedback_failed => 'Gửi đánh giá thất bại';
+
+  @override
+  String get transaction_info => 'Thông tin giao dịch';
+
+  @override
+  String get transaction_information => 'Thông tin giao dịch';
+
+  @override
+  String get transaction_created_time => 'Thời gian tạo';
+
+  @override
+  String get transaction_updated_time => 'Thời gian cập nhật';
+
+  @override
+  String get offer_info => 'Thông tin đề nghị';
+
+  @override
+  String get post_address => 'Địa chỉ thu gom';
+
+  @override
+  String get no_feedbacks_yet => 'Chưa có đánh giá';
+
+  @override
+  String get approve => 'Phê duyệt';
+
+  @override
+  String get reject => 'Từ chối';
+
+  @override
+  String get rewards => 'Phần thưởng';
+
+  @override
+  String get messages => 'Tin nhắn';
+
+  @override
+  String get sort_by => 'Sắp xếp theo';
+
+  @override
+  String get order => 'Thứ tự';
+
+  @override
+  String get newest_first => 'Mới nhất trước';
+
+  @override
+  String get oldest_first => 'Cũ nhất trước';
+
+  @override
+  String get sort_by_last_updated => 'Sắp xếp theo lần cập nhật gần nhất';
+
+  @override
+  String get sort_by_creation_date => 'Sắp xếp theo ngày tạo';
+
+  @override
+  String get most_recent_at_top => 'Gần đây nhất ở trên';
+
+  @override
+  String get earliest_at_top => 'Sớm nhất ở trên';
+
+  @override
+  String get emergency_cancel => 'Hủy Khẩn Cấp';
+
+  @override
+  String get emergency_cancel_confirm => 'Hủy Giao Dịch Khẩn Cấp';
+
+  @override
+  String get emergency_cancel_message =>
+      'Điều này sẽ hủy giao dịch do lý do khẩn cấp (xe hỏng, không liên lạc được, v.v.). Bạn có chắc chắn?';
+
+  @override
+  String get emergency_cancel_note =>
+      'Chỉ dùng cho các trường hợp khẩn cấp: xe hỏng, không liên lạc được khách hàng, thời tiết xấu, v.v.';
+
+  @override
+  String get transaction_emergency_canceled => 'Đã hủy giao dịch do khẩn cấp';
+
+  @override
+  String get resume_transaction => 'Tiếp Tục Giao Dịch';
+
+  @override
+  String get resume_confirm => 'Tiếp Tục Giao Dịch';
+
+  @override
+  String get resume_message =>
+      'Điều này sẽ tiếp tục giao dịch và đổi trạng thái về Đang Thực Hiện. Bạn có chắc chắn?';
+
+  @override
+  String get resume => 'Tiếp tục';
+
+  @override
+  String get transaction_resumed => 'Đã tiếp tục giao dịch thành công';
+
+  @override
+  String get operation_failed => 'Thao tác thất bại. Vui lòng thử lại.';
+
+  @override
+  String get scheduled => 'Đã lên lịch';
 }
