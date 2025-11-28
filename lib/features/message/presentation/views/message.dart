@@ -1,5 +1,5 @@
 import 'package:GreenConnectMobile/features/message/presentation/views/message_class.dart';
-import 'package:GreenConnectMobile/features/message/presentation/views/widges/message_item.dart';
+import 'package:GreenConnectMobile/features/message/presentation/views/widgets/message_item.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';

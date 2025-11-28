@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/core/di/auth_injector.dart';
+import 'package:GreenConnectMobile/core/di/offer_injector.dart';
 import 'package:GreenConnectMobile/core/di/scrap_category_injector.dart';
 import 'package:GreenConnectMobile/core/di/setting_injector.dart';
 import 'package:GreenConnectMobile/core/network/api_client.dart';
@@ -15,4 +16,5 @@ Future<void> initDependencies() async {
   await initAuthModule();
   await initSettingsModule();
   await initScrapCategoryModule();
+  await initOfferModule();
 }

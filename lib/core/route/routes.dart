@@ -2,20 +2,22 @@ import 'package:GreenConnectMobile/core/helper/app_router_observer.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/login_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/register_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/welcome_page.dart';
-import 'package:GreenConnectMobile/features/household/presentation/views/create_post.dart';
-import 'package:GreenConnectMobile/features/household/presentation/views/house_hold_home.dart';
-import 'package:GreenConnectMobile/features/household/presentation/views/household_list_post.dart';
-import 'package:GreenConnectMobile/features/household/presentation/views/post_detail.dart';
-import 'package:GreenConnectMobile/features/household/presentation/views/update_recycling_post.dart';
 import 'package:GreenConnectMobile/features/message/presentation/views/chat_message_detail.dart';
 import 'package:GreenConnectMobile/features/message/presentation/views/message.dart';
 import 'package:GreenConnectMobile/features/notification/presentation/views/widgets/notification.dart';
+import 'package:GreenConnectMobile/features/offer/presentation/views/offers_list_page.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/create_post.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/house_hold_home.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/household_list_post.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/post_detail.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/update_recycling_post.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setting.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setup.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/upgrade_verification.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/list_history_post.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
-import 'package:GreenConnectMobile/features/transaction/presentation/views/confirm_transaction_detail.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/views/transaction_detail_page_modern.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/views/transactions_list_page.dart';
 import 'package:GreenConnectMobile/shared/layouts/household_layout.dart';
 import 'package:go_router/go_router.dart';
 
@@ -45,6 +47,11 @@ final GoRouter greenRouter = GoRouter(
           path: '/profile-settings',
           name: 'profile-settings',
           builder: (context, state) => const ProfileSetting(),
+        ),
+        GoRoute(
+          path: '/list-transactions',
+          name: 'list-transactions',
+          builder: (context, state) => const TransactionsListPage(),
         ),
       ],
     ),
@@ -106,11 +113,6 @@ final GoRouter greenRouter = GoRouter(
       builder: (context, state) => const RewardStore(),
     ),
     GoRoute(
-      path: '/confirm-transaction',
-      name: 'confirm-transaction',
-      builder: (context, state) => const ConfirmTransaction(),
-    ),
-    GoRoute(
       path: '/list-message',
       name: 'list-message',
       builder: (context, state) => const MessageListScreen(),
@@ -121,6 +123,28 @@ final GoRouter greenRouter = GoRouter(
       builder: (context, state) {
         final initialData = state.extra as Map<String, dynamic>? ?? {};
         return ChatDetailScreen(initialData: initialData);
+      },
+    ),
+    GoRoute(
+      path: '/offers-list',
+      name: 'offers-list',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        return OffersListPage(
+          postId: initialData['postId'] as String?,
+          isCollectorView: initialData['isCollectorView'] as bool? ?? false,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/transaction-detail',
+      name: 'transaction-detail',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        return TransactionDetailPageModern(
+          transactionId: initialData['transactionId'] as String,
+          userRole: initialData['userRole'] as String,
+        );
       },
     ),
   ],

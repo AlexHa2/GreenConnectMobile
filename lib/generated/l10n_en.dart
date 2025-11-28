@@ -166,7 +166,7 @@ class SEn extends S {
   String get profile_setup_step3 => 'Step 3 of 3';
 
   @override
-  String get location => 'Your location';
+  String get location => 'Location';
 
   @override
   String get street_address => 'Street Address';
@@ -777,7 +777,7 @@ class SEn extends S {
   String get start_sharing_recycling_posts => 'Start sharing recycling posts';
 
   @override
-  String get view_details => 'View detail';
+  String get view_details => 'View Details';
 
   @override
   String get go_to_transaction => 'Go transaction';
@@ -888,4 +888,562 @@ class SEn extends S {
 
   @override
   String get household_role => 'Household';
+
+  @override
+  String get view_offers => 'View offers';
+
+  @override
+  String get all_offers => 'All Offers';
+
+  @override
+  String get post_offers => 'Post Offers';
+
+  @override
+  String get no_offers_found => 'No Offers Found';
+
+  @override
+  String no_offers_yet(Object status) {
+    return 'No $status offers yet';
+  }
+
+  @override
+  String get no_offers_available => 'No offers available at the moment';
+
+  @override
+  String get something_went_wrong => 'Something went wrong';
+
+  @override
+  String get try_again => 'Try Again';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String items_count(Object count) {
+    return '$count Item';
+  }
+
+  @override
+  String items_count_plural(Object count) {
+    return '$count Items';
+  }
+
+  @override
+  String schedules_count(Object count) {
+    return '$count Schedule';
+  }
+
+  @override
+  String schedules_count_plural(Object count) {
+    return '$count Schedules';
+  }
+
+  @override
+  String get pricing_details => 'Pricing Details:';
+
+  @override
+  String get unknown => 'Unknown';
+
+  @override
+  String more_items(Object count) {
+    return '+$count more items';
+  }
+
+  @override
+  String minutes_short(Object count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String hours_short(Object count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String days_short(Object count) {
+    return '${count}d ago';
+  }
+
+  @override
+  String get per_unit => '\$';
+
+  @override
+  String get offer_details => 'Offer Details';
+
+  @override
+  String get collector_information => 'Collector Information';
+
+  @override
+  String get pricing_information => 'Pricing Information';
+
+  @override
+  String get schedule_proposals => 'Schedule Proposals';
+
+  @override
+  String get post_information => 'Post Information';
+
+  @override
+  String get no_pricing_info => 'No pricing information available';
+
+  @override
+  String get no_schedules => 'No schedule proposals';
+
+  @override
+  String get no_post_info => 'Post information not available';
+
+  @override
+  String get contact_collector => 'Contact Collector';
+
+  @override
+  String get accept_offer => 'Accept Offer';
+
+  @override
+  String get reject_offer => 'Reject Offer';
+
+  @override
+  String get cancel_offer => 'Cancel Offer';
+
+  @override
+  String get restore_offer => 'Restore Offer';
+
+  @override
+  String get confirm_accept => 'Confirm Accept';
+
+  @override
+  String get confirm_reject => 'Confirm Reject';
+
+  @override
+  String get confirm_cancel => 'Confirm Cancel';
+
+  @override
+  String get accept_offer_message =>
+      'Are you sure you want to accept this offer?';
+
+  @override
+  String get reject_offer_message =>
+      'Are you sure you want to reject this offer?';
+
+  @override
+  String get cancel_offer_message =>
+      'Are you sure you want to cancel this offer?';
+
+  @override
+  String get restore_offer_message =>
+      'Are you sure you want to restore this offer?';
+
+  @override
+  String get offer_accepted_success => 'Offer accepted successfully';
+
+  @override
+  String get offer_rejected_success => 'Offer rejected successfully';
+
+  @override
+  String get offer_canceled_success => 'Offer canceled successfully';
+
+  @override
+  String get offer_restored_success => 'Offer restored successfully';
+
+  @override
+  String get action_failed => 'Action failed';
+
+  @override
+  String member_since(Object date) {
+    return 'Member since $date';
+  }
+
+  @override
+  String get response_message => 'Response';
+
+  @override
+  String get no_response => 'No response yet';
+
+  @override
+  String get total_amount => 'Total Amount';
+
+  @override
+  String estimated_total(Object amount) {
+    return 'Estimated: $amount VND';
+  }
+
+  @override
+  String get post_description => 'Description';
+
+  @override
+  String get posted_at => 'Posted at';
+
+  @override
+  String get offer_created_at => 'Offer created';
+
+  @override
+  String get scheduleListTitle => 'Schedules';
+
+  @override
+  String get scheduleStatusAll => 'All';
+
+  @override
+  String get scheduleStatusPending => 'Pending';
+
+  @override
+  String get scheduleStatusAccepted => 'Accepted';
+
+  @override
+  String get scheduleStatusRejected => 'Rejected';
+
+  @override
+  String get scheduleStatusCanceled => 'Canceled';
+
+  @override
+  String get scheduleEmptyMessage => 'No schedules found';
+
+  @override
+  String get scheduleCreatedAt => 'Created at';
+
+  @override
+  String get scheduleDetailTitle => 'Schedule Details';
+
+  @override
+  String get scheduleProposedTime => 'Proposed Time';
+
+  @override
+  String get scheduleResponseMessage => 'Response Message';
+
+  @override
+  String get scheduleNoResponse => 'No response';
+
+  @override
+  String get scheduleAcceptButton => 'Accept';
+
+  @override
+  String get scheduleRejectButton => 'Reject';
+
+  @override
+  String get scheduleCancelButton => 'Cancel';
+
+  @override
+  String get scheduleRestoreButton => 'Restore';
+
+  @override
+  String get scheduleRescheduleButton => 'Reschedule';
+
+  @override
+  String get scheduleConfirmAccept => 'Confirm Accept Schedule';
+
+  @override
+  String get scheduleConfirmReject => 'Confirm Reject Schedule';
+
+  @override
+  String get scheduleConfirmCancel => 'Confirm Cancel Schedule';
+
+  @override
+  String get scheduleAcceptMessage =>
+      'Are you sure you want to accept this schedule?';
+
+  @override
+  String get scheduleRejectMessage =>
+      'Are you sure you want to reject this schedule?';
+
+  @override
+  String get scheduleCancelMessage =>
+      'Are you sure you want to cancel this schedule?';
+
+  @override
+  String get scheduleAcceptSuccess => 'Schedule accepted successfully';
+
+  @override
+  String get scheduleRejectSuccess => 'Schedule rejected successfully';
+
+  @override
+  String get scheduleAcceptNote =>
+      'Use \'Accept Offer\' button below to accept schedule';
+
+  @override
+  String get scheduleRejectShort => 'Reject';
+
+  @override
+  String get scheduleCancelSuccess => 'Schedule canceled successfully';
+
+  @override
+  String get scheduleRestoreSuccess => 'Schedule restored successfully';
+
+  @override
+  String get scheduleUpdateSuccess => 'Schedule updated successfully';
+
+  @override
+  String get schedule_hint_swipe_to_reject =>
+      'Use the \'Accept Proposal\' button below to accept the schedule';
+
+  @override
+  String get transactions => 'Transactions';
+
+  @override
+  String get my_transactions => 'My Transactions';
+
+  @override
+  String get transaction_details => 'Transaction Details';
+
+  @override
+  String get transaction_id => 'Transaction ID';
+
+  @override
+  String get transaction_status => 'Status';
+
+  @override
+  String get scheduled_time => 'Scheduled Time';
+
+  @override
+  String get check_in_time => 'Check-in Time';
+
+  @override
+  String get completed_time => 'Completed Time';
+
+  @override
+  String get collector_info => 'Collector Information';
+
+  @override
+  String get household_info => 'Household Information';
+
+  @override
+  String get transaction_items => 'Transaction Items';
+
+  @override
+  String get total_weight => 'Total Weight';
+
+  @override
+  String get total_value => 'Total Value';
+
+  @override
+  String get collector_note => 'Collector Note';
+
+  @override
+  String get household_note => 'Household Note';
+
+  @override
+  String get check_in => 'Check In';
+
+  @override
+  String get input_details => 'Input Details';
+
+  @override
+  String get process_transaction => 'Process Transaction';
+
+  @override
+  String get cancel_transaction => 'Cancel Transaction';
+
+  @override
+  String get provide_feedback => 'Provide Feedback';
+
+  @override
+  String get transaction_feedbacks => 'Feedbacks';
+
+  @override
+  String get in_progress => 'In Progress';
+
+  @override
+  String get awaiting_confirmation => 'Awaiting Confirmation';
+
+  @override
+  String get cancelled => 'Cancelled';
+
+  @override
+  String get check_in_success => 'Checked in successfully';
+
+  @override
+  String get check_in_confirm => 'Confirm Check-in';
+
+  @override
+  String get check_in_message =>
+      'Are you sure you want to check in at this location?';
+
+  @override
+  String get input_details_title => 'Input Transaction Details';
+
+  @override
+  String get enter_weight => 'Enter Weight (kg)';
+
+  @override
+  String get enter_value => 'Enter Value (\$)';
+
+  @override
+  String get enter_note => 'Enter Note (Optional)';
+
+  @override
+  String get details_saved => 'Details saved successfully';
+
+  @override
+  String get approve_confirm => 'Approve Transaction';
+
+  @override
+  String get reject_confirm => 'Reject Transaction';
+
+  @override
+  String get approve_message =>
+      'Are you sure you want to approve this transaction?';
+
+  @override
+  String get reject_message =>
+      'Are you sure you want to reject this transaction?';
+
+  @override
+  String get transaction_approved => 'Transaction approved successfully';
+
+  @override
+  String get transaction_rejected => 'Transaction rejected successfully';
+
+  @override
+  String get cancel_confirm => 'Cancel Transaction';
+
+  @override
+  String get cancel_message =>
+      'Are you sure you want to cancel this transaction?';
+
+  @override
+  String get transaction_cancelled => 'Transaction cancelled successfully';
+
+  @override
+  String get feedback_submitted => 'Feedback submitted successfully';
+
+  @override
+  String get no_transactions_found => 'No transactions found';
+
+  @override
+  String get pull_to_refresh => 'Pull to refresh';
+
+  @override
+  String get refreshing => 'Refreshing...';
+
+  @override
+  String get scrap_type => 'Scrap Type';
+
+  @override
+  String get price_per_unit => 'Price per Unit';
+
+  @override
+  String get total_price => 'Total Price';
+
+  @override
+  String get provided_by => 'Provided by';
+
+  @override
+  String get at_time => 'at';
+
+  @override
+  String get kg => 'kg';
+
+  @override
+  String get error_weight_required => 'Weight is required';
+
+  @override
+  String get error_value_required => 'Value is required';
+
+  @override
+  String get error_check_in_failed => 'Check-in failed';
+
+  @override
+  String get error_input_details_failed => 'Failed to input details';
+
+  @override
+  String get error_process_failed => 'Failed to process transaction';
+
+  @override
+  String get error_cancel_failed => 'Failed to cancel transaction';
+
+  @override
+  String get error_feedback_failed => 'Failed to submit feedback';
+
+  @override
+  String get transaction_info => 'Transaction Information';
+
+  @override
+  String get transaction_information => 'Transaction Information';
+
+  @override
+  String get transaction_created_time => 'Created At';
+
+  @override
+  String get transaction_updated_time => 'Updated At';
+
+  @override
+  String get offer_info => 'Offer Information';
+
+  @override
+  String get post_address => 'Collection Address';
+
+  @override
+  String get no_feedbacks_yet => 'No feedbacks yet';
+
+  @override
+  String get approve => 'Approve';
+
+  @override
+  String get reject => 'Reject';
+
+  @override
+  String get rewards => 'Rewards';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get sort_by => 'Sort By';
+
+  @override
+  String get order => 'Order';
+
+  @override
+  String get newest_first => 'Newest First';
+
+  @override
+  String get oldest_first => 'Oldest First';
+
+  @override
+  String get sort_by_last_updated => 'Sort by last updated';
+
+  @override
+  String get sort_by_creation_date => 'Sort by creation date';
+
+  @override
+  String get most_recent_at_top => 'Most recent at the top';
+
+  @override
+  String get earliest_at_top => 'Earliest at the top';
+
+  @override
+  String get emergency_cancel => 'Emergency Cancel';
+
+  @override
+  String get emergency_cancel_confirm => 'Emergency Cancellation';
+
+  @override
+  String get emergency_cancel_message =>
+      'This will cancel the transaction due to emergency reasons (vehicle breakdown, unable to contact, etc.). Are you sure?';
+
+  @override
+  String get emergency_cancel_note =>
+      'For emergency situations only: vehicle breakdown, unable to contact customer, extreme weather, etc.';
+
+  @override
+  String get transaction_emergency_canceled =>
+      'Transaction cancelled due to emergency';
+
+  @override
+  String get resume_transaction => 'Resume Transaction';
+
+  @override
+  String get resume_confirm => 'Resume Transaction';
+
+  @override
+  String get resume_message =>
+      'This will resume the transaction and change status back to In Progress. Are you sure?';
+
+  @override
+  String get resume => 'Resume';
+
+  @override
+  String get transaction_resumed => 'Transaction resumed successfully';
+
+  @override
+  String get operation_failed => 'Operation failed. Please try again.';
+
+  @override
+  String get scheduled => 'Scheduled';
 }

@@ -412,7 +412,7 @@ abstract class S {
   /// No description provided for @location.
   ///
   /// In en, this message translates to:
-  /// **'Your location'**
+  /// **'Location'**
   String get location;
 
   /// No description provided for @street_address.
@@ -1606,7 +1606,7 @@ abstract class S {
   /// No description provided for @view_details.
   ///
   /// In en, this message translates to:
-  /// **'View detail'**
+  /// **'View Details'**
   String get view_details;
 
   /// No description provided for @go_to_transaction.
@@ -1818,6 +1818,1044 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Household'**
   String get household_role;
+
+  /// No description provided for @view_offers.
+  ///
+  /// In en, this message translates to:
+  /// **'View offers'**
+  String get view_offers;
+
+  /// No description provided for @all_offers.
+  ///
+  /// In en, this message translates to:
+  /// **'All Offers'**
+  String get all_offers;
+
+  /// No description provided for @post_offers.
+  ///
+  /// In en, this message translates to:
+  /// **'Post Offers'**
+  String get post_offers;
+
+  /// No description provided for @no_offers_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No Offers Found'**
+  String get no_offers_found;
+
+  /// No description provided for @no_offers_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No {status} offers yet'**
+  String no_offers_yet(Object status);
+
+  /// No description provided for @no_offers_available.
+  ///
+  /// In en, this message translates to:
+  /// **'No offers available at the moment'**
+  String get no_offers_available;
+
+  /// No description provided for @something_went_wrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get something_went_wrong;
+
+  /// No description provided for @try_again.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get try_again;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pending;
+
+  /// No description provided for @items_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Item'**
+  String items_count(Object count);
+
+  /// No description provided for @items_count_plural.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Items'**
+  String items_count_plural(Object count);
+
+  /// No description provided for @schedules_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Schedule'**
+  String schedules_count(Object count);
+
+  /// No description provided for @schedules_count_plural.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Schedules'**
+  String schedules_count_plural(Object count);
+
+  /// No description provided for @pricing_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing Details:'**
+  String get pricing_details;
+
+  /// No description provided for @unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
+
+  /// No description provided for @more_items.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} more items'**
+  String more_items(Object count);
+
+  /// No description provided for @minutes_short.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m ago'**
+  String minutes_short(Object count);
+
+  /// No description provided for @hours_short.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String hours_short(Object count);
+
+  /// No description provided for @days_short.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d ago'**
+  String days_short(Object count);
+
+  /// No description provided for @per_unit.
+  ///
+  /// In en, this message translates to:
+  /// **'\$'**
+  String get per_unit;
+
+  /// No description provided for @offer_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer Details'**
+  String get offer_details;
+
+  /// No description provided for @collector_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Collector Information'**
+  String get collector_information;
+
+  /// No description provided for @pricing_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing Information'**
+  String get pricing_information;
+
+  /// No description provided for @schedule_proposals.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule Proposals'**
+  String get schedule_proposals;
+
+  /// No description provided for @post_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Post Information'**
+  String get post_information;
+
+  /// No description provided for @no_pricing_info.
+  ///
+  /// In en, this message translates to:
+  /// **'No pricing information available'**
+  String get no_pricing_info;
+
+  /// No description provided for @no_schedules.
+  ///
+  /// In en, this message translates to:
+  /// **'No schedule proposals'**
+  String get no_schedules;
+
+  /// No description provided for @no_post_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Post information not available'**
+  String get no_post_info;
+
+  /// No description provided for @contact_collector.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Collector'**
+  String get contact_collector;
+
+  /// No description provided for @accept_offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept Offer'**
+  String get accept_offer;
+
+  /// No description provided for @reject_offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Offer'**
+  String get reject_offer;
+
+  /// No description provided for @cancel_offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Offer'**
+  String get cancel_offer;
+
+  /// No description provided for @restore_offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Offer'**
+  String get restore_offer;
+
+  /// No description provided for @confirm_accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Accept'**
+  String get confirm_accept;
+
+  /// No description provided for @confirm_reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Reject'**
+  String get confirm_reject;
+
+  /// No description provided for @confirm_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Cancel'**
+  String get confirm_cancel;
+
+  /// No description provided for @accept_offer_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to accept this offer?'**
+  String get accept_offer_message;
+
+  /// No description provided for @reject_offer_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to reject this offer?'**
+  String get reject_offer_message;
+
+  /// No description provided for @cancel_offer_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this offer?'**
+  String get cancel_offer_message;
+
+  /// No description provided for @restore_offer_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to restore this offer?'**
+  String get restore_offer_message;
+
+  /// No description provided for @offer_accepted_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer accepted successfully'**
+  String get offer_accepted_success;
+
+  /// No description provided for @offer_rejected_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer rejected successfully'**
+  String get offer_rejected_success;
+
+  /// No description provided for @offer_canceled_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer canceled successfully'**
+  String get offer_canceled_success;
+
+  /// No description provided for @offer_restored_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer restored successfully'**
+  String get offer_restored_success;
+
+  /// No description provided for @action_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Action failed'**
+  String get action_failed;
+
+  /// No description provided for @member_since.
+  ///
+  /// In en, this message translates to:
+  /// **'Member since {date}'**
+  String member_since(Object date);
+
+  /// No description provided for @response_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Response'**
+  String get response_message;
+
+  /// No description provided for @no_response.
+  ///
+  /// In en, this message translates to:
+  /// **'No response yet'**
+  String get no_response;
+
+  /// No description provided for @total_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Amount'**
+  String get total_amount;
+
+  /// No description provided for @estimated_total.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated: {amount} VND'**
+  String estimated_total(Object amount);
+
+  /// No description provided for @post_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get post_description;
+
+  /// No description provided for @posted_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted at'**
+  String get posted_at;
+
+  /// No description provided for @offer_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer created'**
+  String get offer_created_at;
+
+  /// No description provided for @scheduleListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedules'**
+  String get scheduleListTitle;
+
+  /// No description provided for @scheduleStatusAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get scheduleStatusAll;
+
+  /// No description provided for @scheduleStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get scheduleStatusPending;
+
+  /// No description provided for @scheduleStatusAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get scheduleStatusAccepted;
+
+  /// No description provided for @scheduleStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get scheduleStatusRejected;
+
+  /// No description provided for @scheduleStatusCanceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceled'**
+  String get scheduleStatusCanceled;
+
+  /// No description provided for @scheduleEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No schedules found'**
+  String get scheduleEmptyMessage;
+
+  /// No description provided for @scheduleCreatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created at'**
+  String get scheduleCreatedAt;
+
+  /// No description provided for @scheduleDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule Details'**
+  String get scheduleDetailTitle;
+
+  /// No description provided for @scheduleProposedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposed Time'**
+  String get scheduleProposedTime;
+
+  /// No description provided for @scheduleResponseMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Response Message'**
+  String get scheduleResponseMessage;
+
+  /// No description provided for @scheduleNoResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'No response'**
+  String get scheduleNoResponse;
+
+  /// No description provided for @scheduleAcceptButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get scheduleAcceptButton;
+
+  /// No description provided for @scheduleRejectButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get scheduleRejectButton;
+
+  /// No description provided for @scheduleCancelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get scheduleCancelButton;
+
+  /// No description provided for @scheduleRestoreButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get scheduleRestoreButton;
+
+  /// No description provided for @scheduleRescheduleButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reschedule'**
+  String get scheduleRescheduleButton;
+
+  /// No description provided for @scheduleConfirmAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Accept Schedule'**
+  String get scheduleConfirmAccept;
+
+  /// No description provided for @scheduleConfirmReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Reject Schedule'**
+  String get scheduleConfirmReject;
+
+  /// No description provided for @scheduleConfirmCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Cancel Schedule'**
+  String get scheduleConfirmCancel;
+
+  /// No description provided for @scheduleAcceptMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to accept this schedule?'**
+  String get scheduleAcceptMessage;
+
+  /// No description provided for @scheduleRejectMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to reject this schedule?'**
+  String get scheduleRejectMessage;
+
+  /// No description provided for @scheduleCancelMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this schedule?'**
+  String get scheduleCancelMessage;
+
+  /// No description provided for @scheduleAcceptSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule accepted successfully'**
+  String get scheduleAcceptSuccess;
+
+  /// No description provided for @scheduleRejectSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule rejected successfully'**
+  String get scheduleRejectSuccess;
+
+  /// No description provided for @scheduleAcceptNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Use \'Accept Offer\' button below to accept schedule'**
+  String get scheduleAcceptNote;
+
+  /// No description provided for @scheduleRejectShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get scheduleRejectShort;
+
+  /// No description provided for @scheduleCancelSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule canceled successfully'**
+  String get scheduleCancelSuccess;
+
+  /// No description provided for @scheduleRestoreSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule restored successfully'**
+  String get scheduleRestoreSuccess;
+
+  /// No description provided for @scheduleUpdateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule updated successfully'**
+  String get scheduleUpdateSuccess;
+
+  /// No description provided for @schedule_hint_swipe_to_reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the \'Accept Proposal\' button below to accept the schedule'**
+  String get schedule_hint_swipe_to_reject;
+
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
+
+  /// No description provided for @my_transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'My Transactions'**
+  String get my_transactions;
+
+  /// No description provided for @transaction_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Details'**
+  String get transaction_details;
+
+  /// No description provided for @transaction_id.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction ID'**
+  String get transaction_id;
+
+  /// No description provided for @transaction_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get transaction_status;
+
+  /// No description provided for @scheduled_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled Time'**
+  String get scheduled_time;
+
+  /// No description provided for @check_in_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in Time'**
+  String get check_in_time;
+
+  /// No description provided for @completed_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Time'**
+  String get completed_time;
+
+  /// No description provided for @collector_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Collector Information'**
+  String get collector_info;
+
+  /// No description provided for @household_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Household Information'**
+  String get household_info;
+
+  /// No description provided for @transaction_items.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Items'**
+  String get transaction_items;
+
+  /// No description provided for @total_weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Weight'**
+  String get total_weight;
+
+  /// No description provided for @total_value.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Value'**
+  String get total_value;
+
+  /// No description provided for @collector_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Collector Note'**
+  String get collector_note;
+
+  /// No description provided for @household_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Household Note'**
+  String get household_note;
+
+  /// No description provided for @check_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Check In'**
+  String get check_in;
+
+  /// No description provided for @input_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Input Details'**
+  String get input_details;
+
+  /// No description provided for @process_transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Process Transaction'**
+  String get process_transaction;
+
+  /// No description provided for @cancel_transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Transaction'**
+  String get cancel_transaction;
+
+  /// No description provided for @provide_feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Provide Feedback'**
+  String get provide_feedback;
+
+  /// No description provided for @transaction_feedbacks.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedbacks'**
+  String get transaction_feedbacks;
+
+  /// No description provided for @in_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get in_progress;
+
+  /// No description provided for @awaiting_confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting Confirmation'**
+  String get awaiting_confirmation;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelled;
+
+  /// No description provided for @check_in_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked in successfully'**
+  String get check_in_success;
+
+  /// No description provided for @check_in_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Check-in'**
+  String get check_in_confirm;
+
+  /// No description provided for @check_in_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to check in at this location?'**
+  String get check_in_message;
+
+  /// No description provided for @input_details_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Input Transaction Details'**
+  String get input_details_title;
+
+  /// No description provided for @enter_weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Weight (kg)'**
+  String get enter_weight;
+
+  /// No description provided for @enter_value.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Value (\$)'**
+  String get enter_value;
+
+  /// No description provided for @enter_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Note (Optional)'**
+  String get enter_note;
+
+  /// No description provided for @details_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Details saved successfully'**
+  String get details_saved;
+
+  /// No description provided for @approve_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve Transaction'**
+  String get approve_confirm;
+
+  /// No description provided for @reject_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Transaction'**
+  String get reject_confirm;
+
+  /// No description provided for @approve_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to approve this transaction?'**
+  String get approve_message;
+
+  /// No description provided for @reject_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to reject this transaction?'**
+  String get reject_message;
+
+  /// No description provided for @transaction_approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction approved successfully'**
+  String get transaction_approved;
+
+  /// No description provided for @transaction_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction rejected successfully'**
+  String get transaction_rejected;
+
+  /// No description provided for @cancel_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Transaction'**
+  String get cancel_confirm;
+
+  /// No description provided for @cancel_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this transaction?'**
+  String get cancel_message;
+
+  /// No description provided for @transaction_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction cancelled successfully'**
+  String get transaction_cancelled;
+
+  /// No description provided for @feedback_submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback submitted successfully'**
+  String get feedback_submitted;
+
+  /// No description provided for @no_transactions_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions found'**
+  String get no_transactions_found;
+
+  /// No description provided for @pull_to_refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull to refresh'**
+  String get pull_to_refresh;
+
+  /// No description provided for @refreshing.
+  ///
+  /// In en, this message translates to:
+  /// **'Refreshing...'**
+  String get refreshing;
+
+  /// No description provided for @scrap_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Scrap Type'**
+  String get scrap_type;
+
+  /// No description provided for @price_per_unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Price per Unit'**
+  String get price_per_unit;
+
+  /// No description provided for @total_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Price'**
+  String get total_price;
+
+  /// No description provided for @provided_by.
+  ///
+  /// In en, this message translates to:
+  /// **'Provided by'**
+  String get provided_by;
+
+  /// No description provided for @at_time.
+  ///
+  /// In en, this message translates to:
+  /// **'at'**
+  String get at_time;
+
+  /// No description provided for @kg.
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get kg;
+
+  /// No description provided for @error_weight_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight is required'**
+  String get error_weight_required;
+
+  /// No description provided for @error_value_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Value is required'**
+  String get error_value_required;
+
+  /// No description provided for @error_check_in_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in failed'**
+  String get error_check_in_failed;
+
+  /// No description provided for @error_input_details_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to input details'**
+  String get error_input_details_failed;
+
+  /// No description provided for @error_process_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to process transaction'**
+  String get error_process_failed;
+
+  /// No description provided for @error_cancel_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to cancel transaction'**
+  String get error_cancel_failed;
+
+  /// No description provided for @error_feedback_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit feedback'**
+  String get error_feedback_failed;
+
+  /// No description provided for @transaction_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Information'**
+  String get transaction_info;
+
+  /// No description provided for @transaction_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Information'**
+  String get transaction_information;
+
+  /// No description provided for @transaction_created_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get transaction_created_time;
+
+  /// No description provided for @transaction_updated_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated At'**
+  String get transaction_updated_time;
+
+  /// No description provided for @offer_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer Information'**
+  String get offer_info;
+
+  /// No description provided for @post_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Collection Address'**
+  String get post_address;
+
+  /// No description provided for @no_feedbacks_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No feedbacks yet'**
+  String get no_feedbacks_yet;
+
+  /// No description provided for @approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approve;
+
+  /// No description provided for @reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get reject;
+
+  /// No description provided for @rewards.
+  ///
+  /// In en, this message translates to:
+  /// **'Rewards'**
+  String get rewards;
+
+  /// No description provided for @messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get messages;
+
+  /// No description provided for @sort_by.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort By'**
+  String get sort_by;
+
+  /// No description provided for @order.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get order;
+
+  /// No description provided for @newest_first.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest First'**
+  String get newest_first;
+
+  /// No description provided for @oldest_first.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest First'**
+  String get oldest_first;
+
+  /// No description provided for @sort_by_last_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by last updated'**
+  String get sort_by_last_updated;
+
+  /// No description provided for @sort_by_creation_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by creation date'**
+  String get sort_by_creation_date;
+
+  /// No description provided for @most_recent_at_top.
+  ///
+  /// In en, this message translates to:
+  /// **'Most recent at the top'**
+  String get most_recent_at_top;
+
+  /// No description provided for @earliest_at_top.
+  ///
+  /// In en, this message translates to:
+  /// **'Earliest at the top'**
+  String get earliest_at_top;
+
+  /// No description provided for @emergency_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Cancel'**
+  String get emergency_cancel;
+
+  /// No description provided for @emergency_cancel_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Cancellation'**
+  String get emergency_cancel_confirm;
+
+  /// No description provided for @emergency_cancel_message.
+  ///
+  /// In en, this message translates to:
+  /// **'This will cancel the transaction due to emergency reasons (vehicle breakdown, unable to contact, etc.). Are you sure?'**
+  String get emergency_cancel_message;
+
+  /// No description provided for @emergency_cancel_note.
+  ///
+  /// In en, this message translates to:
+  /// **'For emergency situations only: vehicle breakdown, unable to contact customer, extreme weather, etc.'**
+  String get emergency_cancel_note;
+
+  /// No description provided for @transaction_emergency_canceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction cancelled due to emergency'**
+  String get transaction_emergency_canceled;
+
+  /// No description provided for @resume_transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume Transaction'**
+  String get resume_transaction;
+
+  /// No description provided for @resume_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume Transaction'**
+  String get resume_confirm;
+
+  /// No description provided for @resume_message.
+  ///
+  /// In en, this message translates to:
+  /// **'This will resume the transaction and change status back to In Progress. Are you sure?'**
+  String get resume_message;
+
+  /// No description provided for @resume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get resume;
+
+  /// No description provided for @transaction_resumed.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction resumed successfully'**
+  String get transaction_resumed;
+
+  /// No description provided for @operation_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation failed. Please try again.'**
+  String get operation_failed;
+
+  /// No description provided for @scheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get scheduled;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

@@ -1,4 +1,4 @@
-import 'package:GreenConnectMobile/features/household/domain/entities/location_entity.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/location_entity.dart';
 import 'package:geocoding/geocoding.dart';
 
 Future<LocationEntity?> getLocationFromAddress(String address) async {
