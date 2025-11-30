@@ -4,7 +4,7 @@ class OfferDetailEntity {
   final String offerDetailId;
   final String collectionOfferId;
   final int scrapCategoryId;
-  final ScrapCategoryEntity scrapCategory;
+  final ScrapCategoryEntity? scrapCategory;
   final double pricePerUnit;
   final String unit;
 
@@ -12,7 +12,7 @@ class OfferDetailEntity {
     required this.offerDetailId,
     required this.collectionOfferId,
     required this.scrapCategoryId,
-    required this.scrapCategory,
+    this.scrapCategory,
     required this.pricePerUnit,
     required this.unit,
   });

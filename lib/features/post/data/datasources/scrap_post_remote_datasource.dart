@@ -111,4 +111,28 @@ class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
 
     return false;
   }
+
+  @override
+  Future<PaginatedScrapPostModel> searchPostsForCollector({
+    String? categoryName,
+    String? status,
+    bool? sortByLocation,
+    bool? sortByCreateAt,
+    required int pageNumber,
+    required int pageSize,
+  }) async {
+    final res = await _apiClient.get(
+      _baseUrl,
+      queryParameters: {
+        if (categoryName != null && categoryName.isNotEmpty)
+          "categoryName": categoryName,
+        if (status != null && status.isNotEmpty) "status": status,
+        if (sortByLocation != null) "sortByLocation": sortByLocation,
+        if (sortByCreateAt != null) "sortByCreateAt": sortByCreateAt,
+        "pageNumber": pageNumber,
+        "pageSize": pageSize,
+      },
+    );
+    return PaginatedScrapPostModel.fromJson(res.data);
+  }
 }

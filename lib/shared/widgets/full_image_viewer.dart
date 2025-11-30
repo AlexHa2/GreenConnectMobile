@@ -18,7 +18,7 @@ class FullImageViewer extends StatelessWidget {
     return GestureDetector(
       onTap: onClose ?? () => Navigator.pop(context),
       child: Scaffold(
-        backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.9),
+        backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
         body: Center(
           child: Hero(
             tag: imagePath,

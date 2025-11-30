@@ -34,8 +34,8 @@ class TransactionDetailAppBar extends StatelessWidget {
             child: Text(
               s.transaction_details,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white,
+              style:  TextStyle(
+                color: theme.scaffoldBackgroundColor,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),

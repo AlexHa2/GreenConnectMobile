@@ -101,6 +101,7 @@ class _FilterMenuContentState extends State<_FilterMenuContent> {
             // Sort by section
             _FilterSection(
               title: widget.s.sort_by,
+              space: widget.space,
               children: [
                 _FilterOption(
                   icon: Icons.access_time,
@@ -125,7 +126,6 @@ class _FilterMenuContentState extends State<_FilterMenuContent> {
                   space: widget.space,
                 ),
               ],
-              space: widget.space,
             ),
 
             Divider(
@@ -138,6 +138,7 @@ class _FilterMenuContentState extends State<_FilterMenuContent> {
             // Order section
             _FilterSection(
               title: widget.s.order,
+              space: widget.space,
               children: [
                 _FilterOption(
                   icon: Icons.arrow_upward,
@@ -162,7 +163,6 @@ class _FilterMenuContentState extends State<_FilterMenuContent> {
                   space: widget.space,
                 ),
               ],
-              space: widget.space,
             ),
 
             // Apply button
@@ -221,10 +221,7 @@ class _FilterSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: space * 2,
-            vertical: space,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: space * 2, vertical: space),
           child: Text(
             title,
             style: theme.textTheme.titleSmall?.copyWith(

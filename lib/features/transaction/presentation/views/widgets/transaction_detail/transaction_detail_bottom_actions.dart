@@ -292,7 +292,7 @@ class _CompletedTransactionActions extends StatelessWidget {
             label: Text(s.write_review),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.warning,
-              foregroundColor: Colors.white,
+              foregroundColor: theme.scaffoldBackgroundColor,
               padding: EdgeInsets.symmetric(vertical: spacing),
               elevation: 0,
               shape: RoundedRectangleBorder(
@@ -307,7 +307,7 @@ class _CompletedTransactionActions extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: () async {
               final result = await context.pushNamed<bool>(
-                'create-feedback',
+                'create-complaint',
                 extra: {'transactionId': transactionId},
               );
               if (result == true) {
@@ -318,7 +318,7 @@ class _CompletedTransactionActions extends StatelessWidget {
             label: Text(s.complain),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.danger,
-              side: BorderSide(color: AppColors.danger, width: 1.5),
+              side: const BorderSide(color: AppColors.danger, width: 1.5),
               padding: EdgeInsets.symmetric(vertical: spacing),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(spacing),

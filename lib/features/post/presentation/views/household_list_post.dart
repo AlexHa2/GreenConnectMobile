@@ -1,13 +1,13 @@
 import 'dart:async';
+
 import 'package:GreenConnectMobile/core/enum/post_status.dart';
 import 'package:GreenConnectMobile/core/helper/post_status_helper.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/paginated_scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/empty_state_widget.dart';
-import 'package:GreenConnectMobile/features/post/presentation/views/widgets/filter_button.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_filter_chips.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_item.dart';
-import 'package:GreenConnectMobile/features/post/presentation/views/widgets/search_bar_widget.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
@@ -138,6 +138,7 @@ class _HouseholdListPostScreenState
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final spacing = theme.extension<AppSpacing>()!;
+    final space = spacing.screenPadding;
     final s = S.of(context)!;
 
     final vmState = ref.watch(scrapPostViewModelProvider);
@@ -147,61 +148,90 @@ class _HouseholdListPostScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("${s.list} ${s.post}"),
+        title: Text(
+          "${s.list} ${s.post}",
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/household-home'),
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(spacing.screenPadding * 2),
-        ),
-        onPressed: () => context.push("/create-post"),
-        backgroundColor: theme.primaryColor,
-        label: Text(
-          s.add,
-          style: theme.textTheme.labelLarge!.copyWith(
-            color: theme.scaffoldBackgroundColor,
-            fontWeight: FontWeight.bold,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline),
+            onPressed: () => context.push("/create-post"),
+            tooltip: s.add,
           ),
-        ),
+        ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(spacing.screenPadding),
+        padding: EdgeInsets.only(bottom: space),
         child: Column(
           children: [
-            SearchBarWidget(
-              hintText: s.search_by_name,
-              onChanged: _onChangeSearch,
-            ),
-            const SizedBox(height: 12),
-
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
+            // Header Section with Search and Info
+            Container(
+              decoration: BoxDecoration(
+                color: theme.cardColor,
+                border: Border(
+                  bottom: BorderSide(color: theme.dividerColor, width: 1),
+                ),
+              ),
+              child: Column(
                 children: [
-                  FilterButton(
-                    label: s.all,
-                    color: theme.primaryColor,
-                    isSelected: _selectedStatus == null,
-                    onTap: () => _onSelectFilter(null),
+                  // Search Bar
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      space,
+                      space,
+                      space,
+                      space * 0.75,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: theme.scaffoldBackgroundColor,
+                        borderRadius: BorderRadius.circular(space),
+                        border: Border.all(
+                          color: theme.dividerColor.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      child: TextField(
+                        onChanged: _onChangeSearch,
+                        decoration: InputDecoration(
+                          hintText: s.search_by_name,
+                          hintStyle: TextStyle(
+                            color: theme.hintColor.withValues(alpha: 0.6),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: theme.primaryColor,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: space,
+                            vertical: space * 0.75,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  SizedBox(width: spacing.screenPadding / 2),
-                  _buildStatusFilter(context, "Open"),
-                  SizedBox(width: spacing.screenPadding / 2),
-                  _buildStatusFilter(context, "Partiallybooked"),
-                  SizedBox(width: spacing.screenPadding / 2),
-                  _buildStatusFilter(context, "Fullybooked"),
-                  SizedBox(width: spacing.screenPadding / 2),
-                  _buildStatusFilter(context, "Completed"),
-                  SizedBox(width: spacing.screenPadding / 2),
-                  _buildStatusFilter(context, "Canceled"),
+
+                  // Filter Chips
+                  Padding(
+                    padding: EdgeInsets.only(bottom: space * 0.75),
+                    child: PostFilterChips(
+                      selectedStatus: _selectedStatus,
+                      onSelectFilter: _onSelectFilter,
+                      allLabel: s.all,
+                      showAllStatuses: true,
+                    ),
+                  ),
                 ],
               ),
             ),
-
-            const SizedBox(height: 12),
 
             // Body
             Expanded(
@@ -210,34 +240,52 @@ class _HouseholdListPostScreenState
                 child: Builder(
                   builder: (context) {
                     if (isFirstLoading) {
-                      return const Center(child: CircularProgressIndicator());
+                      return Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: theme.scaffoldBackgroundColor.withValues(
+                          alpha: 0.8,
+                        ),
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
                     }
 
                     if (error != null && _posts.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(s.error_occurred),
-                            const SizedBox(height: 8),
-                            ElevatedButton(
-                              onPressed: _refresh,
-                              child: Text(s.retry),
+                      return ListView(
+                        children: [
+                          SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(s.error_occurred),
+                                const SizedBox(height: 8),
+                                ElevatedButton(
+                                  onPressed: _refresh,
+                                  child: Text(s.retry),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       );
                     }
 
                     if (_posts.isEmpty) {
-                      return EmptyStateWidget(
-                        icon: Icons.post_add_outlined,
-                        message: s.not_found,
+                      return ListView(
+                        children: [
+                          SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                          EmptyStateWidget(
+                            icon: Icons.post_add_outlined,
+                            message: s.not_found,
+                          ),
+                        ],
                       );
                     }
 
                     return ListView.builder(
                       controller: _scrollController,
+                      padding: EdgeInsets.all(space),
                       itemCount: _posts.length + (_hasMore ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index == _posts.length) {
@@ -262,7 +310,7 @@ class _HouseholdListPostScreenState
                         final time = post.availableTimeRange;
 
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
+                          padding: EdgeInsets.only(bottom: space),
                           child: PostItem(
                             title: title,
                             desc: desc,
@@ -273,6 +321,15 @@ class _HouseholdListPostScreenState
                               context.push(
                                 '/detail-post',
                                 extra: {'postId': post.scrapPostId},
+                              );
+                            },
+                            onGoToOffers: () {
+                              context.push(
+                                '/offers-list',
+                                extra: {
+                                  'postId': post.scrapPostId,
+                                  'isCollectorView': false,
+                                },
                               );
                             },
                             onGoToTransaction: () {
@@ -296,20 +353,4 @@ class _HouseholdListPostScreenState
     );
   }
 
-  Widget _buildStatusFilter(BuildContext context, String status) {
-    final color = PostStatusHelper.getStatusColor(
-      context,
-      PostStatus.parseStatus(status),
-    );
-    final label = PostStatusHelper.getLocalizedStatus(
-      context,
-      PostStatus.parseStatus(status),
-    );
-    return FilterButton(
-      label: label,
-      color: color,
-      isSelected: _selectedStatus == status,
-      onTap: () => _onSelectFilter(status),
-    );
-  }
 }

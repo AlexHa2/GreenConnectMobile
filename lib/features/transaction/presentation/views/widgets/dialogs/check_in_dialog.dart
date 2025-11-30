@@ -33,7 +33,7 @@ class CheckInDialog extends StatelessWidget {
           Icon(
             Icons.check_circle_outline,
             size: space * 6,
-            color: Colors.green,
+            color: theme.primaryColor,
           ),
           SizedBox(height: space * 1.5),
           Text(
@@ -55,8 +55,8 @@ class CheckInDialog extends StatelessWidget {
             onSuccess();
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
-            foregroundColor: Colors.white,
+            backgroundColor: theme.primaryColor,
+            foregroundColor: theme.scaffoldBackgroundColor,
           ),
           child: Text(s.check_in),
         ),

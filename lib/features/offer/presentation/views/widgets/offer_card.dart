@@ -251,7 +251,7 @@ class OfferCard extends StatelessWidget {
                                   SizedBox(width: spacing),
                                   Expanded(
                                     child: Text(
-                                      detail.scrapCategory.categoryName,
+                                      detail.scrapCategory!.categoryName,
                                       style: theme.textTheme.bodySmall,
                                     ),
                                   ),

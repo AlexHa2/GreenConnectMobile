@@ -34,4 +34,13 @@ abstract class ScrapPostRepository {
     required int
     scrapCategoryId,
   });
+
+  Future<PaginatedScrapPostEntity> searchPostsForCollector({
+    String? categoryName,
+    String? status,
+    bool? sortByLocation,
+    bool? sortByCreateAt,
+    required int pageNumber,
+    required int pageSize,
+  });
 }

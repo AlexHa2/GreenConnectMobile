@@ -6,7 +6,7 @@ class HouseholdEntity {
   final int pointBalance;
   final String rank;
   final List<String> roles;
-  final String avatarUrl;
+  final String? avatarUrl;
 
   HouseholdEntity({
     required this.id,
@@ -15,6 +15,6 @@ class HouseholdEntity {
     required this.pointBalance,
     required this.rank,
     required this.roles,
-    required this.avatarUrl,
+    this.avatarUrl,
   });
 }

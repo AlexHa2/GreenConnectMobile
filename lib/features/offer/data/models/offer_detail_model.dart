@@ -5,7 +5,7 @@ class OfferDetailModel {
   final String offerDetailId;
   final String collectionOfferId;
   final int scrapCategoryId;
-  final ScrapCategoryModel scrapCategory;
+  final ScrapCategoryModel? scrapCategory;
   final double pricePerUnit;
   final String unit;
 
@@ -13,7 +13,7 @@ class OfferDetailModel {
     required this.offerDetailId,
     required this.collectionOfferId,
     required this.scrapCategoryId,
-    required this.scrapCategory,
+    this.scrapCategory,
     required this.pricePerUnit,
     required this.unit,
   });
@@ -23,7 +23,9 @@ class OfferDetailModel {
       offerDetailId: json['offerDetailId'],
       collectionOfferId: json['collectionOfferId'],
       scrapCategoryId: json['scrapCategoryId'],
-      scrapCategory: ScrapCategoryModel.fromJson(json['scrapCategory']),
+      scrapCategory: json['scrapCategory'] != null
+          ? ScrapCategoryModel.fromJson(json['scrapCategory'])
+          : null,
       pricePerUnit: (json['pricePerUnit'] as num).toDouble(),
       unit: json['unit'],
     );
@@ -34,7 +36,7 @@ class OfferDetailModel {
       'offerDetailId': offerDetailId,
       'collectionOfferId': collectionOfferId,
       'scrapCategoryId': scrapCategoryId,
-      'scrapCategory': scrapCategory.toJson(),
+      'scrapCategory': scrapCategory?.toJson(),
       'pricePerUnit': pricePerUnit,
       'unit': unit,
     };
@@ -45,7 +47,7 @@ class OfferDetailModel {
       offerDetailId: offerDetailId,
       collectionOfferId: collectionOfferId,
       scrapCategoryId: scrapCategoryId,
-      scrapCategory: scrapCategory.toEntity(),
+      scrapCategory: scrapCategory?.toEntity(),
       pricePerUnit: pricePerUnit,
       unit: unit,
     );

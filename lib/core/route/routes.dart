@@ -2,6 +2,9 @@ import 'package:GreenConnectMobile/core/helper/app_router_observer.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/login_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/register_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/welcome_page.dart';
+import 'package:GreenConnectMobile/features/complaint/presentation/views/complaint_detail_screen.dart';
+import 'package:GreenConnectMobile/features/complaint/presentation/views/complaint_list_page.dart';
+import 'package:GreenConnectMobile/features/complaint/presentation/views/create_complaint_screen.dart';
 import 'package:GreenConnectMobile/features/feedback/presentation/views/create_feedback_page.dart';
 import 'package:GreenConnectMobile/features/feedback/presentation/views/feedback_detail_page.dart';
 import 'package:GreenConnectMobile/features/feedback/presentation/views/feedback_list_page.dart';
@@ -9,6 +12,8 @@ import 'package:GreenConnectMobile/features/message/presentation/views/chat_mess
 import 'package:GreenConnectMobile/features/message/presentation/views/message.dart';
 import 'package:GreenConnectMobile/features/notification/presentation/views/widgets/notification.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/offers_list_page.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/collector_list_post.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/collector_post_detail.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/create_post.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/house_hold_home.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/household_list_post.dart';
@@ -30,6 +35,7 @@ final GoRouter greenRouter = GoRouter(
   observers: [appRouterObserver],
   initialLocation: '/',
   routes: [
+    
     ShellRoute(
       builder: (context, state, child) => HouseholdLayout(child: child),
       routes: [
@@ -60,6 +66,29 @@ final GoRouter greenRouter = GoRouter(
           path: '/feedback-list',
           name: 'feedback-list',
           builder: (context, state) => const FeedbackListPage(),
+        ),
+        GoRoute(
+          path: '/complaint-list',
+          name: 'complaint-list',
+          builder: (context, state) => const ComplaintListPage(),
+        ),
+      ],
+    ),
+    ShellRoute(
+      builder: (context, state, child) => HouseholdLayout(child: child),
+      routes: [
+        GoRoute(
+          path: '/collector-list-post',
+          name: 'collector-list-post',
+          builder: (context, state) => const CollectorListPostPage(),
+        ),
+        GoRoute(
+          path: '/collector-post-detail',
+          name: 'collector-post-detail',
+          builder: (context, state) {
+             final initialData = state.extra as Map<String, dynamic>? ?? {};
+             return CollectorPostDetailPage(initialData: initialData);
+          },
         ),
       ],
     ),
@@ -170,6 +199,26 @@ final GoRouter greenRouter = GoRouter(
       builder: (context, state) {
         final initialData = state.extra as Map<String, dynamic>? ?? {};
         return CreateFeedbackPage(
+          transactionId: initialData['transactionId'] as String,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/complaint-detail',
+      name: 'complaint-detail',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        return ComplaintDetailPage(
+          complaintId: initialData['complaintId'] as String,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/create-complaint',
+      name: 'create-complaint',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        return CreateComplaintPage(
           transactionId: initialData['transactionId'] as String,
         );
       },
