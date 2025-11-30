@@ -87,6 +87,7 @@ class OtpInputCard extends StatelessWidget {
 
             /// --- Pinput OTP ---
             Pinput(
+              key: const Key('otpField'),
               length: 6,
               controller: controller,
               enabled: !isLoading,
