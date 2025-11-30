@@ -1,11 +1,13 @@
 import 'dart:async';
-
 import 'package:GreenConnectMobile/core/enum/post_status.dart';
 import 'package:GreenConnectMobile/core/helper/post_status_helper.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/paginated_scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/empty_state_widget.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/filter_button.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_item.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/search_bar_widget.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
@@ -169,41 +171,31 @@ class _HouseholdListPostScreenState
         padding: EdgeInsets.all(spacing.screenPadding),
         child: Column(
           children: [
-            // Search bar
-            TextField(
+            SearchBarWidget(
+              hintText: s.search_by_name,
               onChanged: _onChangeSearch,
-              decoration: InputDecoration(
-                hintText: s.search_by_name,
-                prefixIcon: const Icon(Icons.search),
-              ),
             ),
             const SizedBox(height: 12),
 
-            // Filter buttons
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildFilterButton(
+                  FilterButton(
                     label: s.all,
                     color: theme.primaryColor,
                     isSelected: _selectedStatus == null,
                     onTap: () => _onSelectFilter(null),
                   ),
                   SizedBox(width: spacing.screenPadding / 2),
-
                   _buildStatusFilter(context, "Open"),
                   SizedBox(width: spacing.screenPadding / 2),
-
                   _buildStatusFilter(context, "Partiallybooked"),
                   SizedBox(width: spacing.screenPadding / 2),
-
                   _buildStatusFilter(context, "Fullybooked"),
                   SizedBox(width: spacing.screenPadding / 2),
-
                   _buildStatusFilter(context, "Completed"),
                   SizedBox(width: spacing.screenPadding / 2),
-
                   _buildStatusFilter(context, "Canceled"),
                 ],
               ),
@@ -238,7 +230,10 @@ class _HouseholdListPostScreenState
                     }
 
                     if (_posts.isEmpty) {
-                      return Center(child: Text(s.not_found));
+                      return EmptyStateWidget(
+                        icon: Icons.post_add_outlined,
+                        message: s.not_found,
+                      );
                     }
 
                     return ListView.builder(
@@ -310,39 +305,11 @@ class _HouseholdListPostScreenState
       context,
       PostStatus.parseStatus(status),
     );
-    return _buildFilterButton(
+    return FilterButton(
       label: label,
       color: color,
       isSelected: _selectedStatus == status,
       onTap: () => _onSelectFilter(status),
-    );
-  }
-
-  Widget _buildFilterButton({
-    required String label,
-    required Color color,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-
-    return OutlinedButton(
-      onPressed: onTap,
-      style: OutlinedButton.styleFrom(
-        backgroundColor: isSelected
-            ? color.withValues(alpha: 0.1)
-            : Colors.transparent,
-        side: BorderSide(color: color),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      ),
-      child: Text(
-        label,
-        style: theme.textTheme.bodyMedium!.copyWith(
-          color: isSelected ? color : theme.textTheme.bodyMedium!.color,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
     );
   }
 }

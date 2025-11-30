@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/confirm_dialog_helper.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
@@ -8,11 +9,12 @@ import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Bottom action buttons for transaction detail
 class TransactionDetailBottomActions extends ConsumerWidget {
   final TransactionEntity transaction;
-  final String userRole;
+  final Role userRole;
   final VoidCallback onActionCompleted;
 
   const TransactionDetailBottomActions({
@@ -22,21 +24,49 @@ class TransactionDetailBottomActions extends ConsumerWidget {
     required this.onActionCompleted,
   });
 
-  bool get _isHousehold => userRole.toLowerCase() == 'household';
+  bool get _isHousehold => userRole == Role.household;
 
   bool get _canTakeAction {
     final status = transaction.statusEnum;
     return _isHousehold && status == TransactionStatus.inProgress;
   }
 
+  bool get _isCompleted {
+    return transaction.statusEnum == TransactionStatus.completed;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!.screenPadding;
+
+    // Show review/complain buttons for completed transactions
+    if (_isCompleted) {
+      return Container(
+        padding: EdgeInsets.all(spacing),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: _CompletedTransactionActions(
+            transactionId: transaction.transactionId,
+            onActionCompleted: onActionCompleted,
+          ),
+        ),
+      );
+    }
+
+    // Show approve/reject buttons for in-progress transactions
     if (!_canTakeAction) {
       return const SizedBox.shrink();
     }
-
-    final theme = Theme.of(context);
-    final spacing = theme.extension<AppSpacing>()!.screenPadding;
 
     return Container(
       padding: EdgeInsets.all(spacing),
@@ -223,6 +253,80 @@ class _ApproveButton extends ConsumerWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
+    );
+  }
+}
+
+/// Action buttons for completed transactions
+class _CompletedTransactionActions extends StatelessWidget {
+  final String transactionId;
+  final VoidCallback onActionCompleted;
+
+  const _CompletedTransactionActions({
+    required this.transactionId,
+    required this.onActionCompleted,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!.screenPadding;
+    final s = S.of(context)!;
+
+    return Row(
+      children: [
+        // Review button
+        Expanded(
+          flex: 2,
+          child: ElevatedButton.icon(
+            onPressed: () async {
+              final result = await context.pushNamed<bool>(
+                'create-feedback',
+                extra: {'transactionId': transactionId},
+              );
+              if (result == true) {
+                onActionCompleted();
+              }
+            },
+            icon: Icon(Icons.star, size: spacing * 1.8),
+            label: Text(s.write_review),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.warning,
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(vertical: spacing),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(spacing),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: spacing),
+        // Complain button
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () async {
+              final result = await context.pushNamed<bool>(
+                'create-feedback',
+                extra: {'transactionId': transactionId},
+              );
+              if (result == true) {
+                onActionCompleted();
+              }
+            },
+            icon: Icon(Icons.report_problem, size: spacing * 1.8),
+            label: Text(s.complain),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.danger,
+              side: BorderSide(color: AppColors.danger, width: 1.5),
+              padding: EdgeInsets.symmetric(vertical: spacing),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(spacing),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

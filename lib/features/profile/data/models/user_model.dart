@@ -10,6 +10,7 @@ class UserModel extends UserEntity {
     required super.rank,
     required super.roles,
     super.avatarUrl,
+    super.buyerType,
   });
 
   @override
@@ -22,6 +23,7 @@ class UserModel extends UserEntity {
       rank: json['rank'] ?? '',
       roles: List<String>.from(json['roles'] ?? []),
       avatarUrl: json['avatarUrl'],
+      buyerType: json['buyerType'],
     );
   }
 
@@ -34,6 +36,7 @@ class UserModel extends UserEntity {
       'rank': rank,
       'roles': roles,
       'avatarUrl': avatarUrl,
+      'buyerType': buyerType,
     };
   }
 
@@ -46,6 +49,7 @@ class UserModel extends UserEntity {
       rank: rank,
       roles: roles,
       avatarUrl: avatarUrl,
+      buyerType: buyerType,
     );
   }
 

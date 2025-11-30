@@ -35,7 +35,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
   late TextEditingController _quantityController;
   late TextEditingController _weightController;
 
-  // Logic: Tách biệt ảnh cũ (URL) và ảnh mới (File)
+  // Logic: Separate old image (URL) and new image (File)
   String? _currentImageUrl;
   File? _newPickedFile;
 
@@ -57,8 +57,8 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
     if (picked != null) {
       setState(() {
         _newPickedFile = File(picked.path);
-        // Khi chọn ảnh mới, ta ưu tiên hiển thị ảnh mới,
-        // nhưng vẫn giữ _currentImageUrl để tham khảo nếu cần (hoặc set null tùy logic business)
+        // When selecting new image, prioritize displaying new image,
+        // but keep _currentImageUrl for reference if needed (or set null depending on business logic)
       });
     }
   }
@@ -85,7 +85,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
       ),
       backgroundColor: theme.cardColor,
       child: SingleChildScrollView(
-        // Thêm scroll để tránh overflow khi bàn phím hiện
+        // Add scroll to prevent overflow when keyboard appears
         child: Padding(
           padding: EdgeInsets.all(spacing.screenPadding * 2),
           child: Form(
@@ -170,7 +170,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                 SizedBox(height: spacing.screenPadding * 1.5),
 
                 // --- IMPROVED IMAGE SECTION ---
-                _buildLabel(context, S.of(context)!.image), // "Hình ảnh"
+                _buildLabel(context, S.of(context)!.image), // "Image"
                 SizedBox(height: spacing.screenPadding / 2),
                 _buildImageSection(context, theme, spacing),
 
@@ -193,9 +193,9 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                     SizedBox(width: spacing.screenPadding),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            AppColors.warningUpdate, // Màu cam/vàng update
-                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors
+                            .warningUpdate, // Orange/yellow update color
+                        foregroundColor: theme.scaffoldBackgroundColor,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 12,
@@ -206,15 +206,15 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          // Logic trả về dữ liệu
-                          // Ưu tiên trả về file mới, nếu không có thì trả về url cũ (hoặc null nếu đã xóa hết)
+                          // Return data logic
+                          // Prioritize returning new file, if not available return old url (or null if all deleted)
                           dynamic imageResult;
                           if (_newPickedFile != null) {
                             imageResult =
-                                _newPickedFile!.path; // Trả về Path String
+                                _newPickedFile!.path; // Return Path String
                           } else {
                             imageResult =
-                                _currentImageUrl; // Trả về URL cũ hoặc null
+                                _currentImageUrl; // Return old URL or null
                           }
 
                           Navigator.pop(context, {
@@ -246,6 +246,11 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
         _newPickedFile != null ||
         (_currentImageUrl != null && _currentImageUrl!.isNotEmpty);
     final spacing = Theme.of(context).extension<AppSpacing>()!;
+    
+    // Check if _currentImageUrl is a file path or URL
+    final bool isCurrentImageFile = _currentImageUrl != null && 
+        !_currentImageUrl!.startsWith('http');
+    
     return GestureDetector(
       onTap: _pickImage,
       child: Container(
@@ -264,16 +269,27 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                     borderRadius: BorderRadius.circular(spacing.screenPadding),
                     child: _newPickedFile != null
                         ? Image.file(_newPickedFile!, fit: BoxFit.cover)
-                        : Image.network(
-                            _currentImageUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (ctx, err, stack) => Center(
-                              child: Icon(
-                                Icons.broken_image,
-                                color: theme.disabledColor,
+                        : isCurrentImageFile
+                            ? Image.file(
+                                File(_currentImageUrl!),
+                                fit: BoxFit.cover,
+                                errorBuilder: (ctx, err, stack) => Center(
+                                  child: Icon(
+                                    Icons.broken_image,
+                                    color: theme.disabledColor,
+                                  ),
+                                ),
+                              )
+                            : Image.network(
+                                _currentImageUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (ctx, err, stack) => Center(
+                                  child: Icon(
+                                    Icons.broken_image,
+                                    color: theme.disabledColor,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
                   ),
 
                   Positioned(

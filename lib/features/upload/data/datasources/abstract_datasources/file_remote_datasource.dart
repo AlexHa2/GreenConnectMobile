@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:GreenConnectMobile/features/upload/data/models/delete_file_request_model.dart';
+import 'package:GreenConnectMobile/features/upload/data/models/recognize_scrap_response_model.dart';
 import 'package:GreenConnectMobile/features/upload/data/models/upload_request_model.dart';
 import 'package:GreenConnectMobile/features/upload/data/models/upload_url_model.dart';
 
@@ -13,6 +14,15 @@ abstract class FileRemoteDataSource {
     String entityType,
     UploadFileWithEntityRequestModel request,
   );
+
+  /// Upload file for scrap-post
+  Future<UploadUrlModel> uploadFileForScrapPost(UploadFileRequestModel request);
+
+  /// Upload file for complaint
+  Future<UploadUrlModel> uploadFileForComplaint(UploadFileRequestModel request);
+
+  /// Recognize scrap from image using AI
+  Future<RecognizeScrapResponseModel> recognizeScrap(Uint8List imageBytes, String fileName);
 
   Future<bool> deleteFile(DeleteFileRequestModel request);
 

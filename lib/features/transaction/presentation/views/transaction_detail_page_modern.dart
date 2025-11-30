@@ -1,4 +1,7 @@
+import 'package:GreenConnectMobile/core/di/profile_injector.dart';
+import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
+import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/transaction_detail_app_bar.dart';
@@ -14,12 +17,10 @@ import 'package:go_router/go_router.dart';
 
 class TransactionDetailPageModern extends ConsumerStatefulWidget {
   final String transactionId;
-  final String userRole;
 
   const TransactionDetailPageModern({
     super.key,
     required this.transactionId,
-    required this.userRole,
   });
 
   @override
@@ -29,14 +30,32 @@ class TransactionDetailPageModern extends ConsumerStatefulWidget {
 
 class _TransactionDetailPageModernState
     extends ConsumerState<TransactionDetailPageModern> {
+  final TokenStorageService _tokenStorage = sl<TokenStorageService>();
   bool _hasChanges = false;
+  Role _userRole = Role.household;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadUserRole();
       _loadTransactionDetail();
     });
+  }
+
+  Future<void> _loadUserRole() async {
+    final user = await _tokenStorage.getUserData();
+    if (user != null && user.roles.isNotEmpty) {
+      setState(() {
+        if (Role.hasRole(user.roles, Role.household)) {
+          _userRole = Role.household;
+        } else if (Role.hasRole(user.roles, Role.individualCollector)) {
+          _userRole = Role.individualCollector;
+        } else if (Role.hasRole(user.roles, Role.businessCollector)) {
+          _userRole = Role.businessCollector;
+        }
+      });
+    }
   }
 
   Future<void> _loadTransactionDetail() async {
@@ -65,12 +84,20 @@ class _TransactionDetailPageModernState
     final s = S.of(context)!;
     final state = ref.watch(transactionViewModelProvider);
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      extendBodyBehindAppBar: true,
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: _buildBody(state, theme, spacing, s),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _onBack();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        extendBodyBehindAppBar: true,
+        body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: _buildBody(state, theme, spacing, s),
+        ),
       ),
     );
   }
@@ -99,7 +126,7 @@ class _TransactionDetailPageModernState
     return _TransactionDetailContent(
       key: const ValueKey('content'),
       transaction: state.detailData!,
-      userRole: widget.userRole,
+      userRole: _userRole,
       onRefresh: _onRefresh,
       onActionCompleted: _onActionCompleted,
       onBack: _onBack,
@@ -110,7 +137,7 @@ class _TransactionDetailPageModernState
 /// Main content widget for transaction detail
 class _TransactionDetailContent extends StatelessWidget {
   final TransactionEntity transaction;
-  final String userRole;
+  final Role userRole;
   final VoidCallback onRefresh;
   final VoidCallback onActionCompleted;
   final VoidCallback onBack;

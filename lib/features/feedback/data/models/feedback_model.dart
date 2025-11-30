@@ -29,18 +29,40 @@ class FeedbackModel {
 
   factory FeedbackModel.fromJson(Map<String, dynamic> json) {
     return FeedbackModel(
-      feedbackId: json['feedbackId'] ?? '',
-      transactionId: json['transactionId'] ?? '',
+      feedbackId: json['feedbackId'] as String? ?? '',
+      transactionId: json['transactionId'] as String? ?? '',
       transaction: json['transaction'] != null
-          ? TransactionModel.fromJson(json['transaction'])
+          ? TransactionModel.fromJson(json['transaction'] as Map<String, dynamic>)
           : null,
-      reviewerId: json['reviewerId'] ?? '',
-      reviewer: UserModel.fromJson(json['reviewer'] ?? {}),
-      revieweeId: json['revieweeId'] ?? '',
-      reviewee: UserModel.fromJson(json['reviewee'] ?? {}),
-      rate: json['rate'] ?? 0,
-      comment: json['comment'] ?? '',
-      createdAt: DateTime.parse(json['createdAt']),
+      reviewerId: json['reviewerId'] as String? ?? '',
+      reviewer: json['reviewer'] != null
+          ? UserModel.fromJson(json['reviewer'] as Map<String, dynamic>)
+          : UserModel(
+              userId: '',
+              fullName: 'Unknown',
+              phoneNumber: '',
+              pointBalance: 0,
+              rank: 'Bronze',
+              roles: [],
+              avatarUrl: null,
+            ),
+      revieweeId: json['revieweeId'] as String? ?? '',
+      reviewee: json['reviewee'] != null
+          ? UserModel.fromJson(json['reviewee'] as Map<String, dynamic>)
+          : UserModel(
+              userId: '',
+              fullName: 'Unknown',
+              phoneNumber: '',
+              pointBalance: 0,
+              rank: 'Bronze',
+              roles: [],
+              avatarUrl: null,
+            ),
+      rate: (json['rate'] as num?)?.toInt() ?? 0,
+      comment: json['comment'] as String? ?? '',
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : DateTime.now(),
     );
   }
 

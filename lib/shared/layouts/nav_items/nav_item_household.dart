@@ -8,18 +8,23 @@ final List<NavConfig> navItemsHousehold = [
     routeName: '/household-home',
   ),
   const NavConfig(
+    icon: Icons.chat,
+    label: "Complaints",
+    routeName: '/list-complaints',
+  ),
+  const NavConfig(
     icon: Icons.receipt,
     label: "Transactions",
     routeName: '/list-transactions',
   ),
    const NavConfig(
-    icon: Icons.chat,
-    label: "Messages",
-    routeName: '/list-message',
+    icon: Icons.feedback,
+    label: "Feedbacks",
+    routeName: '/feedback-list',
   ),
   const NavConfig(
     icon: Icons.settings,
-    label: "Settings",
+    label: "Profile",
     routeName: '/profile-settings',
   ),
 ];

@@ -62,14 +62,16 @@ class _HouseholdLayoutState extends State<HouseholdLayout> {
 
   String _getLableWithLocalization(String label) {
     final s = S.of(context)!;
-    switch (label) {
-      case "Home":
+    switch (label.toLowerCase()) {
+      case "home":
         return s.home;
-      case "Transactions":
+      case "complaints":
+        return s.complaints;
+      case "transactions":
         return s.transactions;
-      case "Rewards":
-        return s.rewards;
-      case "Profile":
+      case "feedbacks":
+        return s.feedbacks;
+      case "profile":
         return s.profile;
       default:
         return label;

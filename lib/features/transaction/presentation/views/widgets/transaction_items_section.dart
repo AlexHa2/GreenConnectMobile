@@ -1,9 +1,11 @@
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_entity.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
 class TransactionItemsSection extends StatelessWidget {
   final List<TransactionDetailEntity> transactionDetails;
+  final TransactionEntity transaction;
   final ThemeData theme;
   final double space;
   final S s;
@@ -11,6 +13,7 @@ class TransactionItemsSection extends StatelessWidget {
   const TransactionItemsSection({
     super.key,
     required this.transactionDetails,
+    required this.transaction,
     required this.theme,
     required this.space,
     required this.s,
@@ -53,9 +56,10 @@ class TransactionItemsSection extends StatelessWidget {
           ...transactionDetails.asMap().entries.map((entry) {
             final index = entry.key;
             final item = entry.value;
+            final imageUrl = _getImageUrlForItem(item);
             return Column(
               children: [
-                _buildItemRow(item, s),
+                _buildItemRow(item, imageUrl, s),
                 if (index < transactionDetails.length - 1)
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: space),
@@ -78,13 +82,13 @@ class TransactionItemsSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${s.total_price} ${s.per_unit}',
+                  s.total_price,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  _calculateTotal().toStringAsFixed(2),
+                  '${_calculateTotal().toStringAsFixed(2)} ${s.per_unit}',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.primaryColor,
@@ -98,21 +102,49 @@ class TransactionItemsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildItemRow(TransactionDetailEntity item, S s) {
+  Widget _buildItemRow(TransactionDetailEntity item, String? imageUrl, S s) {
     return Row(
       children: [
-        // Icon
-        Container(
-          padding: EdgeInsets.all(space * 0.75),
-          decoration: BoxDecoration(
-            color: theme.primaryColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(space / 2),
-          ),
-          child: Icon(
-            Icons.recycling,
-            size: space * 1.5,
-            color: theme.primaryColor,
-          ),
+        // Image or Icon
+        ClipRRect(
+          borderRadius: BorderRadius.circular(space / 2),
+          child: imageUrl != null && imageUrl.isNotEmpty
+              ? Image.network(
+                  imageUrl,
+                  width: space * 4,
+                  height: space * 4,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: space * 4,
+                      height: space * 4,
+                      padding: EdgeInsets.all(space * 0.75),
+                      decoration: BoxDecoration(
+                        color: theme.primaryColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(space / 2),
+                      ),
+                      child: Icon(
+                        Icons.recycling,
+                        size: space * 1.5,
+                        color: theme.primaryColor,
+                      ),
+                    );
+                  },
+                )
+              : Container(
+                  width: space * 4,
+                  height: space * 4,
+                  padding: EdgeInsets.all(space * 0.75),
+                  decoration: BoxDecoration(
+                    color: theme.primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(space / 2),
+                  ),
+                  child: Icon(
+                    Icons.recycling,
+                    size: space * 1.5,
+                    color: theme.primaryColor,
+                  ),
+                ),
         ),
 
         SizedBox(width: space),
@@ -130,7 +162,7 @@ class TransactionItemsSection extends StatelessWidget {
               ),
               SizedBox(height: space / 4),
               Text(
-                '${item.quantity} ${item.unit} × ${item.pricePerUnit.toStringAsFixed(2)}/${item.unit}',
+                '${item.quantity} × ${item.pricePerUnit.toStringAsFixed(2)}/${item.unit}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.textTheme.bodySmall?.color?.withValues(
                     alpha: 0.7,
@@ -143,7 +175,7 @@ class TransactionItemsSection extends StatelessWidget {
 
         // Price
         Text(
-          '${item.finalPrice.toStringAsFixed(2)} ${s.per_unit}',
+          '${item.finalPrice.toStringAsFixed(2)} / ${s.per_unit}',
           style: theme.textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.primaryColor,
@@ -155,5 +187,23 @@ class TransactionItemsSection extends StatelessWidget {
 
   double _calculateTotal() {
     return transactionDetails.fold(0.0, (sum, item) => sum + item.finalPrice);
+  }
+
+  /// Get imageUrl for a transaction item by matching scrapCategoryId with scrapPostDetails
+  String? _getImageUrlForItem(TransactionDetailEntity item) {
+    final scrapPost = transaction.offer?.scrapPost;
+    if (scrapPost == null || scrapPost.scrapPostDetails.isEmpty) {
+      return null;
+    }
+
+    // Find matching scrap post detail by scrapCategoryId
+    try {
+      final matchingDetail = scrapPost.scrapPostDetails.firstWhere(
+        (detail) => detail.scrapCategoryId == item.scrapCategoryId,
+      );
+      return matchingDetail.imageUrl;
+    } catch (e) {
+      return null;
+    }
   }
 }

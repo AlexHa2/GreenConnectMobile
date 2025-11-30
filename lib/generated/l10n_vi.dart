@@ -877,6 +877,19 @@ class SVi extends S {
   String get buyer_type_business => 'Doanh nghiệp';
 
   @override
+  String get update_verification => 'Cập nhật xác thực';
+
+  @override
+  String get verification_updated_successfully =>
+      'Cập nhật xác thực thành công';
+
+  @override
+  String get update_account_type => 'Cập nhật loại tài khoản';
+
+  @override
+  String get switch_account_type => 'Chuyển đổi loại tài khoản';
+
+  @override
   String get send_verification_info => 'gửi thông tin xác thực thành công';
 
   @override
@@ -912,7 +925,7 @@ class SVi extends S {
   String get no_offers_available => 'Hiện tại chưa có đề nghị nào';
 
   @override
-  String get something_went_wrong => 'Đã có lỗi xảy ra';
+  String get something_went_wrong => 'Đã xảy ra lỗi';
 
   @override
   String get try_again => 'Thử lại';
@@ -1370,6 +1383,94 @@ class SVi extends S {
   String get no_feedbacks_yet => 'Chưa có đánh giá';
 
   @override
+  String get my_feedbacks => 'Đánh giá của tôi';
+
+  @override
+  String get all_feedbacks => 'Tất cả đánh giá';
+
+  @override
+  String get feedback_list => 'Danh sách đánh giá';
+
+  @override
+  String get sort_feedbacks => 'Sắp xếp đánh giá';
+
+  @override
+  String get no_feedbacks_found => 'Không có phản hồi nào hiện tại';
+
+  @override
+  String get no_feedbacks_available => 'Hiện tại chưa có đánh giá nào';
+
+  @override
+  String get rated_by => 'Đánh giá bởi';
+
+  @override
+  String get rated_for => 'Đánh giá cho';
+
+  @override
+  String get transaction_ref => 'Giao dịch';
+
+  @override
+  String get stars => 'sao';
+
+  @override
+  String get feedback_details => 'Chi tiết phản hồi';
+
+  @override
+  String get feedback_information => 'Thông tin đánh giá';
+
+  @override
+  String get reviewer_information => 'Thông tin người đánh giá';
+
+  @override
+  String get reviewee_information => 'Thông tin người được đánh giá';
+
+  @override
+  String get given_rating => 'Đánh giá';
+
+  @override
+  String get feedback_comment => 'Bình luận';
+
+  @override
+  String get no_comment => 'Không có bình luận';
+
+  @override
+  String get feedback_date => 'Ngày đánh giá';
+
+  @override
+  String get edit_feedback => 'Chỉnh sửa đánh giá';
+
+  @override
+  String get delete_feedback => 'Xóa phản hồi';
+
+  @override
+  String get confirm_delete_feedback => 'Xóa đánh giá';
+
+  @override
+  String get delete_feedback_message =>
+      'Bạn có chắc chắn muốn xóa đánh giá này? Hành động này không thể hoàn tác.';
+
+  @override
+  String get feedback_deleted_success => 'Xóa đánh giá thành công';
+
+  @override
+  String get feedback_updated_success => 'Cập nhật đánh giá thành công';
+
+  @override
+  String get update_feedback_failed => 'Cập nhật đánh giá thất bại';
+
+  @override
+  String get delete_feedback_failed => 'Xóa đánh giá thất bại';
+
+  @override
+  String get view_transaction => 'Xem giao dịch';
+
+  @override
+  String get member_info => 'Thông tin thành viên';
+
+  @override
+  String get contact_info => 'Thông tin liên hệ';
+
+  @override
   String get approve => 'Phê duyệt';
 
   @override
@@ -1443,4 +1544,200 @@ class SVi extends S {
 
   @override
   String get scheduled => 'Đã lên lịch';
+
+  @override
+  String get feedback => 'Đánh giá';
+
+  @override
+  String get transaction => 'Giao dịch';
+
+  @override
+  String get for_transaction => 'Dành cho';
+
+  @override
+  String get delete_feedback_confirm =>
+      'Bạn có chắc muốn xóa phản hồi này? Hành động này không thể hoàn tác.';
+
+  @override
+  String get feedback_delete_success => 'Xóa phản hồi thành công';
+
+  @override
+  String get feedback_delete_failed => 'Xóa phản hồi thất bại';
+
+  @override
+  String get feedback_not_found => 'Không tìm thấy phản hồi';
+
+  @override
+  String get feedback_may_deleted => 'Phản hồi này có thể đã bị xóa';
+
+  @override
+  String get feedback_may_have_been_deleted =>
+      'Đánh giá này có lẽ đã bị xóa rồi';
+
+  @override
+  String get comment => 'Nội dung đánh giá';
+
+  @override
+  String get update_feedback => 'Cập nhật đánh giá';
+
+  @override
+  String get edit_your_feedback => 'Chỉnh sửa đánh giá của bạn';
+
+  @override
+  String get update_rating => 'Cập nhật đánh giá';
+
+  @override
+  String get update_comment => 'Cập nhật bình luận';
+
+  @override
+  String get enter_your_comment => 'Nhập bình luận của bạn';
+
+  @override
+  String get rating_required => 'Vui lòng chọn đánh giá';
+
+  @override
+  String get save_changes => 'Lưu thay đổi';
+
+  @override
+  String get review => 'Đánh giá';
+
+  @override
+  String get complain => 'Phản ánh';
+
+  @override
+  String get write_review => 'Viết đánh giá';
+
+  @override
+  String get file_complaint => 'Gửi khiếu nại';
+
+  @override
+  String get create_feedback => 'Tạo đánh giá';
+
+  @override
+  String get rate_transaction => 'Đánh giá giao dịch';
+
+  @override
+  String get your_rating => 'Đánh giá của bạn';
+
+  @override
+  String get tap_to_rate => 'Nhấn để đánh giá';
+
+  @override
+  String get write_comment => 'Viết bình luận';
+
+  @override
+  String get comment_placeholder =>
+      'Chia sẻ trải nghiệm của bạn về giao dịch này...';
+
+  @override
+  String get rating_description => 'Bạn cảm thấy thế nào về trải nghiệm này?';
+
+  @override
+  String get comment_required => 'Vui lòng cung cấp bình luận';
+
+  @override
+  String get feedback_created_success => 'Tạo đánh giá thành công';
+
+  @override
+  String get create_feedback_failed => 'Tạo đánh giá thất bại';
+
+  @override
+  String get poor => 'Kém';
+
+  @override
+  String get fair => 'Trung bình';
+
+  @override
+  String get good => 'Tốt';
+
+  @override
+  String get veryGood => 'Rất tốt';
+
+  @override
+  String get excellent => 'Xuất sắc';
+
+  @override
+  String get ai_cannot_analyze =>
+      'AI không thể phân tích. Vui lòng nhập thông tin thủ công (ảnh sẽ được upload khi tạo post).';
+
+  @override
+  String get ai_cannot_analyze_update =>
+      'AI không thể phân tích. Vui lòng nhập thông tin thủ công (ảnh sẽ được upload khi update post).';
+
+  @override
+  String get error_analyze_image =>
+      'Lỗi phân tích hình ảnh. Vui lòng nhập thông tin thủ công.';
+
+  @override
+  String get ai_recognition => 'AI Nhận Diện';
+
+  @override
+  String get item => 'Vật phẩm';
+
+  @override
+  String get recyclable => 'Tái chế';
+
+  @override
+  String get yes => 'Có';
+
+  @override
+  String get no => 'Không';
+
+  @override
+  String get estimated => 'Ước lượng';
+
+  @override
+  String get advice => 'Lời khuyên';
+
+  @override
+  String get info_auto_filled =>
+      'Thông tin đã được điền tự động. Bạn có thể chỉnh sửa trước khi thêm.';
+
+  @override
+  String get close => 'Đóng';
+
+  @override
+  String get please_select_image => 'Vui lòng chọn hình ảnh';
+
+  @override
+  String get please_select_category => 'Vui lòng chọn danh mục';
+
+  @override
+  String get item_added_success => 'Đã thêm item thành công';
+
+  @override
+  String get error_get_upload_url => 'Lấy URL upload lỗi';
+
+  @override
+  String error_upload_image(Object error) {
+    return 'Lỗi upload ảnh: $error';
+  }
+
+  @override
+  String get ai_will_auto_recognize =>
+      'AI sẽ tự động nhận diện sau khi chọn ảnh';
+
+  @override
+  String get ai_will_auto_analyze => 'AI sẽ tự động phân tích hình ảnh';
+
+  @override
+  String get ai_analyzing =>
+      'AI đang phân tích hình ảnh và tự động điền thông tin...';
+
+  @override
+  String get image_will_upload =>
+      'Ảnh sẽ được upload khi tạo bài post. Vui lòng nhập thông tin thủ công.';
+
+  @override
+  String get analyzing => 'Đang phân tích...';
+
+  @override
+  String get ai_connect_error =>
+      'Lỗi kết nối AI. Bạn có thể nhập thông tin thủ công, ảnh sẽ được upload khi update post.';
+
+  @override
+  String get complaints => 'Khiếu nại';
+
+  @override
+  String get feedbacks => 'Đánh giá';
 }

@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/features/upload/domain/entities/recognize_scrap_response_entity.dart';
 import 'package:GreenConnectMobile/features/upload/domain/entities/upload_url_entity.dart';
 
 class UploadState {
@@ -5,6 +6,7 @@ class UploadState {
   final UploadUrl? uploadUrl;
   final bool isUploaded;
   final bool deleted;
+  final RecognizeScrapResponse? recognizeScrapResponse;
   final String? errorMessage;
 
   UploadState({
@@ -12,6 +14,7 @@ class UploadState {
     this.uploadUrl,
     this.isUploaded = false,
     this.deleted = false,
+    this.recognizeScrapResponse,
     this.errorMessage,
   });
 
@@ -20,6 +23,7 @@ class UploadState {
     UploadUrl? uploadUrl,
     bool? isUploaded,
     bool? deleted,
+    RecognizeScrapResponse? recognizeScrapResponse,
     String? errorMessage,
   }) {
     return UploadState(
@@ -27,6 +31,7 @@ class UploadState {
       uploadUrl: uploadUrl ?? this.uploadUrl,
       isUploaded: isUploaded ?? this.isUploaded,
       deleted: deleted ?? this.deleted,
+      recognizeScrapResponse: recognizeScrapResponse ?? this.recognizeScrapResponse,
       errorMessage: errorMessage,
     );
   }

@@ -6,7 +6,6 @@ import 'package:GreenConnectMobile/features/transaction/presentation/views/widge
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_list/transaction_list_empty_state.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_list/transaction_list_filter_menu.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_list/transaction_list_header.dart';
-import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_leaf_loading.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +25,7 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
   final TokenStorageService _tokenStorage = sl<TokenStorageService>();
   final ScrollController _scrollController = ScrollController();
 
-  String _userRole = 'household';
+  Role _userRole = Role.household;
   int _currentPage = 1;
   final int _pageSize = 20;
   bool _isLoadingMore = false;
@@ -67,11 +66,11 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
     if (user != null && user.roles.isNotEmpty) {
       setState(() {
         if (Role.hasRole(user.roles, Role.household)) {
-          _userRole = 'household';
+          _userRole = Role.household;
         } else if (Role.hasRole(user.roles, Role.individualCollector)) {
-          _userRole = 'collector';
+          _userRole = Role.individualCollector;
         } else if (Role.hasRole(user.roles, Role.businessCollector)) {
-          _userRole = 'business';
+          _userRole = Role.businessCollector;
         }
       });
     }
@@ -159,37 +158,33 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
     );
   }
 
-  void _navigateToDetail(String transactionId) {
-    context.pushNamed(
+  void _navigateToDetail(String transactionId) async {
+    final result = await context.pushNamed<bool>(
       'transaction-detail',
-      extra: {'transactionId': transactionId, 'userRole': _userRole},
+      extra: {'transactionId': transactionId},
     );
+
+    // Refresh list if transaction was updated
+    debugPrint('Returned from detail with result: $result');
+    if (result == true && mounted) {
+      _onRefresh();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final space = theme.extension<AppSpacing>()!.screenPadding;
-    final s = S.of(context)!;
+    // final s = S.of(context)!;
     final transactionState = ref.watch(transactionViewModelProvider);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(
-          s.transactions,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: theme.scaffoldBackgroundColor,
-      ),
       body: RefreshIndicator(
         onRefresh: _onRefresh,
         child: Column(
           children: [
+            SizedBox(height: MediaQuery.of(context).padding.top),
             // Filter header
             TransactionListHeader(
               filterType: _filterType,
@@ -226,6 +221,24 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
                           userRole: _userRole,
                           onTap: () =>
                               _navigateToDetail(transaction.transactionId),
+                          onReviewTap: () async {
+                            final result = await context.pushNamed<bool>(
+                              'create-feedback',
+                              extra: {'transactionId': transaction.transactionId},
+                            );
+                            if (result == true) {
+                              _onRefresh();
+                            }
+                          },
+                          onComplainTap: () async {
+                            final result = await context.pushNamed<bool>(
+                              'create-feedback',
+                              extra: {'transactionId': transaction.transactionId},
+                            );
+                            if (result == true) {
+                              _onRefresh();
+                            }
+                          },
                         );
                       },
                     ),
