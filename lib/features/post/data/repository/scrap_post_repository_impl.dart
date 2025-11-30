@@ -141,4 +141,27 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
       return await remote.updateScrapPost(model);
     });
   }
+
+  @override
+  Future<PaginatedScrapPostEntity> searchPostsForCollector({
+    String? categoryName,
+    String? status,
+    bool? sortByLocation,
+    bool? sortByCreateAt,
+    required int pageNumber,
+    required int pageSize,
+  }) {
+    return guard(() async {
+      final result = await remote.searchPostsForCollector(
+        categoryName: categoryName,
+        status: status,
+        sortByLocation: sortByLocation,
+        sortByCreateAt: sortByCreateAt,
+        pageNumber: pageNumber,
+        pageSize: pageSize,
+      );
+
+      return result.toEntity((model) => model.toEntity());
+    });
+  }
 }

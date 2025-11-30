@@ -119,7 +119,7 @@ class PricingInfoSection extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      detail.scrapCategory.categoryName,
+                                      detail.scrapCategory!.categoryName,
                                       style: theme.textTheme.bodyMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.w600,

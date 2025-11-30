@@ -52,6 +52,31 @@ class PostStatusHelper {
     }
   }
 
+  static IconData getStatusIcon(PostStatus status) {
+    switch (status) {
+      case PostStatus.open:
+        return Icons.fiber_new_rounded;
+
+      case PostStatus.partiallyBooked:
+        return Icons.hourglass_bottom_rounded;
+
+      case PostStatus.fullyBooked:
+        return Icons.event_busy_rounded;
+
+      case PostStatus.completed:
+        return Icons.check_circle_rounded;
+
+      case PostStatus.canceled:
+        return Icons.cancel_rounded;
+    }
+  }
+
+  static bool showOffersButton(PostStatus status) {
+    final statusLower = status;
+    return statusLower == PostStatus.partiallyBooked ||
+        statusLower == PostStatus.fullyBooked;
+  }
+
   static bool showTransactionAction(String status) {
     return status.toLowerCase() == "accepted";
   }

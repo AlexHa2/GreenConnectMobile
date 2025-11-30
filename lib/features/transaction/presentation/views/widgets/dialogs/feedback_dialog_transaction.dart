@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 
@@ -93,7 +94,7 @@ class _FeedbackDialogTransactionState extends State<FeedbackDialogTransaction> {
                   icon: Icon(
                     index < _rating ? Icons.star : Icons.star_border,
                     size: space * 3,
-                    color: Colors.amber,
+                    color: AppColors.warning,
                   ),
                 );
               }),
@@ -127,7 +128,7 @@ class _FeedbackDialogTransactionState extends State<FeedbackDialogTransaction> {
           onPressed: _isLoading ? null : _submit,
           style: ElevatedButton.styleFrom(
             backgroundColor: theme.primaryColor,
-            foregroundColor: Colors.white,
+            foregroundColor: theme.scaffoldBackgroundColor,
           ),
           child: _isLoading
               ? SizedBox(
@@ -135,7 +136,9 @@ class _FeedbackDialogTransactionState extends State<FeedbackDialogTransaction> {
                   height: space * 1.5,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      theme.scaffoldBackgroundColor,
+                    ),
                   ),
                 )
               : Text(s.submit_feedback),

@@ -6,6 +6,7 @@ import 'package:GreenConnectMobile/features/post/domain/usecases/delete_scrap_de
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_my_scrap_post_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_scrap_post_detail_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/scrap_post_usecases.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/search_posts_for_collector_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/toggle_scrap_post_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/update_scrap_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/update_scrap_usecase.dart';
@@ -80,6 +81,12 @@ final deleteScrapDetailUsecaseProvider = Provider<DeleteScrapDetailUsecase>((
   ref,
 ) {
   return DeleteScrapDetailUsecase(ref.read(scrapPostRepositoryProvider));
+});
+
+// Search posts for collector
+final searchPostsForCollectorUsecaseProvider =
+    Provider<SearchPostsForCollectorUsecase>((ref) {
+  return SearchPostsForCollectorUsecase(ref.read(scrapPostRepositoryProvider));
 });
 
 final scrapPostViewModelProvider =

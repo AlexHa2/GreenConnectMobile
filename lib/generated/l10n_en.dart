@@ -1051,6 +1051,46 @@ class SEn extends S {
   String get offer_rejected_success => 'Offer rejected successfully';
 
   @override
+  String get create_offer => 'Create Offer';
+
+  @override
+  String get offer_prices => 'Offer Prices';
+
+  @override
+  String get proposed_pickup_time => 'Proposed Pickup Time';
+
+  @override
+  String get select_date_time => 'Select Date & Time';
+
+  @override
+  String get please_select_time => 'Please select proposed pickup time';
+
+  @override
+  String get please_enter_at_least_one_price =>
+      'Please enter at least one price';
+
+  @override
+  String get invalid_price => 'Invalid price';
+
+  @override
+  String get submit_offer => 'Submit Offer';
+
+  @override
+  String get offer_created_successfully => 'Offer created successfully';
+
+  @override
+  String get failed_to_create_offer => 'Failed to create offer';
+
+  @override
+  String get available_posts => 'Available Posts';
+
+  @override
+  String get enter_message => 'Enter your message';
+
+  @override
+  String get please_enter_message => 'Please enter a message';
+
+  @override
   String get offer_canceled_success => 'Offer canceled successfully';
 
   @override
@@ -1735,11 +1775,171 @@ class SEn extends S {
 
   @override
   String get ai_connect_error =>
-      'AI connection error. You can enter information manually, image will be uploaded when updating post.';
+      'AI connection error. You can enter information manually, images will be uploaded when updating the post.';
 
   @override
   String get complaints => 'Complaints';
 
   @override
   String get feedbacks => 'Feedbacks';
+
+  @override
+  String get complaint_submitted => 'Submitted';
+
+  @override
+  String get complaint_in_review => 'In Review';
+
+  @override
+  String get complaint_resolved => 'Resolved';
+
+  @override
+  String get complaint_dismissed => 'Dismissed';
+
+  @override
+  String get complaint_list => 'Complaint List';
+
+  @override
+  String get sort_by_date => 'Sort by Date';
+
+  @override
+  String get sort_ascending => 'Ascending';
+
+  @override
+  String get sort_descending => 'Descending';
+
+  @override
+  String get filter_by_status => 'Filter by Status';
+
+  @override
+  String get no_complaints => 'No complaints yet';
+
+  @override
+  String get complaint_reason => 'Complaint Reason';
+
+  @override
+  String get complainant => 'Complainant';
+
+  @override
+  String get accused => 'Accused';
+
+  @override
+  String get created_at => 'Created At';
+
+  @override
+  String get complaint_detail => 'Complaint Detail';
+
+  @override
+  String get complaint_id => 'Complaint ID';
+
+  @override
+  String get complaint_information => 'Complaint Information';
+
+  @override
+  String get participants => 'Participants';
+
+  @override
+  String get evidence => 'Evidence';
+
+  @override
+  String get update_complaint => 'Update Complaint';
+
+  @override
+  String get update_complaint_subtitle => 'Update your complaint details';
+
+  @override
+  String get create_complaint => 'Create Complaint';
+
+  @override
+  String get create_complaint_subtitle =>
+      'Report an issue with this transaction';
+
+  @override
+  String get enter_complaint_reason_hint =>
+      'Describe the issue you encountered with this transaction...';
+
+  @override
+  String get minimum_10_characters => 'Minimum 10 characters required';
+
+  @override
+  String get reason_too_short => 'Reason must be at least 10 characters';
+
+  @override
+  String get please_select_evidence_image => 'Please select an evidence image';
+
+  @override
+  String get evidence_selected => 'Evidence selected';
+
+  @override
+  String get no_evidence_selected => 'No evidence selected';
+
+  @override
+  String get tap_below_to_select_image => 'Tap below to select an image';
+
+  @override
+  String get select_evidence_image => 'Select Evidence Image';
+
+  @override
+  String get submit_complaint => 'Submit Complaint';
+
+  @override
+  String get complaint_created_success => 'Complaint created successfully';
+
+  @override
+  String get failed_to_create_complaint => 'Failed to create complaint';
+
+  @override
+  String get complaint_info_note =>
+      'All fields are required. Please provide clear evidence and detailed reason for better processing.';
+
+  @override
+  String get image_attached => 'Image attached';
+
+  @override
+  String get error_load_image => 'Failed to load image';
+
+  @override
+  String get no_evidence_attached => 'No evidence attached';
+
+  @override
+  String get change_evidence_image => 'Change Evidence';
+
+  @override
+  String get add_evidence_image => 'Add Evidence Image';
+
+  @override
+  String get please_enter_reason => 'Please enter a reason';
+
+  @override
+  String get reopen_complaint => 'Reopen Complaint';
+
+  @override
+  String get reopen_complaint_confirm =>
+      'Are you sure you want to reopen this complaint?';
+
+  @override
+  String get reopen_success => 'Complaint reopened successfully';
+
+  @override
+  String get update_success => 'Updated successfully';
+
+  @override
+  String get transaction_scheduled => 'Scheduled';
+
+  @override
+  String get transaction_inProgress => 'In progress';
+
+  @override
+  String get transaction_completed => 'Completed';
+
+  @override
+  String get transaction_canceledBySystem => 'Canceled by system';
+
+  @override
+  String get transaction_canceledByUser => 'Canceled by user';
+
+  @override
+  String get enter_complaint_reason => 'Enter your complaint reason...';
+
+  @override
+  String get new_image => 'New image';
 }

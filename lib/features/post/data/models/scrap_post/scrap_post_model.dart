@@ -10,11 +10,11 @@ class ScrapPostModel {
   final String title;
   final String description;
   final String address;
-  final String availableTimeRange;
+  final String? availableTimeRange;
   final String status;
   final DateTime createdAt;
-  final DateTime updatedAt;
-  final String householdId;
+  final DateTime? updatedAt;
+  final String? householdId;
   final HouseholdModel? household;
   final bool mustTakeAll;
   final List<ScrapPostDetailModel> scrapPostDetails;
@@ -24,12 +24,12 @@ class ScrapPostModel {
     required this.title,
     required this.description,
     required this.address,
-    required this.availableTimeRange,
+    this.availableTimeRange,
     required this.status,
     required this.createdAt,
-    required this.updatedAt,
-    required this.householdId,
-    required this.household,
+    this.updatedAt,
+    this.householdId,
+    this.household,
     required this.mustTakeAll,
     required this.scrapPostDetails,
   });
@@ -43,7 +43,9 @@ class ScrapPostModel {
       availableTimeRange: json['availableTimeRange'],
       status: json['status'],
       createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : null,
       householdId: json['householdId'],
       household: json['household'] != null
           ? HouseholdModel.fromJson(json['household'])
@@ -61,7 +63,7 @@ class ScrapPostModel {
       title: title,
       description: description,
       address: address,
-      availableTimeRange: availableTimeRange,
+      availableTimeRange: availableTimeRange ?? '',
       createdAt: createdAt,
       updatedAt: updatedAt,
       status: status,

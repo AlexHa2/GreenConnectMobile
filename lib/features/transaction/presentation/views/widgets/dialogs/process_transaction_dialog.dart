@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 
@@ -43,7 +44,7 @@ class _ProcessTransactionDialogState extends State<ProcessTransactionDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(S.of(context)!.error_process_failed),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.danger,
           ),
         );
       }
@@ -66,7 +67,7 @@ class _ProcessTransactionDialogState extends State<ProcessTransactionDialog> {
         children: [
           Icon(
             widget.isApprove ? Icons.check_circle : Icons.cancel,
-            color: widget.isApprove ? Colors.green : Colors.red,
+            color: widget.isApprove ? theme.primaryColor : AppColors.danger,
           ),
           SizedBox(width: space),
           Expanded(
@@ -82,7 +83,7 @@ class _ProcessTransactionDialogState extends State<ProcessTransactionDialog> {
           Icon(
             widget.isApprove ? Icons.check_circle_outline : Icons.cancel_outlined,
             size: space * 6,
-            color: widget.isApprove ? Colors.green : Colors.red,
+            color: widget.isApprove ? theme.primaryColor : AppColors.danger,
           ),
           SizedBox(height: space * 1.5),
           Text(
@@ -116,8 +117,8 @@ class _ProcessTransactionDialogState extends State<ProcessTransactionDialog> {
         ElevatedButton(
           onPressed: _isLoading ? null : _submit,
           style: ElevatedButton.styleFrom(
-            backgroundColor: widget.isApprove ? Colors.green : Colors.red,
-            foregroundColor: Colors.white,
+            backgroundColor: widget.isApprove ? theme.primaryColor : AppColors.danger,
+            foregroundColor: theme.scaffoldBackgroundColor,
           ),
           child: _isLoading
               ? SizedBox(
@@ -125,7 +126,7 @@ class _ProcessTransactionDialogState extends State<ProcessTransactionDialog> {
                   height: space * 1.5,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: AlwaysStoppedAnimation<Color>(theme.scaffoldBackgroundColor),
                   ),
                 )
               : Text(widget.isApprove ? s.approve : s.reject),

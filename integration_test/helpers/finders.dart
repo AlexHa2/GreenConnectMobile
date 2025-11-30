@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class AppKeys {
-  // key of welcome page
+  // 🏠 Welcome page keys
   static const goLogin = Key('goLogin');
   static const goRegister = Key('goRegister');
 
-  // 🔐  key of LoginPage
+  // 🔐 Login page keys
   static const phoneField = Key('phoneField');
   static const otpField = Key('otpField');
   static const sendOtpButton = Key('sendOtpButton');
 
-  // 🏠 key acting LoginPage
-  static const loginButton = Key('loginButton');
+  // 📱 Common keys
+  static const backButton = Key('backButton');
 }

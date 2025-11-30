@@ -224,7 +224,9 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
                           onReviewTap: () async {
                             final result = await context.pushNamed<bool>(
                               'create-feedback',
-                              extra: {'transactionId': transaction.transactionId},
+                              extra: {
+                                'transactionId': transaction.transactionId,
+                              },
                             );
                             if (result == true) {
                               _onRefresh();
@@ -232,7 +234,7 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
                           },
                           onComplainTap: () async {
                             final result = await context.pushNamed<bool>(
-                              'create-feedback',
+                              'create-complaint',
                               extra: {'transactionId': transaction.transactionId},
                             );
                             if (result == true) {
