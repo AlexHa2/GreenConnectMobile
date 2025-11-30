@@ -16,8 +16,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+enum VerificationMode { create, update }
+
 class UpgradeVerificationScreen extends ConsumerStatefulWidget {
-  const UpgradeVerificationScreen({super.key});
+  final VerificationMode mode;
+  final BuyerTypeStatus? initialBuyerType;
+  
+  const UpgradeVerificationScreen({
+    super.key,
+    this.mode = VerificationMode.create,
+    this.initialBuyerType,
+  });
 
   @override
   ConsumerState<UpgradeVerificationScreen> createState() =>
@@ -32,7 +41,13 @@ class _UpgradeVerificationScreenState
   String? frontFilePath;
   String? backFilePath;
 
-  BuyerTypeStatus buyerType = BuyerTypeStatus.individual; // mặc định
+  late BuyerTypeStatus buyerType;
+
+  @override
+  void initState() {
+    super.initState();
+    buyerType = widget.initialBuyerType ?? BuyerTypeStatus.individual;
+  }
 
   Future<String?> uploadCCCD(Uint8List imageBytes, String fileName) async {
     final uploadVM = ref.read(uploadViewModelProvider.notifier);
@@ -71,7 +86,6 @@ class _UpgradeVerificationScreenState
 
   Future<void> handleSubmit() async {
     final s = S.of(context)!;
-    // final uploadVM = ref.read(uploadViewModelProvider.notifier);
     final profileVM = ref.read(profileViewModelProvider.notifier);
 
     if (frontBytes == null || backBytes == null) {
@@ -93,21 +107,30 @@ class _UpgradeVerificationScreenState
         return;
       }
 
-      await profileVM.verifyUser(
-        VerificationModel(
-          buyerType: buyerType.toJson(),
-          documentFrontUrl: frontUrl,
-          documentBackUrl: backUrl,
-        ),
+      final verificationModel = VerificationModel(
+        buyerType: buyerType.toJson(),
+        documentFrontUrl: frontUrl,
+        documentBackUrl: backUrl,
       );
+
+      // Use different API based on mode
+      if (widget.mode == VerificationMode.create) {
+        await profileVM.verifyUser(verificationModel);
+      } else {
+        await profileVM.updateVerification(verificationModel);
+      }
+
       if (!mounted) return;
       CustomToast.show(
         context,
-        s.send_verification_info,
+        widget.mode == VerificationMode.create
+            ? s.send_verification_info
+            : s.verification_updated_successfully,
         type: ToastType.success,
       );
-      context.pop();
+      context.pop(true); // Return true to indicate success
     } catch (e) {
+      if (!mounted) return;
       CustomToast.show(
         context,
         s.error_occurred_while_updating_avatar,
@@ -130,7 +153,11 @@ class _UpgradeVerificationScreenState
       children: [
         Scaffold(
           appBar: AppBar(
-            title: Text(s.account_verification),
+            title: Text(
+              widget.mode == VerificationMode.create
+                  ? s.account_verification
+                  : s.update_verification,
+            ),
             centerTitle: true,
           ),
           body: SingleChildScrollView(
@@ -138,7 +165,12 @@ class _UpgradeVerificationScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(s.upgrade_to_collector, style: theme.textTheme.titleLarge),
+                Text(
+                  widget.mode == VerificationMode.create
+                      ? s.upgrade_to_collector
+                      : s.update_account_type,
+                  style: theme.textTheme.titleLarge,
+                ),
                 SizedBox(height: spacing.screenPadding),
 
                 Text(s.cccd_guide_text, style: theme.textTheme.bodyMedium),
@@ -208,7 +240,16 @@ class _UpgradeVerificationScreenState
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: isLoading ? null : handleSubmit,
-                    child: Text(s.submit_verification),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        vertical: spacing.screenPadding,
+                      ),
+                    ),
+                    child: Text(
+                      widget.mode == VerificationMode.create
+                          ? s.submit_verification
+                          : s.update_verification,
+                    ),
                   ),
                 ),
                 SizedBox(height: spacing.screenPadding * 3),

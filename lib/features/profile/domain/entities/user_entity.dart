@@ -6,6 +6,7 @@ class UserEntity {
   final String rank;
   final List<String> roles;
   final String? avatarUrl;
+  final String? buyerType;
 
   UserEntity({
     required this.userId,
@@ -15,5 +16,6 @@ class UserEntity {
     required this.rank,
     required this.roles,
     this.avatarUrl,
+    this.buyerType,
   });
 }

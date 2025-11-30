@@ -875,6 +875,19 @@ class SEn extends S {
   String get buyer_type_business => 'Business';
 
   @override
+  String get update_verification => 'Update Verification';
+
+  @override
+  String get verification_updated_successfully =>
+      'Verification updated successfully';
+
+  @override
+  String get update_account_type => 'Update Account Type';
+
+  @override
+  String get switch_account_type => 'Switch Account Type';
+
+  @override
   String get send_verification_info => 'send verification info successfully';
 
   @override
@@ -913,7 +926,7 @@ class SEn extends S {
   String get something_went_wrong => 'Something went wrong';
 
   @override
-  String get try_again => 'Try Again';
+  String get try_again => 'Try again';
 
   @override
   String get pending => 'Pending';
@@ -1372,6 +1385,94 @@ class SEn extends S {
   String get no_feedbacks_yet => 'No feedbacks yet';
 
   @override
+  String get my_feedbacks => 'My Feedbacks';
+
+  @override
+  String get all_feedbacks => 'All Feedbacks';
+
+  @override
+  String get feedback_list => 'Feedback List';
+
+  @override
+  String get sort_feedbacks => 'Sort Feedbacks';
+
+  @override
+  String get no_feedbacks_found => 'No feedbacks available at the moment';
+
+  @override
+  String get no_feedbacks_available => 'No feedbacks available at the moment';
+
+  @override
+  String get rated_by => 'Rated by';
+
+  @override
+  String get rated_for => 'Rated for';
+
+  @override
+  String get transaction_ref => 'Transaction';
+
+  @override
+  String get stars => 'stars';
+
+  @override
+  String get feedback_details => 'Feedback Details';
+
+  @override
+  String get feedback_information => 'Feedback Information';
+
+  @override
+  String get reviewer_information => 'Reviewer Information';
+
+  @override
+  String get reviewee_information => 'Reviewee Information';
+
+  @override
+  String get given_rating => 'Given Rating';
+
+  @override
+  String get feedback_comment => 'Comment';
+
+  @override
+  String get no_comment => 'No comment provided';
+
+  @override
+  String get feedback_date => 'Feedback Date';
+
+  @override
+  String get edit_feedback => 'Edit Feedback';
+
+  @override
+  String get delete_feedback => 'Delete Feedback';
+
+  @override
+  String get confirm_delete_feedback => 'Delete Feedback';
+
+  @override
+  String get delete_feedback_message =>
+      'Are you sure you want to delete this feedback? This action cannot be undone.';
+
+  @override
+  String get feedback_deleted_success => 'Feedback deleted successfully';
+
+  @override
+  String get feedback_updated_success => 'Feedback updated successfully';
+
+  @override
+  String get update_feedback_failed => 'Failed to update feedback';
+
+  @override
+  String get delete_feedback_failed => 'Failed to delete feedback';
+
+  @override
+  String get view_transaction => 'View Transaction';
+
+  @override
+  String get member_info => 'Member Information';
+
+  @override
+  String get contact_info => 'Contact Information';
+
+  @override
   String get approve => 'Approve';
 
   @override
@@ -1446,4 +1547,199 @@ class SEn extends S {
 
   @override
   String get scheduled => 'Scheduled';
+
+  @override
+  String get feedback => 'Feedbacks';
+
+  @override
+  String get transaction => 'Transaction';
+
+  @override
+  String get for_transaction => 'For';
+
+  @override
+  String get delete_feedback_confirm =>
+      'Are you sure you want to delete this feedback? This action cannot be undone.';
+
+  @override
+  String get feedback_delete_success => 'Feedback deleted successfully';
+
+  @override
+  String get feedback_delete_failed => 'Failed to delete feedback';
+
+  @override
+  String get feedback_not_found => 'Feedback Not Found';
+
+  @override
+  String get feedback_may_deleted => 'This feedback may have been deleted';
+
+  @override
+  String get feedback_may_have_been_deleted => 'feedback may have been deleted';
+
+  @override
+  String get comment => 'Comment';
+
+  @override
+  String get update_feedback => 'Update Feedback';
+
+  @override
+  String get edit_your_feedback => 'Edit Your Feedback';
+
+  @override
+  String get update_rating => 'Update Rating';
+
+  @override
+  String get update_comment => 'Update Comment';
+
+  @override
+  String get enter_your_comment => 'Enter your comment';
+
+  @override
+  String get rating_required => 'Rating is required';
+
+  @override
+  String get save_changes => 'Save Changes';
+
+  @override
+  String get review => 'Review';
+
+  @override
+  String get complain => 'Complain';
+
+  @override
+  String get write_review => 'Write Review';
+
+  @override
+  String get file_complaint => 'File Complaint';
+
+  @override
+  String get create_feedback => 'Create Feedback';
+
+  @override
+  String get rate_transaction => 'Rate Transaction';
+
+  @override
+  String get your_rating => 'Your Rating';
+
+  @override
+  String get tap_to_rate => 'Tap to rate';
+
+  @override
+  String get write_comment => 'Write your comment';
+
+  @override
+  String get comment_placeholder =>
+      'Share your experience with this transaction...';
+
+  @override
+  String get rating_description => 'How would you rate your experience?';
+
+  @override
+  String get comment_required => 'Please provide a comment';
+
+  @override
+  String get feedback_created_success => 'Feedback created successfully';
+
+  @override
+  String get create_feedback_failed => 'Failed to create feedback';
+
+  @override
+  String get poor => 'Poor';
+
+  @override
+  String get fair => 'Fair';
+
+  @override
+  String get good => 'Good';
+
+  @override
+  String get veryGood => 'Very Good';
+
+  @override
+  String get excellent => 'Excellent';
+
+  @override
+  String get ai_cannot_analyze =>
+      'AI cannot analyze. Please enter information manually (image will be uploaded when creating post).';
+
+  @override
+  String get ai_cannot_analyze_update =>
+      'AI cannot analyze. Please enter information manually (image will be uploaded when updating post).';
+
+  @override
+  String get error_analyze_image =>
+      'Error analyzing image. Please enter information manually.';
+
+  @override
+  String get ai_recognition => 'AI Recognition';
+
+  @override
+  String get item => 'Item';
+
+  @override
+  String get recyclable => 'Recyclable';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get estimated => 'Estimated';
+
+  @override
+  String get advice => 'Advice';
+
+  @override
+  String get info_auto_filled =>
+      'Information has been automatically filled. You can edit before adding.';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get please_select_image => 'Please select an image';
+
+  @override
+  String get please_select_category => 'Please select a category';
+
+  @override
+  String get item_added_success => 'Item added successfully';
+
+  @override
+  String get error_get_upload_url => 'Failed to get upload URL';
+
+  @override
+  String error_upload_image(Object error) {
+    return 'Error uploading image: $error';
+  }
+
+  @override
+  String get ai_will_auto_recognize =>
+      'AI will automatically recognize after selecting image';
+
+  @override
+  String get ai_will_auto_analyze => 'AI will automatically analyze the image';
+
+  @override
+  String get ai_analyzing =>
+      'AI is analyzing the image and automatically filling information...';
+
+  @override
+  String get image_will_upload =>
+      'Image will be uploaded when creating post. Please enter information manually.';
+
+  @override
+  String get analyzing => 'Analyzing...';
+
+  @override
+  String get ai_connect_error =>
+      'AI connection error. You can enter information manually, image will be uploaded when updating post.';
+
+  @override
+  String get complaints => 'Complaints';
+
+  @override
+  String get feedbacks => 'Feedbacks';
 }

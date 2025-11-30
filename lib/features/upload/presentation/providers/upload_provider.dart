@@ -2,7 +2,10 @@ import 'package:GreenConnectMobile/features/upload/data/datasources/abstract_dat
 import 'package:GreenConnectMobile/features/upload/data/datasources/file_remote_datasource_impl.dart';
 import 'package:GreenConnectMobile/features/upload/data/repository/file_repository_impl.dart';
 import 'package:GreenConnectMobile/features/upload/domain/usecases/delete_file_usecase.dart';
+import 'package:GreenConnectMobile/features/upload/domain/usecases/recognize_scrap_usecase.dart';
 import 'package:GreenConnectMobile/features/upload/domain/usecases/upload_binary_file_usecase.dart';
+import 'package:GreenConnectMobile/features/upload/domain/usecases/upload_file_for_complaint_usecase.dart';
+import 'package:GreenConnectMobile/features/upload/domain/usecases/upload_file_for_scrap_post_usecase.dart';
 import 'package:GreenConnectMobile/features/upload/domain/usecases/upload_file_usecase.dart';
 import 'package:GreenConnectMobile/features/upload/domain/usecases/upload_file_with_entity_usecase.dart';
 import 'package:GreenConnectMobile/features/upload/presentation/viewmodels/states/upload_state.dart';
@@ -38,6 +41,18 @@ final uploadBinaryFileUsecaseProvider = Provider<UploadBinaryFileUseCase>((
 
 final deleteFileUsecaseProvider = Provider<DeleteFileUseCase>((ref) {
   return DeleteFileUseCase(ref.read(fileRepositoryProvider));
+});
+
+final uploadFileForScrapPostUsecaseProvider = Provider<UploadFileForScrapPostUseCase>((ref) {
+  return UploadFileForScrapPostUseCase(ref.read(fileRepositoryProvider));
+});
+
+final uploadFileForComplaintUsecaseProvider = Provider<UploadFileForComplaintUseCase>((ref) {
+  return UploadFileForComplaintUseCase(ref.read(fileRepositoryProvider));
+});
+
+final recognizeScrapUsecaseProvider = Provider<RecognizeScrapUseCase>((ref) {
+  return RecognizeScrapUseCase(ref.read(fileRepositoryProvider));
 });
 
 // ---------------- ViewModel ----------------

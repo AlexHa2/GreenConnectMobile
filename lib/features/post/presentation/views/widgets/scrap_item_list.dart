@@ -1,11 +1,12 @@
+import 'package:GreenConnectMobile/features/post/domain/entities/scrap_item_data.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 
 class ScrapItemList extends StatelessWidget {
-  final List<Map<String, dynamic>> items;
-  final Function(int index, Map<String, dynamic> data) onUpdate;
-  final Function(Map<String, dynamic> item) onDelete;
+  final List<ScrapItemData> items;
+  final Function(int index, ScrapItemData data) onUpdate;
+  final Function(ScrapItemData item) onDelete;
 
   const ScrapItemList({
     super.key,
@@ -40,24 +41,7 @@ class ScrapItemList extends StatelessWidget {
                     borderRadius: BorderRadius.circular(
                       spacing.screenPadding / 1.5,
                     ),
-                    child: item['image'] != null
-                        ? Image.file(
-                            item['image'],
-                            width: spacing.screenPadding * 6,
-                            height: spacing.screenPadding * 6,
-                            fit: BoxFit.cover,
-                          )
-                        : Container(
-                            width: spacing.screenPadding * 6,
-                            height: spacing.screenPadding * 6,
-                            color: theme.dividerColor.withValues(alpha: 0.6),
-                            child: Icon(
-                              Icons.image,
-                              color: theme.colorScheme.onSurface.withValues(
-                                alpha: 0.3,
-                              ),
-                            ),
-                          ),
+                    child: _buildImage(item, spacing, theme),
                   ),
 
                   SizedBox(width: spacing.screenPadding),
@@ -68,7 +52,7 @@ class ScrapItemList extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "${item['category']}",
+                          item.categoryName,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -83,14 +67,14 @@ class ScrapItemList extends StatelessWidget {
                             _buildInfoTag(
                               context,
                               icon: Icons.scale,
-                              text: "${item['weight']} kg",
+                              text: "${item.weight} kg",
                               color: Colors.blue.shade700,
                               bgColor: Colors.blue.shade50,
                             ),
                             _buildInfoTag(
                               context,
                               icon: Icons.inventory_2,
-                              text: "SL: ${item['quantity']}",
+                              text: "SL: ${item.quantity}",
                               color: Colors.orange.shade800,
                               bgColor: Colors.orange.shade50,
                             ),
@@ -138,6 +122,50 @@ class ScrapItemList extends StatelessWidget {
           ),
         );
       }).toList(),
+    );
+  }
+
+  Widget _buildImage(ScrapItemData item, AppSpacing spacing, ThemeData theme) {
+    final hasImage = item.imageFile != null || item.imageUrl != null;
+    
+    if (!hasImage) {
+      return Container(
+        width: spacing.screenPadding * 6,
+        height: spacing.screenPadding * 6,
+        color: theme.dividerColor.withValues(alpha: 0.6),
+        child: Icon(
+          Icons.image,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+        ),
+      );
+    }
+    
+    // If local File exists, display from File
+    if (item.imageFile != null) {
+      return Image.file(
+        item.imageFile!,
+        width: spacing.screenPadding * 6,
+        height: spacing.screenPadding * 6,
+        fit: BoxFit.cover,
+      );
+    }
+    // If URL exists, display from network
+    return Image.network(
+      item.imageUrl!,
+      width: spacing.screenPadding * 6,
+      height: spacing.screenPadding * 6,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          width: spacing.screenPadding * 6,
+          height: spacing.screenPadding * 6,
+          color: theme.dividerColor.withValues(alpha: 0.6),
+          child: Icon(
+            Icons.broken_image,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+          ),
+        );
+      },
     );
   }
 

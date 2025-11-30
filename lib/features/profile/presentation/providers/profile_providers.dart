@@ -3,6 +3,7 @@ import 'package:GreenConnectMobile/features/profile/data/repository/profile_repo
 import 'package:GreenConnectMobile/features/profile/domain/repository/profile_repository.dart';
 import 'package:GreenConnectMobile/features/profile/domain/usecases/get_me_usecase.dart';
 import 'package:GreenConnectMobile/features/profile/domain/usecases/update_me_usecase.dart';
+import 'package:GreenConnectMobile/features/profile/domain/usecases/update_verification_usecase.dart';
 import 'package:GreenConnectMobile/features/profile/domain/usecases/upload_user_avatar.dart';
 import 'package:GreenConnectMobile/features/profile/domain/usecases/verify_user_usecase.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/viewmodels/profile_viewmodel.dart';
@@ -34,5 +35,10 @@ final verifyUserUsecaseProvider = Provider<VerifyUserUseCase>((ref) {
 final updateMeAvatarUsecaseProvider = Provider<UpdateMeAvatarUseCase>((ref) {
   return UpdateMeAvatarUseCase(ref.read(profileRepositoryProvider));
 });
+
+final updateVerificationUsecaseProvider = Provider<UpdateVerificationUsecase>((ref) {
+  return UpdateVerificationUsecase(ref.read(profileRepositoryProvider));
+});
+
 final profileViewModelProvider =
     NotifierProvider<ProfileViewModel, ProfileState>(() => ProfileViewModel());

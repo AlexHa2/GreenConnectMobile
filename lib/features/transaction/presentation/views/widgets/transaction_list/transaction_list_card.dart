@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
 import 'package:GreenConnectMobile/core/helper/date_time_extension.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
@@ -9,14 +10,18 @@ import 'package:flutter/material.dart';
 /// Transaction card for list view
 class TransactionListCard extends StatelessWidget {
   final TransactionEntity transaction;
-  final String userRole;
+  final Role userRole;
   final VoidCallback onTap;
+  final VoidCallback? onReviewTap;
+  final VoidCallback? onComplainTap;
 
   const TransactionListCard({
     super.key,
     required this.transaction,
     required this.userRole,
     required this.onTap,
+    this.onReviewTap,
+    this.onComplainTap,
   });
 
   @override
@@ -46,10 +51,7 @@ class TransactionListCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            _TransactionCardHeader(
-              transaction: transaction,
-              s: s,
-            ),
+            _TransactionCardHeader(transaction: transaction, s: s),
 
             SizedBox(height: space),
             Divider(height: 1, color: theme.dividerColor),
@@ -68,6 +70,16 @@ class TransactionListCard extends StatelessWidget {
               _TransactionPriceChip(price: transaction.totalPrice),
             ],
 
+            // Action buttons for completed transactions
+            if (transaction.statusEnum == TransactionStatus.completed) ...[
+              SizedBox(height: space * 1.2),
+              _TransactionActionButtons(
+                onReviewTap: onReviewTap,
+                onComplainTap: onComplainTap,
+                s: s,
+              ),
+            ],
+
             SizedBox(height: space),
 
             // View details hint
@@ -84,10 +96,7 @@ class _TransactionCardHeader extends StatelessWidget {
   final TransactionEntity transaction;
   final S s;
 
-  const _TransactionCardHeader({
-    required this.transaction,
-    required this.s,
-  });
+  const _TransactionCardHeader({required this.transaction, required this.s});
 
   @override
   Widget build(BuildContext context) {
@@ -105,10 +114,7 @@ class _TransactionCardHeader extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        _TransactionStatusChip(
-          status: transaction.statusEnum,
-          s: s,
-        ),
+        _TransactionStatusChip(status: transaction.statusEnum, s: s),
       ],
     );
   }
@@ -119,10 +125,7 @@ class _TransactionStatusChip extends StatelessWidget {
   final TransactionStatus status;
   final S s;
 
-  const _TransactionStatusChip({
-    required this.status,
-    required this.s,
-  });
+  const _TransactionStatusChip({required this.status, required this.s});
 
   Color _getStatusColor(BuildContext context) {
     final theme = Theme.of(context);
@@ -161,10 +164,7 @@ class _TransactionStatusChip extends StatelessWidget {
     final statusColor = _getStatusColor(context);
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: space,
-        vertical: space * 0.5,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: space, vertical: space * 0.5),
       decoration: BoxDecoration(
         color: statusColor.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(space * 2),
@@ -184,7 +184,7 @@ class _TransactionStatusChip extends StatelessWidget {
 /// Card info section
 class _TransactionCardInfo extends StatelessWidget {
   final TransactionEntity transaction;
-  final String userRole;
+  final Role userRole;
   final S s;
 
   const _TransactionCardInfo({
@@ -210,7 +210,7 @@ class _TransactionCardInfo extends StatelessWidget {
         ],
 
         // Person/Household name based on role
-        if (userRole == 'household') ...[
+        if (userRole == Role.household) ...[
           _InfoRow(
             icon: Icons.person_outline,
             text: transaction.scrapCollector.fullName,
@@ -218,7 +218,7 @@ class _TransactionCardInfo extends StatelessWidget {
           SizedBox(height: space * 0.75),
         ],
 
-        if (userRole != 'household') ...[
+        if (userRole != Role.household) ...[
           _InfoRow(
             icon: Icons.home_outlined,
             text: transaction.household.fullName,
@@ -229,9 +229,7 @@ class _TransactionCardInfo extends StatelessWidget {
         // Scheduled time
         _InfoRow(
           icon: Icons.schedule_outlined,
-          text: transaction.scheduledTime.toCustomFormat(
-            locale: s.localeName,
-          ),
+          text: transaction.scheduledTime.toCustomFormat(locale: s.localeName),
         ),
       ],
     );
@@ -243,10 +241,7 @@ class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const _InfoRow({
-    required this.icon,
-    required this.text,
-  });
+  const _InfoRow({required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -255,11 +250,7 @@ class _InfoRow extends StatelessWidget {
 
     return Row(
       children: [
-        Icon(
-          icon,
-          size: space * 1.5,
-          color: AppColors.textSecondary,
-        ),
+        Icon(icon, size: space * 1.5, color: AppColors.textSecondary),
         SizedBox(width: space * 0.75),
         Expanded(
           child: Text(
@@ -285,10 +276,7 @@ class _TransactionPriceChip extends StatelessWidget {
     final space = theme.extension<AppSpacing>()!.screenPadding;
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: space,
-        vertical: space * 0.75,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: space, vertical: space * 0.75),
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(space * 0.75),
@@ -296,17 +284,140 @@ class _TransactionPriceChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.attach_money,
-            size: space * 1.5,
-            color: AppColors.primary,
-          ),
+          Icon(Icons.attach_money, size: space * 1.5, color: AppColors.primary),
           SizedBox(width: space * 0.5),
           Text(
             '\$${price.toStringAsFixed(2)}',
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.primary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Action buttons for completed transactions
+class _TransactionActionButtons extends StatelessWidget {
+  final VoidCallback? onReviewTap;
+  final VoidCallback? onComplainTap;
+  final S s;
+
+  const _TransactionActionButtons({
+    required this.onReviewTap,
+    required this.onComplainTap,
+    required this.s,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final space = theme.extension<AppSpacing>()!.screenPadding;
+
+    return Container(
+      padding: EdgeInsets.all(space * 0.8),
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(space),
+        border: Border.all(
+          color: theme.dividerColor.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        children: [
+          // Review button
+          Expanded(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onReviewTap,
+                borderRadius: BorderRadius.circular(space * 0.8),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: space * 0.9),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.warning.withValues(alpha: 0.15),
+                        AppColors.warning.withValues(alpha: 0.08),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(space * 0.8),
+                    border: Border.all(
+                      color: AppColors.warning.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.star_rounded,
+                        size: space * 1.6,
+                        color: AppColors.warning,
+                      ),
+                      SizedBox(width: space * 0.5),
+                      Text(
+                        s.review,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.warning,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: space * 0.8),
+          // Complain button
+          Expanded(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onComplainTap,
+                borderRadius: BorderRadius.circular(space * 0.8),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: space * 0.9),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.danger.withValues(alpha: 0.12),
+                        AppColors.danger.withValues(alpha: 0.06),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(space * 0.8),
+                    border: Border.all(
+                      color: AppColors.danger.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.warning_rounded,
+                        size: space * 1.6,
+                        color: AppColors.danger,
+                      ),
+                      SizedBox(width: space * 0.5),
+                      Text(
+                        s.complain,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.danger,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ],

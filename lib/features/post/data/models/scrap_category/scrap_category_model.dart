@@ -13,9 +13,9 @@ class ScrapCategoryModel {
   /// ⬇ From JSON
   factory ScrapCategoryModel.fromJson(Map<String, dynamic> json) {
     return ScrapCategoryModel(
-      scrapCategoryId: json['scrapCategoryId'],
-      categoryName: json['categoryName'],
-      description: json['description'],
+      scrapCategoryId: (json['scrapCategoryId'] as num?)?.toInt() ?? 0,
+      categoryName: json['categoryName'] as String? ?? '',
+      description: json['description'] as String?,
     );
   }
 

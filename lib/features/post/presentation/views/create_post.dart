@@ -1,17 +1,24 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:GreenConnectMobile/core/helper/get_location_from_address.dart';
 import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/location_entity.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/scrap_item_data.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_detail_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_category_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/add_scrap_item_section.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/ai_result_dialog.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/loading_overlay.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_info_form.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_section_title.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/scrap_item_list.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/take_all_switch.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/update_scrap_item_dialog.dart';
+import 'package:GreenConnectMobile/features/upload/domain/entities/upload_request_entity.dart';
+import 'package:GreenConnectMobile/features/upload/presentation/providers/upload_provider.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
@@ -51,9 +58,15 @@ class _CreateRecyclingPostPageState
   final ImagePicker _picker = ImagePicker();
 
   int? _selectedCategoryId;
-  final List<Map<String, dynamic>> _scrapItems = [];
+  final List<ScrapItemData> _scrapItems = [];
 
   bool _isTakeAll = false;
+  bool _isSubmitting = false;
+
+  // AI Recognition state
+  bool _isAnalyzingImage = false;
+  String? _recognizedImageUrl;
+  Map<String, dynamic>? _aiRecognitionData;
 
   @override
   void initState() {
@@ -70,18 +83,155 @@ class _CreateRecyclingPostPageState
       source: ImageSource.gallery,
     );
     if (pickedFile != null) {
-      setState(() => _selectedImage = File(pickedFile.path));
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+        _isAnalyzingImage = true;
+        _aiRecognitionData = null;
+        _recognizedImageUrl = null;
+      });
+
+      // Call AI API immediately after image selection
+      await _analyzeImageWithAI();
     }
   }
-  
+
+  Future<void> _analyzeImageWithAI() async {
+    if (_selectedImage == null) return;
+
+    try {
+      final uploadNotifier = ref.read(uploadViewModelProvider.notifier);
+      final Uint8List bytes = await _selectedImage!.readAsBytes();
+      final fileName = _selectedImage!.path.split('/').last;
+
+      await uploadNotifier.recognizeScrap(bytes, fileName);
+
+      final uploadState = ref.read(uploadViewModelProvider);
+
+      if (uploadState.recognizeScrapResponse != null) {
+        final aiResponse = uploadState.recognizeScrapResponse!;
+
+        // Try to match AI category with existing categories
+        final categories =
+            ref.read(scrapCategoryViewModelProvider).listData?.data ?? [];
+        final matchedCategory = categories.where((cat) {
+          final categoryLower = cat.categoryName.toLowerCase();
+          final aiCategoryLower = aiResponse.category.toLowerCase();
+          return categoryLower.contains(aiCategoryLower) ||
+              aiCategoryLower.contains(categoryLower);
+        }).firstOrNull;
+
+        int recognizedQuantity = 1;
+        double recognizedWeight = 1.0;
+
+        // Parse estimated amount if available
+        if (aiResponse.estimatedAmount.isNotEmpty) {
+          final amountStr = aiResponse.estimatedAmount.toLowerCase();
+          final quantityMatch = RegExp(
+            r'(\d+)\s*(?:pcs|pieces|items)',
+          ).firstMatch(amountStr);
+          final weightMatch = RegExp(
+            r'(\d+\.?\d*)\s*(?:kg|kilograms)',
+          ).firstMatch(amountStr);
+
+          if (quantityMatch != null) {
+            recognizedQuantity =
+                int.tryParse(quantityMatch.group(1) ?? '1') ?? 1;
+          }
+          if (weightMatch != null) {
+            recognizedWeight =
+                double.tryParse(weightMatch.group(1) ?? '1.0') ?? 1.0;
+          }
+        }
+
+        setState(() {
+          _isAnalyzingImage = false;
+          // Save imageUrl from AI response (already uploaded)
+          _recognizedImageUrl = aiResponse.savedImageUrl;
+          _aiRecognitionData = {
+            'categoryId': matchedCategory?.scrapCategoryId,
+            'itemName': aiResponse.itemName,
+            'category': aiResponse.category,
+            'isRecyclable': aiResponse.isRecyclable,
+            'confidence': aiResponse.confidence,
+            'estimatedAmount': aiResponse.estimatedAmount,
+            'advice': aiResponse.advice,
+            'quantity': recognizedQuantity,
+            'weight': recognizedWeight,
+          };
+
+          // Auto-fill fields
+          if (matchedCategory != null) {
+            _selectedCategoryId = matchedCategory.scrapCategoryId;
+          }
+          _quantityController.text = recognizedQuantity.toString();
+          _weightController.text = recognizedWeight.toString();
+        });
+
+        // Show AI results dialog
+        if (mounted) {
+          _showAIResultDialog(aiResponse);
+        }
+      } else {
+        // AI error: Keep imageFile, allow user to enter manually
+        setState(() {
+          _isAnalyzingImage = false;
+          _recognizedImageUrl = null; // No URL
+          _aiRecognitionData = null;
+        });
+        if (mounted) {
+          CustomToast.show(
+            context,
+            S.of(context)!.ai_cannot_analyze,
+            type: ToastType.warning,
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ ERROR ANALYZE IMAGE: $e');
+      setState(() => _isAnalyzingImage = false);
+      if (mounted) {
+        CustomToast.show(
+          context,
+          S.of(context)!.error_analyze_image,
+          type: ToastType.error,
+        );
+      }
+    }
+  }
+
+  void _showAIResultDialog(dynamic aiResponse) {
+    showDialog(
+      context: context,
+      builder: (context) => AIResultDialog(aiResponse: aiResponse),
+    );
+  }
 
   void _handleAddItem() {
-    if (!_itemFormKey.currentState!.validate() || _selectedCategoryId == null) {
+    // Validate required fields
+    if (_selectedImage == null) {
+      CustomToast.show(
+        context,
+        S.of(context)!.please_select_image,
+        type: ToastType.error,
+      );
+      return;
+    }
+
+    if (_selectedCategoryId == null) {
+      CustomToast.show(
+        context,
+        S.of(context)!.please_select_category,
+        type: ToastType.error,
+      );
+      return;
+    }
+
+    if (!_itemFormKey.currentState!.validate()) {
       return;
     }
 
     final exists = _scrapItems.any(
-      (item) => item['categoryId'] == _selectedCategoryId,
+      (item) => item.categoryId == _selectedCategoryId,
     );
     if (exists) {
       CustomToast.show(
@@ -92,26 +242,109 @@ class _CreateRecyclingPostPageState
       return;
     }
 
-    setState(() {
-      _scrapItems.add({
-        'categoryId': _selectedCategoryId!,
-        'category': ref
-            .read(scrapCategoryViewModelProvider)
-            .listData!
-            .data
-            .firstWhere((cat) => cat.scrapCategoryId == _selectedCategoryId)
-            .categoryName,
-        'quantity': int.parse(_quantityController.text),
-        'weight': double.parse(_weightController.text),
-        'image': _selectedImage,
-      });
+    // Add item with ScrapItemData (can be File or URL)
+    final categoryName = ref
+        .read(scrapCategoryViewModelProvider)
+        .listData!
+        .data
+        .firstWhere((cat) => cat.scrapCategoryId == _selectedCategoryId)
+        .categoryName;
 
+    setState(() {
+      _scrapItems.add(
+        ScrapItemData(
+          categoryId: _selectedCategoryId!,
+          categoryName: categoryName,
+          quantity: int.parse(_quantityController.text),
+          weight: double.parse(_weightController.text),
+          // If URL from AI exists, use URL; otherwise use File (will upload later)
+          imageUrl: _recognizedImageUrl,
+          imageFile: _recognizedImageUrl == null ? _selectedImage : null,
+          aiData: _aiRecognitionData,
+        ),
+      );
+
+      // Reset form
       _selectedCategoryId = null;
       _quantityController.text = "1";
       _weightController.text = "1";
       _selectedImage = null;
+      _recognizedImageUrl = null;
+      _aiRecognitionData = null;
+      _isAnalyzingImage = false;
       _itemFormKey.currentState!.reset();
     });
+
+    CustomToast.show(
+      context,
+      S.of(context)!.item_added_success,
+      type: ToastType.success,
+    );
+  }
+
+  /// BATCH UPLOAD: Upload all images without URL in a single batch
+  Future<bool> _uploadPendingImages() async {
+    final uploadNotifier = ref.read(uploadViewModelProvider.notifier);
+
+    try {
+      // Find all items that need upload
+      final itemsNeedUpload = _scrapItems
+          .where((item) => item.needsUpload)
+          .toList();
+
+      if (itemsNeedUpload.isEmpty) {
+        return true; // Nothing to upload
+      }
+
+      // Upload each image
+      for (int i = 0; i < itemsNeedUpload.length; i++) {
+        final item = itemsNeedUpload[i];
+        final file = item.imageFile!;
+
+        // Step 1: Request upload URL
+        final fileName = file.path.split('/').last;
+        final contentType = "image/${fileName.split('.').last}";
+
+        await uploadNotifier.requestUploadUrlForScrapPost(
+          UploadFileRequest(fileName: fileName, contentType: contentType),
+        );
+
+        final uploadState = ref.read(uploadViewModelProvider);
+        if (uploadState.uploadUrl == null) {
+          if (!mounted) return false;
+          throw Exception(S.of(context)!.error_get_upload_url);
+        }
+
+        // Step 2: Upload binary
+        final Uint8List bytes = await file.readAsBytes();
+        await uploadNotifier.uploadBinary(
+          uploadUrl: uploadState.uploadUrl!.uploadUrl,
+          fileBytes: bytes,
+          contentType: contentType,
+        );
+
+        // Step 3: Update item with uploaded URL
+        final itemIndex = _scrapItems.indexOf(item);
+        setState(() {
+          _scrapItems[itemIndex] = item.copyWith(
+            imageUrl: uploadState.uploadUrl!.filePath,
+            imageFile: null, // Remove local file
+          );
+        });
+      }
+
+      return true;
+    } catch (e, st) {
+      debugPrint('❌ ERROR UPLOADING IMAGES: $e');
+      debugPrint('📌 STACK TRACE: $st');
+      if (!mounted) return false;
+      CustomToast.show(
+        context,
+        S.of(context)!.error_upload_image(e.toString()),
+        type: ToastType.error,
+      );
+      return false;
+    }
   }
 
   void _resetAllData() {
@@ -138,7 +371,6 @@ class _CreateRecyclingPostPageState
   @override
   Widget build(BuildContext context) {
     final spacing = Theme.of(context).extension<AppSpacing>()!;
-    final theme = Theme.of(context);
 
     final categoryState = ref.watch(scrapCategoryViewModelProvider);
     final categories = categoryState.listData?.data ?? [];
@@ -149,200 +381,254 @@ class _CreateRecyclingPostPageState
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+          onPressed: _isSubmitting ? null : () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(spacing.screenPadding),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              PostInfoForm(
-                formKey: _formKey,
-                titleController: _titleController,
-                descController: _descriptionController,
-                addressController: _pickupAddressController,
-                timeController: _pickupTimeController,
-                onSearchAddress: () async {
-                  final loc = await getLocationFromAddress(
-                    _pickupAddressController.text.trim(),
-                  );
-                  if (loc != null) {
-                    setState(() {
-                      _location = loc;
-                      _addressFound = true;
-                    });
-                    if (!mounted || !context.mounted) return;
-                    CustomToast.show(
-                      context,
-                      S.of(context)!.address_found,
-                      type: ToastType.success,
+      body: LoadingOverlay(
+        isLoading: _isSubmitting,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(spacing.screenPadding),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                PostInfoForm(
+                  formKey: _formKey,
+                  titleController: _titleController,
+                  descController: _descriptionController,
+                  addressController: _pickupAddressController,
+                  timeController: _pickupTimeController,
+                  onSearchAddress: () async {
+                    final loc = await getLocationFromAddress(
+                      _pickupAddressController.text.trim(),
                     );
-                  } else {
-                    setState(() {
-                      _addressFound = false;
-                    });
-                    if (!mounted || !context.mounted) return;
-                    CustomToast.show(
-                      context,
-                      S.of(context)!.address_not_found,
-                      type: ToastType.error,
-                    );
-                  }
-                },
-                addressFound: _addressFound,
-              ),
-
-              SizedBox(height: spacing.screenPadding),
-              Text(
-                S.of(context)!.add_scrap_items,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: spacing.screenPadding * 2,
-                ),
-              ),
-              SizedBox(height: spacing.screenPadding),
-              AddScrapItemSection(
-                key: ValueKey(_selectedCategoryId),
-                itemFormKey: _itemFormKey,
-                selectedCategoryId: _selectedCategoryId,
-                categories: categories,
-                quantityController: _quantityController,
-                weightController: _weightController,
-                image: _selectedImage,
-                onPickImage: _pickImage,
-                onCategoryChange: (value) {
-                  setState(() => _selectedCategoryId = value);
-                },
-                onAddItem: _handleAddItem,
-              ),
-
-              SizedBox(height: spacing.screenPadding),
-
-              ScrapItemList(
-                items: _scrapItems,
-                onUpdate: (index, data) async {
-                  final updated = await showDialog(
-                    context: context,
-                    builder: (_) => UpdateScrapItemDialog(
-                      categories: categories
-                          .map((e) => e.categoryName)
-                          .toList(),
-                      initialCategory: data['category'],
-                      initialQuantity: data['quantity'],
-                      initialWeight: data['weight'],
-                      initialImageUrl: data['image'],
-                    ),
-                  );
-
-                  if (updated != null) {
-                    setState(() {
-                      _scrapItems[index] = {
-                        'categoryId': categories
-                            .firstWhere(
-                              (cat) => cat.categoryName == updated['category'],
-                            )
-                            .scrapCategoryId,
-                        'category': updated['category'],
-                        'quantity': updated['quantity'],
-                        'weight': updated['weight'],
-                        'image': updated['image'],
-                      };
-                    });
-                  }
-                },
-                onDelete: (item) => setState(() => _scrapItems.remove(item)),
-              ),
-
-              SizedBox(height: spacing.screenPadding * 2),
-              TakeAllSwitch(
-                value: _isTakeAll,
-                onChange: (val) => setState(() => _isTakeAll = val),
-              ),
-              SizedBox(height: spacing.screenPadding),
-              GradientButton(
-                text: "${S.of(context)!.create} ${S.of(context)!.post}",
-                onPressed: () async {
-                  final requiredMsg = S.of(context)!.error_required;
-                  final emptyMsg = S.of(context)!.error_scrap_item_empty;
-                  final successMsg = S.of(context)!.success_post_created;
-                  final generalMsg = S.of(context)!.error_general;
-
-                  if (!_formKey.currentState!.validate()) {
-                    CustomToast.show(
-                      context,
-                      requiredMsg,
-                      type: ToastType.error,
-                    );
-                    return;
-                  }
-
-                  if (_scrapItems.isEmpty) {
-                    CustomToast.show(context, emptyMsg, type: ToastType.error);
-                    return;
-                  }
-
-                  final vm = ref.read(scrapPostViewModelProvider.notifier);
-
-                  if (_location == null) {
-                    CustomToast.show(
-                      context,
-                      S.of(context)!.error_invalid_address,
-                      type: ToastType.error,
-                    );
-                    return;
-                  }
-                  final post = ScrapPostEntity(
-                    title: _titleController.text.trim(),
-                    description: _descriptionController.text.trim(),
-                    address: _pickupAddressController.text.trim(),
-                    availableTimeRange: _pickupTimeController.text.trim(),
-                    scrapPostDetails: _scrapItems
-                        .map(
-                          (e) => ScrapPostDetailEntity(
-                            scrapCategoryId: e['categoryId'],
-                            amountDescription:
-                                "${e['quantity']} pcs - ${e['weight'].toStringAsFixed(1)} kg",
-                            // imageUrl: e['image'],
-                            imageUrl:
-                                "https://media.vietnamplus.vn/images/fbc23bef0d088b23a8965bce49f85a61cd286afccaf9606b44256f5d7ef5d5fefff6aa780c9464f6499f791f5dd6f3de1d175058d9a59d4e21100ddb41c54c45/ngaymoitruong_12.jpg",
-                          ),
-                        )
-                        .toList(),
-                    mustTakeAll: _isTakeAll,
-                    location: _location!,
-                  );
-
-                  final success = await vm.createPost(post: post);
-
-                  if (success) {
-                    if (!mounted || !context.mounted) return;
-                    _resetAllData();
-                    CustomToast.show(
-                      context,
-                      successMsg,
-                      type: ToastType.success,
-                    );
-
-                    if (context.mounted) {
-                      navigateWithLoading(context, route: '/list-post');
+                    if (loc != null) {
+                      setState(() {
+                        _location = loc;
+                        _addressFound = true;
+                      });
+                      if (!mounted || !context.mounted) return;
+                      CustomToast.show(
+                        context,
+                        S.of(context)!.address_found,
+                        type: ToastType.success,
+                      );
+                    } else {
+                      setState(() {
+                        _addressFound = false;
+                      });
+                      if (!mounted || !context.mounted) return;
+                      CustomToast.show(
+                        context,
+                        S.of(context)!.address_not_found,
+                        type: ToastType.error,
+                      );
                     }
-                  } else {
-                    if (!mounted || !context.mounted) return;
+                  },
+                  addressFound: _addressFound,
+                ),
 
-                    // final error = ref
-                    //     .read(scrapPostViewModelProvider)
-                    //     .errorMessage;
-                    CustomToast.show(
-                      context,
-                      "$generalMsg ${S.of(context)!.error_scrap_category}",
-                      type: ToastType.error,
+                SizedBox(height: spacing.screenPadding),
+                PostSectionTitle(title: S.of(context)!.add_scrap_items),
+                SizedBox(height: spacing.screenPadding),
+                AddScrapItemSection(
+                  key: ValueKey(_selectedCategoryId),
+                  itemFormKey: _itemFormKey,
+                  selectedCategoryId: _selectedCategoryId,
+                  categories: categories,
+                  quantityController: _quantityController,
+                  weightController: _weightController,
+                  image: _selectedImage,
+                  recognizedImageUrl: _recognizedImageUrl,
+                  onPickImage: _pickImage,
+                  onCategoryChange: (value) {
+                    setState(() => _selectedCategoryId = value);
+                  },
+                  onAddItem: _handleAddItem,
+                  isAnalyzing: _isAnalyzingImage,
+                ),
+
+                SizedBox(height: spacing.screenPadding),
+
+                ScrapItemList(
+                  items: _scrapItems,
+                  onUpdate: (index, itemData) async {
+                    final updated = await showDialog(
+                      context: context,
+                      builder: (_) => UpdateScrapItemDialog(
+                        categories: categories
+                            .map((e) => e.categoryName)
+                            .toList(),
+                        initialCategory: itemData.categoryName,
+                        initialQuantity: itemData.quantity,
+                        initialWeight: itemData.weight,
+                        initialImageUrl: itemData.displayPath,
+                      ),
                     );
-                  }
-                },
-              ),
-            ],
+
+                    if (updated != null) {
+                      final matchedCat = categories.firstWhere(
+                        (cat) => cat.categoryName == updated['category'],
+                      );
+
+                      // Handle image: File path or URL
+                      String? newImageUrl;
+                      File? newImageFile;
+
+                      if (updated['image'] is String &&
+                          updated['image'] != null) {
+                        final imagePath = updated['image'] as String;
+                        // Check if file path (starts with /) or URL (http)
+                        if (imagePath.startsWith('/') ||
+                            imagePath.contains('file://')) {
+                          // This is a new File
+                          newImageFile = File(imagePath);
+                          newImageUrl = null;
+                        } else if (imagePath.startsWith('http')) {
+                          // This is a URL
+                          newImageUrl = imagePath;
+                          newImageFile = null;
+                        } else {
+                          // Local path without /
+                          newImageFile = File(imagePath);
+                          newImageUrl = null;
+                        }
+                      }
+
+                      setState(() {
+                        _scrapItems[index] = ScrapItemData(
+                          categoryId: matchedCat.scrapCategoryId,
+                          categoryName: matchedCat.categoryName,
+                          quantity: updated['quantity'],
+                          weight: updated['weight'],
+                          imageUrl: newImageUrl,
+                          imageFile: newImageFile,
+                        );
+                      });
+                    }
+                  },
+                  onDelete: (item) => setState(() => _scrapItems.remove(item)),
+                ),
+
+                SizedBox(height: spacing.screenPadding * 2),
+                TakeAllSwitch(
+                  value: _isTakeAll,
+                  onChange: (val) => setState(() => _isTakeAll = val),
+                ),
+                SizedBox(height: spacing.screenPadding),
+                GradientButton(
+                  text: "${S.of(context)!.create} ${S.of(context)!.post}",
+                  onPressed: _isSubmitting
+                      ? null
+                      : () async {
+                          final requiredMsg = S.of(context)!.error_required;
+                          final emptyMsg = S
+                              .of(context)!
+                              .error_scrap_item_empty;
+                          final successMsg = S
+                              .of(context)!
+                              .success_post_created;
+                          final generalMsg = S.of(context)!.error_general;
+
+                          if (!_formKey.currentState!.validate()) {
+                            CustomToast.show(
+                              context,
+                              requiredMsg,
+                              type: ToastType.error,
+                            );
+                            return;
+                          }
+
+                          if (_scrapItems.isEmpty) {
+                            CustomToast.show(
+                              context,
+                              emptyMsg,
+                              type: ToastType.error,
+                            );
+                            return;
+                          }
+
+                          if (_location == null) {
+                            CustomToast.show(
+                              context,
+                              S.of(context)!.error_invalid_address,
+                              type: ToastType.error,
+                            );
+                            return;
+                          }
+
+                          // Start loading
+                          setState(() => _isSubmitting = true);
+
+                          try {
+                            final vm = ref.read(
+                              scrapPostViewModelProvider.notifier,
+                            );
+
+                            // BATCH UPLOAD: Upload all images without URL before creating post
+                            final uploadSuccess = await _uploadPendingImages();
+                            if (!uploadSuccess) {
+                              setState(() => _isSubmitting = false);
+                              return; // Upload error, stop
+                            }
+
+                            final post = ScrapPostEntity(
+                              title: _titleController.text.trim(),
+                              description: _descriptionController.text.trim(),
+                              address: _pickupAddressController.text.trim(),
+                              availableTimeRange: _pickupTimeController.text
+                                  .trim(),
+                              scrapPostDetails: _scrapItems
+                                  .map(
+                                    (item) => ScrapPostDetailEntity(
+                                      scrapCategoryId: item.categoryId,
+                                      amountDescription:
+                                          "${item.quantity} pcs - ${item.weight.toStringAsFixed(1)} kg",
+                                      imageUrl:
+                                          item.imageUrl ??
+                                          "https://media.vietnamplus.vn/images/fbc23bef0d088b23a8965bce49f85a61cd286afccaf9606b44256f5d7ef5d5fefff6aa780c9464f6499f791f5dd6f3de1d175058d9a59d4e21100ddb41c54c45/ngaymoitruong_12.jpg",
+                                    ),
+                                  )
+                                  .toList(),
+                              mustTakeAll: _isTakeAll,
+                              location: _location!,
+                            );
+
+                            final success = await vm.createPost(post: post);
+
+                            if (success) {
+                              if (!mounted || !context.mounted) return;
+                              _resetAllData();
+                              CustomToast.show(
+                                context,
+                                successMsg,
+                                type: ToastType.success,
+                              );
+
+                              if (context.mounted) {
+                                navigateWithLoading(
+                                  context,
+                                  route: '/list-post',
+                                );
+                              }
+                            } else {
+                              if (!mounted || !context.mounted) return;
+                              CustomToast.show(
+                                context,
+                                "$generalMsg ${S.of(context)!.error_scrap_category}",
+                                type: ToastType.error,
+                              );
+                            }
+                          } finally {
+                            // Stop loading
+                            if (mounted) {
+                              setState(() => _isSubmitting = false);
+                            }
+                          }
+                        },
+                ),
+              ],
+            ),
           ),
         ),
       ),

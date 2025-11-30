@@ -4,6 +4,7 @@ import 'package:GreenConnectMobile/features/profile/data/models/user_update_mode
 import 'package:GreenConnectMobile/features/profile/data/models/verification_model.dart';
 import 'package:GreenConnectMobile/features/profile/domain/usecases/get_me_usecase.dart';
 import 'package:GreenConnectMobile/features/profile/domain/usecases/update_me_usecase.dart';
+import 'package:GreenConnectMobile/features/profile/domain/usecases/update_verification_usecase.dart';
 import 'package:GreenConnectMobile/features/profile/domain/usecases/upload_user_avatar.dart';
 import 'package:GreenConnectMobile/features/profile/domain/usecases/verify_user_usecase.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/providers/profile_providers.dart';
@@ -15,12 +16,14 @@ class ProfileViewModel extends Notifier<ProfileState> {
   late final UpdateMeUseCase _updateMeUseCase;
   late final VerifyUserUseCase _verifyUserUseCase;
   late final UpdateMeAvatarUseCase _updateMeAvatarUseCase;
+  late final UpdateVerificationUsecase _updateVerificationUseCase;
   @override
   ProfileState build() {
     _getMeUseCase = ref.read(getMeUsecaseProvider);
     _updateMeUseCase = ref.read(updateMeUsecaseProvider);
     _verifyUserUseCase = ref.read(verifyUserUsecaseProvider);
     _updateMeAvatarUseCase = ref.read(updateMeAvatarUsecaseProvider);
+    _updateVerificationUseCase = ref.read(updateVerificationUsecaseProvider);
 
     return ProfileState();
   }
@@ -67,6 +70,17 @@ class ProfileViewModel extends Notifier<ProfileState> {
     try {
       await _updateMeAvatarUseCase(avatarUrl);
       state = state.copyWith(isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+    }
+  }
+
+  // PATCH /admin/verifications/update-verification
+  Future<void> updateVerification(VerificationModel verify) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      await _updateVerificationUseCase(verify);
+      state = state.copyWith(isLoading: false, verified: true);
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }

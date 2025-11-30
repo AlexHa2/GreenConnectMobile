@@ -1789,6 +1789,30 @@ abstract class S {
   /// **'Business'**
   String get buyer_type_business;
 
+  /// No description provided for @update_verification.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Verification'**
+  String get update_verification;
+
+  /// No description provided for @verification_updated_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification updated successfully'**
+  String get verification_updated_successfully;
+
+  /// No description provided for @update_account_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Account Type'**
+  String get update_account_type;
+
+  /// No description provided for @switch_account_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch Account Type'**
+  String get switch_account_type;
+
   /// No description provided for @send_verification_info.
   ///
   /// In en, this message translates to:
@@ -1864,7 +1888,7 @@ abstract class S {
   /// No description provided for @try_again.
   ///
   /// In en, this message translates to:
-  /// **'Try Again'**
+  /// **'Try again'**
   String get try_again;
 
   /// No description provided for @pending.
@@ -2713,6 +2737,180 @@ abstract class S {
   /// **'No feedbacks yet'**
   String get no_feedbacks_yet;
 
+  /// No description provided for @my_feedbacks.
+  ///
+  /// In en, this message translates to:
+  /// **'My Feedbacks'**
+  String get my_feedbacks;
+
+  /// No description provided for @all_feedbacks.
+  ///
+  /// In en, this message translates to:
+  /// **'All Feedbacks'**
+  String get all_feedbacks;
+
+  /// No description provided for @feedback_list.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback List'**
+  String get feedback_list;
+
+  /// No description provided for @sort_feedbacks.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Feedbacks'**
+  String get sort_feedbacks;
+
+  /// No description provided for @no_feedbacks_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No feedbacks available at the moment'**
+  String get no_feedbacks_found;
+
+  /// No description provided for @no_feedbacks_available.
+  ///
+  /// In en, this message translates to:
+  /// **'No feedbacks available at the moment'**
+  String get no_feedbacks_available;
+
+  /// No description provided for @rated_by.
+  ///
+  /// In en, this message translates to:
+  /// **'Rated by'**
+  String get rated_by;
+
+  /// No description provided for @rated_for.
+  ///
+  /// In en, this message translates to:
+  /// **'Rated for'**
+  String get rated_for;
+
+  /// No description provided for @transaction_ref.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction'**
+  String get transaction_ref;
+
+  /// No description provided for @stars.
+  ///
+  /// In en, this message translates to:
+  /// **'stars'**
+  String get stars;
+
+  /// No description provided for @feedback_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback Details'**
+  String get feedback_details;
+
+  /// No description provided for @feedback_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback Information'**
+  String get feedback_information;
+
+  /// No description provided for @reviewer_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewer Information'**
+  String get reviewer_information;
+
+  /// No description provided for @reviewee_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewee Information'**
+  String get reviewee_information;
+
+  /// No description provided for @given_rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Given Rating'**
+  String get given_rating;
+
+  /// No description provided for @feedback_comment.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get feedback_comment;
+
+  /// No description provided for @no_comment.
+  ///
+  /// In en, this message translates to:
+  /// **'No comment provided'**
+  String get no_comment;
+
+  /// No description provided for @feedback_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback Date'**
+  String get feedback_date;
+
+  /// No description provided for @edit_feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Feedback'**
+  String get edit_feedback;
+
+  /// No description provided for @delete_feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Feedback'**
+  String get delete_feedback;
+
+  /// No description provided for @confirm_delete_feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Feedback'**
+  String get confirm_delete_feedback;
+
+  /// No description provided for @delete_feedback_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this feedback? This action cannot be undone.'**
+  String get delete_feedback_message;
+
+  /// No description provided for @feedback_deleted_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback deleted successfully'**
+  String get feedback_deleted_success;
+
+  /// No description provided for @feedback_updated_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback updated successfully'**
+  String get feedback_updated_success;
+
+  /// No description provided for @update_feedback_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update feedback'**
+  String get update_feedback_failed;
+
+  /// No description provided for @delete_feedback_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete feedback'**
+  String get delete_feedback_failed;
+
+  /// No description provided for @view_transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'View Transaction'**
+  String get view_transaction;
+
+  /// No description provided for @member_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Member Information'**
+  String get member_info;
+
+  /// No description provided for @contact_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Information'**
+  String get contact_info;
+
   /// No description provided for @approve.
   ///
   /// In en, this message translates to:
@@ -2856,6 +3054,372 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Scheduled'**
   String get scheduled;
+
+  /// No description provided for @feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedbacks'**
+  String get feedback;
+
+  /// No description provided for @transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction'**
+  String get transaction;
+
+  /// No description provided for @for_transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'For'**
+  String get for_transaction;
+
+  /// No description provided for @delete_feedback_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this feedback? This action cannot be undone.'**
+  String get delete_feedback_confirm;
+
+  /// No description provided for @feedback_delete_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback deleted successfully'**
+  String get feedback_delete_success;
+
+  /// No description provided for @feedback_delete_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete feedback'**
+  String get feedback_delete_failed;
+
+  /// No description provided for @feedback_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback Not Found'**
+  String get feedback_not_found;
+
+  /// No description provided for @feedback_may_deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'This feedback may have been deleted'**
+  String get feedback_may_deleted;
+
+  /// No description provided for @feedback_may_have_been_deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'feedback may have been deleted'**
+  String get feedback_may_have_been_deleted;
+
+  /// No description provided for @comment.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get comment;
+
+  /// No description provided for @update_feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Feedback'**
+  String get update_feedback;
+
+  /// No description provided for @edit_your_feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Your Feedback'**
+  String get edit_your_feedback;
+
+  /// No description provided for @update_rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Rating'**
+  String get update_rating;
+
+  /// No description provided for @update_comment.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Comment'**
+  String get update_comment;
+
+  /// No description provided for @enter_your_comment.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your comment'**
+  String get enter_your_comment;
+
+  /// No description provided for @rating_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating is required'**
+  String get rating_required;
+
+  /// No description provided for @save_changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get save_changes;
+
+  /// No description provided for @review.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get review;
+
+  /// No description provided for @complain.
+  ///
+  /// In en, this message translates to:
+  /// **'Complain'**
+  String get complain;
+
+  /// No description provided for @write_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Write Review'**
+  String get write_review;
+
+  /// No description provided for @file_complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'File Complaint'**
+  String get file_complaint;
+
+  /// No description provided for @create_feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Feedback'**
+  String get create_feedback;
+
+  /// No description provided for @rate_transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate Transaction'**
+  String get rate_transaction;
+
+  /// No description provided for @your_rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Rating'**
+  String get your_rating;
+
+  /// No description provided for @tap_to_rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to rate'**
+  String get tap_to_rate;
+
+  /// No description provided for @write_comment.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your comment'**
+  String get write_comment;
+
+  /// No description provided for @comment_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your experience with this transaction...'**
+  String get comment_placeholder;
+
+  /// No description provided for @rating_description.
+  ///
+  /// In en, this message translates to:
+  /// **'How would you rate your experience?'**
+  String get rating_description;
+
+  /// No description provided for @comment_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a comment'**
+  String get comment_required;
+
+  /// No description provided for @feedback_created_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback created successfully'**
+  String get feedback_created_success;
+
+  /// No description provided for @create_feedback_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create feedback'**
+  String get create_feedback_failed;
+
+  /// No description provided for @poor.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor'**
+  String get poor;
+
+  /// No description provided for @fair.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair'**
+  String get fair;
+
+  /// No description provided for @good.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get good;
+
+  /// No description provided for @veryGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Very Good'**
+  String get veryGood;
+
+  /// No description provided for @excellent.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
+  String get excellent;
+
+  /// No description provided for @ai_cannot_analyze.
+  ///
+  /// In en, this message translates to:
+  /// **'AI cannot analyze. Please enter information manually (image will be uploaded when creating post).'**
+  String get ai_cannot_analyze;
+
+  /// No description provided for @ai_cannot_analyze_update.
+  ///
+  /// In en, this message translates to:
+  /// **'AI cannot analyze. Please enter information manually (image will be uploaded when updating post).'**
+  String get ai_cannot_analyze_update;
+
+  /// No description provided for @error_analyze_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Error analyzing image. Please enter information manually.'**
+  String get error_analyze_image;
+
+  /// No description provided for @ai_recognition.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Recognition'**
+  String get ai_recognition;
+
+  /// No description provided for @item.
+  ///
+  /// In en, this message translates to:
+  /// **'Item'**
+  String get item;
+
+  /// No description provided for @recyclable.
+  ///
+  /// In en, this message translates to:
+  /// **'Recyclable'**
+  String get recyclable;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @estimated.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated'**
+  String get estimated;
+
+  /// No description provided for @advice.
+  ///
+  /// In en, this message translates to:
+  /// **'Advice'**
+  String get advice;
+
+  /// No description provided for @info_auto_filled.
+  ///
+  /// In en, this message translates to:
+  /// **'Information has been automatically filled. You can edit before adding.'**
+  String get info_auto_filled;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @please_select_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an image'**
+  String get please_select_image;
+
+  /// No description provided for @please_select_category.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a category'**
+  String get please_select_category;
+
+  /// No description provided for @item_added_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Item added successfully'**
+  String get item_added_success;
+
+  /// No description provided for @error_get_upload_url.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get upload URL'**
+  String get error_get_upload_url;
+
+  /// No description provided for @error_upload_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Error uploading image: {error}'**
+  String error_upload_image(Object error);
+
+  /// No description provided for @ai_will_auto_recognize.
+  ///
+  /// In en, this message translates to:
+  /// **'AI will automatically recognize after selecting image'**
+  String get ai_will_auto_recognize;
+
+  /// No description provided for @ai_will_auto_analyze.
+  ///
+  /// In en, this message translates to:
+  /// **'AI will automatically analyze the image'**
+  String get ai_will_auto_analyze;
+
+  /// No description provided for @ai_analyzing.
+  ///
+  /// In en, this message translates to:
+  /// **'AI is analyzing the image and automatically filling information...'**
+  String get ai_analyzing;
+
+  /// No description provided for @image_will_upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Image will be uploaded when creating post. Please enter information manually.'**
+  String get image_will_upload;
+
+  /// No description provided for @analyzing.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing...'**
+  String get analyzing;
+
+  /// No description provided for @ai_connect_error.
+  ///
+  /// In en, this message translates to:
+  /// **'AI connection error. You can enter information manually, image will be uploaded when updating post.'**
+  String get ai_connect_error;
+
+  /// No description provided for @complaints.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaints'**
+  String get complaints;
+
+  /// No description provided for @feedbacks.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedbacks'**
+  String get feedbacks;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
