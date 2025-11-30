@@ -105,10 +105,10 @@ class TransactionHeaderInfo extends StatelessWidget {
             vertical: spacing * 0.5,
           ),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.2),
+            color: theme.scaffoldBackgroundColor.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.3),
+              color: theme.scaffoldBackgroundColor.withValues(alpha: 0.3),
             ),
           ),
           child: Row(
@@ -116,14 +116,14 @@ class TransactionHeaderInfo extends StatelessWidget {
             children: [
               Icon(
                 _getStatusIcon(transaction.statusEnum),
-                color: Colors.white,
+                color: theme.scaffoldBackgroundColor,
                 size: 16,
               ),
               SizedBox(width: spacing * 0.5),
               Text(
                 _localizeStatus(s, transaction.statusEnum).toUpperCase(),
                 style: theme.textTheme.labelLarge?.copyWith(
-                  color: Colors.white,
+                  color: theme.scaffoldBackgroundColor.withValues(alpha: 0.9),
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
                 ),
@@ -149,7 +149,7 @@ class TransactionHeaderInfo extends StatelessWidget {
           child: Text(
             'ID: ${transaction.transactionId}',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: theme.scaffoldBackgroundColor.withValues(alpha: 0.8),
             ),
           ),
         ),
@@ -181,7 +181,7 @@ class TransactionSummaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(spacing * 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -224,7 +224,7 @@ class TransactionSummaryCard extends StatelessWidget {
             ),
             Expanded(
               child: _SummaryItem(
-                label: "Số lượng",
+                label: s.quantity,
                 value: "${transaction.transactionDetails.length}",
                 color: theme.primaryColor,
                 icon: Icons.inventory_2_outlined,

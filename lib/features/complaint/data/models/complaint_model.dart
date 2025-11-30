@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/enum/complaint_status.dart';
 import 'package:GreenConnectMobile/features/complaint/domain/entities/complaint_entity.dart';
 import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
 import 'package:GreenConnectMobile/features/transaction/data/models/transaction_model.dart';
@@ -7,11 +8,11 @@ class ComplaintModel {
   final String transactionId;
   final TransactionModel? transaction;
   final String complainantId;
-  final UserModel complainant;
+  final UserModel? complainant;
   final String accusedId;
-  final UserModel accused;
+  final UserModel? accused;
   final String reason;
-  final String evidenceUrl;
+  final String? evidenceUrl;
   final String status;
   final String createdAt;
 
@@ -20,11 +21,11 @@ class ComplaintModel {
     required this.transactionId,
     this.transaction,
     required this.complainantId,
-    required this.complainant,
+    this.complainant,
     required this.accusedId,
-    required this.accused,
+    this.accused,
     required this.reason,
-    required this.evidenceUrl,
+    this.evidenceUrl,
     required this.status,
     required this.createdAt,
   });
@@ -37,11 +38,15 @@ class ComplaintModel {
           ? TransactionModel.fromJson(json['transaction'])
           : null,
       complainantId: json['complainantId'] ?? '',
-      complainant: UserModel.fromJson(json['complainant']),
+      complainant: json['complainant'] != null
+          ? UserModel.fromJson(json['complainant'])
+          : null,
       accusedId: json['accusedId'] ?? '',
-      accused: UserModel.fromJson(json['accused']),
+      accused: json['accused'] != null
+          ? UserModel.fromJson(json['accused'])
+          : null,
       reason: json['reason'] ?? '',
-      evidenceUrl: json['evidenceUrl'] ?? '',
+      evidenceUrl: json['evidenceUrl'],
       status: json['status'] ?? 'Submitted',
       createdAt: json['createdAt'] ?? '',
     );
@@ -53,9 +58,9 @@ class ComplaintModel {
       'transactionId': transactionId,
       'transaction': transaction?.toJson(),
       'complainantId': complainantId,
-      'complainant': complainant.toJson(),
+      'complainant': complainant?.toJson(),
       'accusedId': accusedId,
-      'accused': accused.toJson(),
+      'accused': accused?.toJson(),
       'reason': reason,
       'evidenceUrl': evidenceUrl,
       'status': status,
@@ -69,9 +74,9 @@ class ComplaintModel {
       transactionId: transactionId,
       transaction: transaction?.toEntity(),
       complainantId: complainantId,
-      complainant: complainant.toEntity(),
+      complainant: complainant?.toEntity(),
       accusedId: accusedId,
-      accused: accused.toEntity(),
+      accused: accused?.toEntity(),
       reason: reason,
       evidenceUrl: evidenceUrl,
       status: ComplaintStatus.fromString(status),

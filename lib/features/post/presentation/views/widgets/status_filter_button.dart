@@ -38,7 +38,10 @@ class StatusFilterButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(space.screenPadding),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: space.screenPadding,
+          vertical: space.screenPadding * 0.5,
+        ),
       ),
       child: Text(
         label,

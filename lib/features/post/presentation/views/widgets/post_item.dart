@@ -14,6 +14,7 @@ class PostItem extends StatelessWidget {
   final String localizedStatus;
   final VoidCallback onTapDetails;
   final VoidCallback? onGoToTransaction;
+  final VoidCallback? onGoToOffers;
 
   const PostItem({
     super.key,
@@ -24,6 +25,7 @@ class PostItem extends StatelessWidget {
     required this.localizedStatus,
     required this.onTapDetails,
     this.onGoToTransaction,
+    this.onGoToOffers,
     required this.timeCreated,
   });
 
@@ -31,7 +33,13 @@ class PostItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isAccepted = PostStatusHelper.showTransactionAction(rawStatus);
-    final statusColor = PostStatusHelper.getStatusColor(context, PostStatus.parseStatus(rawStatus));
+    final showOffersButton = PostStatusHelper.showOffersButton(
+      PostStatus.parseStatus(rawStatus),
+    );
+    final statusColor = PostStatusHelper.getStatusColor(
+      context,
+      PostStatus.parseStatus(rawStatus),
+    );
     final createdAgo = TimeAgoHelper.format(
       context,
       DateTime.parse(timeCreated),
@@ -159,6 +167,33 @@ class PostItem extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  if (showOffersButton && onGoToOffers != null) ...[
+                    SizedBox(width: space),
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: onGoToOffers,
+                        style: FilledButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 0,
+                            horizontal: space * 2 / 3,
+                          ),
+                          backgroundColor: theme.primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(space),
+                          ),
+                        ),
+
+                        icon: const Icon(Icons.receipt_long_rounded, size: 16),
+                        label: Text(
+                          S.of(context)!.view_offers,
+                          style: const TextStyle(fontSize: 13),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ],
 
                   if (isAccepted) ...[
                     SizedBox(width: space),

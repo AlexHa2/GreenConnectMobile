@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:GreenConnectMobile/core/di/injector.dart';
-import 'package:GreenConnectMobile/core/enum/buyer_type.dart';
+import 'package:GreenConnectMobile/core/enum/buyer_type_status.dart';
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';

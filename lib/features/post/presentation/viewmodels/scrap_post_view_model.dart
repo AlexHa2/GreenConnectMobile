@@ -7,6 +7,7 @@ import 'package:GreenConnectMobile/features/post/domain/usecases/delete_scrap_de
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_my_scrap_post_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_scrap_post_detail_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/scrap_post_usecases.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/search_posts_for_collector_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/toggle_scrap_post_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/update_scrap_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/update_scrap_usecase.dart';
@@ -24,6 +25,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
   late UpdateScrapDetailUsecase _updateDetail;
   late DeleteScrapDetailUsecase _deleteDetail;
   late CreateScrapDetailUsecase _createDetail;
+  late SearchPostsForCollectorUsecase _searchPostsForCollector;
   @override
   ScrapPostState build() {
     _getMyPosts = ref.read(getMyScrapPostsUsecaseProvider);
@@ -34,6 +36,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
     _updateDetail = ref.read(updateScrapDetailUsecaseProvider);
     _deleteDetail = ref.read(deleteScrapDetailUsecaseProvider);
     _createDetail = ref.read(createScrapDetailUsecaseProvider);
+    _searchPostsForCollector = ref.read(searchPostsForCollectorUsecaseProvider);
     return ScrapPostState();
   }
 
@@ -57,6 +60,36 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
     } catch (e, stack) {
       if (e is AppException) {
         debugPrint('❌ ERROR FETCH MY POSTS SYSTEM: ${e.message}');
+      }
+      debugPrint('📌 STACK TRACE: $stack');
+      state = state.copyWith(isLoadingList: false, errorMessage: e.toString());
+    }
+  }
+
+  /// Search Posts For Collector
+  Future<void> searchPostsForCollector({
+    required int page,
+    required int size,
+    String? categoryName,
+    String? status,
+    bool? sortByLocation,
+    bool? sortByCreateAt,
+  }) async {
+    state = state.copyWith(isLoadingList: true, errorMessage: null);
+
+    try {
+      final result = await _searchPostsForCollector(
+        categoryName: categoryName,
+        status: status,
+        sortByLocation: sortByLocation,
+        sortByCreateAt: sortByCreateAt,
+        pageNumber: page,
+        pageSize: size,
+      );
+      state = state.copyWith(isLoadingList: false, listData: result);
+    } catch (e, stack) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR SEARCH POSTS FOR COLLECTOR: ${e.message}');
       }
       debugPrint('📌 STACK TRACE: $stack');
       state = state.copyWith(isLoadingList: false, errorMessage: e.toString());

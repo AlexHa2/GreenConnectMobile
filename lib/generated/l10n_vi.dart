@@ -905,7 +905,7 @@ class SVi extends S {
   String get household_role => 'Hộ dân';
 
   @override
-  String get view_offers => 'Xem danh sách người cung cấp ';
+  String get view_offers => 'Xem danh sách các đề nghị';
 
   @override
   String get all_offers => 'Tất cả đề nghị';
@@ -1050,6 +1050,45 @@ class SVi extends S {
 
   @override
   String get offer_rejected_success => 'Từ chối đề nghị thành công';
+
+  @override
+  String get create_offer => 'Tạo đề nghị';
+
+  @override
+  String get offer_prices => 'Giá đề nghị';
+
+  @override
+  String get proposed_pickup_time => 'Thời gian nhận hàng đề xuất';
+
+  @override
+  String get select_date_time => 'Chọn ngày & giờ';
+
+  @override
+  String get please_select_time => 'Vui lòng chọn thời gian nhận hàng đề xuất';
+
+  @override
+  String get please_enter_at_least_one_price => 'Vui lòng nhập ít nhất một giá';
+
+  @override
+  String get invalid_price => 'Giá không hợp lệ';
+
+  @override
+  String get submit_offer => 'Gửi đề nghị';
+
+  @override
+  String get offer_created_successfully => 'Tạo đề nghị thành công';
+
+  @override
+  String get failed_to_create_offer => 'Tạo đề nghị thất bại';
+
+  @override
+  String get available_posts => 'Bài đăng khả dụng';
+
+  @override
+  String get enter_message => 'Nhập tin nhắn của bạn';
+
+  @override
+  String get please_enter_message => 'Vui lòng nhập tin nhắn';
 
   @override
   String get offer_canceled_success => 'Hủy đề nghị thành công';
@@ -1740,4 +1779,164 @@ class SVi extends S {
 
   @override
   String get feedbacks => 'Đánh giá';
+
+  @override
+  String get complaint_submitted => 'Đã gửi';
+
+  @override
+  String get complaint_in_review => 'Đang xem xét';
+
+  @override
+  String get complaint_resolved => 'Đã giải quyết';
+
+  @override
+  String get complaint_dismissed => 'Đã từ chối';
+
+  @override
+  String get complaint_list => 'Danh sách khiếu nại';
+
+  @override
+  String get sort_by_date => 'Sắp xếp theo ngày';
+
+  @override
+  String get sort_ascending => 'Tăng dần';
+
+  @override
+  String get sort_descending => 'Giảm dần';
+
+  @override
+  String get filter_by_status => 'Lọc theo trạng thái';
+
+  @override
+  String get no_complaints => 'Chưa có khiếu nại nào';
+
+  @override
+  String get complaint_reason => 'Lý do khiếu nại';
+
+  @override
+  String get complainant => 'Người khiếu nại';
+
+  @override
+  String get accused => 'Người bị tố cáo';
+
+  @override
+  String get created_at => 'Tạo lúc';
+
+  @override
+  String get complaint_detail => 'Chi tiết khiếu nại';
+
+  @override
+  String get complaint_id => 'Mã khiếu nại';
+
+  @override
+  String get complaint_information => 'Thông tin khiếu nại';
+
+  @override
+  String get participants => 'Người tham gia';
+
+  @override
+  String get evidence => 'Bằng chứng';
+
+  @override
+  String get update_complaint => 'Cập nhật khiếu nại';
+
+  @override
+  String get update_complaint_subtitle => 'Cập nhật chi tiết khiếu nại của bạn';
+
+  @override
+  String get create_complaint => 'Tạo khiếu nại';
+
+  @override
+  String get create_complaint_subtitle => 'Báo cáo sự cố với giao dịch này';
+
+  @override
+  String get enter_complaint_reason_hint =>
+      'Mô tả vấn đề bạn gặp phải với giao dịch này...';
+
+  @override
+  String get minimum_10_characters => 'Tối thiểu 10 ký tự';
+
+  @override
+  String get reason_too_short => 'Lý do phải có ít nhất 10 ký tự';
+
+  @override
+  String get please_select_evidence_image =>
+      'Vui lòng chọn hình ảnh bằng chứng';
+
+  @override
+  String get evidence_selected => 'Đã chọn bằng chứng';
+
+  @override
+  String get no_evidence_selected => 'Chưa chọn bằng chứng';
+
+  @override
+  String get tap_below_to_select_image => 'Nhấn bên dưới để chọn hình ảnh';
+
+  @override
+  String get select_evidence_image => 'Chọn hình ảnh bằng chứng';
+
+  @override
+  String get submit_complaint => 'Gửi khiếu nại';
+
+  @override
+  String get complaint_created_success => 'Tạo khiếu nại thành công';
+
+  @override
+  String get failed_to_create_complaint => 'Tạo khiếu nại thất bại';
+
+  @override
+  String get complaint_info_note =>
+      'Tất cả các trường đều bắt buộc. Vui lòng cung cấp bằng chứng rõ ràng và lý do chi tiết để xử lý tốt hơn.';
+
+  @override
+  String get image_attached => 'Đã đính kèm hình ảnh';
+
+  @override
+  String get error_load_image => 'Không thể tải hình ảnh';
+
+  @override
+  String get no_evidence_attached => 'Chưa có bằng chứng';
+
+  @override
+  String get change_evidence_image => 'Thay đổi bằng chứng';
+
+  @override
+  String get add_evidence_image => 'Thêm hình ảnh bằng chứng';
+
+  @override
+  String get please_enter_reason => 'Vui lòng nhập lý do';
+
+  @override
+  String get reopen_complaint => 'Mở lại khiếu nại';
+
+  @override
+  String get reopen_complaint_confirm =>
+      'Bạn có chắc muốn mở lại khiếu nại này?';
+
+  @override
+  String get reopen_success => 'Mở lại khiếu nại thành công';
+
+  @override
+  String get update_success => 'Cập nhật thành công';
+
+  @override
+  String get transaction_scheduled => 'Đã lên lịch';
+
+  @override
+  String get transaction_inProgress => 'Đang xử lý';
+
+  @override
+  String get transaction_completed => 'Hoàn thành';
+
+  @override
+  String get transaction_canceledBySystem => 'Hệ thống đã hủy';
+
+  @override
+  String get transaction_canceledByUser => 'Người dùng đã hủy';
+
+  @override
+  String get enter_complaint_reason => 'Nhập lý do bạn khiếu nại...';
+
+  @override
+  String get new_image => 'Ảnh mới';
 }

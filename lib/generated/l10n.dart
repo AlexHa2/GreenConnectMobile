@@ -2095,6 +2095,84 @@ abstract class S {
   /// **'Offer rejected successfully'**
   String get offer_rejected_success;
 
+  /// No description provided for @create_offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Offer'**
+  String get create_offer;
+
+  /// No description provided for @offer_prices.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer Prices'**
+  String get offer_prices;
+
+  /// No description provided for @proposed_pickup_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposed Pickup Time'**
+  String get proposed_pickup_time;
+
+  /// No description provided for @select_date_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date & Time'**
+  String get select_date_time;
+
+  /// No description provided for @please_select_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select proposed pickup time'**
+  String get please_select_time;
+
+  /// No description provided for @please_enter_at_least_one_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter at least one price'**
+  String get please_enter_at_least_one_price;
+
+  /// No description provided for @invalid_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid price'**
+  String get invalid_price;
+
+  /// No description provided for @submit_offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Offer'**
+  String get submit_offer;
+
+  /// No description provided for @offer_created_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer created successfully'**
+  String get offer_created_successfully;
+
+  /// No description provided for @failed_to_create_offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create offer'**
+  String get failed_to_create_offer;
+
+  /// No description provided for @available_posts.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Posts'**
+  String get available_posts;
+
+  /// No description provided for @enter_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your message'**
+  String get enter_message;
+
+  /// No description provided for @please_enter_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a message'**
+  String get please_enter_message;
+
   /// No description provided for @offer_canceled_success.
   ///
   /// In en, this message translates to:
@@ -3406,7 +3484,7 @@ abstract class S {
   /// No description provided for @ai_connect_error.
   ///
   /// In en, this message translates to:
-  /// **'AI connection error. You can enter information manually, image will be uploaded when updating post.'**
+  /// **'AI connection error. You can enter information manually, images will be uploaded when updating the post.'**
   String get ai_connect_error;
 
   /// No description provided for @complaints.
@@ -3420,6 +3498,318 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Feedbacks'**
   String get feedbacks;
+
+  /// No description provided for @complaint_submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get complaint_submitted;
+
+  /// No description provided for @complaint_in_review.
+  ///
+  /// In en, this message translates to:
+  /// **'In Review'**
+  String get complaint_in_review;
+
+  /// No description provided for @complaint_resolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get complaint_resolved;
+
+  /// No description provided for @complaint_dismissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismissed'**
+  String get complaint_dismissed;
+
+  /// No description provided for @complaint_list.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint List'**
+  String get complaint_list;
+
+  /// No description provided for @sort_by_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by Date'**
+  String get sort_by_date;
+
+  /// No description provided for @sort_ascending.
+  ///
+  /// In en, this message translates to:
+  /// **'Ascending'**
+  String get sort_ascending;
+
+  /// No description provided for @sort_descending.
+  ///
+  /// In en, this message translates to:
+  /// **'Descending'**
+  String get sort_descending;
+
+  /// No description provided for @filter_by_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Status'**
+  String get filter_by_status;
+
+  /// No description provided for @no_complaints.
+  ///
+  /// In en, this message translates to:
+  /// **'No complaints yet'**
+  String get no_complaints;
+
+  /// No description provided for @complaint_reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Reason'**
+  String get complaint_reason;
+
+  /// No description provided for @complainant.
+  ///
+  /// In en, this message translates to:
+  /// **'Complainant'**
+  String get complainant;
+
+  /// No description provided for @accused.
+  ///
+  /// In en, this message translates to:
+  /// **'Accused'**
+  String get accused;
+
+  /// No description provided for @created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get created_at;
+
+  /// No description provided for @complaint_detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Detail'**
+  String get complaint_detail;
+
+  /// No description provided for @complaint_id.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint ID'**
+  String get complaint_id;
+
+  /// No description provided for @complaint_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Information'**
+  String get complaint_information;
+
+  /// No description provided for @participants.
+  ///
+  /// In en, this message translates to:
+  /// **'Participants'**
+  String get participants;
+
+  /// No description provided for @evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence'**
+  String get evidence;
+
+  /// No description provided for @update_complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Complaint'**
+  String get update_complaint;
+
+  /// No description provided for @update_complaint_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your complaint details'**
+  String get update_complaint_subtitle;
+
+  /// No description provided for @create_complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Complaint'**
+  String get create_complaint;
+
+  /// No description provided for @create_complaint_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report an issue with this transaction'**
+  String get create_complaint_subtitle;
+
+  /// No description provided for @enter_complaint_reason_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the issue you encountered with this transaction...'**
+  String get enter_complaint_reason_hint;
+
+  /// No description provided for @minimum_10_characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum 10 characters required'**
+  String get minimum_10_characters;
+
+  /// No description provided for @reason_too_short.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason must be at least 10 characters'**
+  String get reason_too_short;
+
+  /// No description provided for @please_select_evidence_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an evidence image'**
+  String get please_select_evidence_image;
+
+  /// No description provided for @evidence_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence selected'**
+  String get evidence_selected;
+
+  /// No description provided for @no_evidence_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'No evidence selected'**
+  String get no_evidence_selected;
+
+  /// No description provided for @tap_below_to_select_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap below to select an image'**
+  String get tap_below_to_select_image;
+
+  /// No description provided for @select_evidence_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Evidence Image'**
+  String get select_evidence_image;
+
+  /// No description provided for @submit_complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Complaint'**
+  String get submit_complaint;
+
+  /// No description provided for @complaint_created_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint created successfully'**
+  String get complaint_created_success;
+
+  /// No description provided for @failed_to_create_complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create complaint'**
+  String get failed_to_create_complaint;
+
+  /// No description provided for @complaint_info_note.
+  ///
+  /// In en, this message translates to:
+  /// **'All fields are required. Please provide clear evidence and detailed reason for better processing.'**
+  String get complaint_info_note;
+
+  /// No description provided for @image_attached.
+  ///
+  /// In en, this message translates to:
+  /// **'Image attached'**
+  String get image_attached;
+
+  /// No description provided for @error_load_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load image'**
+  String get error_load_image;
+
+  /// No description provided for @no_evidence_attached.
+  ///
+  /// In en, this message translates to:
+  /// **'No evidence attached'**
+  String get no_evidence_attached;
+
+  /// No description provided for @change_evidence_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Evidence'**
+  String get change_evidence_image;
+
+  /// No description provided for @add_evidence_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Evidence Image'**
+  String get add_evidence_image;
+
+  /// No description provided for @please_enter_reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a reason'**
+  String get please_enter_reason;
+
+  /// No description provided for @reopen_complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen Complaint'**
+  String get reopen_complaint;
+
+  /// No description provided for @reopen_complaint_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to reopen this complaint?'**
+  String get reopen_complaint_confirm;
+
+  /// No description provided for @reopen_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint reopened successfully'**
+  String get reopen_success;
+
+  /// No description provided for @update_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated successfully'**
+  String get update_success;
+
+  /// No description provided for @transaction_scheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get transaction_scheduled;
+
+  /// No description provided for @transaction_inProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get transaction_inProgress;
+
+  /// No description provided for @transaction_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get transaction_completed;
+
+  /// No description provided for @transaction_canceledBySystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceled by system'**
+  String get transaction_canceledBySystem;
+
+  /// No description provided for @transaction_canceledByUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceled by user'**
+  String get transaction_canceledByUser;
+
+  /// No description provided for @enter_complaint_reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your complaint reason...'**
+  String get enter_complaint_reason;
+
+  /// No description provided for @new_image.
+  ///
+  /// In en, this message translates to:
+  /// **'New image'**
+  String get new_image;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

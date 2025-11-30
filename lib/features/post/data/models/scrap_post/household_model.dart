@@ -9,7 +9,7 @@ class HouseholdModel {
   final int pointBalance;
   final String rank;
   final List<String> roles;
-  final String avatarUrl;
+  final String? avatarUrl;
 
   HouseholdModel({
     required this.id,
@@ -18,7 +18,7 @@ class HouseholdModel {
     required this.pointBalance,
     required this.rank,
     required this.roles,
-    required this.avatarUrl,
+    this.avatarUrl,
   });
 
   factory HouseholdModel.fromJson(Map<String, dynamic> json) {
@@ -29,7 +29,7 @@ class HouseholdModel {
       pointBalance: json['pointBalance'],
       rank: json['rank'],
       roles: List<String>.from(json['roles']),
-      avatarUrl: json['avatarUrl'] ?? '',
+      avatarUrl: json['avatarUrl'],
     );
   }
 

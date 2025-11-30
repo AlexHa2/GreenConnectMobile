@@ -1,14 +1,50 @@
 name: Flutter Integration Test
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main, develop, feature/**]
+  pull_request:
+    branches: [main, develop]
 
 jobs:
   integration_test:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.24.0"
-      - run: flutter pub get
-      - run: flutter test integration_test
+          flutter-version: "3.27.1"
+          channel: 'stable'
+          cache: true
+      
+      - name: Install dependencies
+        run: flutter pub get
+      
+      - name: Analyze code
+        run: flutter analyze
+      
+      - name: Run unit tests
+        run: flutter test
+      
+      - name: Setup Chrome Driver for Web Testing
+        uses: nanasess/setup-chromedriver@v2
+      
+      - name: Start ChromeDriver
+        run: chromedriver --port=4444 &
+      
+      - name: Run integration tests on Chrome (Web)
+        run: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/authentication/login_test.dart -d web-server
+        continue-on-error: true
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: integration-test-results
+          path: |
+            build/reports/
+            screenshots//

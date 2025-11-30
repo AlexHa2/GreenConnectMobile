@@ -45,6 +45,7 @@ class PhoneInputCard extends StatelessWidget {
             const SizedBox(height: 8),
 
             TextFormField(
+              key: const Key('phoneField'),
               controller: controller,
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
@@ -59,6 +60,7 @@ class PhoneInputCard extends StatelessWidget {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
+                key: const Key('sendOtpButton'),
                 onPressed: isLoading ? null : onSendOtp,
                 child: isLoading
                     ? SizedBox(

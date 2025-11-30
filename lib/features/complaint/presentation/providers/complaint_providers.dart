@@ -8,8 +8,8 @@ import 'package:GreenConnectMobile/features/complaint/domain/usecases/get_compla
 import 'package:GreenConnectMobile/features/complaint/domain/usecases/process_complaint_usecase.dart';
 import 'package:GreenConnectMobile/features/complaint/domain/usecases/reopen_complaint_usecase.dart';
 import 'package:GreenConnectMobile/features/complaint/domain/usecases/update_complaint_usecase.dart';
-import 'package:GreenConnectMobile/features/complaint/presentation/complaint_state.dart';
-import 'package:GreenConnectMobile/features/complaint/presentation/complaint_view_model.dart';
+import 'package:GreenConnectMobile/features/complaint/presentation/viewmodels/states/complaint_state.dart';
+import 'package:GreenConnectMobile/features/complaint/presentation/viewmodels/complaint_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Datasource Provider

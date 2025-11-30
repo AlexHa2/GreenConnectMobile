@@ -150,7 +150,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         Role.hasRole(userRoles, Role.individualCollector);
 
     if (isCollector) {
-      GoRouter.of(context).go('/household-home');
+      GoRouter.of(context).go('/collector-list-post');
       return;
     }
     final isHousehold = Role.hasRole(userRoles, Role.household);

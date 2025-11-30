@@ -1,3 +1,5 @@
+
+
 enum TransactionStatus {
   scheduled('Scheduled'),
   inProgress('InProgress'),
@@ -8,10 +10,14 @@ enum TransactionStatus {
   final String value;
   const TransactionStatus(this.value);
 
+  static TransactionStatus fromJson(String json) {
+    return fromString(json);
+  }
+
   /// Parse string to TransactionStatus enum
   static TransactionStatus fromString(String status) {
     final normalizedStatus = status.trim().toUpperCase().replaceAll('_', '');
-    
+
     switch (normalizedStatus) {
       case 'SCHEDULED':
       case 'PENDING':
@@ -53,14 +59,14 @@ enum TransactionStatus {
 
   /// Check if transaction is active (not completed or canceled)
   bool get isActive {
-    return this == TransactionStatus.scheduled || 
-           this == TransactionStatus.inProgress;
+    return this == TransactionStatus.scheduled ||
+        this == TransactionStatus.inProgress;
   }
 
   /// Check if transaction is canceled
   bool get isCanceled {
-    return this == TransactionStatus.canceledBySystem || 
-           this == TransactionStatus.canceledByUser;
+    return this == TransactionStatus.canceledBySystem ||
+        this == TransactionStatus.canceledByUser;
   }
 
   /// Check if transaction is completed
@@ -70,8 +76,8 @@ enum TransactionStatus {
 
   /// Check if transaction can be canceled by user
   bool get canCancel {
-    return this == TransactionStatus.scheduled || 
-           this == TransactionStatus.inProgress;
+    return this == TransactionStatus.scheduled ||
+        this == TransactionStatus.inProgress;
   }
 
   /// Check if transaction can be checked in (for collector)

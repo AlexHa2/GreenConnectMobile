@@ -164,7 +164,7 @@ class _InputDetailsDialogState extends State<InputDetailsDialog> {
           onPressed: _isLoading ? null : _submit,
           style: ElevatedButton.styleFrom(
             backgroundColor: theme.primaryColor,
-            foregroundColor: Colors.white,
+            foregroundColor: theme.scaffoldBackgroundColor,
           ),
           child: _isLoading
               ? SizedBox(
@@ -172,7 +172,7 @@ class _InputDetailsDialogState extends State<InputDetailsDialog> {
                   height: space * 1.5,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: AlwaysStoppedAnimation<Color>(theme.scaffoldBackgroundColor),
                   ),
                 )
               : Text(s.submit_feedback),

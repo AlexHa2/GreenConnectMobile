@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:GreenConnectMobile/core/enum/buyer_type.dart';
+import 'package:GreenConnectMobile/core/enum/buyer_type_status.dart';
 import 'package:GreenConnectMobile/features/profile/data/models/verification_model.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/providers/profile_providers.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/widgets/upload_card.dart';
