@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
 import 'package:GreenConnectMobile/core/error/failure.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/confirm_dialog_helper.dart';
@@ -15,7 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TransactionActionButtons extends ConsumerWidget {
   final TransactionEntity transaction;
-  final String userRole;
+  final Role userRole;
   final ThemeData theme;
   final double space;
   final S s;
@@ -76,7 +77,7 @@ class TransactionActionButtons extends ConsumerWidget {
   }
 
   bool _canToggleCancel() {
-    return userRole != 'household' &&
+    return userRole != Role.household &&
         (transaction.statusEnum == TransactionStatus.inProgress ||
             transaction.statusEnum == TransactionStatus.canceledByUser);
   }
@@ -85,7 +86,8 @@ class TransactionActionButtons extends ConsumerWidget {
     final buttons = <Widget>[];
 
     // Collector actions
-    if (userRole == 'collector') {
+    if (userRole == Role.individualCollector ||
+        userRole == Role.businessCollector) {
       if (_canCheckIn()) {
         buttons.add(_buildCheckInButton(context));
       } else if (_canInputDetails()) {
@@ -104,7 +106,7 @@ class TransactionActionButtons extends ConsumerWidget {
     }
 
     // Household/Business actions
-    if (userRole != 'collector') {
+    if (userRole == Role.household) {
       if (_canProcess()) {
         buttons.addAll([
           Row(
@@ -143,7 +145,7 @@ class TransactionActionButtons extends ConsumerWidget {
     return GradientButton(
       onPressed: () => _showCheckInDialog(context),
       text: s.check_in,
-      icon: const Icon(Icons.location_on, color: Colors.white),
+      icon:  Icon(Icons.location_on, color: theme.scaffoldBackgroundColor),
     );
   }
 
@@ -151,7 +153,7 @@ class TransactionActionButtons extends ConsumerWidget {
     return GradientButton(
       onPressed: () => _showInputDetailsDialog(context),
       text: s.input_details,
-      icon: const Icon(Icons.edit, color: Colors.white),
+      icon: Icon(Icons.edit, color: theme.scaffoldBackgroundColor),
     );
   }
 
@@ -159,7 +161,7 @@ class TransactionActionButtons extends ConsumerWidget {
     return GradientButton(
       onPressed: () => _showProcessDialog(context, isApprove: true),
       text: s.approve,
-      icon: const Icon(Icons.check, color: Colors.white),
+      icon:  Icon(Icons.check, color:theme.scaffoldBackgroundColor),
     );
   }
 
@@ -170,8 +172,8 @@ class TransactionActionButtons extends ConsumerWidget {
       label: Text(s.reject),
       style: OutlinedButton.styleFrom(
         padding: EdgeInsets.symmetric(vertical: space * 1.25),
-        side: BorderSide(color: Colors.red, width: 2),
-        foregroundColor: Colors.red,
+        side: const BorderSide(color: AppColors.danger, width: 2),
+        foregroundColor: AppColors.danger,
       ),
     );
   }
@@ -183,8 +185,8 @@ class TransactionActionButtons extends ConsumerWidget {
       label: Text(s.cancel_transaction),
       style: OutlinedButton.styleFrom(
         padding: EdgeInsets.symmetric(vertical: space * 1.25),
-        side: BorderSide(color: Colors.orange, width: 2),
-        foregroundColor: Colors.orange,
+        side: const BorderSide(color: AppColors.warningUpdate, width: 2),
+        foregroundColor: AppColors.warningUpdate,
       ),
     );
   }
@@ -365,12 +367,12 @@ class TransactionActionButtons extends ConsumerWidget {
           ),
           title: Row(
             children: [
-              Icon(Icons.warning_amber_rounded, color: AppColors.danger),
+              const Icon(Icons.warning_amber_rounded, color: AppColors.danger),
               SizedBox(width: space),
               Expanded(
                 child: Text(
                   s.emergency_cancel_confirm,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.danger,
                     fontWeight: FontWeight.bold,
                   ),
@@ -405,7 +407,7 @@ class TransactionActionButtons extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         s.emergency_cancel_note,
-                        style: TextStyle(
+                        style:const TextStyle(
                           fontSize: 12,
                           color: AppColors.danger,
                           fontWeight: FontWeight.w500,
@@ -426,7 +428,7 @@ class TransactionActionButtons extends ConsumerWidget {
               onPressed: () => Navigator.pop(context, true),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.danger,
-                foregroundColor: Colors.white,
+                foregroundColor: theme.scaffoldBackgroundColor,
               ),
               child: Text(s.emergency_cancel),
             ),
@@ -510,12 +512,12 @@ class TransactionActionButtons extends ConsumerWidget {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.white),
+             Icon(Icons.check_circle, color: theme.scaffoldBackgroundColor),
             SizedBox(width: space),
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: theme.primaryColor,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -526,7 +528,7 @@ class TransactionActionButtons extends ConsumerWidget {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.error_outline, color: Colors.white),
+            Icon(Icons.error_outline, color: theme.scaffoldBackgroundColor),
             SizedBox(width: space),
             Expanded(child: Text(message)),
           ],

@@ -1,5 +1,6 @@
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -50,10 +51,12 @@ class TransactionFeedbackSection extends StatelessWidget {
           Divider(height: 1, color: theme.dividerColor),
           SizedBox(height: space * 1.5),
 
-          ...feedbacks.map((feedback) => Padding(
-                padding: EdgeInsets.only(bottom: space * 1.5),
-                child: _buildFeedbackCard(feedback),
-              )).toList(),
+          ...feedbacks.map(
+            (feedback) => Padding(
+              padding: EdgeInsets.only(bottom: space * 1.5),
+              child: _buildFeedbackCard(feedback),
+            ),
+          ),
         ],
       ),
     );
@@ -64,8 +67,8 @@ class TransactionFeedbackSection extends StatelessWidget {
       padding: EdgeInsets.all(space * 1.25),
       decoration: BoxDecoration(
         color: theme.brightness == Brightness.dark
-            ? Colors.grey.shade800.withOpacity(0.3)
-            : Colors.grey.shade100,
+            ? theme.cardColor.withValues(alpha: 0.5)
+            : theme.cardColor,
         borderRadius: BorderRadius.circular(space * 0.75),
       ),
       child: Column(
@@ -78,11 +81,9 @@ class TransactionFeedbackSection extends StatelessWidget {
               Row(
                 children: List.generate(5, (index) {
                   return Icon(
-                    index < feedback.rating
-                        ? Icons.star
-                        : Icons.star_border,
+                    index < feedback.rating ? Icons.star : Icons.star_border,
                     size: space * 1.75,
-                    color: Colors.amber,
+                    color: AppColors.warning,
                   );
                 }),
               ),
@@ -91,7 +92,9 @@ class TransactionFeedbackSection extends StatelessWidget {
               Text(
                 _formatDateTime(feedback.createdAt),
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
+                  color: theme.textTheme.bodySmall?.color?.withValues(
+                    alpha: 0.6,
+                  ),
                 ),
               ),
             ],
@@ -99,10 +102,7 @@ class TransactionFeedbackSection extends StatelessWidget {
 
           if (feedback.comment != null && feedback.comment!.isNotEmpty) ...[
             SizedBox(height: space),
-            Text(
-              feedback.comment!,
-              style: theme.textTheme.bodyMedium,
-            ),
+            Text(feedback.comment!, style: theme.textTheme.bodyMedium),
           ],
 
           SizedBox(height: space * 0.75),
@@ -112,13 +112,13 @@ class TransactionFeedbackSection extends StatelessWidget {
               Icon(
                 Icons.person_outline,
                 size: space * 1.25,
-                color: theme.iconTheme.color?.withOpacity(0.6),
+                color: theme.iconTheme.color?.withValues(alpha: 0.6),
               ),
               SizedBox(width: space * 0.5),
               Text(
                 '${s.provided_by} ${feedback.providedBy}',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
+                  color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.6),
                   fontStyle: FontStyle.italic,
                 ),
               ),

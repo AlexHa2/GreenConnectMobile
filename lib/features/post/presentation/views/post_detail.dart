@@ -4,7 +4,10 @@ import 'package:GreenConnectMobile/core/helper/time_ago_helper.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/delete_post_dialog.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/info_row_widget.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_item_no_action.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_section_title.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/status_badge.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -175,47 +178,11 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
             vertical: spacing.screenPadding,
           ),
           children: [
-            // --- SECTION 1: Header (Status + Date) ---
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: statusColor.withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: statusColor,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        statusText,
-                        style: textTheme.labelMedium?.copyWith(
-                          color: statusColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                StatusBadge(text: statusText, color: statusColor),
                 const Spacer(),
-                // Time Ago
                 Icon(
                   Icons.access_time_rounded,
                   size: 14,
@@ -251,99 +218,34 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
 
             SizedBox(height: spacing.screenPadding * 1.5),
 
-            Container(
-              padding: EdgeInsets.all(spacing.screenPadding),
-              decoration: BoxDecoration(
-                color: theme.cardColor, // AppColors.surface
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-                // Border màu AppColors.border
-                border: Border.all(color: theme.dividerColor),
+            Card(
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(spacing.screenPadding),
+                side: BorderSide(color: theme.dividerColor),
               ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: theme.primaryColor.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.calendar_today_rounded,
-                          size: 20,
-                          color: theme.primaryColor,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              s.pickup_time,
-                              // labelLarge / bodyMedium
-                              style: textTheme.bodyMedium,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              pickupTime,
-                              // titleSmall / bodyLarge
-                              style: textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(height: 1, color: theme.dividerColor),
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.warning.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.location_on_rounded,
-                          size: 20,
-                          color: AppColors.warning,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(s.pickup_address, style: textTheme.bodyMedium),
-                            const SizedBox(height: 2),
-                            Text(
-                              pickupAddress,
-                              style: textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+              child: Padding(
+                padding: EdgeInsets.all(spacing.screenPadding),
+                child: Column(
+                  children: [
+                    InfoRowWidget(
+                      icon: Icons.calendar_today_rounded,
+                      iconColor: theme.primaryColor,
+                      label: s.pickup_time,
+                      value: pickupTime,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Divider(height: 1, color: theme.dividerColor),
+                    ),
+                    InfoRowWidget(
+                      icon: Icons.location_on_rounded,
+                      iconColor: AppColors.warning,
+                      label: s.pickup_address,
+                      value: pickupAddress,
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -357,7 +259,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
                 ),
                 decoration: BoxDecoration(
                   color: theme.primaryColor.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(spacing.screenPadding),
                   border: Border.all(
                     color: theme.primaryColor.withValues(alpha: 0.2),
                   ),
@@ -369,7 +271,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
                       color: theme.primaryColor,
                       size: 24,
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: spacing.screenPadding),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -415,20 +317,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
               SizedBox(height: spacing.screenPadding * 2),
             ],
 
-            Row(
-              children: [
-                Container(
-                  width: 4,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: theme.primaryColor,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text("${s.list} ${s.items}", style: textTheme.titleLarge),
-              ],
-            ),
+            PostSectionTitle(title: "${s.list} ${s.items}"),
             SizedBox(height: spacing.screenPadding),
 
             if (postState.isLoadingDetail && !hasEntity)
@@ -446,6 +335,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
                     context: context,
                     category: detail.scrapCategory?.categoryName ?? 'Unknown',
                     packageInformation: detail.amountDescription,
+                    imageUrl: detail.imageUrl,
                   ),
                 );
               })
@@ -461,6 +351,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
                     category: map['category'] ?? '',
                     packageInformation:
                         '${s.quantity}: ${map['quantity']}, ${s.weight}: ${map['weight']}kg',
+                    imageUrl: map['imageUrl'] ?? '',
                   ),
                 );
               }),

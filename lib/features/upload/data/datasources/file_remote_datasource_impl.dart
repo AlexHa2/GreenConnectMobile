@@ -4,6 +4,7 @@ import 'package:GreenConnectMobile/core/di/auth_injector.dart';
 import 'package:GreenConnectMobile/core/network/api_client.dart';
 import 'package:GreenConnectMobile/features/upload/data/datasources/abstract_datasources/file_remote_datasource.dart';
 import 'package:GreenConnectMobile/features/upload/data/models/delete_file_request_model.dart';
+import 'package:GreenConnectMobile/features/upload/data/models/recognize_scrap_response_model.dart';
 import 'package:GreenConnectMobile/features/upload/data/models/upload_request_model.dart';
 import 'package:GreenConnectMobile/features/upload/data/models/upload_url_model.dart';
 import 'package:dio/dio.dart';
@@ -35,9 +36,54 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
   }
 
   @override
+  Future<UploadUrlModel> uploadFileForScrapPost(
+    UploadFileRequestModel request,
+  ) async {
+    final response = await _apiClient.post(
+      '$_baseUrl/upload-url/scrap-post',
+      data: request.toJson(),
+    );
+    return UploadUrlModel.fromJson(response.data);
+  }
+
+  @override
+  Future<UploadUrlModel> uploadFileForComplaint(
+    UploadFileRequestModel request,
+  ) async {
+    final response = await _apiClient.post(
+      '$_baseUrl/upload-url/complaint',
+      data: request.toJson(),
+    );
+    return UploadUrlModel.fromJson(response.data);
+  }
+
+  @override
   Future<bool> deleteFile(DeleteFileRequestModel request) async {
     final response = await _apiClient.delete(_baseUrl, data: request.toJson());
     return response.statusCode == 204;
+  }
+
+  @override
+  Future<RecognizeScrapResponseModel> recognizeScrap(
+    Uint8List imageBytes,
+    String fileName,
+  ) async {
+    final formData = FormData.fromMap({
+      'image': MultipartFile.fromBytes(
+        imageBytes,
+        filename: fileName,
+      ),
+    });
+
+    final response = await _apiClient.post(
+      '/v1/ai/recognize-scrap',
+      data: formData,
+      options: Options(
+        headers: {'Content-Type': 'multipart/form-data'},
+      ),
+    );
+
+    return RecognizeScrapResponseModel.fromJson(response.data);
   }
 
   @override

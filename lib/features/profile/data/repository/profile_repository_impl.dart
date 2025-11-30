@@ -28,5 +28,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<bool> updateAvatar(String avatarUrl) {
     return profileDataSource.updateAvatar(avatarUrl: avatarUrl);
   }
-  
+
+  @override
+  Future<String> updateVerification(VerificationEntity verify) {
+    return profileDataSource.updateVerification(verify: verify);
+  }
 }

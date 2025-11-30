@@ -1,4 +1,3 @@
-import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:flutter/material.dart';
 
 class FullImageViewer extends StatelessWidget {
@@ -15,10 +14,11 @@ class FullImageViewer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onClose ?? () => Navigator.pop(context),
       child: Scaffold(
-        backgroundColor: AppColors.textPrimary.withValues(alpha: 0.9),
+        backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.9),
         body: Center(
           child: Hero(
             tag: imagePath,

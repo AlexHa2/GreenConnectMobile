@@ -2,6 +2,9 @@ import 'package:GreenConnectMobile/core/helper/app_router_observer.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/login_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/register_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/welcome_page.dart';
+import 'package:GreenConnectMobile/features/feedback/presentation/views/create_feedback_page.dart';
+import 'package:GreenConnectMobile/features/feedback/presentation/views/feedback_detail_page.dart';
+import 'package:GreenConnectMobile/features/feedback/presentation/views/feedback_list_page.dart';
 import 'package:GreenConnectMobile/features/message/presentation/views/chat_message_detail.dart';
 import 'package:GreenConnectMobile/features/message/presentation/views/message.dart';
 import 'package:GreenConnectMobile/features/notification/presentation/views/widgets/notification.dart';
@@ -52,6 +55,11 @@ final GoRouter greenRouter = GoRouter(
           path: '/list-transactions',
           name: 'list-transactions',
           builder: (context, state) => const TransactionsListPage(),
+        ),
+        GoRoute(
+          path: '/feedback-list',
+          name: 'feedback-list',
+          builder: (context, state) => const FeedbackListPage(),
         ),
       ],
     ),
@@ -143,7 +151,26 @@ final GoRouter greenRouter = GoRouter(
         final initialData = state.extra as Map<String, dynamic>? ?? {};
         return TransactionDetailPageModern(
           transactionId: initialData['transactionId'] as String,
-          userRole: initialData['userRole'] as String,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/feedback-detail',
+      name: 'feedback-detail',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        return FeedbackDetailPage(
+          feedbackId: initialData['feedbackId'] as String,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/create-feedback',
+      name: 'create-feedback',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        return CreateFeedbackPage(
+          transactionId: initialData['transactionId'] as String,
         );
       },
     ),

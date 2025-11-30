@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
@@ -5,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class TransactionPartyInfo extends StatelessWidget {
   final TransactionEntity transaction;
-  final String userRole;
+  final Role userRole;
   final ThemeData theme;
   final double space;
   final S s;
@@ -21,7 +22,7 @@ class TransactionPartyInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shouldShowCollector = userRole != 'collector';
+    final shouldShowCollector = userRole != Role.individualCollector && userRole != Role.businessCollector;
     final party = shouldShowCollector
         ? transaction.scrapCollector
         : transaction.household;

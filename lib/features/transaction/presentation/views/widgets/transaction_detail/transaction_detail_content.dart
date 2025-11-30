@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
 import 'package:GreenConnectMobile/core/helper/date_time_extension.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
@@ -13,7 +14,7 @@ import 'package:intl/intl.dart';
 /// Main content body for transaction detail
 class TransactionDetailContentBody extends StatelessWidget {
   final TransactionEntity transaction;
-  final String userRole;
+  final Role userRole;
 
   const TransactionDetailContentBody({
     super.key,
@@ -44,6 +45,7 @@ class TransactionDetailContentBody extends StatelessWidget {
         if (transaction.transactionDetails.isNotEmpty)
           TransactionItemsSection(
             transactionDetails: transaction.transactionDetails,
+            transaction: transaction,
             theme: theme,
             space: spacing,
             s: s,

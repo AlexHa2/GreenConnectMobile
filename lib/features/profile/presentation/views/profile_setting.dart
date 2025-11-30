@@ -1,12 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:GreenConnectMobile/core/di/injector.dart';
+import 'package:GreenConnectMobile/core/enum/buyer_type.dart';
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/providers/auth_provider.dart';
 import 'package:GreenConnectMobile/features/profile/data/models/user_update_model.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/providers/profile_providers.dart';
+import 'package:GreenConnectMobile/features/profile/presentation/views/upgrade_verification.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/widgets/card_infor_profile_setting.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/widgets/card_profile_setting.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/widgets/dialog_update_profile.dart';
@@ -22,7 +24,6 @@ import 'package:GreenConnectMobile/shared/widgets/custom_leaf_loading.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileSetting extends ConsumerStatefulWidget {
@@ -109,6 +110,105 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
     }
   }
 
+  Widget _buildVerificationButtons(
+    BuildContext context,
+    dynamic user,
+    AppSpacing spacing,
+    ThemeData theme,
+    S s,
+  ) {
+    final isHousehold = Role.hasRole(user?.roles, Role.household);
+    final isIndividualCollector = Role.hasRole(
+      user?.roles,
+      Role.individualCollector,
+    );
+    final isBusinessCollector = Role.hasRole(
+      user?.roles,
+      Role.businessCollector,
+    );
+    final isCollector = isIndividualCollector || isBusinessCollector;
+
+    return Column(
+      children: [
+        // Upgrade button for household users only
+        if (isHousehold)
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.verified_rounded),
+              label: Text(s.upgrade_to_collector),
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const UpgradeVerificationScreen(
+                      mode: VerificationMode.create,
+                    ),
+                  ),
+                );
+                if (result == true && mounted) {
+                  ref.read(profileViewModelProvider.notifier).getMe();
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.primaryColor,
+                foregroundColor: theme.scaffoldBackgroundColor,
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                padding: EdgeInsets.symmetric(vertical: spacing.screenPadding),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(spacing.screenPadding),
+                ),
+              ),
+            ),
+          ),
+
+        // Switch account type button for collectors (Individual ↔ Business)
+        if (isCollector) ...[
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.swap_horiz_rounded, color: theme.primaryColor),
+              label: Text(
+                '${s.switch_account_type} (${isIndividualCollector ? s.buyer_type_business : s.buyer_type_individual})',
+              ),
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => UpgradeVerificationScreen(
+                      mode: VerificationMode.update,
+                      initialBuyerType: isIndividualCollector
+                          ? BuyerTypeStatus.business
+                          : BuyerTypeStatus.individual,
+                    ),
+                  ),
+                );
+                if (result == true && mounted) {
+                  ref.read(profileViewModelProvider.notifier).getMe();
+                }
+              },
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: theme.primaryColor),
+                foregroundColor: theme.primaryColor,
+                textStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                padding: EdgeInsets.symmetric(vertical: spacing.screenPadding),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(spacing.screenPadding),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -125,9 +225,11 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
     final uploadState = ref.watch(uploadViewModelProvider);
     final profileState = ref.watch(profileViewModelProvider);
     final user = profileState.user;
-    final checkAccountIsUpgrade = Role.hasRole(user?.roles, Role.household);
     if (uploadState.isLoading) {
-      return const RotatingLeafLoader();
+      return Container(
+        color: theme.scaffoldBackgroundColor.withValues(alpha: 0.8),
+        child: const Center(child: RotatingLeafLoader()),
+      );
     }
     return Scaffold(
       appBar: AppBar(
@@ -256,33 +358,7 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
                 ),
                 SizedBox(height: spacing.screenPadding * 2),
 
-                if (checkAccountIsUpgrade)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.verified_rounded),
-                      label: Text(s.upgrade_to_collector),
-                      onPressed: () {
-                        context.push("/upgrade-verification");
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.primaryColor,
-                        foregroundColor: theme.scaffoldBackgroundColor,
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          vertical: spacing.screenPadding,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            spacing.screenPadding,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                _buildVerificationButtons(context, user, spacing, theme, s),
               ],
             ),
             SizedBox(height: spacing.screenPadding * 2.5),

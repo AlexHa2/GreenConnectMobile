@@ -7,6 +7,7 @@ import 'package:GreenConnectMobile/features/post/presentation/views/widgets/empt
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/message.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/notification_bell.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_item.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/stat_box.dart';
 import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
@@ -250,23 +251,20 @@ class _HouseHoldHomeState extends ConsumerState<HouseHoldHome>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildStatBox(
-                        context,
-                        "112",
-                        S.of(context)!.accepted,
-                        AppColors.primary,
+                      StatBox(
+                        value: "112",
+                        label: S.of(context)!.accepted,
+                        color: AppColors.primary,
                       ),
-                      _buildStatBox(
-                        context,
-                        "110",
-                        "${S.of(context)!.completed} ",
-                        AppColors.primary,
+                      StatBox(
+                        value: "110",
+                        label: "${S.of(context)!.completed} ",
+                        color: AppColors.primary,
                       ),
-                      _buildStatBox(
-                        context,
-                        "144",
-                        "${S.of(context)!.available} ",
-                        AppColors.warning,
+                      StatBox(
+                        value: "144",
+                        label: "${S.of(context)!.available} ",
+                        color: AppColors.warning,
                       ),
                     ],
                   ),
@@ -370,40 +368,4 @@ class _HouseHoldHomeState extends ConsumerState<HouseHoldHome>
     );
   }
 
-  Widget _buildStatBox(
-    BuildContext context,
-    String value,
-    String label,
-    Color color,
-  ) {
-    final theme = Theme.of(context);
-    final spacing = Theme.of(context).extension<AppSpacing>()!;
-    return Container(
-      width: spacing.screenPadding * 8,
-      padding: EdgeInsets.symmetric(vertical: spacing.screenPadding),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(spacing.screenPadding),
-        boxShadow: [BoxShadow(color: theme.shadowColor)],
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: spacing.screenPadding * 2,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.labelLarge,
-          ),
-        ],
-      ),
-    );
-  }
 }

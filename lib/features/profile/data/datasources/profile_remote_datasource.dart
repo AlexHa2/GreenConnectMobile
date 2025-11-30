@@ -11,6 +11,7 @@ class ProfileRemoteDatasource {
   final String getMeUrl = '/v1/profile/me';
   final String updateMeUrl = '/v1/profile/me';
   final String updateAvatarUrl = '/v1/profile/avatar';
+  final String updateVerificationUrl = '/v1/admin/verifications/update-verification';
   Future<String> verifyUser({required VerificationEntity verify}) async {
     try {
       final response = await _apiClient.post(
@@ -64,5 +65,22 @@ class ProfileRemoteDatasource {
       return true;
     }
     return false;
+  }
+
+  Future<String> updateVerification({required VerificationEntity verify}) async {
+    try {
+      final queryParams = Uri(queryParameters: {
+        'documentFrontUrl': verify.documentFrontUrl,
+        'documentBackUrl': verify.documentBackUrl,
+        'buyerType': verify.buyerType,
+      }).query;
+      
+      final response = await _apiClient.patch(
+        '$updateVerificationUrl?$queryParams',
+      );
+      return response.data;
+    } catch (e) {
+      throw Exception('Update verification failed: $e');
+    }
   }
 }

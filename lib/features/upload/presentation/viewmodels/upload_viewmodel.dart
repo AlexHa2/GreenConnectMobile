@@ -2,7 +2,10 @@ import 'package:GreenConnectMobile/core/error/failure.dart';
 import 'package:GreenConnectMobile/features/upload/domain/entities/delete_file_request_entity.dart';
 import 'package:GreenConnectMobile/features/upload/domain/entities/upload_request_entity.dart';
 import 'package:GreenConnectMobile/features/upload/domain/usecases/delete_file_usecase.dart';
+import 'package:GreenConnectMobile/features/upload/domain/usecases/recognize_scrap_usecase.dart';
 import 'package:GreenConnectMobile/features/upload/domain/usecases/upload_binary_file_usecase.dart';
+import 'package:GreenConnectMobile/features/upload/domain/usecases/upload_file_for_complaint_usecase.dart';
+import 'package:GreenConnectMobile/features/upload/domain/usecases/upload_file_for_scrap_post_usecase.dart';
 import 'package:GreenConnectMobile/features/upload/domain/usecases/upload_file_usecase.dart';
 import 'package:GreenConnectMobile/features/upload/domain/usecases/upload_file_with_entity_usecase.dart';
 import 'package:GreenConnectMobile/features/upload/presentation/providers/upload_provider.dart';
@@ -15,6 +18,9 @@ class UploadViewModel extends Notifier<UploadState> {
   late UploadFileWithEntityUseCase _uploadFileWithEntityUseCase;
   late UploadBinaryFileUseCase _uploadBinaryFileUseCase;
   late DeleteFileUseCase _deleteFileUseCase;
+  late UploadFileForScrapPostUseCase _uploadFileForScrapPostUseCase;
+  late UploadFileForComplaintUseCase _uploadFileForComplaintUseCase;
+  late RecognizeScrapUseCase _recognizeScrapUseCase;
 
   @override
   UploadState build() {
@@ -24,10 +30,11 @@ class UploadViewModel extends Notifier<UploadState> {
     );
     _uploadBinaryFileUseCase = ref.read(uploadBinaryFileUsecaseProvider);
     _deleteFileUseCase = ref.read(deleteFileUsecaseProvider);
+    _uploadFileForScrapPostUseCase = ref.read(uploadFileForScrapPostUsecaseProvider);
+    _uploadFileForComplaintUseCase = ref.read(uploadFileForComplaintUsecaseProvider);
+    _recognizeScrapUseCase = ref.read(recognizeScrapUsecaseProvider);
     return UploadState();
-  }
-
-  // ---------------- REQUEST SIGNED URL (NO ENTITY) ----------------
+  }  // ---------------- REQUEST SIGNED URL (NO ENTITY) ----------------
   Future<void> requestUploadUrl(UploadFileRequest request) async {
     state = state.copyWith(isLoading: true);
     try {
@@ -89,6 +96,48 @@ class UploadViewModel extends Notifier<UploadState> {
     } catch (e, stack) {
       if (e is AppException) {
         debugPrint('❌ ERROR DELETE FILE SYSTEM: ${e.message}');
+      }
+      debugPrint('📌 STACK TRACE: $stack');
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+    }
+  }
+
+  Future<void> requestUploadUrlForScrapPost(UploadFileRequest request) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final response = await _uploadFileForScrapPostUseCase(request);
+      state = state.copyWith(isLoading: false, uploadUrl: response);
+    } catch (e, stack) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR REQUEST UPLOAD URL FOR SCRAP POST: ${e.message}');
+      }
+      debugPrint('📌 STACK TRACE: $stack');
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+    }
+  }
+
+  Future<void> requestUploadUrlForComplaint(UploadFileRequest request) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final response = await _uploadFileForComplaintUseCase(request);
+      state = state.copyWith(isLoading: false, uploadUrl: response);
+    } catch (e, stack) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR REQUEST UPLOAD URL FOR COMPLAINT: ${e.message}');
+      }
+      debugPrint('📌 STACK TRACE: $stack');
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+    }
+  }
+
+  Future<void> recognizeScrap(Uint8List imageBytes, String fileName) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final response = await _recognizeScrapUseCase(imageBytes, fileName);
+      state = state.copyWith(isLoading: false, recognizeScrapResponse: response);
+    } catch (e, stack) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR RECOGNIZE SCRAP: ${e.message}');
       }
       debugPrint('📌 STACK TRACE: $stack');
       state = state.copyWith(isLoading: false, errorMessage: e.toString());

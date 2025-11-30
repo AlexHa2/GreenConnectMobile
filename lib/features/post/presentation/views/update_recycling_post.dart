@@ -1,18 +1,23 @@
 import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:GreenConnectMobile/core/enum/post_status.dart';
 import 'package:GreenConnectMobile/core/helper/get_location_from_address.dart';
 import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/location_entity.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/scrap_item_data.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_detail_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/update_scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_category_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/add_scrap_item_section.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/loading_overlay.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_info_form.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_section_title.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/scrap_item_list.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/take_all_switch.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/update_scrap_item_dialog.dart';
+import 'package:GreenConnectMobile/features/upload/domain/entities/upload_request_entity.dart';
+import 'package:GreenConnectMobile/features/upload/presentation/providers/upload_provider.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -35,33 +40,41 @@ class UpdateRecyclingPostPage extends ConsumerStatefulWidget {
 class _UpdateRecyclingPostPageState
     extends ConsumerState<UpdateRecyclingPostPage> {
   final _formKey = GlobalKey<FormState>();
-  final _itemFormKey = GlobalKey<FormState>();
 
   // Controllers
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
   late TextEditingController _pickupAddressController;
   late TextEditingController _pickupTimeController;
+
+  LocationEntity? _location;
+  bool _addressFound = true;
+
+  final List<ScrapItemData> _scrapItems = [];
+  // Track which items are existing (from server) vs new
+  final Map<int, bool> _existingItemsMap = {};
+  // Track which items have been modified
+  final Set<int> _modifiedItemIndices = {};
+
+  final List<int> _deletedCategoryIds = [];
+
+  // State for AddScrapItemSection
+  final _itemFormKey = GlobalKey<FormState>();
   final TextEditingController _quantityController = TextEditingController(
     text: "1",
   );
   final TextEditingController _weightController = TextEditingController(
     text: "1",
   );
-
-  LocationEntity? _location;
-  bool _addressFound = true;
-
-  File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
-
+  File? _selectedImage;
   int? _selectedCategoryId;
-
-  final List<Map<String, dynamic>> _scrapItems = [];
-
-  final List<int> _deletedCategoryIds = [];
+  bool _isAnalyzingImage = false;
+  String? _recognizedImageUrl;
+  Map<String, dynamic>? _aiRecognitionData;
 
   bool _isTakeAll = false;
+  bool _isSubmitting = false;
   late String _postId;
 
   @override
@@ -99,16 +112,18 @@ class _UpdateRecyclingPostPageState
             w = double.parse(parts[1].replaceAll(RegExp(r'[^0-9.]'), ''));
           } catch (_) {}
 
-          _scrapItems.add({
-            'categoryId': item.scrapCategoryId,
-            'category':
+          final itemData = ScrapItemData(
+            categoryId: item.scrapCategoryId,
+            categoryName:
                 item.scrapCategory?.categoryName ??
                 'Category ${item.scrapCategoryId}',
-            'quantity': q,
-            'weight': w,
-            'imageUrl': item.imageUrl,
-            'isExisting': true,
-          });
+            quantity: q,
+            weight: w,
+            imageUrl: item.imageUrl,
+          );
+
+          _scrapItems.add(itemData);
+          _existingItemsMap[item.scrapCategoryId] = true;
         }
       }
     }
@@ -125,22 +140,155 @@ class _UpdateRecyclingPostPageState
     super.dispose();
   }
 
+  void _handleDeleteItem(int index) {
+    setState(() {
+      final item = _scrapItems[index];
+      // If existing item (from server), track for deletion
+      if (_existingItemsMap[item.categoryId] == true) {
+        _deletedCategoryIds.add(item.categoryId);
+      }
+      _scrapItems.removeAt(index);
+    });
+  }
+
+  // Method to pick image
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
     );
     if (pickedFile != null) {
-      setState(() => _selectedImage = File(pickedFile.path));
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+        _isAnalyzingImage = true;
+        _aiRecognitionData = null;
+        _recognizedImageUrl = null;
+      });
+
+      await _analyzeImageWithAI();
     }
   }
 
+  // Method to analyze image with AI
+  Future<void> _analyzeImageWithAI() async {
+    if (_selectedImage == null) return;
+
+    try {
+      final uploadNotifier = ref.read(uploadViewModelProvider.notifier);
+      final Uint8List bytes = await _selectedImage!.readAsBytes();
+      final fileName = _selectedImage!.path.split('/').last;
+
+      await uploadNotifier.recognizeScrap(bytes, fileName);
+
+      final uploadState = ref.read(uploadViewModelProvider);
+
+      if (uploadState.recognizeScrapResponse != null) {
+        final aiResponse = uploadState.recognizeScrapResponse!;
+
+        final categories =
+            ref.read(scrapCategoryViewModelProvider).listData?.data ?? [];
+        final matchedCategory = categories.where((cat) {
+          final categoryLower = cat.categoryName.toLowerCase();
+          final aiCategoryLower = aiResponse.category.toLowerCase();
+          return categoryLower.contains(aiCategoryLower) ||
+              aiCategoryLower.contains(categoryLower);
+        }).firstOrNull;
+
+        int recognizedQuantity = 1;
+        double recognizedWeight = 1.0;
+
+        if (aiResponse.estimatedAmount.isNotEmpty) {
+          final amountStr = aiResponse.estimatedAmount.toLowerCase();
+          final quantityMatch = RegExp(
+            r'(\d+)\s*(?:pcs|pieces|items)',
+          ).firstMatch(amountStr);
+          final weightMatch = RegExp(
+            r'(\d+\.?\d*)\s*(?:kg|kilograms)',
+          ).firstMatch(amountStr);
+
+          if (quantityMatch != null) {
+            recognizedQuantity =
+                int.tryParse(quantityMatch.group(1) ?? '1') ?? 1;
+          }
+          if (weightMatch != null) {
+            recognizedWeight =
+                double.tryParse(weightMatch.group(1) ?? '1.0') ?? 1.0;
+          }
+        }
+
+        setState(() {
+          _isAnalyzingImage = false;
+          _recognizedImageUrl = aiResponse.savedImageUrl;
+          _aiRecognitionData = {
+            'categoryId': matchedCategory?.scrapCategoryId,
+            'itemName': aiResponse.itemName,
+            'category': aiResponse.category,
+            'quantity': recognizedQuantity,
+            'weight': recognizedWeight,
+          };
+
+          if (matchedCategory != null) {
+            _selectedCategoryId = matchedCategory.scrapCategoryId;
+          }
+          _quantityController.text = recognizedQuantity.toString();
+          _weightController.text = recognizedWeight.toString();
+        });
+      } else {
+        setState(() {
+          _isAnalyzingImage = false;
+          _recognizedImageUrl = null;
+          _aiRecognitionData = null;
+        });
+        if (mounted) {
+          CustomToast.show(
+            context,
+            S.of(context)!.ai_cannot_analyze_update,
+            type: ToastType.warning,
+          );
+        }
+      }
+    } catch (e) {
+      setState(() {
+        _isAnalyzingImage = false;
+        _recognizedImageUrl = null;
+        _aiRecognitionData = null;
+      });
+      debugPrint('❌ ERROR ANALYZING IMAGE: $e');
+      if (mounted) {
+        CustomToast.show(
+          context,
+          S.of(context)!.ai_connect_error,
+          type: ToastType.warning,
+        );
+      }
+    }
+  }
+
+  // Method to handle adding item
   void _handleAddItem() {
-    if (!_itemFormKey.currentState!.validate() || _selectedCategoryId == null) {
+    if (_selectedImage == null) {
+      CustomToast.show(
+        context,
+        S.of(context)!.please_select_image,
+        type: ToastType.error,
+      );
+      return;
+    }
+
+    if (_selectedCategoryId == null) {
+      CustomToast.show(
+        context,
+        S.of(context)!.please_select_category,
+        type: ToastType.error,
+      );
+      return;
+    }
+
+    if (!_itemFormKey.currentState!.validate()) {
       return;
     }
 
     final exists = _scrapItems.any(
-      (item) => item['categoryId'] == _selectedCategoryId,
+      (item) => item.categoryId == _selectedCategoryId,
     );
     if (exists) {
       CustomToast.show(
@@ -151,37 +299,105 @@ class _UpdateRecyclingPostPageState
       return;
     }
 
-    setState(() {
-      _scrapItems.add({
-        'categoryId': _selectedCategoryId!,
-        'category': ref
-            .read(scrapCategoryViewModelProvider)
-            .listData!
-            .data
-            .firstWhere((cat) => cat.scrapCategoryId == _selectedCategoryId)
-            .categoryName,
-        'quantity': int.parse(_quantityController.text),
-        'weight': double.parse(_weightController.text),
-        'image': _selectedImage,
-        'isExisting': false,
-      });
+    final categoryName = ref
+        .read(scrapCategoryViewModelProvider)
+        .listData!
+        .data
+        .firstWhere((cat) => cat.scrapCategoryId == _selectedCategoryId)
+        .categoryName;
 
+    setState(() {
+      _scrapItems.add(
+        ScrapItemData(
+          categoryId: _selectedCategoryId!,
+          categoryName: categoryName,
+          quantity: int.parse(_quantityController.text),
+          weight: double.parse(_weightController.text),
+          imageUrl: _recognizedImageUrl,
+          imageFile: _recognizedImageUrl == null ? _selectedImage : null,
+          aiData: _aiRecognitionData,
+        ),
+      );
+      // New item is not marked as existing
+      // _existingItemsMap[_selectedCategoryId!] = false; // Not needed, defaults to false
+
+      // Reset form
       _selectedCategoryId = null;
       _quantityController.text = "1";
       _weightController.text = "1";
       _selectedImage = null;
+      _recognizedImageUrl = null;
+      _aiRecognitionData = null;
+      _isAnalyzingImage = false;
       _itemFormKey.currentState!.reset();
     });
+
+    CustomToast.show(
+      context,
+      S.of(context)!.item_added_success,
+      type: ToastType.success,
+    );
   }
 
-  void _handleDeleteItem(int index) {
-    setState(() {
-      final item = _scrapItems[index];
-      if (item['isExisting'] == true) {
-        _deletedCategoryIds.add(item['categoryId']);
+  /// BATCH UPLOAD: Upload all new images (only File, no URL yet)
+  Future<bool> _uploadPendingImages() async {
+    final uploadNotifier = ref.read(uploadViewModelProvider.notifier);
+
+    try {
+      final itemsNeedUpload = _scrapItems
+          .where((item) => item.needsUpload)
+          .toList();
+
+      if (itemsNeedUpload.isEmpty) {
+        return true; // Nothing to upload
       }
-      _scrapItems.removeAt(index);
-    });
+
+      for (int i = 0; i < itemsNeedUpload.length; i++) {
+        final item = itemsNeedUpload[i];
+        final file = item.imageFile!;
+
+        final fileName = file.path.split('/').last;
+        final contentType = "image/${fileName.split('.').last}";
+
+        await uploadNotifier.requestUploadUrlForScrapPost(
+          UploadFileRequest(fileName: fileName, contentType: contentType),
+        );
+
+        final uploadState = ref.read(uploadViewModelProvider);
+        if (uploadState.uploadUrl == null) {
+          if(!mounted) return false;
+          throw Exception(S.of(context)!.error_get_upload_url);
+        }
+
+        final Uint8List bytes = await file.readAsBytes();
+        await uploadNotifier.uploadBinary(
+          uploadUrl: uploadState.uploadUrl!.uploadUrl,
+          fileBytes: bytes,
+          contentType: contentType,
+        );
+
+        // Update item with uploaded URL
+        final itemIndex = _scrapItems.indexOf(item);
+        setState(() {
+          _scrapItems[itemIndex] = item.copyWith(
+            imageUrl: uploadState.uploadUrl!.filePath,
+            imageFile: null,
+          );
+        });
+      }
+
+      return true;
+    } catch (e, st) {
+      debugPrint('❌ ERROR UPLOADING IMAGES: $e');
+      debugPrint('📌 STACK TRACE: $st');
+      if (!mounted) return false;
+      CustomToast.show(
+        context,
+        S.of(context)!.error_upload_image(e.toString()),
+        type: ToastType.error,
+      );
+      return false;
+    }
   }
 
   Future<void> _handleUpdate() async {
@@ -199,8 +415,8 @@ class _UpdateRecyclingPostPageState
       return;
     }
 
-    // Nếu location chưa được set lại (người dùng không sửa địa chỉ),
-    // ta cần location cũ hoặc search lại. Ở đây giả định search lại để đảm bảo chính xác.
+    // If location not reset (user didn't edit address),
+    // we need old location or search again. Here we assume search again for accuracy.
     if (_location == null) {
       final loc = await getLocationFromAddress(
         _pickupAddressController.text.trim(),
@@ -217,83 +433,103 @@ class _UpdateRecyclingPostPageState
       _location = loc;
     }
 
-    final vm = ref.read(scrapPostViewModelProvider.notifier);
+    // Start loading
+    setState(() => _isSubmitting = true);
 
-    final updateEntity = UpdateScrapPostEntity(
-      scrapPostId: _postId,
-      title: _titleController.text.trim(),
-      description: _descriptionController.text.trim(),
-      address: _pickupAddressController.text.trim(),
-      availableTimeRange: _pickupTimeController.text.trim(),
-      mustTakeAll: _isTakeAll,
-      location: _location!,
-    );
-
-    bool allSuccess = true;
-
-    final postUpdated = await vm.updatePost(post: updateEntity);
-    if (!postUpdated) allSuccess = false;
-
-    for (var catId in _deletedCategoryIds) {
-      final deleted = await vm.deleteDetail(postId: _postId, categoryId: catId);
-      if (!deleted) allSuccess = false;
-    }
-
-    for (var item in _scrapItems) {
-      final detailEntity = ScrapPostDetailEntity(
-        scrapCategoryId: item['categoryId'],
-        amountDescription:
-            "${item['quantity']} pcs - ${item['weight'].toStringAsFixed(1)} kg",
-        // Logic ảnh: Nếu là item mới -> dùng file upload (cần logic upload ảnh riêng hoặc base64).
-        // Nếu là item cũ -> giữ nguyên imageUrl cũ.
-        // *Lưu ý*: Ở đây giả định imageUrl nhận string. Nếu backend cần File cho create/update,
-        // usecase cần xử lý MultipartFile.
-        imageUrl: item['imageUrl'] ?? "https://placeholder.com/default.jpg",
-        status: PostDetailStatus.available.name,
-      );
-
-      if (item['isExisting'] == true) {
-        // Update Detail
-        final updated = await vm.updateDetail(
-          postId: _postId,
-          detail: detailEntity,
-        );
-        if (!updated) allSuccess = false;
-      } else {
-        // Create Detail
-        final created = await vm.createDetail(
-          postId: _postId,
-          detail: detailEntity,
-        );
-        if (!created) allSuccess = false;
+    try {
+      // BATCH UPLOAD: Upload all new images before updating post
+      final uploadSuccess = await _uploadPendingImages();
+      if (!uploadSuccess) {
+        setState(() => _isSubmitting = false);
+        return; // Upload error, stop
       }
-    }
 
-    if (allSuccess) {
-      if (!mounted) return;
-      navigateWithLoading(
-        context,
-        route: "/detail-post",
-        extra: {'postId': _postId},
-        asyncTask: () => Future.delayed(const Duration(milliseconds: 250)),
+      final vm = ref.read(scrapPostViewModelProvider.notifier);
+
+      final updateEntity = UpdateScrapPostEntity(
+        scrapPostId: _postId,
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        address: _pickupAddressController.text.trim(),
+        availableTimeRange: _pickupTimeController.text.trim(),
+        mustTakeAll: _isTakeAll,
+        location: _location!,
       );
-      CustomToast.show(
-        context,
-        "${s.update} ${s.post} ${s.successfully}",
-        type: ToastType.success,
-      );
-    } else {
-      if (!mounted) return;
-      final errorMsg =
-          ref.read(scrapPostViewModelProvider).errorMessage ?? s.error_general;
-      CustomToast.show(context, errorMsg, type: ToastType.error);
+
+      bool allSuccess = true;
+
+      final postUpdated = await vm.updatePost(post: updateEntity);
+      if (!postUpdated) allSuccess = false;
+
+      for (var catId in _deletedCategoryIds) {
+        final deleted = await vm.deleteDetail(
+          postId: _postId,
+          categoryId: catId,
+        );
+        if (!deleted) allSuccess = false;
+      }
+
+      for (int i = 0; i < _scrapItems.length; i++) {
+        final item = _scrapItems[i];
+        final detailEntity = ScrapPostDetailEntity(
+          scrapCategoryId: item.categoryId,
+          amountDescription:
+              "${item.quantity} pcs - ${item.weight.toStringAsFixed(1)} kg",
+          // All images already uploaded in previous step
+          imageUrl: item.imageUrl ?? "https://placeholder.com/default.jpg",
+          status: PostDetailStatus.available.name,
+        );
+
+        if (_existingItemsMap[item.categoryId] == true) {
+          // Only update if this item was modified
+          if (_modifiedItemIndices.contains(i)) {
+            final updated = await vm.updateDetail(
+              postId: _postId,
+              detail: detailEntity,
+            );
+            if (!updated) allSuccess = false;
+          }
+        } else {
+          // Create Detail (new items)
+          final created = await vm.createDetail(
+            postId: _postId,
+            detail: detailEntity,
+          );
+          if (!created) allSuccess = false;
+        }
+      }
+
+      if (allSuccess) {
+        if (!mounted) return;
+        navigateWithLoading(
+          context,
+          route: "/detail-post",
+          extra: {'postId': _postId},
+          asyncTask: () => Future.delayed(const Duration(milliseconds: 250)),
+        );
+        CustomToast.show(
+          context,
+          "${s.update} ${s.post} ${s.successfully}",
+          type: ToastType.success,
+        );
+      } else {
+        if (!mounted) return;
+        final errorMsg =
+            ref.read(scrapPostViewModelProvider).errorMessage ??
+            s.error_general;
+        CustomToast.show(context, errorMsg, type: ToastType.error);
+      }
+    } finally {
+      // Stop loading
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final spacing = Theme.of(context).extension<AppSpacing>()!;
-    final theme = Theme.of(context);
     final categoryState = ref.watch(scrapCategoryViewModelProvider);
     final categories = categoryState.listData?.data ?? [];
 
@@ -302,125 +538,162 @@ class _UpdateRecyclingPostPageState
         title: Text("${S.of(context)!.update} ${S.of(context)!.post}"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+          onPressed: _isSubmitting ? null : () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(spacing.screenPadding),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              PostInfoForm(
-                formKey: _formKey,
-                titleController: _titleController,
-                descController: _descriptionController,
-                addressController: _pickupAddressController,
-                timeController: _pickupTimeController,
-                addressFound: _addressFound,
-                onSearchAddress: () async {
-                  final loc = await getLocationFromAddress(
-                    _pickupAddressController.text.trim(),
-                  );
-                  setState(() {
-                    _location = loc;
-                    _addressFound = loc != null;
-                  });
-                  if (!mounted && !context.mounted) {
-                    return;
-                  }
-                  CustomToast.show(
-                    context,
-                    loc != null
-                        ? S.of(context)!.address_found
-                        : S.of(context)!.address_not_found,
-                    type: loc != null ? ToastType.success : ToastType.error,
-                  );
-                },
-              ),
-
-              SizedBox(height: spacing.screenPadding),
-
-              Text(
-                S.of(context)!.add_scrap_items,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: spacing.screenPadding * 2,
-                ),
-              ),
-
-              SizedBox(height: spacing.screenPadding),
-
-              AddScrapItemSection(
-                key: ValueKey(_selectedCategoryId),
-                itemFormKey: _itemFormKey,
-                selectedCategoryId: _selectedCategoryId,
-                categories: categories,
-                quantityController: _quantityController,
-                weightController: _weightController,
-                image: _selectedImage,
-                onPickImage: _pickImage,
-                onCategoryChange: (val) =>
-                    setState(() => _selectedCategoryId = val),
-                onAddItem: _handleAddItem,
-              ),
-
-              SizedBox(height: spacing.screenPadding),
-
-              ScrapItemList(
-                items: _scrapItems,
-                onUpdate: (index, data) async {
-                  final updated = await showDialog(
-                    context: context,
-                    builder: (_) => UpdateScrapItemDialog(
-                      categories: categories
-                          .map((e) => e.categoryName)
-                          .toList(),
-                      initialCategory: data['category'],
-                      initialQuantity: data['quantity'],
-                      initialWeight: data['weight'],
-                      initialImageUrl: data['imageUrl'],
-                    ),
-                  );
-
-                  if (updated != null) {
-                    setState(() {
-                      _scrapItems[index]['quantity'] = updated['quantity'];
-                      _scrapItems[index]['weight'] = updated['weight'];
-                    });
-                  }
-                },
-                onDelete: (item) {
-                  final index = _scrapItems.indexOf(item);
-                  if (index != -1) _handleDeleteItem(index);
-                },
-              ),
-
-              SizedBox(height: spacing.screenPadding * 2),
-
-              TakeAllSwitch(
-                value: _isTakeAll,
-                onChange: (val) => setState(() => _isTakeAll = val),
-              ),
-
-              SizedBox(height: spacing.screenPadding),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      vertical: spacing.screenPadding,
-                    ),
-                    backgroundColor: AppColors.warningUpdate,
+      body: LoadingOverlay(
+        isLoading: _isSubmitting,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(spacing.screenPadding),
+          child: Form(
+            key: _formKey,
+            child: Column(
+                children: [
+                  PostInfoForm(
+                    formKey: _formKey,
+                    titleController: _titleController,
+                    descController: _descriptionController,
+                    addressController: _pickupAddressController,
+                    timeController: _pickupTimeController,
+                    addressFound: _addressFound,
+                    onSearchAddress: () async {
+                      final loc = await getLocationFromAddress(
+                        _pickupAddressController.text.trim(),
+                      );
+                      setState(() {
+                        _location = loc;
+                        _addressFound = loc != null;
+                      });
+                      if (!mounted && !context.mounted) {
+                        return;
+                      }
+                      CustomToast.show(
+                        context,
+                        loc != null
+                            ? S.of(context)!.address_found
+                            : S.of(context)!.address_not_found,
+                        type: loc != null ? ToastType.success : ToastType.error,
+                      );
+                    },
                   ),
-                  onPressed: _handleUpdate,
-                  child: Text(
-                    "${S.of(context)!.update} ${S.of(context)!.post}",
+
+                  SizedBox(height: spacing.screenPadding),
+
+                  PostSectionTitle(title: S.of(context)!.add_scrap_items),
+
+                  SizedBox(height: spacing.screenPadding),
+
+                  // AddScrapItemSection to add new items
+                  AddScrapItemSection(
+                    key: ValueKey(_selectedCategoryId),
+                    itemFormKey: _itemFormKey,
+                    selectedCategoryId: _selectedCategoryId,
+                    categories: categories,
+                    quantityController: _quantityController,
+                    weightController: _weightController,
+                    image: _selectedImage,
+                    recognizedImageUrl: _recognizedImageUrl,
+                    onPickImage: _pickImage,
+                    onCategoryChange: (value) {
+                      setState(() => _selectedCategoryId = value);
+                    },
+                    onAddItem: _handleAddItem,
+                    isAnalyzing: _isAnalyzingImage,
                   ),
-                ),
-              ),
-              SizedBox(height: spacing.screenPadding * 2),
-            ],
+
+                  SizedBox(height: spacing.screenPadding),
+
+                  ScrapItemList(
+                    items: _scrapItems,
+                    onUpdate: (index, itemData) async {
+                      final updated = await showDialog(
+                        context: context,
+                        builder: (_) => UpdateScrapItemDialog(
+                          categories: categories
+                              .map((e) => e.categoryName)
+                              .toList(),
+                          initialCategory: itemData.categoryName,
+                          initialQuantity: itemData.quantity,
+                          initialWeight: itemData.weight,
+                          initialImageUrl: itemData.displayPath,
+                        ),
+                      );
+
+                      if (updated != null) {
+                        // Handle image: File (new) or URL (existing)
+                        String? newImageUrl = itemData.imageUrl;
+                        File? newImageFile;
+
+                        if (updated['image'] is String &&
+                            updated['image'] != null) {
+                          final imagePath = updated['image'] as String;
+                          // Check if it's a file path (new image) or URL (existing image)
+                          if (imagePath.startsWith('/') ||
+                              imagePath.contains('file://')) {
+                            // This is a new File, save File, will upload on submit
+                            newImageFile = File(imagePath);
+                            newImageUrl = null; // Clear URL to trigger upload
+                          } else if (imagePath.startsWith('http')) {
+                            // This is existing URL, keep as is
+                            newImageUrl = imagePath;
+                            newImageFile = null;
+                          } else {
+                            // Local path without prefix
+                            newImageFile = File(imagePath);
+                            newImageUrl = null;
+                          }
+                        }
+
+                        final matchedCat = categories.firstWhere(
+                          (cat) => cat.categoryName == updated['category'],
+                        );
+
+                        setState(() {
+                          _scrapItems[index] = ScrapItemData(
+                            categoryId: matchedCat.scrapCategoryId,
+                            categoryName: matchedCat.categoryName,
+                            quantity: updated['quantity'],
+                            weight: updated['weight'],
+                            imageUrl: newImageUrl,
+                            imageFile: newImageFile,
+                          );
+                          // Mark this item as modified
+                          _modifiedItemIndices.add(index);
+                        });
+                      }
+                    },
+                    onDelete: (item) {
+                      final index = _scrapItems.indexOf(item);
+                      if (index != -1) _handleDeleteItem(index);
+                    },
+                  ),
+
+                  SizedBox(height: spacing.screenPadding * 2),
+
+                  TakeAllSwitch(
+                    value: _isTakeAll,
+                    onChange: (val) => setState(() => _isTakeAll = val),
+                  ),
+
+                  SizedBox(height: spacing.screenPadding),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: spacing.screenPadding,
+                        ),
+                        backgroundColor: AppColors.warningUpdate,
+                      ),
+                      onPressed: _isSubmitting ? null : _handleUpdate,
+                      child: Text(
+                        "${S.of(context)!.update} ${S.of(context)!.post}",
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: spacing.screenPadding * 2),
+              ],
+            ),
           ),
         ),
       ),

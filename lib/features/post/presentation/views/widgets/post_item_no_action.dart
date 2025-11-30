@@ -1,4 +1,3 @@
-import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/full_image_viewer.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +6,13 @@ class PostItemNoAction extends StatelessWidget {
   final BuildContext context;
   final String category;
   final String packageInformation;
+  final String? imageUrl;
   const PostItemNoAction({
     super.key,
     required this.context,
     required this.category,
     required this.packageInformation,
+    this.imageUrl,
   });
 
   @override
@@ -64,14 +65,18 @@ class PostItemNoAction extends StatelessWidget {
 
             GestureDetector(
               onTap: () {
+                final displayImage = imageUrl ?? logo;
                 showGeneralDialog(
                   context: context,
                   barrierLabel: 'Dismiss',
-                  barrierColor: AppColors.textPrimary.withValues(alpha: 0.1),
+                  barrierColor: theme.colorScheme.onSurface.withValues(
+                    alpha: 0.1,
+                  ),
                   transitionDuration: const Duration(milliseconds: 250),
                   pageBuilder: (_, _, _) {
                     return FullImageViewer(
-                      imagePath: logo,
+                      imagePath: displayImage,
+                      isNetworkImage: imageUrl != null,
                       onClose: () => Navigator.pop(context),
                     );
                   },
@@ -90,12 +95,51 @@ class PostItemNoAction extends StatelessWidget {
                 );
               },
               child: Hero(
-                tag: logo,
-                child: Image.asset(
-                  logo,
-                  width: spacing.screenPadding * 4,
-                  height: spacing.screenPadding * 4,
-                  fit: BoxFit.cover,
+                tag: imageUrl ?? logo,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(spacing.screenPadding / 2),
+                  child: imageUrl != null
+                      ? Image.network(
+                          imageUrl!,
+                          width: spacing.screenPadding * 4,
+                          height: spacing.screenPadding * 4,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              width: spacing.screenPadding * 4,
+                              height: spacing.screenPadding * 4,
+                              color: theme.dividerColor.withValues(alpha: 0.2),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    value: loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress.cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              logo,
+                              width: spacing.screenPadding * 4,
+                              height: spacing.screenPadding * 4,
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        )
+                      : Image.asset(
+                          logo,
+                          width: spacing.screenPadding * 4,
+                          height: spacing.screenPadding * 4,
+                          fit: BoxFit.cover,
+                        ),
                 ),
               ),
             ),
