@@ -13,7 +13,6 @@ import 'package:GreenConnectMobile/features/message/presentation/views/message.d
 import 'package:GreenConnectMobile/features/notification/presentation/views/widgets/notification.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/offers_list_page.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/collector_list_post.dart';
-import 'package:GreenConnectMobile/features/post/presentation/views/collector_post_detail.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/create_post.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/house_hold_home.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/household_list_post.dart';
@@ -26,6 +25,7 @@ import 'package:GreenConnectMobile/features/reward/presentation/views/list_histo
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transaction_detail_page_modern.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transactions_list_page.dart';
+import 'package:GreenConnectMobile/shared/layouts/collector_layout.dart';
 import 'package:GreenConnectMobile/shared/layouts/household_layout.dart';
 import 'package:go_router/go_router.dart';
 
@@ -35,7 +35,6 @@ final GoRouter greenRouter = GoRouter(
   observers: [appRouterObserver],
   initialLocation: '/',
   routes: [
-    
     ShellRoute(
       builder: (context, state, child) => HouseholdLayout(child: child),
       routes: [
@@ -48,34 +47,34 @@ final GoRouter greenRouter = GoRouter(
           },
         ),
         GoRoute(
-          path: '/notifications',
-          name: 'notifications',
+          path: '/household-notifications',
+          name: 'household-notifications',
           builder: (context, state) => const NotificationScreen(),
         ),
         GoRoute(
-          path: '/profile-settings',
-          name: 'profile-settings',
+          path: '/household-profile-settings',
+          name: 'household-profile-settings',
           builder: (context, state) => const ProfileSetting(),
         ),
         GoRoute(
-          path: '/list-transactions',
-          name: 'list-transactions',
+          path: '/household-list-transactions',
+          name: 'household-list-transactions',
           builder: (context, state) => const TransactionsListPage(),
         ),
         GoRoute(
-          path: '/feedback-list',
-          name: 'feedback-list',
+          path: '/household-feedback-list',
+          name: 'household-feedback-list',
           builder: (context, state) => const FeedbackListPage(),
         ),
         GoRoute(
-          path: '/complaint-list',
-          name: 'complaint-list',
+          path: '/household-complaint-list',
+          name: 'household-complaint-list',
           builder: (context, state) => const ComplaintListPage(),
         ),
       ],
     ),
     ShellRoute(
-      builder: (context, state, child) => HouseholdLayout(child: child),
+      builder: (context, state, child) => CollectorLayout(child: child),
       routes: [
         GoRoute(
           path: '/collector-list-post',
@@ -83,12 +82,24 @@ final GoRouter greenRouter = GoRouter(
           builder: (context, state) => const CollectorListPostPage(),
         ),
         GoRoute(
-          path: '/collector-post-detail',
-          name: 'collector-post-detail',
-          builder: (context, state) {
-             final initialData = state.extra as Map<String, dynamic>? ?? {};
-             return CollectorPostDetailPage(initialData: initialData);
-          },
+          path: '/collector-profile-settings',
+          name: 'collector-profile-settings',
+          builder: (context, state) => const ProfileSetting(),
+        ),
+        GoRoute(
+          path: '/collector-list-transactions',
+          name: 'collector-list-transactions',
+          builder: (context, state) => const TransactionsListPage(),
+        ),
+        GoRoute(
+          path: '/collector-feedback-list',
+          name: 'collector-feedback-list',
+          builder: (context, state) => const FeedbackListPage(),
+        ),
+        GoRoute(
+          path: '/collector-complaint-list',
+          name: 'collector-complaint-list',
+          builder: (context, state) => const ComplaintListPage(),
         ),
       ],
     ),

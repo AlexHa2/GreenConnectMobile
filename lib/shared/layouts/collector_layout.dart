@@ -65,7 +65,7 @@ class _CollectorLayoutState extends State<CollectorLayout> {
     switch (label.toLowerCase()) {
       case "home":
         return s.home;
-      case "Posts":
+      case "posts":
         return s.post;
       case "complaints":
         return s.complaints;

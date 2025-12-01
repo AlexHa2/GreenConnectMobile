@@ -201,7 +201,7 @@ class _HouseholdListPostScreenState
                       child: TextField(
                         onChanged: _onChangeSearch,
                         decoration: InputDecoration(
-                          hintText: s.search_by_name,
+                          hintText: s.search_by_name_trash,
                           hintStyle: TextStyle(
                             color: theme.hintColor.withValues(alpha: 0.6),
                           ),
@@ -252,8 +252,11 @@ class _HouseholdListPostScreenState
 
                     if (error != null && _posts.isEmpty) {
                       return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         children: [
-                          SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.3,
+                          ),
                           Center(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
@@ -273,8 +276,11 @@ class _HouseholdListPostScreenState
 
                     if (_posts.isEmpty) {
                       return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         children: [
-                          SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.3,
+                          ),
                           EmptyStateWidget(
                             icon: Icons.post_add_outlined,
                             message: s.not_found,
@@ -284,15 +290,18 @@ class _HouseholdListPostScreenState
                     }
 
                     return ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       controller: _scrollController,
                       padding: EdgeInsets.all(space),
                       itemCount: _posts.length + (_hasMore ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index == _posts.length) {
                           // loading more indicator
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            child: Center(child: CircularProgressIndicator()),
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: space),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
                           );
                         }
 
@@ -310,7 +319,7 @@ class _HouseholdListPostScreenState
                         final time = post.availableTimeRange;
 
                         return Padding(
-                          padding: EdgeInsets.only(bottom: space),
+                          padding: EdgeInsets.only(bottom: space / 12),
                           child: PostItem(
                             title: title,
                             desc: desc,
@@ -352,5 +361,4 @@ class _HouseholdListPostScreenState
       ),
     );
   }
-
 }

@@ -15,6 +15,7 @@ class PostItem extends StatelessWidget {
   final VoidCallback onTapDetails;
   final VoidCallback? onGoToTransaction;
   final VoidCallback? onGoToOffers;
+  final bool isCollectorView;
 
   const PostItem({
     super.key,
@@ -27,6 +28,7 @@ class PostItem extends StatelessWidget {
     this.onGoToTransaction,
     this.onGoToOffers,
     required this.timeCreated,
+    this.isCollectorView = false,
   });
 
   @override
@@ -141,84 +143,86 @@ class PostItem extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: space * 4 / 3),
-              Divider(height: space / 12),
-              SizedBox(height: space),
+              if (!isCollectorView) ...[
+                SizedBox(height: space * 4 / 3),
+                Divider(height: space / 12),
+                SizedBox(height: space),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: onTapDetails,
-                      style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 0,
-                          horizontal: space * 2 / 3,
-                        ),
-                        side: BorderSide(
-                          color: theme.primaryColor.withValues(alpha: 0.5),
-                        ),
-                      ),
-                      child: Text(
-                        S.of(context)!.view_details,
-                        style: const TextStyle(fontSize: 13),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-
-                  if (showOffersButton && onGoToOffers != null) ...[
-                    SizedBox(width: space),
+                Row(
+                  children: [
                     Expanded(
-                      child: FilledButton.icon(
-                        onPressed: onGoToOffers,
-                        style: FilledButton.styleFrom(
+                      child: OutlinedButton(
+                        onPressed: onTapDetails,
+                        style: OutlinedButton.styleFrom(
                           padding: EdgeInsets.symmetric(
                             vertical: 0,
                             horizontal: space * 2 / 3,
                           ),
-                          backgroundColor: theme.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(space),
+                          side: BorderSide(
+                            color: theme.primaryColor.withValues(alpha: 0.5),
                           ),
                         ),
-
-                        icon: const Icon(Icons.receipt_long_rounded, size: 16),
-                        label: Text(
-                          S.of(context)!.view_offers,
+                        child: Text(
+                          S.of(context)!.view_details,
                           style: const TextStyle(fontSize: 13),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
-                  ],
 
-                  if (isAccepted) ...[
-                    SizedBox(width: space),
-                    Expanded(
-                      child: FilledButton.icon(
-                        onPressed: onGoToTransaction,
-                        style: FilledButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 0,
-                            horizontal: space * 2 / 3, // 8
+                    if (showOffersButton && onGoToOffers != null) ...[
+                      SizedBox(width: space),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: onGoToOffers,
+                          style: FilledButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 0,
+                              horizontal: space * 2 / 3,
+                            ),
+                            backgroundColor: theme.primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(space),
+                            ),
                           ),
-                          backgroundColor: theme.primaryColor,
-                        ),
-                        icon: const Icon(Icons.handshake_outlined, size: 16),
-                        label: Text(
-                          S.of(context)!.go_to_transaction,
-                          style: const TextStyle(fontSize: 13),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+
+                          icon: const Icon(Icons.receipt_long_rounded, size: 16),
+                          label: Text(
+                            S.of(context)!.view_offers,
+                            style: const TextStyle(fontSize: 13),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
-                    ),
+                    ],
+
+                    if (isAccepted) ...[
+                      SizedBox(width: space),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: onGoToTransaction,
+                          style: FilledButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 0,
+                              horizontal: space * 2 / 3, // 8
+                            ),
+                            backgroundColor: theme.primaryColor,
+                          ),
+                          icon: const Icon(Icons.handshake_outlined, size: 16),
+                          label: Text(
+                            S.of(context)!.go_to_transaction,
+                            style: const TextStyle(fontSize: 13),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
-              ),
+                ),
+              ],
             ],
           ),
         ),
