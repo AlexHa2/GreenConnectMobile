@@ -35,6 +35,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
   // Logic: Separate old image (URL) and new image (File)
   String? _currentImageUrl;
   File? _newPickedFile;
+  bool _imageChanged = false; // Track if image was modified
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
     if (picked != null) {
       setState(() {
         _newPickedFile = File(picked.path);
+        _imageChanged = true; // Mark as changed
         // When selecting new image, prioritize displaying new image,
         // but keep _currentImageUrl for reference if needed (or set null depending on business logic)
       });
@@ -61,6 +63,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
     setState(() {
       _newPickedFile = null;
       _currentImageUrl = null;
+      _imageChanged = true; // Mark as changed (removed)
     });
   }
 
@@ -203,14 +206,19 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           // Return data logic
-                          // Prioritize returning new file, if not available return old url (or null if all deleted)
+                          // Only return image if it was modified
                           dynamic imageResult;
-                          if (_newPickedFile != null) {
-                            imageResult =
-                                _newPickedFile!.path; // Return Path String
+                          if (_imageChanged) {
+                            if (_newPickedFile != null) {
+                              imageResult =
+                                  _newPickedFile!.path; // Return new file path
+                            } else {
+                              imageResult =
+                                  _currentImageUrl; // Return URL or null if removed
+                            }
                           } else {
-                            imageResult =
-                                _currentImageUrl; // Return old URL or null
+                            // Image not changed - return special marker
+                            imageResult = '__NO_CHANGE__';
                           }
 
                           Navigator.pop(context, {
@@ -218,6 +226,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                             "amountDescription":
                                 _amountDescriptionController.text.trim(),
                             "image": imageResult,
+                            "imageChanged": _imageChanged,
                           });
                         }
                       },

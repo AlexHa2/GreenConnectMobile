@@ -60,26 +60,29 @@ class ScrapItemList extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: spacing.screenPadding / 2),
-                        // Wrap(
-                        //   spacing: spacing.screenPadding,
-                        //   children: [
-                        //     _buildInfoTag(
-                        //       context,
-                        //       icon: Icons.scale,
-                        //       text: "${item.weight} kg",
-                        //       color: Colors.blue.shade700,
-                        //       bgColor: Colors.blue.shade50,
-                        //     ),
-                        //     _buildInfoTag(
-                        //       context,
-                        //       icon: Icons.inventory_2,
-                        //       text: "SL: ${item.quantity}",
-                        //       color: Colors.orange.shade800,
-                        //       bgColor: Colors.orange.shade50,
-                        //     ),
-                        //   ],
-                        // ),
+                        if (item.amountDescription.isNotEmpty) ...[
+                          SizedBox(height: spacing.screenPadding * 0.5),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.inventory_2_outlined,
+                                size: 14,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                              SizedBox(width: spacing.screenPadding * 0.5),
+                              Expanded(
+                                child: Text(
+                                  item.amountDescription,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
                   ),

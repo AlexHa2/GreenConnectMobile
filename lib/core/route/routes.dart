@@ -11,6 +11,7 @@ import 'package:GreenConnectMobile/features/feedback/presentation/views/feedback
 import 'package:GreenConnectMobile/features/message/presentation/views/chat_message_detail.dart';
 import 'package:GreenConnectMobile/features/message/presentation/views/message.dart';
 import 'package:GreenConnectMobile/features/notification/presentation/views/widgets/notification.dart';
+import 'package:GreenConnectMobile/features/offer/presentation/views/offer_detail_page.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/offers_list_page.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/collector_list_post.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/create_post.dart';
@@ -100,6 +101,17 @@ final GoRouter greenRouter = GoRouter(
           path: '/collector-complaint-list',
           name: 'collector-complaint-list',
           builder: (context, state) => const ComplaintListPage(),
+        ),
+        GoRoute(
+          path: '/collector-offer-list',
+          name: 'collector-offer-list',
+          builder: (context, state) {
+            final initialData = state.extra as Map<String, dynamic>? ?? {};
+            return OffersListPage(
+              postId: initialData['postId'] as String?,
+              isCollectorView: initialData['isCollectorView'] as bool? ?? false,
+            );
+          },
         ),
       ],
     ),
@@ -231,6 +243,17 @@ final GoRouter greenRouter = GoRouter(
         final initialData = state.extra as Map<String, dynamic>? ?? {};
         return CreateComplaintPage(
           transactionId: initialData['transactionId'] as String,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/offer-detail',
+      name: 'offer-detail',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        return OfferDetailPage(
+          offerId: initialData['offerId'] as String,
+          isCollectorView: initialData['isCollectorView'] as bool? ?? false,
         );
       },
     ),

@@ -10,6 +10,7 @@ import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/off
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_leaf_loading.dart';
+import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -54,6 +55,50 @@ class _OfferDetailPageState extends ConsumerState<OfferDetailPage> {
         });
       },
     );
+  }
+
+  Future<void> _handleUpdateOfferDetail({
+    required String detailId,
+    required double price,
+    required String unit,
+  }) async {
+    final s = S.of(context)!;
+    final success = await ref.read(offerViewModelProvider.notifier).updateOfferDetail(
+      offerId: widget.offerId,
+      detailId: detailId,
+      pricePerUnit: price,
+      unit: unit,
+    );
+
+    if (success && mounted) {
+      setState(() {
+        _hasChanges = true;
+      });
+      CustomToast.show(context, s.pricing_updated_successfully, type: ToastType.success);
+      _onRefresh();
+    } else if (mounted) {
+      CustomToast.show(context, s.failed_to_update_pricing, type: ToastType.error);
+    }
+  }
+
+  Future<void> _handleDeleteOfferDetail(String detailId) async {
+    final s = S.of(context)!;
+    final success = await ref.read(offerViewModelProvider.notifier).deleteOfferDetail(
+      offerId: widget.offerId,
+      detailId: detailId,
+    );
+
+    if (success && mounted) {
+      setState(() {
+        _hasChanges = true;
+      });
+      CustomToast.show(context, s.pricing_deleted_successfully, type: ToastType.success);
+      _onRefresh();
+    } else {
+      if (mounted) {
+        CustomToast.show(context, s.failed_to_delete_pricing, type: ToastType.error);
+      }
+    }
   }
 
   Future<void> _onRefresh() async {
@@ -153,6 +198,19 @@ class _OfferDetailPageState extends ConsumerState<OfferDetailPage> {
                     theme: theme,
                     spacing: spacing,
                     s: s,
+                    offerStatus: offer.status,
+                    mustTakeAll: offer.scrapPost?.mustTakeAll,
+                    onUpdate: widget.isCollectorView
+                        ? (detailId, price, unit) =>
+                            _handleUpdateOfferDetail(
+                              detailId: detailId,
+                              price: price,
+                              unit: unit,
+                            )
+                        : null,
+                    onDelete: widget.isCollectorView
+                        ? _handleDeleteOfferDetail
+                        : null,
                   ),
                   SizedBox(height: spacing),
 

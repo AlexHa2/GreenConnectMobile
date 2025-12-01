@@ -51,11 +51,15 @@ class OfferViewModel extends Notifier<OfferState> {
       state = state.copyWith(isProcessing: false, detailData: result);
       return true;
     } catch (e, stack) {
+      String errorMsg = 'An error occurred';
       if (e is AppException) {
         debugPrint('❌ ERROR CREATE OFFER: ${e.message}');
+        errorMsg = e.message ?? errorMsg;
+      } else {
+        errorMsg = e.toString();
       }
       debugPrint('📌 STACK TRACE: $stack');
-      state = state.copyWith(isProcessing: false, errorMessage: e.toString());
+      state = state.copyWith(isProcessing: false, errorMessage: errorMsg);
       return false;
     }
   }
@@ -78,11 +82,15 @@ class OfferViewModel extends Notifier<OfferState> {
       );
       state = state.copyWith(isLoadingList: false, listData: result);
     } catch (e, stack) {
+      String errorMsg = 'An error occurred';
       if (e is AppException) {
         debugPrint('❌ ERROR FETCH OFFERS BY POST: ${e.message}');
+        errorMsg = e.message ?? errorMsg;
+      } else {
+        errorMsg = e.toString();
       }
       debugPrint('📌 STACK TRACE: $stack');
-      state = state.copyWith(isLoadingList: false, errorMessage: e.toString());
+      state = state.copyWith(isLoadingList: false, errorMessage: errorMsg);
     }
   }
 
@@ -104,11 +112,15 @@ class OfferViewModel extends Notifier<OfferState> {
       );
       state = state.copyWith(isLoadingList: false, listData: result);
     } catch (e, stack) {
+      String errorMsg = 'An error occurred';
       if (e is AppException) {
         debugPrint('❌ ERROR FETCH ALL OFFERS: ${e.message}');
+        errorMsg = e.message ?? errorMsg;
+      } else {
+        errorMsg = e.toString();
       }
       debugPrint('📌 STACK TRACE: $stack');
-      state = state.copyWith(isLoadingList: false, errorMessage: e.toString());
+      state = state.copyWith(isLoadingList: false, errorMessage: errorMsg);
     }
   }
 
@@ -120,13 +132,17 @@ class OfferViewModel extends Notifier<OfferState> {
       final result = await _getOfferDetail(offerId);
       state = state.copyWith(isLoadingDetail: false, detailData: result);
     } catch (e, stack) {
+      String errorMsg = 'An error occurred';
       if (e is AppException) {
         debugPrint('❌ ERROR FETCH OFFER DETAIL: ${e.message}');
+        errorMsg = e.message ?? errorMsg;
+      } else {
+        errorMsg = e.toString();
       }
       debugPrint('📌 STACK TRACE: $stack');
       state = state.copyWith(
         isLoadingDetail: false,
-        errorMessage: e.toString(),
+        errorMessage: errorMsg,
       );
     }
   }
@@ -140,11 +156,15 @@ class OfferViewModel extends Notifier<OfferState> {
       state = state.copyWith(isProcessing: false);
       return success;
     } catch (e, stack) {
+      String errorMsg = 'An error occurred';
       if (e is AppException) {
         debugPrint('❌ ERROR TOGGLE CANCEL OFFER: ${e.message}');
+        errorMsg = e.message ?? errorMsg;
+      } else {
+        errorMsg = e.toString();
       }
       debugPrint('📌 STACK TRACE: $stack');
-      state = state.copyWith(isProcessing: false, errorMessage: e.toString());
+      state = state.copyWith(isProcessing: false, errorMessage: errorMsg);
       return false;
     }
   }
@@ -164,11 +184,15 @@ class OfferViewModel extends Notifier<OfferState> {
       state = state.copyWith(isProcessing: false);
       return success;
     } catch (e, stack) {
+      String errorMsg = 'An error occurred';
       if (e is AppException) {
         debugPrint('❌ ERROR PROCESS OFFER: ${e.message}');
+        errorMsg = e.message ?? errorMsg;
+      } else {
+        errorMsg = e.toString();
       }
       debugPrint('📌 STACK TRACE: $stack');
-      state = state.copyWith(isProcessing: false, errorMessage: e.toString());
+      state = state.copyWith(isProcessing: false, errorMessage: errorMsg);
       return false;
     }
   }
@@ -192,11 +216,15 @@ class OfferViewModel extends Notifier<OfferState> {
       state = state.copyWith(isProcessing: false, detailData: result);
       return true;
     } catch (e, stack) {
+      String errorMsg = 'An error occurred';
       if (e is AppException) {
         debugPrint('❌ ERROR ADD OFFER DETAIL: ${e.message}');
+        errorMsg = e.message ?? errorMsg;
+      } else {
+        errorMsg = e.toString();
       }
       debugPrint('📌 STACK TRACE: $stack');
-      state = state.copyWith(isProcessing: false, errorMessage: e.toString());
+      state = state.copyWith(isProcessing: false, errorMessage: errorMsg);
       return false;
     }
   }
@@ -220,11 +248,15 @@ class OfferViewModel extends Notifier<OfferState> {
       state = state.copyWith(isProcessing: false, detailData: result);
       return true;
     } catch (e, stack) {
+      String errorMsg = 'An error occurred';
       if (e is AppException) {
         debugPrint('❌ ERROR UPDATE OFFER DETAIL: ${e.message}');
+        errorMsg = e.message ?? errorMsg;
+      } else {
+        errorMsg = e.toString();
       }
       debugPrint('📌 STACK TRACE: $stack');
-      state = state.copyWith(isProcessing: false, errorMessage: e.toString());
+      state = state.copyWith(isProcessing: false, errorMessage: errorMsg);
       return false;
     }
   }
@@ -244,11 +276,15 @@ class OfferViewModel extends Notifier<OfferState> {
       state = state.copyWith(isProcessing: false);
       return success;
     } catch (e, stack) {
+      String errorMsg = 'An error occurred';
       if (e is AppException) {
         debugPrint('❌ ERROR DELETE OFFER DETAIL: ${e.message}');
+        errorMsg = e.message ?? errorMsg;
+      } else {
+        errorMsg = e.toString();
       }
       debugPrint('📌 STACK TRACE: $stack');
-      state = state.copyWith(isProcessing: false, errorMessage: e.toString());
+      state = state.copyWith(isProcessing: false, errorMessage: errorMsg);
       return false;
     }
   }

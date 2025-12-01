@@ -265,6 +265,18 @@ abstract class S {
   /// **'Cancel'**
   String get cancel;
 
+  /// No description provided for @pricing_updated_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing updated successfully'**
+  String get pricing_updated_successfully;
+
+  /// No description provided for @pricing_deleted_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing deleted successfully'**
+  String get pricing_deleted_successfully;
+
   /// No description provided for @error_occurred.
   ///
   /// In en, this message translates to:
@@ -2209,6 +2221,30 @@ abstract class S {
   /// **'Invalid price'**
   String get invalid_price;
 
+  /// No description provided for @update_pricing.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Pricing'**
+  String get update_pricing;
+
+  /// No description provided for @confirm_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delete'**
+  String get confirm_delete;
+
+  /// No description provided for @are_you_sure_delete_pricing.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this pricing item?'**
+  String get are_you_sure_delete_pricing;
+
+  /// No description provided for @unit_is_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit is required'**
+  String get unit_is_required;
+
   /// No description provided for @submit_offer.
   ///
   /// In en, this message translates to:
@@ -2262,6 +2298,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Enter your message here...'**
   String get enter_your_message;
+
+  /// No description provided for @message_is_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Message is required'**
+  String get message_is_required;
 
   /// No description provided for @price_per_unit.
   ///
@@ -2850,6 +2892,24 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Total Price'**
   String get total_price;
+
+  /// No description provided for @your_offer_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Offer Price'**
+  String get your_offer_price;
+
+  /// No description provided for @enter_total_price_for_this_item.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter total price for this item'**
+  String get enter_total_price_for_this_item;
+
+  /// No description provided for @price_must_be_greater_than_zero.
+  ///
+  /// In en, this message translates to:
+  /// **'Price must be greater than zero'**
+  String get price_must_be_greater_than_zero;
 
   /// No description provided for @provided_by.
   ///
@@ -3948,6 +4008,42 @@ abstract class S {
   /// In en, this message translates to:
   /// **'New image'**
   String get new_image;
+
+  /// No description provided for @g.
+  ///
+  /// In en, this message translates to:
+  /// **'g'**
+  String get g;
+
+  /// No description provided for @ton.
+  ///
+  /// In en, this message translates to:
+  /// **'ton'**
+  String get ton;
+
+  /// No description provided for @piece.
+  ///
+  /// In en, this message translates to:
+  /// **'piece'**
+  String get piece;
+
+  /// No description provided for @offers.
+  ///
+  /// In en, this message translates to:
+  /// **'Offers'**
+  String get offers;
+
+  /// No description provided for @failed_to_delete_pricing.
+  ///
+  /// In en, this message translates to:
+  /// **'failed to delete pricing'**
+  String get failed_to_delete_pricing;
+
+  /// No description provided for @failed_to_update_pricing.
+  ///
+  /// In en, this message translates to:
+  /// **'failed to update pricing'**
+  String get failed_to_update_pricing;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

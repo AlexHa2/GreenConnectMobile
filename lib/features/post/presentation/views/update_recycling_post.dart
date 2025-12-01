@@ -53,8 +53,8 @@ class _UpdateRecyclingPostPageState
   final List<ScrapItemData> _scrapItems = [];
   // Track which items are existing (from server) vs new
   final Map<int, bool> _existingItemsMap = {};
-  // Track which items have been modified
-  final Set<int> _modifiedItemIndices = {};
+  // Track which items have been modified and what fields changed
+  final Map<int, Set<String>> _modifiedItemFields = {};
 
   final List<int> _deletedCategoryIds = [];
 
@@ -317,16 +317,21 @@ class _UpdateRecyclingPostPageState
     final uploadNotifier = ref.read(uploadViewModelProvider.notifier);
 
     try {
-      final itemsNeedUpload = _scrapItems
-          .where((item) => item.needsUpload)
-          .toList();
+      // Track items that need upload with their original indices
+      final itemsWithIndices = <MapEntry<int, ScrapItemData>>[];
+      for (int i = 0; i < _scrapItems.length; i++) {
+        if (_scrapItems[i].needsUpload) {
+          itemsWithIndices.add(MapEntry(i, _scrapItems[i]));
+        }
+      }
 
-      if (itemsNeedUpload.isEmpty) {
+      if (itemsWithIndices.isEmpty) {
         return true; // Nothing to upload
       }
 
-      for (int i = 0; i < itemsNeedUpload.length; i++) {
-        final item = itemsNeedUpload[i];
+      for (final entry in itemsWithIndices) {
+        final index = entry.key;
+        final item = entry.value;
         final file = item.imageFile!;
 
         final fileName = file.path.split('/').last;
@@ -349,10 +354,9 @@ class _UpdateRecyclingPostPageState
           contentType: contentType,
         );
 
-        // Update item with uploaded URL
-        final itemIndex = _scrapItems.indexOf(item);
+        // Update item with uploaded URL at correct index
         setState(() {
-          _scrapItems[itemIndex] = item.copyWith(
+          _scrapItems[index] = item.copyWith(
             imageUrl: uploadState.uploadUrl!.filePath,
             imageFile: null,
           );
@@ -370,6 +374,31 @@ class _UpdateRecyclingPostPageState
         type: ToastType.error,
       );
       return false;
+    }
+  }
+
+  /// Extract storage path from signed URL
+  /// Example: https://storage.googleapis.com/.../scraps/xxx/yyy.jpg?params
+  /// Returns: scraps/xxx/yyy.jpg
+  String _extractPathFromUrl(String url) {
+    try {
+      final uri = Uri.parse(url);
+      // Remove domain and get path
+      String path = uri.path;
+      // Remove leading slash if exists
+      if (path.startsWith('/')) {
+        path = path.substring(1);
+      }
+      // Path should start with bucket name, remove it
+      // Format: /bucket-name/scraps/... -> scraps/...
+      final parts = path.split('/');
+      if (parts.length > 1 && parts[0].contains('.')) {
+        // First part is bucket, remove it
+        return parts.sublist(1).join('/');
+      }
+      return path;
+    } catch (e) {
+      return url; // Return original if parsing fails
     }
   }
 
@@ -444,17 +473,24 @@ class _UpdateRecyclingPostPageState
 
       for (int i = 0; i < _scrapItems.length; i++) {
         final item = _scrapItems[i];
+        
+        // Extract path from URL if it's a signed URL
+        String imageUrl = item.imageUrl ?? "https://placeholder.com/default.jpg";
+        if (imageUrl.contains('?')) {
+          // This is a signed URL, extract the path
+          imageUrl = _extractPathFromUrl(imageUrl);
+        }
+        
         final detailEntity = ScrapPostDetailEntity(
           scrapCategoryId: item.categoryId,
           amountDescription: item.amountDescription,
-          // All images already uploaded in previous step
-          imageUrl: item.imageUrl ?? "https://placeholder.com/default.jpg",
+          imageUrl: imageUrl,
           status: PostDetailStatus.available.name,
         );
 
         if (_existingItemsMap[item.categoryId] == true) {
           // Only update if this item was modified
-          if (_modifiedItemIndices.contains(i)) {
+          if (_modifiedItemFields.containsKey(i)) {
             final updated = await vm.updateDetail(
               postId: _postId,
               detail: detailEntity,
@@ -591,27 +627,33 @@ class _UpdateRecyclingPostPageState
                     );
 
                     if (updated != null) {
-                      // Handle image: File (new) or URL (existing)
+                      // Track which fields actually changed
+                      final changedFields = <String>{};
+                      
+                      // Keep original image data
                       String? newImageUrl = itemData.imageUrl;
-                      File? newImageFile;
-
-                      if (updated['image'] is String &&
-                          updated['image'] != null) {
-                        final imagePath = updated['image'] as String;
-                        // Check if it's a file path (new image) or URL (existing image)
-                        if (imagePath.startsWith('/') ||
-                            imagePath.contains('file://')) {
-                          // This is a new File, save File, will upload on submit
-                          newImageFile = File(imagePath);
-                          newImageUrl = null; // Clear URL to trigger upload
-                        } else if (imagePath.startsWith('http')) {
-                          // This is existing URL, keep as is
+                      File? newImageFile = itemData.imageFile;
+                      
+                      // Check if image changed using the flag from dialog
+                      final imageChanged = updated['imageChanged'] == true;
+                      
+                      if (imageChanged) {
+                        final imagePath = updated['image'];
+                        
+                        changedFields.add('image');
+                        
+                        if (imagePath == null) {
+                          // Image was removed
+                          newImageUrl = null;
+                          newImageFile = null;
+                        } else if (imagePath.toString().startsWith('http')) {
+                          // Existing URL (shouldn't happen in changed case, but handle it)
                           newImageUrl = imagePath;
                           newImageFile = null;
-                        } else {
-                          // Local path without prefix
+                        } else if (imagePath != '__NO_CHANGE__') {
+                          // New local file selected
                           newImageFile = File(imagePath);
-                          newImageUrl = null;
+                          newImageUrl = null; // Clear URL to trigger upload
                         }
                       }
 
@@ -619,17 +661,31 @@ class _UpdateRecyclingPostPageState
                         (cat) => cat.categoryName == updated['category'],
                       );
 
-                      setState(() {
-                        _scrapItems[index] = ScrapItemData(
-                          categoryId: matchedCat.scrapCategoryId,
-                          categoryName: matchedCat.categoryName,
-                          amountDescription: updated['amountDescription'] ?? '',
-                          imageUrl: newImageUrl,
-                          imageFile: newImageFile,
-                        );
-                        // Mark this item as modified
-                        _modifiedItemIndices.add(index);
-                      });
+                      // Check if category changed
+                      if (matchedCat.scrapCategoryId != itemData.categoryId) {
+                        changedFields.add('category');
+                      }
+
+                      // Check if amountDescription changed
+                      final newAmountDesc = updated['amountDescription'] ?? '';
+                      if (newAmountDesc != itemData.amountDescription) {
+                        changedFields.add('amountDescription');
+                      }
+
+                      // Only update if something actually changed
+                      if (changedFields.isNotEmpty) {
+                        setState(() {
+                          _scrapItems[index] = ScrapItemData(
+                            categoryId: matchedCat.scrapCategoryId,
+                            categoryName: matchedCat.categoryName,
+                            amountDescription: newAmountDesc,
+                            imageUrl: newImageUrl,
+                            imageFile: newImageFile,
+                          );
+                          // Track which fields were modified for this item
+                          _modifiedItemFields[index] = changedFields;
+                        });
+                      }
                     }
                   },
                   onDelete: (item) {
