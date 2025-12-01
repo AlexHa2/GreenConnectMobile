@@ -12,13 +12,26 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:GreenConnectMobile/core/config/firebase_options.dart';
+
+import 'package:GreenConnectMobile/core/network/token_storage.dart';
+import 'package:flutter/foundation.dart'; // để dùng debugPrint
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await initDependencies();
+ 
+  // Log access token
+  final tokenStorage = sl<TokenStorageService>();
+  final accessToken = await tokenStorage.getAccessToken();
+  debugPrint('ACCESS_TOKEN = $accessToken');
+
+
   FlutterError.demangleStackTrace = (stack) => stack;
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const ProviderScope(child: GreenConnectApp()));
 }
 

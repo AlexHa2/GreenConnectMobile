@@ -227,10 +227,11 @@ class _TransactionCardInfo extends StatelessWidget {
         ],
 
         // Scheduled time
-        _InfoRow(
-          icon: Icons.schedule_outlined,
-          text: transaction.scheduledTime.toCustomFormat(locale: s.localeName),
-        ),
+        if (transaction.scheduledTime != null)
+          _InfoRow(
+            icon: Icons.schedule_outlined,
+            text: transaction.scheduledTime!.toCustomFormat(locale: s.localeName),
+          ),
       ],
     );
   }

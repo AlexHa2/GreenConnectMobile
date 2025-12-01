@@ -12,7 +12,7 @@ class TransactionModel {
   final String offerId;
   final CollectionOfferModel? offer;
   final String status;
-  final DateTime scheduledTime;
+  final DateTime? scheduledTime;
   final DateTime? checkInTime;
   final DateTime createdAt;
   final DateTime? updatedAt;
@@ -28,7 +28,7 @@ class TransactionModel {
     required this.offerId,
     this.offer,
     required this.status,
-    required this.scheduledTime,
+    this.scheduledTime,
     this.checkInTime,
     required this.createdAt,
     this.updatedAt,
@@ -48,7 +48,9 @@ class TransactionModel {
           ? CollectionOfferModel.fromJson(json['offer'])
           : null,
       status: json['status'] ?? 'Scheduled',
-      scheduledTime: DateTime.parse(json['scheduledTime']),
+      scheduledTime: json['scheduledTime'] != null
+          ? DateTime.parse(json['scheduledTime'])
+          : null,
       checkInTime: json['checkInTime'] != null
           ? DateTime.parse(json['checkInTime'])
           : null,
@@ -73,7 +75,7 @@ class TransactionModel {
         'offerId': offerId,
         'offer': offer?.toJson(),
         'status': status,
-        'scheduledTime': scheduledTime.toIso8601String(),
+        'scheduledTime': scheduledTime?.toIso8601String(),
         'checkInTime': checkInTime?.toIso8601String(),
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
