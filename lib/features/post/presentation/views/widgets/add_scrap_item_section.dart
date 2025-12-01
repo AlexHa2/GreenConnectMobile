@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_category_entity.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/amount_description_field.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -10,8 +11,8 @@ import 'package:flutter/material.dart';
 class AddScrapItemSection extends StatelessWidget {
   final int? selectedCategoryId;
   final List<ScrapCategoryEntity> categories;
-  final TextEditingController quantityController;
-  final TextEditingController weightController;
+  final TextEditingController amountDescriptionController;
+  final String? aiSuggestedDescription;
   final File? image;
   final String? recognizedImageUrl;
   final VoidCallback onPickImage;
@@ -24,8 +25,8 @@ class AddScrapItemSection extends StatelessWidget {
     super.key,
     this.selectedCategoryId,
     required this.categories,
-    required this.quantityController,
-    required this.weightController,
+    required this.amountDescriptionController,
+    this.aiSuggestedDescription,
     this.image,
     this.recognizedImageUrl,
     required this.onPickImage,
@@ -80,30 +81,23 @@ class AddScrapItemSection extends StatelessWidget {
                     : null,
               ),
 
-              SizedBox(height: spacing.screenPadding),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildNumberField(
-                      context,
-                      label: S.of(context)!.quantity,
-                      controller: quantityController,
-                      unit: "",
-                    ),
-                  ),
-                  SizedBox(width: spacing.screenPadding),
-                  Expanded(
-                    child: _buildNumberField(
-                      context,
-                      label: S.of(context)!.weight,
-                      controller: weightController,
-                      unit: "kg",
-                    ),
-                  ),
-                ],
+              SizedBox(height: spacing.screenPadding * 1.5),
+              AmountDescriptionField(
+                controller: amountDescriptionController,
+                aiSuggestion: aiSuggestedDescription,
+                isAIAnalyzing: isAnalyzing,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return S.of(context)!.please_enter_description;
+                  }
+                  if (value.trim().length < 5) {
+                    return S.of(context)!.description_too_short;
+                  }
+                  return null;
+                },
               ),
 
-              SizedBox(height: spacing.screenPadding),
+              SizedBox(height: spacing.screenPadding * 1.5),
               Text(
                 "${S.of(context)!.update} ${S.of(context)!.image}",
                 style: theme.textTheme.bodyLarge?.copyWith(
@@ -323,54 +317,6 @@ class AddScrapItemSection extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildNumberField(
-    BuildContext context, {
-    required String label,
-    required TextEditingController controller,
-    required String unit,
-  }) {
-    final theme = Theme.of(context);
-    final spacing = Theme.of(context).extension<AppSpacing>()!;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        SizedBox(height: spacing.screenPadding / 2),
-
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                controller: controller,
-                textAlign: TextAlign.center,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  isDense: true,
-                ),
-                keyboardType: TextInputType.number,
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) {
-                    return S.of(context)!.error_required;
-                  }
-                  final num? val = num.tryParse(v);
-                  if (val == null || val <= 0) {
-                    return S.of(context)!.error_invalid_number;
-                  }
-                  return null;
-                },
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }

@@ -280,6 +280,43 @@ class SVi extends S {
   String get weight_hint => '1';
 
   @override
+  String get amount_description => 'Mô tả số lượng';
+
+  @override
+  String get amount_description_hint => 'VD: 5kg giấy báo, 20 chai, 3 túi nhựa';
+
+  @override
+  String get amount_description_helper =>
+      'Mô tả số lượng, khối lượng hoặc chi tiết đóng gói';
+
+  @override
+  String get ai_suggestion => 'Gợi ý từ AI';
+
+  @override
+  String get reject => 'Từ chối';
+
+  @override
+  String get quick_templates => 'Mẫu nhanh:';
+
+  @override
+  String get template_small_bag => 'Túi nhỏ (~2kg)';
+
+  @override
+  String get template_medium_box => 'Thùng vừa (~5kg)';
+
+  @override
+  String get template_large_bundle => 'Bó lớn (~10kg)';
+
+  @override
+  String get template_multiple_items => 'Nhiều món';
+
+  @override
+  String get please_enter_description => 'Vui lòng nhập mô tả số lượng';
+
+  @override
+  String get description_too_short => 'Mô tả quá ngắn (tối thiểu 5 ký tự)';
+
+  @override
   String get scrap_item => 'vật phẩm phế liệu';
 
   @override
@@ -296,7 +333,7 @@ class SVi extends S {
   String get delete_hint => 'tại sao lại muốn xóa';
 
   @override
-  String get search_by_name => 'tìm kiếm theo tên';
+  String get search_by_name_trash => 'tìm kiếm theo loại rác';
 
   @override
   String get all => 'Tất cả';
@@ -1082,6 +1119,44 @@ class SVi extends S {
   String get failed_to_create_offer => 'Tạo đề nghị thất bại';
 
   @override
+  String get please_select_at_least_one_item =>
+      'Vui lòng chọn ít nhất một mặt hàng';
+
+  @override
+  String get please_select_proposed_time => 'Vui lòng chọn thời gian đề xuất';
+
+  @override
+  String get must_take_all_items =>
+      'Bạn phải nhận tất cả các mặt hàng trong bài đăng này';
+
+  @override
+  String get select_items => 'Chọn mặt hàng';
+
+  @override
+  String get message_optional => 'Tin nhắn (Tùy chọn)';
+
+  @override
+  String get enter_your_message => 'Nhập tin nhắn của bạn...';
+
+  @override
+  String get price_per_unit => 'Giá đơn vị';
+
+  @override
+  String get please_enter_price => 'Vui lòng nhập giá';
+
+  @override
+  String get unit => 'Đơn vị';
+
+  @override
+  String get select_date_and_time => 'Chọn ngày và giờ';
+
+  @override
+  String get creating => 'Đang tạo...';
+
+  @override
+  String get make_an_offer => 'Đưa ra đề nghị';
+
+  @override
   String get available_posts => 'Bài đăng khả dụng';
 
   @override
@@ -1365,9 +1440,6 @@ class SVi extends S {
   String get scrap_type => 'Loại phế liệu';
 
   @override
-  String get price_per_unit => 'Giá đơn vị';
-
-  @override
   String get total_price => 'Tổng giá';
 
   @override
@@ -1511,9 +1583,6 @@ class SVi extends S {
 
   @override
   String get approve => 'Phê duyệt';
-
-  @override
-  String get reject => 'Từ chối';
 
   @override
   String get rewards => 'Phần thưởng';
@@ -1797,6 +1866,9 @@ class SVi extends S {
 
   @override
   String get sort_by_date => 'Sắp xếp theo ngày';
+
+  @override
+  String get sort_by_location => 'Sắp xếp theo vị trí';
 
   @override
   String get sort_ascending => 'Tăng dần';

@@ -279,6 +279,45 @@ class SEn extends S {
   String get weight_hint => '1';
 
   @override
+  String get amount_description => 'Amount Description';
+
+  @override
+  String get amount_description_hint =>
+      'E.g., 5kg of newspapers, 20 bottles, 3 bags of plastic';
+
+  @override
+  String get amount_description_helper =>
+      'Describe quantity, weight, or packaging details';
+
+  @override
+  String get ai_suggestion => 'AI Suggestion';
+
+  @override
+  String get reject => 'Reject';
+
+  @override
+  String get quick_templates => 'Quick templates:';
+
+  @override
+  String get template_small_bag => 'Small bag (~2kg)';
+
+  @override
+  String get template_medium_box => 'Medium box (~5kg)';
+
+  @override
+  String get template_large_bundle => 'Large bundle (~10kg)';
+
+  @override
+  String get template_multiple_items => 'Multiple items';
+
+  @override
+  String get please_enter_description => 'Please enter amount description';
+
+  @override
+  String get description_too_short =>
+      'Description is too short (minimum 5 characters)';
+
+  @override
   String get scrap_item => 'scrap item';
 
   @override
@@ -295,7 +334,7 @@ class SEn extends S {
   String get delete_hint => 'Why are you deleting this post?';
 
   @override
-  String get search_by_name => 'search by name';
+  String get search_by_name_trash => 'search by name of trash';
 
   @override
   String get all => 'All';
@@ -1082,6 +1121,43 @@ class SEn extends S {
   String get failed_to_create_offer => 'Failed to create offer';
 
   @override
+  String get please_select_at_least_one_item =>
+      'Please select at least one item';
+
+  @override
+  String get please_select_proposed_time => 'Please select proposed time';
+
+  @override
+  String get must_take_all_items => 'You must take all items in this post';
+
+  @override
+  String get select_items => 'Select Items';
+
+  @override
+  String get message_optional => 'Message (Optional)';
+
+  @override
+  String get enter_your_message => 'Enter your message here...';
+
+  @override
+  String get price_per_unit => 'Price per Unit';
+
+  @override
+  String get please_enter_price => 'Please enter price';
+
+  @override
+  String get unit => 'Unit';
+
+  @override
+  String get select_date_and_time => 'Select date and time';
+
+  @override
+  String get creating => 'Creating...';
+
+  @override
+  String get make_an_offer => 'Make an Offer';
+
+  @override
   String get available_posts => 'Available Posts';
 
   @override
@@ -1368,9 +1444,6 @@ class SEn extends S {
   String get scrap_type => 'Scrap Type';
 
   @override
-  String get price_per_unit => 'Price per Unit';
-
-  @override
   String get total_price => 'Total Price';
 
   @override
@@ -1514,9 +1587,6 @@ class SEn extends S {
 
   @override
   String get approve => 'Approve';
-
-  @override
-  String get reject => 'Reject';
 
   @override
   String get rewards => 'Rewards';
@@ -1800,6 +1870,9 @@ class SEn extends S {
 
   @override
   String get sort_by_date => 'Sort by Date';
+
+  @override
+  String get sort_by_location => 'Sort by location';
 
   @override
   String get sort_ascending => 'Ascending';

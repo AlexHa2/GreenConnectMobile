@@ -8,6 +8,7 @@ class PostFilterChips extends StatelessWidget {
   final Function(String?) onSelectFilter;
   final String allLabel;
   final bool showAllStatuses;
+  final bool showAllChip;
 
   const PostFilterChips({
     super.key,
@@ -15,27 +16,30 @@ class PostFilterChips extends StatelessWidget {
     required this.onSelectFilter,
     required this.allLabel,
     this.showAllStatuses = true,
+    this.showAllChip = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final space = 16.0;
+    final space = theme.extension<AppSpacing>()!.screenPadding;
 
     return SizedBox(
-      height: 48,
+      height: space * 3,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: space),
         children: [
-          ModernFilterChip(
-            label: allLabel,
-            icon: Icons.list_alt,
-            isSelected: selectedStatus == null,
-            onTap: () => onSelectFilter(null),
-            color: theme.primaryColor,
-          ),
-          SizedBox(width: space * 0.5),
+          if (showAllChip) ...[
+            ModernFilterChip(
+              label: allLabel,
+              icon: Icons.list_alt,
+              isSelected: selectedStatus == null,
+              onTap: () => onSelectFilter(null),
+              color: theme.primaryColor,
+            ),
+            SizedBox(width: space * 0.5),
+          ],
           ModernStatusFilterChip(
             status: "Open",
             isSelected: selectedStatus == "Open",
@@ -97,15 +101,15 @@ class ModernFilterChip extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(space.screenPadding * 2),
+        borderRadius: BorderRadius.circular(space.screenPadding/2),
         child: Container(
           padding: EdgeInsets.symmetric(
             horizontal: space.screenPadding,
-            vertical: space.screenPadding * 0.5,
+            vertical: space.screenPadding/2,
           ),
           decoration: BoxDecoration(
             color: isSelected ? color : color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(space.screenPadding * 2),
+            borderRadius: BorderRadius.circular(space.screenPadding/2),
             border: Border.all(
               color: isSelected ? color : color.withValues(alpha: 0.3),
               width: isSelected ? 2 : 1,

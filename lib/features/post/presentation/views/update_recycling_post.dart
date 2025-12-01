@@ -60,18 +60,15 @@ class _UpdateRecyclingPostPageState
 
   // State for AddScrapItemSection
   final _itemFormKey = GlobalKey<FormState>();
-  final TextEditingController _quantityController = TextEditingController(
-    text: "1",
-  );
-  final TextEditingController _weightController = TextEditingController(
-    text: "1",
-  );
+  final TextEditingController _amountDescriptionController =
+      TextEditingController();
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
   int? _selectedCategoryId;
   bool _isAnalyzingImage = false;
   String? _recognizedImageUrl;
   Map<String, dynamic>? _aiRecognitionData;
+  String? _aiSuggestedDescription;
 
   bool _isTakeAll = false;
   bool _isSubmitting = false;
@@ -104,21 +101,12 @@ class _UpdateRecyclingPostPageState
     if (items != null) {
       for (var item in items) {
         if (item is ScrapPostDetailEntity) {
-          int q = 1;
-          double w = 1.0;
-          try {
-            final parts = item.amountDescription.split(' - ');
-            q = int.parse(parts[0].replaceAll(RegExp(r'[^0-9]'), ''));
-            w = double.parse(parts[1].replaceAll(RegExp(r'[^0-9.]'), ''));
-          } catch (_) {}
-
           final itemData = ScrapItemData(
             categoryId: item.scrapCategoryId,
             categoryName:
                 item.scrapCategory?.categoryName ??
                 'Category ${item.scrapCategoryId}',
-            quantity: q,
-            weight: w,
+            amountDescription: item.amountDescription,
             imageUrl: item.imageUrl,
           );
 
@@ -135,8 +123,8 @@ class _UpdateRecyclingPostPageState
     _descriptionController.dispose();
     _pickupAddressController.dispose();
     _pickupTimeController.dispose();
-    _quantityController.dispose();
-    _weightController.dispose();
+    // _quantityController.dispose();
+    // _weightController.dispose();
     super.dispose();
   }
 
@@ -193,26 +181,15 @@ class _UpdateRecyclingPostPageState
               aiCategoryLower.contains(categoryLower);
         }).firstOrNull;
 
-        int recognizedQuantity = 1;
-        double recognizedWeight = 1.0;
-
+        // Generate AI suggested description from estimatedAmount and advice
+        String? suggestedDesc;
         if (aiResponse.estimatedAmount.isNotEmpty) {
-          final amountStr = aiResponse.estimatedAmount.toLowerCase();
-          final quantityMatch = RegExp(
-            r'(\d+)\s*(?:pcs|pieces|items)',
-          ).firstMatch(amountStr);
-          final weightMatch = RegExp(
-            r'(\d+\.?\d*)\s*(?:kg|kilograms)',
-          ).firstMatch(amountStr);
-
-          if (quantityMatch != null) {
-            recognizedQuantity =
-                int.tryParse(quantityMatch.group(1) ?? '1') ?? 1;
+          suggestedDesc = aiResponse.estimatedAmount;
+          if (aiResponse.advice.isNotEmpty) {
+            suggestedDesc += '. ${aiResponse.advice}';
           }
-          if (weightMatch != null) {
-            recognizedWeight =
-                double.tryParse(weightMatch.group(1) ?? '1.0') ?? 1.0;
-          }
+        } else if (aiResponse.advice.isNotEmpty) {
+          suggestedDesc = aiResponse.advice;
         }
 
         setState(() {
@@ -222,15 +199,12 @@ class _UpdateRecyclingPostPageState
             'categoryId': matchedCategory?.scrapCategoryId,
             'itemName': aiResponse.itemName,
             'category': aiResponse.category,
-            'quantity': recognizedQuantity,
-            'weight': recognizedWeight,
           };
+          _aiSuggestedDescription = suggestedDesc;
 
           if (matchedCategory != null) {
             _selectedCategoryId = matchedCategory.scrapCategoryId;
           }
-          _quantityController.text = recognizedQuantity.toString();
-          _weightController.text = recognizedWeight.toString();
         });
       } else {
         setState(() {
@@ -311,8 +285,7 @@ class _UpdateRecyclingPostPageState
         ScrapItemData(
           categoryId: _selectedCategoryId!,
           categoryName: categoryName,
-          quantity: int.parse(_quantityController.text),
-          weight: double.parse(_weightController.text),
+          amountDescription: _amountDescriptionController.text.trim(),
           imageUrl: _recognizedImageUrl,
           imageFile: _recognizedImageUrl == null ? _selectedImage : null,
           aiData: _aiRecognitionData,
@@ -323,11 +296,11 @@ class _UpdateRecyclingPostPageState
 
       // Reset form
       _selectedCategoryId = null;
-      _quantityController.text = "1";
-      _weightController.text = "1";
+      _amountDescriptionController.clear();
       _selectedImage = null;
       _recognizedImageUrl = null;
       _aiRecognitionData = null;
+      _aiSuggestedDescription = null;
       _isAnalyzingImage = false;
       _itemFormKey.currentState!.reset();
     });
@@ -365,7 +338,7 @@ class _UpdateRecyclingPostPageState
 
         final uploadState = ref.read(uploadViewModelProvider);
         if (uploadState.uploadUrl == null) {
-          if(!mounted) return false;
+          if (!mounted) return false;
           throw Exception(S.of(context)!.error_get_upload_url);
         }
 
@@ -473,8 +446,7 @@ class _UpdateRecyclingPostPageState
         final item = _scrapItems[i];
         final detailEntity = ScrapPostDetailEntity(
           scrapCategoryId: item.categoryId,
-          amountDescription:
-              "${item.quantity} pcs - ${item.weight.toStringAsFixed(1)} kg",
+          amountDescription: item.amountDescription,
           // All images already uploaded in previous step
           imageUrl: item.imageUrl ?? "https://placeholder.com/default.jpg",
           status: PostDetailStatus.available.name,
@@ -548,150 +520,148 @@ class _UpdateRecyclingPostPageState
           child: Form(
             key: _formKey,
             child: Column(
-                children: [
-                  PostInfoForm(
-                    formKey: _formKey,
-                    titleController: _titleController,
-                    descController: _descriptionController,
-                    addressController: _pickupAddressController,
-                    timeController: _pickupTimeController,
-                    addressFound: _addressFound,
-                    onSearchAddress: () async {
-                      final loc = await getLocationFromAddress(
-                        _pickupAddressController.text.trim(),
-                      );
-                      setState(() {
-                        _location = loc;
-                        _addressFound = loc != null;
-                      });
-                      if (!mounted && !context.mounted) {
-                        return;
-                      }
-                      CustomToast.show(
-                        context,
-                        loc != null
-                            ? S.of(context)!.address_found
-                            : S.of(context)!.address_not_found,
-                        type: loc != null ? ToastType.success : ToastType.error,
-                      );
-                    },
-                  ),
+              children: [
+                PostInfoForm(
+                  formKey: _formKey,
+                  titleController: _titleController,
+                  descController: _descriptionController,
+                  addressController: _pickupAddressController,
+                  timeController: _pickupTimeController,
+                  addressFound: _addressFound,
+                  onSearchAddress: () async {
+                    final loc = await getLocationFromAddress(
+                      _pickupAddressController.text.trim(),
+                    );
+                    setState(() {
+                      _location = loc;
+                      _addressFound = loc != null;
+                    });
+                    if (!mounted && !context.mounted) {
+                      return;
+                    }
+                    CustomToast.show(
+                      context,
+                      loc != null
+                          ? S.of(context)!.address_found
+                          : S.of(context)!.address_not_found,
+                      type: loc != null ? ToastType.success : ToastType.error,
+                    );
+                  },
+                ),
 
-                  SizedBox(height: spacing.screenPadding),
+                SizedBox(height: spacing.screenPadding),
 
-                  PostSectionTitle(title: S.of(context)!.add_scrap_items),
+                PostSectionTitle(title: S.of(context)!.add_scrap_items),
 
-                  SizedBox(height: spacing.screenPadding),
+                SizedBox(height: spacing.screenPadding),
 
-                  // AddScrapItemSection to add new items
-                  AddScrapItemSection(
-                    key: ValueKey(_selectedCategoryId),
-                    itemFormKey: _itemFormKey,
-                    selectedCategoryId: _selectedCategoryId,
-                    categories: categories,
-                    quantityController: _quantityController,
-                    weightController: _weightController,
-                    image: _selectedImage,
-                    recognizedImageUrl: _recognizedImageUrl,
-                    onPickImage: _pickImage,
-                    onCategoryChange: (value) {
-                      setState(() => _selectedCategoryId = value);
-                    },
-                    onAddItem: _handleAddItem,
-                    isAnalyzing: _isAnalyzingImage,
-                  ),
+                // AddScrapItemSection to add new items
+                AddScrapItemSection(
+                  key: ValueKey(_selectedCategoryId),
+                  itemFormKey: _itemFormKey,
+                  selectedCategoryId: _selectedCategoryId,
+                  categories: categories,
+                  amountDescriptionController: _amountDescriptionController,
+                  aiSuggestedDescription: _aiSuggestedDescription,
+                  image: _selectedImage,
+                  recognizedImageUrl: _recognizedImageUrl,
+                  onPickImage: _pickImage,
+                  onCategoryChange: (value) {
+                    setState(() => _selectedCategoryId = value);
+                  },
+                  onAddItem: _handleAddItem,
+                  isAnalyzing: _isAnalyzingImage,
+                ),
 
-                  SizedBox(height: spacing.screenPadding),
+                SizedBox(height: spacing.screenPadding),
 
-                  ScrapItemList(
-                    items: _scrapItems,
-                    onUpdate: (index, itemData) async {
-                      final updated = await showDialog(
-                        context: context,
-                        builder: (_) => UpdateScrapItemDialog(
-                          categories: categories
-                              .map((e) => e.categoryName)
-                              .toList(),
-                          initialCategory: itemData.categoryName,
-                          initialQuantity: itemData.quantity,
-                          initialWeight: itemData.weight,
-                          initialImageUrl: itemData.displayPath,
-                        ),
-                      );
+                ScrapItemList(
+                  items: _scrapItems,
+                  onUpdate: (index, itemData) async {
+                    final updated = await showDialog(
+                      context: context,
+                      builder: (_) => UpdateScrapItemDialog(
+                        categories: categories
+                            .map((e) => e.categoryName)
+                            .toList(),
+                        initialCategory: itemData.categoryName,
+                        initialAmountDescription: itemData.amountDescription,
+                        initialImageUrl: itemData.displayPath,
+                      ),
+                    );
 
-                      if (updated != null) {
-                        // Handle image: File (new) or URL (existing)
-                        String? newImageUrl = itemData.imageUrl;
-                        File? newImageFile;
+                    if (updated != null) {
+                      // Handle image: File (new) or URL (existing)
+                      String? newImageUrl = itemData.imageUrl;
+                      File? newImageFile;
 
-                        if (updated['image'] is String &&
-                            updated['image'] != null) {
-                          final imagePath = updated['image'] as String;
-                          // Check if it's a file path (new image) or URL (existing image)
-                          if (imagePath.startsWith('/') ||
-                              imagePath.contains('file://')) {
-                            // This is a new File, save File, will upload on submit
-                            newImageFile = File(imagePath);
-                            newImageUrl = null; // Clear URL to trigger upload
-                          } else if (imagePath.startsWith('http')) {
-                            // This is existing URL, keep as is
-                            newImageUrl = imagePath;
-                            newImageFile = null;
-                          } else {
-                            // Local path without prefix
-                            newImageFile = File(imagePath);
-                            newImageUrl = null;
-                          }
+                      if (updated['image'] is String &&
+                          updated['image'] != null) {
+                        final imagePath = updated['image'] as String;
+                        // Check if it's a file path (new image) or URL (existing image)
+                        if (imagePath.startsWith('/') ||
+                            imagePath.contains('file://')) {
+                          // This is a new File, save File, will upload on submit
+                          newImageFile = File(imagePath);
+                          newImageUrl = null; // Clear URL to trigger upload
+                        } else if (imagePath.startsWith('http')) {
+                          // This is existing URL, keep as is
+                          newImageUrl = imagePath;
+                          newImageFile = null;
+                        } else {
+                          // Local path without prefix
+                          newImageFile = File(imagePath);
+                          newImageUrl = null;
                         }
-
-                        final matchedCat = categories.firstWhere(
-                          (cat) => cat.categoryName == updated['category'],
-                        );
-
-                        setState(() {
-                          _scrapItems[index] = ScrapItemData(
-                            categoryId: matchedCat.scrapCategoryId,
-                            categoryName: matchedCat.categoryName,
-                            quantity: updated['quantity'],
-                            weight: updated['weight'],
-                            imageUrl: newImageUrl,
-                            imageFile: newImageFile,
-                          );
-                          // Mark this item as modified
-                          _modifiedItemIndices.add(index);
-                        });
                       }
-                    },
-                    onDelete: (item) {
-                      final index = _scrapItems.indexOf(item);
-                      if (index != -1) _handleDeleteItem(index);
-                    },
-                  ),
 
-                  SizedBox(height: spacing.screenPadding * 2),
+                      final matchedCat = categories.firstWhere(
+                        (cat) => cat.categoryName == updated['category'],
+                      );
 
-                  TakeAllSwitch(
-                    value: _isTakeAll,
-                    onChange: (val) => setState(() => _isTakeAll = val),
-                  ),
+                      setState(() {
+                        _scrapItems[index] = ScrapItemData(
+                          categoryId: matchedCat.scrapCategoryId,
+                          categoryName: matchedCat.categoryName,
+                          amountDescription: updated['amountDescription'] ?? '',
+                          imageUrl: newImageUrl,
+                          imageFile: newImageFile,
+                        );
+                        // Mark this item as modified
+                        _modifiedItemIndices.add(index);
+                      });
+                    }
+                  },
+                  onDelete: (item) {
+                    final index = _scrapItems.indexOf(item);
+                    if (index != -1) _handleDeleteItem(index);
+                  },
+                ),
 
-                  SizedBox(height: spacing.screenPadding),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          vertical: spacing.screenPadding,
-                        ),
-                        backgroundColor: AppColors.warningUpdate,
+                SizedBox(height: spacing.screenPadding * 2),
+
+                TakeAllSwitch(
+                  value: _isTakeAll,
+                  onChange: (val) => setState(() => _isTakeAll = val),
+                ),
+
+                SizedBox(height: spacing.screenPadding),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        vertical: spacing.screenPadding,
                       ),
-                      onPressed: _isSubmitting ? null : _handleUpdate,
-                      child: Text(
-                        "${S.of(context)!.update} ${S.of(context)!.post}",
-                      ),
+                      backgroundColor: AppColors.warningUpdate,
+                    ),
+                    onPressed: _isSubmitting ? null : _handleUpdate,
+                    child: Text(
+                      "${S.of(context)!.update} ${S.of(context)!.post}",
                     ),
                   ),
-                  SizedBox(height: spacing.screenPadding * 2),
+                ),
+                SizedBox(height: spacing.screenPadding * 2),
               ],
             ),
           ),

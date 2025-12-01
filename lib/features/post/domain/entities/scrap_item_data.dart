@@ -4,8 +4,7 @@ import 'dart:io';
 class ScrapItemData {
   final int categoryId;
   final String categoryName;
-  final int quantity;
-  final double weight;
+  final String amountDescription;
   
   final File? imageFile;
   
@@ -16,8 +15,7 @@ class ScrapItemData {
   const ScrapItemData({
     required this.categoryId,
     required this.categoryName,
-    required this.quantity,
-    required this.weight,
+    required this.amountDescription,
     this.imageFile,
     this.imageUrl,
     this.aiData,
@@ -35,8 +33,7 @@ class ScrapItemData {
   ScrapItemData copyWith({
     int? categoryId,
     String? categoryName,
-    int? quantity,
-    double? weight,
+    String? amountDescription,
     File? imageFile,
     String? imageUrl,
     Map<String, dynamic>? aiData,
@@ -44,8 +41,7 @@ class ScrapItemData {
     return ScrapItemData(
       categoryId: categoryId ?? this.categoryId,
       categoryName: categoryName ?? this.categoryName,
-      quantity: quantity ?? this.quantity,
-      weight: weight ?? this.weight,
+      amountDescription: amountDescription ?? this.amountDescription,
       imageFile: imageFile ?? this.imageFile,
       imageUrl: imageUrl ?? this.imageUrl,
       aiData: aiData ?? this.aiData,
@@ -56,8 +52,7 @@ class ScrapItemData {
     return {
       'categoryId': categoryId,
       'category': categoryName,
-      'quantity': quantity,
-      'weight': weight,
+      'amountDescription': amountDescription,
       'image': imageUrl ?? imageFile?.path ?? '',
       'aiData': aiData,
     };
@@ -66,7 +61,7 @@ class ScrapItemData {
   @override
   String toString() {
     return 'ScrapItemData(categoryId: $categoryId, categoryName: $categoryName, '
-           'quantity: $quantity, weight: $weight, '
+           'amountDescription: $amountDescription, '
            'hasFile: ${imageFile != null}, hasUrl: $hasUploadedImage)';
   }
 }

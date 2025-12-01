@@ -8,28 +8,23 @@ final List<NavConfig> navItemsHousehold = [
     routeName: '/household-home',
   ),
   const NavConfig(
-    icon: Icons.post_add,
-    label: "Posts",
-    routeName: '/collector-list-post',
-  ),
-  const NavConfig(
     icon: Icons.chat,
     label: "Complaints",
-    routeName: '/complaint-list',
+    routeName: '/household-complaint-list',
   ),
   const NavConfig(
     icon: Icons.receipt,
     label: "Transactions",
-    routeName: '/list-transactions',
+    routeName: '/household-list-transactions',
   ),
   const NavConfig(
     icon: Icons.feedback,
     label: "Feedbacks",
-    routeName: '/feedback-list',
+    routeName: '/household-feedback-list',
   ),
   const NavConfig(
     icon: Icons.settings,
     label: "Profile",
-    routeName: '/profile-settings',
+    routeName: '/household-profile-settings',
   ),
 ];

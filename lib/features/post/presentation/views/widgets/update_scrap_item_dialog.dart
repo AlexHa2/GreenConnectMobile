@@ -9,16 +9,14 @@ import 'package:image_picker/image_picker.dart';
 
 class UpdateScrapItemDialog extends StatefulWidget {
   final String? initialCategory;
-  final int? initialQuantity;
-  final double? initialWeight;
+  final String? initialAmountDescription;
   final String? initialImageUrl;
   final List<String> categories;
 
   const UpdateScrapItemDialog({
     super.key,
     this.initialCategory,
-    this.initialQuantity,
-    this.initialWeight,
+    this.initialAmountDescription,
     required this.categories,
     this.initialImageUrl,
   });
@@ -32,8 +30,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
   final ImagePicker _picker = ImagePicker();
 
   late String? _selectedCategory;
-  late TextEditingController _quantityController;
-  late TextEditingController _weightController;
+  late TextEditingController _amountDescriptionController;
 
   // Logic: Separate old image (URL) and new image (File)
   String? _currentImageUrl;
@@ -43,11 +40,8 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
   void initState() {
     super.initState();
     _selectedCategory = widget.initialCategory;
-    _quantityController = TextEditingController(
-      text: widget.initialQuantity?.toString() ?? "1",
-    );
-    _weightController = TextEditingController(
-      text: widget.initialWeight?.toString() ?? "1.0",
+    _amountDescriptionController = TextEditingController(
+      text: widget.initialAmountDescription ?? '',
     );
     _currentImageUrl = widget.initialImageUrl;
   }
@@ -140,31 +134,33 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                       val == null ? S.of(context)!.error_required : null,
                 ),
 
-                SizedBox(height: spacing.screenPadding),
+                SizedBox(height: spacing.screenPadding * 1.5),
 
-                // Quantity & Weight Row
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildNumberInput(
-                        context,
-                        S.of(context)!.quantity,
-                        _quantityController,
-                        "10",
-                      ),
+                // Amount Description
+                _buildLabel(context, S.of(context)!.amount_description),
+                SizedBox(height: spacing.screenPadding / 2),
+                TextFormField(
+                  controller: _amountDescriptionController,
+                  decoration: InputDecoration(
+                    hintText: S.of(context)!.amount_description_hint,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
                     ),
-                    SizedBox(width: spacing.screenPadding),
-                    Expanded(
-                      child: _buildNumberInput(
-                        context,
-                        S.of(context)!.weight,
-                        _weightController,
-                        "1.0",
-                        isDouble: true,
-                        suffixText: "kg",
-                      ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ],
+                  ),
+                  maxLines: 2,
+                  validator: (val) {
+                    if (val == null || val.trim().isEmpty) {
+                      return S.of(context)!.please_enter_description;
+                    }
+                    if (val.trim().length < 5) {
+                      return S.of(context)!.description_too_short;
+                    }
+                    return null;
+                  },
                 ),
 
                 SizedBox(height: spacing.screenPadding * 1.5),
@@ -219,8 +215,8 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
 
                           Navigator.pop(context, {
                             "category": _selectedCategory,
-                            "quantity": int.parse(_quantityController.text),
-                            "weight": double.parse(_weightController.text),
+                            "amountDescription":
+                                _amountDescriptionController.text.trim(),
                             "image": imageResult,
                           });
                         }
@@ -396,49 +392,4 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
     );
   }
 
-  Widget _buildNumberInput(
-    BuildContext context,
-    String label,
-    TextEditingController controller,
-    String hint, {
-    bool isDouble = false,
-    String? suffixText,
-  }) {
-    final spacing = Theme.of(context).extension<AppSpacing>()!;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildLabel(context, label),
-        SizedBox(height: spacing.screenPadding / 2),
-        TextFormField(
-          controller: controller,
-          textAlign: TextAlign.center,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(
-            hintText: hint,
-            suffixText: suffixText,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 14,
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-          ),
-          validator: (val) {
-            if (val == null || val.isEmpty) {
-              return S.of(context)!.error_required;
-            }
-            if (isDouble) {
-              return double.tryParse(val) == null
-                  ? S.of(context)!.error_all_field
-                  : null;
-            } else {
-              return int.tryParse(val) == null
-                  ? S.of(context)!.error_all_field
-                  : null;
-            }
-          },
-        ),
-      ],
-    );
-  }
 }
