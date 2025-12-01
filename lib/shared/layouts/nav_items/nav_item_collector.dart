@@ -13,6 +13,11 @@ final List<NavConfig> navItemsCollector = [
     routeName: '/collector-list-post',
   ),
   const NavConfig(
+    icon: Icons.schedule,
+    label: "Schedules",
+    routeName: '/collector-schedule-list',
+  ),
+  const NavConfig(
     icon: Icons.chat,
     label: "Complaints",
     routeName: '/collector-complaint-list',
