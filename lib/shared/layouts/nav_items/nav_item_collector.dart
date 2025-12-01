@@ -8,23 +8,28 @@ final List<NavConfig> navItemsCollector = [
     routeName: '/collector-home',
   ),
   const NavConfig(
+    icon: Icons.recycling,
+    label: "Posts",
+    routeName: '/collector-list-post',
+  ),
+  const NavConfig(
     icon: Icons.chat,
     label: "Complaints",
-    routeName: '/collector-list-post',
+    routeName: '/collector-complaint-list',
   ),
   const NavConfig(
     icon: Icons.receipt,
     label: "Transactions",
-    routeName: '/list-transactions',
+    routeName: '/collector-list-transactions',
   ),
    const NavConfig(
     icon: Icons.feedback,
     label: "Feedbacks",
-    routeName: '/feedback-list',
+    routeName: '/collector-feedback-list',
   ),
   const NavConfig(
     icon: Icons.settings,
     label: "Profile",
-    routeName: '/profile-settings',
+    routeName: '/collector-profile-settings',
   ),
 ];

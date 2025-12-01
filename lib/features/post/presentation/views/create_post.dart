@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:GreenConnectMobile/core/helper/get_location_from_address.dart';
 import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/location_entity.dart';
@@ -44,12 +43,8 @@ class _CreateRecyclingPostPageState
   final TextEditingController _pickupAddressController =
       TextEditingController();
   final TextEditingController _pickupTimeController = TextEditingController();
-  final TextEditingController _quantityController = TextEditingController(
-    text: "1",
-  );
-  final TextEditingController _weightController = TextEditingController(
-    text: "1",
-  );
+  final TextEditingController _amountDescriptionController =
+      TextEditingController();
 
   LocationEntity? _location;
   bool _addressFound = false;
@@ -67,6 +62,7 @@ class _CreateRecyclingPostPageState
   bool _isAnalyzingImage = false;
   String? _recognizedImageUrl;
   Map<String, dynamic>? _aiRecognitionData;
+  String? _aiSuggestedDescription;
 
   @override
   void initState() {
@@ -120,27 +116,15 @@ class _CreateRecyclingPostPageState
               aiCategoryLower.contains(categoryLower);
         }).firstOrNull;
 
-        int recognizedQuantity = 1;
-        double recognizedWeight = 1.0;
-
-        // Parse estimated amount if available
+        // Generate AI suggested description from estimatedAmount and advice
+        String? suggestedDesc;
         if (aiResponse.estimatedAmount.isNotEmpty) {
-          final amountStr = aiResponse.estimatedAmount.toLowerCase();
-          final quantityMatch = RegExp(
-            r'(\d+)\s*(?:pcs|pieces|items)',
-          ).firstMatch(amountStr);
-          final weightMatch = RegExp(
-            r'(\d+\.?\d*)\s*(?:kg|kilograms)',
-          ).firstMatch(amountStr);
-
-          if (quantityMatch != null) {
-            recognizedQuantity =
-                int.tryParse(quantityMatch.group(1) ?? '1') ?? 1;
+          suggestedDesc = aiResponse.estimatedAmount;
+          if (aiResponse.advice.isNotEmpty) {
+            suggestedDesc += '. ${aiResponse.advice}';
           }
-          if (weightMatch != null) {
-            recognizedWeight =
-                double.tryParse(weightMatch.group(1) ?? '1.0') ?? 1.0;
-          }
+        } else if (aiResponse.advice.isNotEmpty) {
+          suggestedDesc = aiResponse.advice;
         }
 
         setState(() {
@@ -155,16 +139,13 @@ class _CreateRecyclingPostPageState
             'confidence': aiResponse.confidence,
             'estimatedAmount': aiResponse.estimatedAmount,
             'advice': aiResponse.advice,
-            'quantity': recognizedQuantity,
-            'weight': recognizedWeight,
           };
+          _aiSuggestedDescription = suggestedDesc;
 
           // Auto-fill fields
           if (matchedCategory != null) {
             _selectedCategoryId = matchedCategory.scrapCategoryId;
           }
-          _quantityController.text = recognizedQuantity.toString();
-          _weightController.text = recognizedWeight.toString();
         });
 
         // Show AI results dialog
@@ -255,8 +236,7 @@ class _CreateRecyclingPostPageState
         ScrapItemData(
           categoryId: _selectedCategoryId!,
           categoryName: categoryName,
-          quantity: int.parse(_quantityController.text),
-          weight: double.parse(_weightController.text),
+          amountDescription: _amountDescriptionController.text.trim(),
           // If URL from AI exists, use URL; otherwise use File (will upload later)
           imageUrl: _recognizedImageUrl,
           imageFile: _recognizedImageUrl == null ? _selectedImage : null,
@@ -266,11 +246,11 @@ class _CreateRecyclingPostPageState
 
       // Reset form
       _selectedCategoryId = null;
-      _quantityController.text = "1";
-      _weightController.text = "1";
+      _amountDescriptionController.clear();
       _selectedImage = null;
       _recognizedImageUrl = null;
       _aiRecognitionData = null;
+      _aiSuggestedDescription = null;
       _isAnalyzingImage = false;
       _itemFormKey.currentState!.reset();
     });
@@ -352,8 +332,6 @@ class _CreateRecyclingPostPageState
     _descriptionController.clear();
     _pickupAddressController.clear();
     _pickupTimeController.clear();
-    _quantityController.text = "1";
-    _weightController.text = "1";
 
     setState(() {
       _scrapItems.clear();
@@ -436,8 +414,8 @@ class _CreateRecyclingPostPageState
                   itemFormKey: _itemFormKey,
                   selectedCategoryId: _selectedCategoryId,
                   categories: categories,
-                  quantityController: _quantityController,
-                  weightController: _weightController,
+                  amountDescriptionController: _amountDescriptionController,
+                  aiSuggestedDescription: _aiSuggestedDescription,
                   image: _selectedImage,
                   recognizedImageUrl: _recognizedImageUrl,
                   onPickImage: _pickImage,
@@ -460,8 +438,7 @@ class _CreateRecyclingPostPageState
                             .map((e) => e.categoryName)
                             .toList(),
                         initialCategory: itemData.categoryName,
-                        initialQuantity: itemData.quantity,
-                        initialWeight: itemData.weight,
+                        initialAmountDescription: itemData.amountDescription,
                         initialImageUrl: itemData.displayPath,
                       ),
                     );
@@ -499,8 +476,7 @@ class _CreateRecyclingPostPageState
                         _scrapItems[index] = ScrapItemData(
                           categoryId: matchedCat.scrapCategoryId,
                           categoryName: matchedCat.categoryName,
-                          quantity: updated['quantity'],
-                          weight: updated['weight'],
+                          amountDescription: updated['amountDescription'] ?? '',
                           imageUrl: newImageUrl,
                           imageFile: newImageFile,
                         );
@@ -582,8 +558,7 @@ class _CreateRecyclingPostPageState
                                   .map(
                                     (item) => ScrapPostDetailEntity(
                                       scrapCategoryId: item.categoryId,
-                                      amountDescription:
-                                          "${item.quantity} pcs - ${item.weight.toStringAsFixed(1)} kg",
+                                      amountDescription: item.amountDescription,
                                       imageUrl:
                                           item.imageUrl ??
                                           "https://media.vietnamplus.vn/images/fbc23bef0d088b23a8965bce49f85a61cd286afccaf9606b44256f5d7ef5d5fefff6aa780c9464f6499f791f5dd6f3de1d175058d9a59d4e21100ddb41c54c45/ngaymoitruong_12.jpg",

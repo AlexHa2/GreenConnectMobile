@@ -61,25 +61,25 @@ class ScrapItemList extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(height: spacing.screenPadding / 2),
-                        Wrap(
-                          spacing: spacing.screenPadding,
-                          children: [
-                            _buildInfoTag(
-                              context,
-                              icon: Icons.scale,
-                              text: "${item.weight} kg",
-                              color: Colors.blue.shade700,
-                              bgColor: Colors.blue.shade50,
-                            ),
-                            _buildInfoTag(
-                              context,
-                              icon: Icons.inventory_2,
-                              text: "SL: ${item.quantity}",
-                              color: Colors.orange.shade800,
-                              bgColor: Colors.orange.shade50,
-                            ),
-                          ],
-                        ),
+                        // Wrap(
+                        //   spacing: spacing.screenPadding,
+                        //   children: [
+                        //     _buildInfoTag(
+                        //       context,
+                        //       icon: Icons.scale,
+                        //       text: "${item.weight} kg",
+                        //       color: Colors.blue.shade700,
+                        //       bgColor: Colors.blue.shade50,
+                        //     ),
+                        //     _buildInfoTag(
+                        //       context,
+                        //       icon: Icons.inventory_2,
+                        //       text: "SL: ${item.quantity}",
+                        //       color: Colors.orange.shade800,
+                        //       bgColor: Colors.orange.shade50,
+                        //     ),
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),
@@ -169,34 +169,34 @@ class ScrapItemList extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoTag(
-    BuildContext context, {
-    required IconData icon,
-    required String text,
-    required Color color,
-    required Color bgColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: color),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: color,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildInfoTag(
+  //   BuildContext context, {
+  //   required IconData icon,
+  //   required String text,
+  //   required Color color,
+  //   required Color bgColor,
+  // }) {
+  //   return Container(
+  //     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+  //     decoration: BoxDecoration(
+  //       color: bgColor,
+  //       borderRadius: BorderRadius.circular(4),
+  //     ),
+  //     child: Row(
+  //       mainAxisSize: MainAxisSize.min,
+  //       children: [
+  //         Icon(icon, size: 12, color: color),
+  //         const SizedBox(width: 4),
+  //         Text(
+  //           text,
+  //           style: TextStyle(
+  //             fontSize: 12,
+  //             fontWeight: FontWeight.w500,
+  //             color: color,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

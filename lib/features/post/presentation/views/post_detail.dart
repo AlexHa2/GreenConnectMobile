@@ -1,6 +1,7 @@
 import 'package:GreenConnectMobile/core/enum/post_status.dart';
 import 'package:GreenConnectMobile/core/helper/post_status_helper.dart';
 import 'package:GreenConnectMobile/core/helper/time_ago_helper.dart';
+import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/create_offer_bottom_sheet.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/delete_post_dialog.dart';
@@ -107,14 +108,19 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
     final mustTakeAll = hasEntity
         ? entity.mustTakeAll
         : (widget.initialData['mustTakeAll'] ?? false);
+    final isCollectorView = widget.initialData['isCollectorView'] == true;
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(onPressed: () => context.push('/list-post')),
+        leading: BackButton(
+          onPressed: () =>
+              isCollectorView ? context.pop() : context.push('/list-post'),
+        ),
         title: Text(s.detail),
         centerTitle: true,
         actions: [
-          if (PostStatus.parseStatus(status) == PostStatus.open)
+          if (!isCollectorView &&
+              PostStatus.parseStatus(status) == PostStatus.open)
             IconButton(
               icon: const Icon(Icons.edit_rounded),
               onPressed: () {
@@ -135,7 +141,8 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
               },
             ),
 
-          if (PostStatus.parseStatus(status) == PostStatus.open)
+          if (!isCollectorView &&
+              PostStatus.parseStatus(status) == PostStatus.open)
             IconButton(
               icon: const Icon(Icons.delete_outline, color: AppColors.danger),
               onPressed: () {
@@ -299,8 +306,9 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
             // ---------------------------------------------------------
             SizedBox(height: spacing.screenPadding),
 
-            if (status.toString().toLowerCase() == 'partiallybooked' ||
-                status.toString().toLowerCase() == 'fullybooked') ...[
+            if (!isCollectorView &&
+                (status.toString().toLowerCase() == 'partiallybooked' ||
+                    status.toString().toLowerCase() == 'fullybooked')) ...[
               GradientButton(
                 onPressed: () {
                   context.push(
@@ -333,44 +341,71 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
                   padding: EdgeInsets.only(bottom: spacing.screenPadding / 2),
                   child: PostItemNoAction(
                     context: context,
-                    category: detail.scrapCategory?.categoryName ?? 'Unknown',
+                    category: detail.scrapCategory?.categoryName ?? s.unknown,
                     packageInformation: detail.amountDescription,
                     imageUrl: detail.imageUrl,
                   ),
                 );
               })
             else
-              ...(widget.initialData['scrapItems'] as List<dynamic>? ?? []).map((
-                item,
-              ) {
-                final map = item as Map<String, dynamic>;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: PostItemNoAction(
-                    context: context,
-                    category: map['category'] ?? '',
-                    packageInformation:
-                        '${s.quantity}: ${map['quantity']}, ${s.weight}: ${map['weight']}kg',
-                    imageUrl: map['imageUrl'] ?? '',
-                  ),
-                );
-              }),
+              ...(widget.initialData['scrapItems'] as List<dynamic>? ?? []).map(
+                (item) {
+                  final map = item as Map<String, dynamic>;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: PostItemNoAction(
+                      context: context,
+                      category: map['category'] ?? '',
+                      packageInformation: map['amountDescription'] ?? '',
+                      imageUrl: map['imageUrl'] ?? '',
+                    ),
+                  );
+                },
+              ),
 
             SizedBox(height: spacing.screenPadding * 4),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: theme.primaryColor,
-        shape: const CircleBorder(),
-        elevation: 4,
-        onPressed: () {},
-        child: Icon(
-          Icons.message_rounded,
-          color: theme.scaffoldBackgroundColor,
-          size: 24,
-        ),
-      ),
+      floatingActionButton: isCollectorView && hasEntity
+          ? FloatingActionButton.extended(
+              backgroundColor: theme.primaryColor,
+              elevation: 4,
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: CreateOfferBottomSheet(post: entity),
+                  ),
+                ).then((result) {
+                  if (result == true && context.mounted) {
+                    // Offer created successfully
+                    CustomToast.show(
+                      context,
+                      s.offer_created_successfully,
+                      type: ToastType.success,
+                    );
+                  }
+                });
+              },
+              icon: Icon(
+                Icons.local_offer_rounded,
+                color: theme.scaffoldBackgroundColor,
+              ),
+              label: Text(
+                s.create_offer,
+                style: TextStyle(
+                  color: theme.scaffoldBackgroundColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
+          : null,
     );
   }
 }

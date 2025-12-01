@@ -631,6 +631,78 @@ abstract class S {
   /// **'1'**
   String get weight_hint;
 
+  /// No description provided for @amount_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount Description'**
+  String get amount_description;
+
+  /// No description provided for @amount_description_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g., 5kg of newspapers, 20 bottles, 3 bags of plastic'**
+  String get amount_description_hint;
+
+  /// No description provided for @amount_description_helper.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe quantity, weight, or packaging details'**
+  String get amount_description_helper;
+
+  /// No description provided for @ai_suggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Suggestion'**
+  String get ai_suggestion;
+
+  /// No description provided for @reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get reject;
+
+  /// No description provided for @quick_templates.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick templates:'**
+  String get quick_templates;
+
+  /// No description provided for @template_small_bag.
+  ///
+  /// In en, this message translates to:
+  /// **'Small bag (~2kg)'**
+  String get template_small_bag;
+
+  /// No description provided for @template_medium_box.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium box (~5kg)'**
+  String get template_medium_box;
+
+  /// No description provided for @template_large_bundle.
+  ///
+  /// In en, this message translates to:
+  /// **'Large bundle (~10kg)'**
+  String get template_large_bundle;
+
+  /// No description provided for @template_multiple_items.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple items'**
+  String get template_multiple_items;
+
+  /// No description provided for @please_enter_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter amount description'**
+  String get please_enter_description;
+
+  /// No description provided for @description_too_short.
+  ///
+  /// In en, this message translates to:
+  /// **'Description is too short (minimum 5 characters)'**
+  String get description_too_short;
+
   /// No description provided for @scrap_item.
   ///
   /// In en, this message translates to:
@@ -661,11 +733,11 @@ abstract class S {
   /// **'Why are you deleting this post?'**
   String get delete_hint;
 
-  /// No description provided for @search_by_name.
+  /// No description provided for @search_by_name_trash.
   ///
   /// In en, this message translates to:
-  /// **'search by name'**
-  String get search_by_name;
+  /// **'search by name of trash'**
+  String get search_by_name_trash;
 
   /// No description provided for @all.
   ///
@@ -2155,6 +2227,78 @@ abstract class S {
   /// **'Failed to create offer'**
   String get failed_to_create_offer;
 
+  /// No description provided for @please_select_at_least_one_item.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one item'**
+  String get please_select_at_least_one_item;
+
+  /// No description provided for @please_select_proposed_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select proposed time'**
+  String get please_select_proposed_time;
+
+  /// No description provided for @must_take_all_items.
+  ///
+  /// In en, this message translates to:
+  /// **'You must take all items in this post'**
+  String get must_take_all_items;
+
+  /// No description provided for @select_items.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Items'**
+  String get select_items;
+
+  /// No description provided for @message_optional.
+  ///
+  /// In en, this message translates to:
+  /// **'Message (Optional)'**
+  String get message_optional;
+
+  /// No description provided for @enter_your_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your message here...'**
+  String get enter_your_message;
+
+  /// No description provided for @price_per_unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Price per Unit'**
+  String get price_per_unit;
+
+  /// No description provided for @please_enter_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter price'**
+  String get please_enter_price;
+
+  /// No description provided for @unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get unit;
+
+  /// No description provided for @select_date_and_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date and time'**
+  String get select_date_and_time;
+
+  /// No description provided for @creating.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating...'**
+  String get creating;
+
+  /// No description provided for @make_an_offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Make an Offer'**
+  String get make_an_offer;
+
   /// No description provided for @available_posts.
   ///
   /// In en, this message translates to:
@@ -2701,12 +2845,6 @@ abstract class S {
   /// **'Scrap Type'**
   String get scrap_type;
 
-  /// No description provided for @price_per_unit.
-  ///
-  /// In en, this message translates to:
-  /// **'Price per Unit'**
-  String get price_per_unit;
-
   /// No description provided for @total_price.
   ///
   /// In en, this message translates to:
@@ -2994,12 +3132,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Approve'**
   String get approve;
-
-  /// No description provided for @reject.
-  ///
-  /// In en, this message translates to:
-  /// **'Reject'**
-  String get reject;
 
   /// No description provided for @rewards.
   ///
@@ -3534,6 +3666,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Sort by Date'**
   String get sort_by_date;
+
+  /// No description provided for @sort_by_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by location'**
+  String get sort_by_location;
 
   /// No description provided for @sort_ascending.
   ///
