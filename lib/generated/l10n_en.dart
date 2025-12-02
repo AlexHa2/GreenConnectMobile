@@ -94,6 +94,12 @@ class SEn extends S {
   String get cancel => 'Cancel';
 
   @override
+  String get pricing_updated_successfully => 'Pricing updated successfully';
+
+  @override
+  String get pricing_deleted_successfully => 'Pricing deleted successfully';
+
+  @override
   String get error_occurred => 'An error occurred';
 
   @override
@@ -1112,6 +1118,19 @@ class SEn extends S {
   String get invalid_price => 'Invalid price';
 
   @override
+  String get update_pricing => 'Update Pricing';
+
+  @override
+  String get confirm_delete => 'Confirm Delete';
+
+  @override
+  String get are_you_sure_delete_pricing =>
+      'Are you sure you want to delete this pricing item?';
+
+  @override
+  String get unit_is_required => 'Unit is required';
+
+  @override
   String get submit_offer => 'Submit Offer';
 
   @override
@@ -1138,6 +1157,9 @@ class SEn extends S {
 
   @override
   String get enter_your_message => 'Enter your message here...';
+
+  @override
+  String get message_is_required => 'Message is required';
 
   @override
   String get price_per_unit => 'Price per Unit';
@@ -1445,6 +1467,17 @@ class SEn extends S {
 
   @override
   String get total_price => 'Total Price';
+
+  @override
+  String get your_offer_price => 'Your Offer Price';
+
+  @override
+  String get enter_total_price_for_this_item =>
+      'Enter total price for this item';
+
+  @override
+  String get price_must_be_greater_than_zero =>
+      'Price must be greater than zero';
 
   @override
   String get provided_by => 'Provided by';
@@ -2015,4 +2048,22 @@ class SEn extends S {
 
   @override
   String get new_image => 'New image';
+
+  @override
+  String get g => 'g';
+
+  @override
+  String get ton => 'ton';
+
+  @override
+  String get piece => 'piece';
+
+  @override
+  String get offers => 'Offers';
+
+  @override
+  String get failed_to_delete_pricing => 'failed to delete pricing';
+
+  @override
+  String get failed_to_update_pricing => 'failed to update pricing';
 }

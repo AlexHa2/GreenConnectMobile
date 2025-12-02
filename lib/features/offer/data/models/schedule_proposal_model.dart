@@ -33,9 +33,9 @@ class ScheduleProposalModel {
     return {
       'scheduleProposalId': scheduleProposalId,
       'collectionOfferId': collectionOfferId,
-      'proposedTime': proposedTime.toIso8601String(),
+      'proposedTime': proposedTime.toUtc().toIso8601String(),
       'status': status.toJson(),
-      'createdAt': createdAt.toIso8601String(),
+      'createdAt': createdAt.toUtc().toIso8601String(),
       'responseMessage': responseMessage,
     };
   }

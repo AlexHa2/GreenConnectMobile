@@ -74,7 +74,7 @@ class ScheduleProposalRequestModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'proposedTime': proposedTime.toIso8601String(),
+      'proposedTime': proposedTime.toUtc().toIso8601String(),
       'responseMessage': responseMessage,
     };
   }

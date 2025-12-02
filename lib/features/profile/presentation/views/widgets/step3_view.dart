@@ -63,7 +63,7 @@ class ProfileSetupStep3View extends StatelessWidget {
               child: Column(
                 children: [
                   _infoRow("${S.of(context)!.fullName}:", fullName, theme),
-                  _infoRow("${S.of(context)!.gender}:", gender, theme),
+                  _infoRow("${S.of(context)!.gender}:", gender == "Male" ? S.of(context)!.male : S.of(context)!.female, theme),
                   _infoRow(
                     "${S.of(context)!.date_of_birth}:",
                     "${dob.year}-${dob.month}-${dob.day}",

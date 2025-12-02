@@ -153,9 +153,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
           ],
         ),
         child: SafeArea(
-          child: buttons.length == 1
-              ? buttons.first
-              : Row(children: buttons),
+          child: buttons.length == 1 ? buttons.first : Row(children: buttons),
         ),
       );
     }
@@ -197,7 +195,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
     }
 
     // No action buttons to show
-    return const SizedBox.shrink();
+    // return const SizedBox.shrink();
 
     return Container(
       padding: EdgeInsets.all(spacing),
@@ -262,10 +260,7 @@ class _RejectButton extends ConsumerWidget {
       // Call API to cancel transaction
       await ref
           .read(transactionViewModelProvider.notifier)
-          .processTransaction(
-        transactionId: transactionId,
-        isAccepted: false,
-      );
+          .processTransaction(transactionId: transactionId, isAccepted: false);
 
       if (context.mounted) {
         CustomToast.show(
@@ -277,11 +272,7 @@ class _RejectButton extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        CustomToast.show(
-          context,
-          s.operation_failed,
-          type: ToastType.error,
-        );
+        CustomToast.show(context, s.operation_failed, type: ToastType.error);
       }
     }
   }
@@ -298,9 +289,7 @@ class _RejectButton extends ConsumerWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.danger,
         padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         disabledBackgroundColor: AppColors.danger.withValues(alpha: 0.6),
       ),
       child: isProcessing
@@ -337,15 +326,14 @@ class _CheckInButton extends ConsumerWidget {
 
   Future<void> _handleCheckIn(BuildContext context, WidgetRef ref) async {
     final s = S.of(context)!;
-    final theme = Theme.of(context);
-    final spacing = theme.extension<AppSpacing>()!.screenPadding;
+    // final theme = Theme.of(context);
+    // final spacing = theme.extension<AppSpacing>()!.screenPadding;
 
     // Show check-in dialog with GPS location
     final result = await showDialog<Map<String, double>?>(
       context: context,
-      builder: (context) => _CheckInLocationDialog(
-        transactionId: transaction.transactionId,
-      ),
+      builder: (context) =>
+          _CheckInLocationDialog(transactionId: transaction.transactionId),
     );
 
     if (result == null || !context.mounted) return;
@@ -354,10 +342,10 @@ class _CheckInButton extends ConsumerWidget {
       final success = await ref
           .read(transactionViewModelProvider.notifier)
           .checkInTransaction(
-        transactionId: transaction.transactionId,
-        latitude: result['latitude']!,
-        longitude: result['longitude']!,
-      );
+            transactionId: transaction.transactionId,
+            latitude: result['latitude']!,
+            longitude: result['longitude']!,
+          );
 
       if (context.mounted) {
         if (success) {
@@ -370,11 +358,11 @@ class _CheckInButton extends ConsumerWidget {
         } else {
           final state = ref.read(transactionViewModelProvider);
           final errorMsg = state.errorMessage;
-          
-          if (errorMsg != null && 
-              (errorMsg.contains('khoảng cách') || 
-               errorMsg.contains('distance') ||
-               errorMsg.contains('quá xa'))) {
+
+          if (errorMsg != null &&
+              (errorMsg.contains('khoảng cách') ||
+                  errorMsg.contains('distance') ||
+                  errorMsg.contains('quá xa'))) {
             CustomToast.show(
               context,
               'Khoảng cách quá xa. Vui lòng đến gần điểm thu gom hơn (trong vòng 100m).',
@@ -391,11 +379,7 @@ class _CheckInButton extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        CustomToast.show(
-          context,
-          s.operation_failed,
-          type: ToastType.error,
-        );
+        CustomToast.show(context, s.operation_failed, type: ToastType.error);
       }
     }
   }
@@ -429,9 +413,7 @@ class _CheckInButton extends ConsumerWidget {
         backgroundColor: theme.primaryColor,
         foregroundColor: theme.scaffoldBackgroundColor,
         padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         disabledBackgroundColor: theme.primaryColor.withValues(alpha: 0.6),
       ),
     );
@@ -442,9 +424,7 @@ class _CheckInButton extends ConsumerWidget {
 class _CheckInLocationDialog extends StatefulWidget {
   final String transactionId;
 
-  const _CheckInLocationDialog({
-    required this.transactionId,
-  });
+  const _CheckInLocationDialog({required this.transactionId});
 
   @override
   State<_CheckInLocationDialog> createState() => _CheckInLocationDialogState();
@@ -466,11 +446,11 @@ class _CheckInLocationDialogState extends State<_CheckInLocationDialog> {
       // Use platform channel to get location
       // This is a simple implementation - in production, use geolocator package
       // For now, we'll use a basic approach
-      
+
       // Try to get location using platform channels
       // Note: This requires location permissions in AndroidManifest.xml and Info.plist
       final location = await _getLocationFromPlatform();
-      
+
       if (location != null) {
         setState(() {
           _isLoading = false;
@@ -480,7 +460,8 @@ class _CheckInLocationDialogState extends State<_CheckInLocationDialog> {
       } else {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Không thể lấy vị trí. Vui lòng bật GPS và cấp quyền vị trí.';
+          _errorMessage =
+              'Không thể lấy vị trí. Vui lòng bật GPS và cấp quyền vị trí.';
         });
       }
     } catch (e) {
@@ -505,7 +486,7 @@ class _CheckInLocationDialogState extends State<_CheckInLocationDialog> {
       //     'latitude': position.latitude,
       //     'longitude': position.longitude,
       //   };
-      
+
       // For now, return null to show error message
       // User needs to install geolocator package for GPS functionality
       return null;
@@ -604,10 +585,10 @@ class _CheckInLocationDialogState extends State<_CheckInLocationDialog> {
         ),
         ElevatedButton(
           onPressed: (_latitude != null && _longitude != null && !_isLoading)
-              ? () => Navigator.pop(
-                    context,
-                    {'latitude': _latitude, 'longitude': _longitude},
-                  )
+              ? () => Navigator.pop(context, {
+                  'latitude': _latitude,
+                  'longitude': _longitude,
+                })
               : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: theme.primaryColor,
@@ -636,9 +617,7 @@ class _InputDetailsButton extends ConsumerWidget {
     // Show input details dialog
     final result = await showDialog<List<Map<String, dynamic>>?>(
       context: context,
-      builder: (context) => _InputScrapQuantityDialog(
-        transaction: transaction,
-      ),
+      builder: (context) => _InputScrapQuantityDialog(transaction: transaction),
     );
 
     if (result == null || result.isEmpty || !context.mounted) return;
@@ -657,9 +636,9 @@ class _InputDetailsButton extends ConsumerWidget {
       final success = await ref
           .read(transactionViewModelProvider.notifier)
           .updateTransactionDetails(
-        transactionId: transaction.transactionId,
-        details: details,
-      );
+            transactionId: transaction.transactionId,
+            details: details,
+          );
 
       if (context.mounted) {
         if (success) {
@@ -701,11 +680,7 @@ class _InputDetailsButton extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        CustomToast.show(
-          context,
-          s.operation_failed,
-          type: ToastType.error,
-        );
+        CustomToast.show(context, s.operation_failed, type: ToastType.error);
       }
     }
   }
@@ -739,9 +714,7 @@ class _InputDetailsButton extends ConsumerWidget {
         backgroundColor: theme.primaryColor,
         foregroundColor: theme.scaffoldBackgroundColor,
         padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         disabledBackgroundColor: theme.primaryColor.withValues(alpha: 0.6),
       ),
     );
@@ -752,9 +725,7 @@ class _InputDetailsButton extends ConsumerWidget {
 class _InputScrapQuantityDialog extends StatefulWidget {
   final TransactionEntity transaction;
 
-  const _InputScrapQuantityDialog({
-    required this.transaction,
-  });
+  const _InputScrapQuantityDialog({required this.transaction});
 
   @override
   State<_InputScrapQuantityDialog> createState() =>
@@ -903,9 +874,7 @@ class _InputScrapQuantityDialogState extends State<_InputScrapQuantityDialog> {
                     decoration: BoxDecoration(
                       color: theme.scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(spacing / 2),
-                      border: Border.all(
-                        color: theme.dividerColor,
-                      ),
+                      border: Border.all(color: theme.dividerColor),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -949,8 +918,9 @@ class _InputScrapQuantityDialogState extends State<_InputScrapQuantityDialog> {
                             filled: true,
                             fillColor: theme.cardColor,
                           ),
-                          keyboardType:
-                              const TextInputType.numberWithOptions(decimal: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Vui lòng nhập số lượng';
@@ -1040,10 +1010,7 @@ class _ApproveButton extends ConsumerWidget {
       // Call API to complete transaction
       await ref
           .read(transactionViewModelProvider.notifier)
-          .processTransaction(
-        transactionId: transactionId,
-        isAccepted: true,
-      );
+          .processTransaction(transactionId: transactionId, isAccepted: true);
 
       if (context.mounted) {
         CustomToast.show(
@@ -1055,11 +1022,7 @@ class _ApproveButton extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        CustomToast.show(
-          context,
-          s.operation_failed,
-          type: ToastType.error,
-        );
+        CustomToast.show(context, s.operation_failed, type: ToastType.error);
       }
     }
   }
@@ -1076,9 +1039,7 @@ class _ApproveButton extends ConsumerWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: theme.primaryColor,
         padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         disabledBackgroundColor: theme.primaryColor.withValues(alpha: 0.6),
       ),
       child: isProcessing
@@ -1153,11 +1114,7 @@ class _ToggleCancelButton extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              isCanceled
-                  ? s.resume_message
-                  : s.emergency_cancel_message,
-            ),
+            Text(isCanceled ? s.resume_message : s.emergency_cancel_message),
             if (!isCanceled) ...[
               SizedBox(height: spacing),
               Container(
@@ -1202,8 +1159,9 @@ class _ToggleCancelButton extends ConsumerWidget {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  isCanceled ? AppColors.warningUpdate : AppColors.danger,
+              backgroundColor: isCanceled
+                  ? AppColors.warningUpdate
+                  : AppColors.danger,
               foregroundColor: Colors.white,
             ),
             child: Text(isCanceled ? s.resume : s.emergency_cancel),
@@ -1230,20 +1188,12 @@ class _ToggleCancelButton extends ConsumerWidget {
           );
           onActionCompleted();
         } else {
-          CustomToast.show(
-            context,
-            s.operation_failed,
-            type: ToastType.error,
-          );
+          CustomToast.show(context, s.operation_failed, type: ToastType.error);
         }
       }
     } catch (e) {
       if (context.mounted) {
-        CustomToast.show(
-          context,
-          s.operation_failed,
-          type: ToastType.error,
-        );
+        CustomToast.show(context, s.operation_failed, type: ToastType.error);
       }
     }
   }
@@ -1270,9 +1220,7 @@ class _ToggleCancelButton extends ConsumerWidget {
                 ),
               ),
             )
-          : Icon(
-              isCanceled ? Icons.restart_alt : Icons.warning_amber_rounded,
-            ),
+          : Icon(isCanceled ? Icons.restart_alt : Icons.warning_amber_rounded),
       label: Text(
         isCanceled ? s.resume_transaction : s.emergency_cancel,
         style: const TextStyle(fontWeight: FontWeight.w600),
@@ -1283,13 +1231,15 @@ class _ToggleCancelButton extends ConsumerWidget {
           color: isCanceled ? AppColors.warningUpdate : AppColors.danger,
           width: 2,
         ),
-        foregroundColor:
-            isCanceled ? AppColors.warningUpdate : AppColors.danger,
+        foregroundColor: isCanceled
+            ? AppColors.warningUpdate
+            : AppColors.danger,
         backgroundColor: isCanceled
             ? AppColors.warningUpdate.withValues(alpha: 0.05)
             : AppColors.danger.withValues(alpha: 0.05),
-        disabledForegroundColor:
-            isCanceled ? AppColors.warningUpdate : AppColors.danger,
+        disabledForegroundColor: isCanceled
+            ? AppColors.warningUpdate
+            : AppColors.danger,
         disabledBackgroundColor: isCanceled
             ? AppColors.warningUpdate.withValues(alpha: 0.05)
             : AppColors.danger.withValues(alpha: 0.05),

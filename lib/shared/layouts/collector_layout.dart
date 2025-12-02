@@ -69,6 +69,8 @@ class _CollectorLayoutState extends State<CollectorLayout> {
         return s.scheduleListTitle;
       case "posts":
         return s.post;
+      case "offers":
+        return s.offers;
       case "complaints":
         return s.complaints;
       case "transactions":

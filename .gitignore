@@ -46,7 +46,41 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-#environment files
+# Environment files
 .env
 .env.*.local
 .env.local
+
+# Firebase configuration files (contains sensitive keys)
+google-services.json
+GoogleService-Info.plist
+firebase.json
+**/lib/core/config/firebase_options.dart
+lib/core/config/firebase_options.dart
+
+
+# Android signing keys
+*.keystore
+*.jks
+key.properties
+/android/key.properties
+/android/app/upload-keystore.jks
+
+# iOS signing and provisioning
+**/ios/Runner/GoogleService-Info.plist
+**/ios/.symlinks/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+*.mobileprovision
+*.p12
+*.certSigningRequest
+
+# Secrets and API keys
+secrets.yaml
+secrets.json
+api_keys.dart
+config/secrets.dart
+
+# Local configuration
+local.properties
+**/android/local.properties
