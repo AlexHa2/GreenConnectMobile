@@ -1,6 +1,9 @@
+import 'package:GreenConnectMobile/core/enum/offer_status.dart';
 import 'package:GreenConnectMobile/features/offer/domain/entities/offer_detail_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class PricingInfoSection extends StatelessWidget {
@@ -8,6 +11,10 @@ class PricingInfoSection extends StatelessWidget {
   final ThemeData theme;
   final double spacing;
   final S s;
+  final OfferStatus? offerStatus;
+  final bool? mustTakeAll;
+  final Function(String detailId, double price, String unit)? onUpdate;
+  final Function(String detailId)? onDelete;
 
   const PricingInfoSection({
     super.key,
@@ -15,6 +22,10 @@ class PricingInfoSection extends StatelessWidget {
     required this.theme,
     required this.spacing,
     required this.s,
+    this.offerStatus,
+    this.mustTakeAll,
+    this.onUpdate,
+    this.onDelete,
   });
 
   @override
@@ -24,6 +35,7 @@ class PricingInfoSection extends StatelessWidget {
     for (final detail in offerDetails) {
       totalEstimated += detail.pricePerUnit;
     }
+    final s = S.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: theme.cardColor,
@@ -81,6 +93,15 @@ class PricingInfoSection extends StatelessWidget {
                     children: [
                       // Pricing items
                       ...offerDetails.map((detail) {
+                        final canEdit =
+                            offerStatus != null &&
+                            offerStatus != OfferStatus.accepted;
+                        final canDelete =
+                            canEdit &&
+                            (mustTakeAll == null || mustTakeAll == false) &&
+                            offerDetails.length >
+                                1; // Can't delete if only 1 item left
+
                         return Container(
                           margin: EdgeInsets.only(bottom: spacing * 0.75),
                           padding: EdgeInsets.all(spacing * 0.75),
@@ -106,10 +127,16 @@ class PricingInfoSection extends StatelessWidget {
                                     spacing / 2,
                                   ),
                                 ),
-                                child: Icon(
-                                  Icons.category_outlined,
-                                  color: theme.primaryColor,
-                                  size: 20,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                    spacing / 2,
+                                  ),
+                                  child: Image.asset(
+                                    'assets/images/green_connect_logo.png',
+                                    width: 40,
+                                    height: 40,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                               SizedBox(width: spacing),
@@ -139,14 +166,96 @@ class PricingInfoSection extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              // Price
-                              Text(
-                                '${numberFormat.format(detail.pricePerUnit)} ${detail.unit}',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.primaryColor,
-                                ),
+                              // Price and Unit
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '${numberFormat.format(detail.pricePerUnit)} ${s.per_unit} ',
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: theme.primaryColor,
+                                        ),
+                                  ),
+                                  // SizedBox(height: spacing / 4),
+                                  Text(
+                                    '/${detail.unit}',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.textTheme.bodySmall?.color,
+                                    ),
+                                  ),
+                                ],
                               ),
+                              // Action buttons
+                              if (canEdit || canDelete) ...[
+                                SizedBox(width: spacing / 2),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (canEdit)
+                                      InkWell(
+                                        onTap: () =>
+                                            _showUpdateDialog(context, detail),
+                                        borderRadius: BorderRadius.circular(
+                                          spacing / 2,
+                                        ),
+                                        child: Container(
+                                          padding: EdgeInsets.all(spacing / 2),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.warning.withValues(
+                                              alpha: 0.1,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              spacing / 2,
+                                            ),
+                                            border: Border.all(
+                                              color: AppColors.warning
+                                                  .withValues(alpha: 0.3),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: const Icon(
+                                            Icons.edit_outlined,
+                                            size: 18,
+                                            color: AppColors.warning,
+                                          ),
+                                        ),
+                                      ),
+                                    if (canEdit && canDelete)
+                                      SizedBox(width: spacing / 3),
+                                    if (canDelete)
+                                      InkWell(
+                                        onTap: () =>
+                                            _showDeleteDialog(context, detail),
+                                        borderRadius: BorderRadius.circular(
+                                          spacing / 2,
+                                        ),
+                                        child: Container(
+                                          padding: EdgeInsets.all(spacing / 2),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.danger.withValues(
+                                              alpha: 0.1,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              spacing / 2,
+                                            ),
+                                            border: Border.all(
+                                              color: AppColors.danger
+                                                  .withValues(alpha: 0.3),
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: const Icon(
+                                            Icons.delete_outline,
+                                            size: 18,
+                                            color: AppColors.danger,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ],
                             ],
                           ),
                         );
@@ -171,9 +280,9 @@ class PricingInfoSection extends StatelessWidget {
                         child: Row(
                           children: [
                             Icon(
-                              Icons.calculate_outlined,
+                              Icons.calculate_rounded,
                               color: theme.primaryColor,
-                              size: 24,
+                              size: 20,
                             ),
                             SizedBox(width: spacing),
                             Expanded(
@@ -186,15 +295,15 @@ class PricingInfoSection extends StatelessWidget {
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  SizedBox(height: spacing / 4),
-                                  Text(
-                                    s.estimated_total(
-                                      numberFormat.format(totalEstimated),
-                                    ),
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.textTheme.bodySmall?.color,
-                                    ),
-                                  ),
+                                  // SizedBox(height: spacing / 4),
+                                  // Text(
+                                  //   s.estimated_total(
+                                  //     numberFormat.format(totalEstimated),
+                                  //   ),
+                                  //   style: theme.textTheme.bodySmall?.copyWith(
+                                  //     color: theme.textTheme.bodySmall?.color,
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ),
@@ -210,6 +319,234 @@ class PricingInfoSection extends StatelessWidget {
                       ),
                     ],
                   ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showUpdateDialog(BuildContext context, OfferDetailEntity detail) {
+    if (onUpdate == null) return;
+
+    final priceController = TextEditingController(
+      text: detail.pricePerUnit.toString(),
+    );
+    final unitController = TextEditingController(text: detail.unit);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(spacing / 2),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.edit_outlined, color: theme.primaryColor),
+            SizedBox(width: spacing / 2),
+            Expanded(
+              child: Text(
+                s.update_pricing,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Category name (readonly)
+              Container(
+                padding: EdgeInsets.all(spacing),
+                decoration: BoxDecoration(
+                  color: theme.primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(spacing / 2),
+                ),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(spacing / 2),
+                      child: Image.asset(
+                        'assets/images/green_connect_logo.png',
+                        width: 20,
+                        height: 20,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    SizedBox(width: spacing / 2),
+                    Expanded(
+                      child: Text(
+                        detail.scrapCategory!.categoryName,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: spacing),
+              Text(s.price_per_unit, style: theme.textTheme.bodyMedium),
+              SizedBox(height: spacing / 2),
+              // Price input
+              TextField(
+                controller: priceController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(spacing/2),
+                  ),
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                ],
+              ),
+              SizedBox(height: spacing),
+              // Unit input
+              Text(s.unit, style: theme.textTheme.bodyMedium),
+              SizedBox(height: spacing / 2),
+              TextField(
+                controller: unitController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(spacing/2),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(s.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final price = double.tryParse(priceController.text);
+              final unit = unitController.text.trim();
+
+              if (price == null || price <= 0) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(s.invalid_price)));
+                return;
+              }
+
+              if (unit.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(s.unit_is_required)),
+                );
+                return;
+              }
+
+              onUpdate!(detail.offerDetailId, price, unit);
+              Navigator.pop(dialogContext);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.warningUpdate,
+              foregroundColor: theme.scaffoldBackgroundColor,
+            ),
+            child: Text(s.update),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, OfferDetailEntity detail) {
+    if (onDelete == null) return;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: AppColors.danger),
+            SizedBox(width: spacing / 2),
+            Expanded(
+              child: Text(
+                s.confirm_delete,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(s.are_you_sure_delete_pricing),
+            SizedBox(height: spacing),
+            Container(
+              padding: EdgeInsets.all(spacing * 0.75),
+              decoration: BoxDecoration(
+                color: AppColors.danger.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(spacing / 2),
+                border: Border.all(
+                  color: AppColors.danger.withValues(alpha: 0.3),
+                ),
+              ),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(spacing / 4),
+                    child: Image.asset(
+                      'assets/images/green_connect_logo.png',
+                      width: 20,
+                      height: 20,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(width: spacing / 2),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          detail.scrapCategory!.categoryName,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: spacing / 4),
+                        Text(
+                          '${detail.pricePerUnit} ${detail.unit}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.danger,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(s.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              onDelete!(detail.offerDetailId);
+              Navigator.pop(dialogContext);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.danger,
+              foregroundColor: theme.scaffoldBackgroundColor,
+            ),
+            child: Text(s.delete),
           ),
         ],
       ),

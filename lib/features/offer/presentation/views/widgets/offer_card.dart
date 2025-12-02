@@ -9,8 +9,14 @@ import 'package:flutter/material.dart';
 class OfferCard extends StatelessWidget {
   final CollectionOfferEntity offer;
   final VoidCallback onTap;
+  final bool isCollectorView;
 
-  const OfferCard({super.key, required this.offer, required this.onTap});
+  const OfferCard({
+    super.key,
+    required this.offer,
+    required this.onTap,
+    this.isCollectorView = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -87,8 +93,154 @@ class OfferCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Collector info
-                  if (offer.scrapCollector != null) ...[
+                  // Post info for collector view OR Collector info for household view
+                  if (isCollectorView && offer.scrapPost != null) ...[
+                    // Show post information
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(spacing),
+                          decoration: BoxDecoration(
+                            color: theme.primaryColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(spacing),
+                          ),
+                          child: Icon(
+                            Icons.article_outlined,
+                            color: theme.primaryColor,
+                            size: 28,
+                          ),
+                        ),
+                        SizedBox(width: spacing),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                offer.scrapPost!.title,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: spacing / 3),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    size: 14,
+                                    color: theme.textTheme.bodySmall?.color,
+                                  ),
+                                  SizedBox(width: spacing / 3),
+                                  Expanded(
+                                    child: Text(
+                                      offer.scrapPost!.address,
+                                      style: theme.textTheme.bodySmall,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: spacing),
+                    // Household info
+                    if (offer.scrapPost!.household != null)
+                      Container(
+                        padding: EdgeInsets.all(spacing * 0.75),
+                        decoration: BoxDecoration(
+                          color: theme.scaffoldBackgroundColor,
+                          borderRadius: BorderRadius.circular(spacing * 0.75),
+                        ),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: spacing * 1.5,
+                              backgroundColor: theme.primaryColor.withValues(
+                                alpha: 0.1,
+                              ),
+                              backgroundImage:
+                                  offer.scrapPost!.household!.avatarUrl != null
+                                      ? NetworkImage(
+                                          offer.scrapPost!.household!.avatarUrl!,
+                                        )
+                                      : null,
+                              child: offer.scrapPost!.household!.avatarUrl == null
+                                  ? Icon(
+                                      Icons.person,
+                                      color: theme.primaryColor,
+                                      size: 20,
+                                    )
+                                  : null,
+                            ),
+                            SizedBox(width: spacing),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    offer.scrapPost!.household!.fullName,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.phone,
+                                        size: 12,
+                                        color: theme.textTheme.bodySmall?.color,
+                                      ),
+                                      SizedBox(width: spacing / 3),
+                                      Text(
+                                        offer.scrapPost!.household!.phoneNumber,
+                                        style: theme.textTheme.bodySmall,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: spacing * 0.75,
+                                vertical: spacing / 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: theme.primaryColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.stars,
+                                    size: 12,
+                                    color: theme.primaryColor,
+                                  ),
+                                  SizedBox(width: spacing / 4),
+                                  Text(
+                                    offer.scrapPost!.household!.rank,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.primaryColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    SizedBox(height: spacing),
+                    Divider(height: 1, color: theme.dividerColor),
+                    SizedBox(height: spacing),
+                  ] else if (!isCollectorView && offer.scrapCollector != null) ...[
                     Row(
                       children: [
                         CircleAvatar(

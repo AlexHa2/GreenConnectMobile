@@ -1,7 +1,6 @@
 import 'package:GreenConnectMobile/core/enum/offer_status.dart';
 import 'package:GreenConnectMobile/features/offer/domain/entities/collection_offer_entity.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/providers/offer_providers.dart';
-import 'package:GreenConnectMobile/features/offer/presentation/views/offer_detail_page.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_card.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_filter_chips.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
@@ -10,6 +9,7 @@ import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_leaf_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class OffersListPage extends ConsumerStatefulWidget {
   final String? postId;
@@ -147,18 +147,13 @@ class _OffersListPageState extends ConsumerState<OffersListPage> {
   }
 
   Future<void> _navigateToOfferDetail(String offerId) async {
-    final result = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => OfferDetailPage(
-          offerId: offerId,
-          isCollectorView: widget.isCollectorView,
-        ),
-      ),
+    final result = await context.pushNamed(
+      'offer-detail',
+      extra: {'offerId': offerId, 'isCollectorView': widget.isCollectorView},
     );
 
-    // If result is true or null (user came back), reload the list
-    if (result != false && mounted) {
+    // If result is true (changes made), reload the list
+    if (result == true && mounted) {
       _onRefresh();
     }
   }
@@ -206,10 +201,13 @@ class _OffersListPageState extends ConsumerState<OffersListPage> {
           ),
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: theme.iconTheme.color),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: widget.isCollectorView
+            ? null
+            : IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: theme.iconTheme.color),
+                onPressed: () => Navigator.pop(context),
+              ),
+        automaticallyImplyLeading: !widget.isCollectorView,
       ),
       body: Column(
         children: [
@@ -283,6 +281,7 @@ class _OffersListPageState extends ConsumerState<OffersListPage> {
             padding: EdgeInsets.only(bottom: spacing),
             child: OfferCard(
               offer: offer,
+              isCollectorView: widget.isCollectorView,
               onTap: () async {
                 await _navigateToOfferDetail(offer.collectionOfferId);
               },

@@ -337,6 +337,13 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
               )
             else if (hasEntity)
               ...entity.scrapPostDetails.map((detail) {
+                // For collector view, only show available items
+                if (isCollectorView) {
+                  final itemStatus = PostDetailStatus.parseStatus(detail.status ?? 'available');
+                  if (itemStatus != PostDetailStatus.available) {
+                    return const SizedBox.shrink();
+                  }
+                }
                 return Padding(
                   padding: EdgeInsets.only(bottom: spacing.screenPadding / 2),
                   child: PostItemNoAction(
@@ -367,7 +374,9 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
           ],
         ),
       ),
-      floatingActionButton: isCollectorView && hasEntity
+      floatingActionButton: isCollectorView && 
+              hasEntity && 
+              PostStatus.parseStatus(status) != PostStatus.fullyBooked
           ? FloatingActionButton.extended(
               backgroundColor: theme.primaryColor,
               elevation: 4,
@@ -384,12 +393,9 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
                   ),
                 ).then((result) {
                   if (result == true && context.mounted) {
-                    // Offer created successfully
-                    CustomToast.show(
-                      context,
-                      s.offer_created_successfully,
-                      type: ToastType.success,
-                    );
+                    // Offer created successfully - refresh post detail
+                    // Toast already shown in bottom sheet, just refresh
+                    ref.read(scrapPostViewModelProvider.notifier).fetchDetail(scrapPostId);
                   }
                 });
               },

@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/config/env.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_item_data.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -14,6 +15,23 @@ class ScrapItemList extends StatelessWidget {
     required this.onUpdate,
     required this.onDelete,
   });
+
+  /// Build full URL from fileName
+  /// Example: scraps/uuid/file.jpg -> https://api.com/v1/files/scraps/uuid/file.jpg
+  String _buildImageUrl(String fileName) {
+    debugPrint('_buildImageUrl1111111: $fileName');
+    if (fileName.isEmpty) return '';
+    
+    // If already a full URL, return as is
+    if (fileName.startsWith('http://') || fileName.startsWith('https://')) {
+      return fileName;
+    }
+    
+    // Construct full URL: baseUrl + /v1/files/ + fileName
+    final baseUrl = Env.baseUrl;
+    return '$baseUrl/v1/files/$fileName';
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,26 +78,29 @@ class ScrapItemList extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: spacing.screenPadding / 2),
-                        // Wrap(
-                        //   spacing: spacing.screenPadding,
-                        //   children: [
-                        //     _buildInfoTag(
-                        //       context,
-                        //       icon: Icons.scale,
-                        //       text: "${item.weight} kg",
-                        //       color: Colors.blue.shade700,
-                        //       bgColor: Colors.blue.shade50,
-                        //     ),
-                        //     _buildInfoTag(
-                        //       context,
-                        //       icon: Icons.inventory_2,
-                        //       text: "SL: ${item.quantity}",
-                        //       color: Colors.orange.shade800,
-                        //       bgColor: Colors.orange.shade50,
-                        //     ),
-                        //   ],
-                        // ),
+                        if (item.amountDescription.isNotEmpty) ...[
+                          SizedBox(height: spacing.screenPadding * 0.5),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.inventory_2_outlined,
+                                size: 14,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                              SizedBox(width: spacing.screenPadding * 0.5),
+                              Expanded(
+                                child: Text(
+                                  item.amountDescription,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -150,11 +171,29 @@ class ScrapItemList extends StatelessWidget {
       );
     }
     // If URL exists, display from network
+    // Build full URL if fileName only
+    final imageUrl = _buildImageUrl(item.imageUrl!);
     return Image.network(
-      item.imageUrl!,
+      imageUrl,
       width: spacing.screenPadding * 6,
       height: spacing.screenPadding * 6,
       fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Container(
+          width: spacing.screenPadding * 6,
+          height: spacing.screenPadding * 6,
+          color: theme.dividerColor.withValues(alpha: 0.6),
+          child: Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+            ),
+          ),
+        );
+      },
       errorBuilder: (context, error, stackTrace) {
         return Container(
           width: spacing.screenPadding * 6,

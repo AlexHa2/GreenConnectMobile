@@ -4,6 +4,7 @@ import 'package:GreenConnectMobile/features/offer/data/datasources/offer_remote_
 import 'package:GreenConnectMobile/features/offer/data/models/collection_offer_model.dart';
 import 'package:GreenConnectMobile/features/offer/data/models/create_offer_request_model.dart';
 import 'package:GreenConnectMobile/features/offer/data/models/paginated_offer_model.dart';
+import 'package:flutter/widgets.dart';
 
 class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
   final ApiClient _apiClient = sl<ApiClient>();
@@ -15,10 +16,12 @@ class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
     required String postId,
     required CreateOfferRequestModel request,
   }) async {
+    debugPrint('Creating offer for postId: $postId with request: ${request.toJson()}');
     final res = await _apiClient.post(
       '$_postsBaseUrl/$postId/offers',
       data: request.toJson(),
     );
+
     return CollectionOfferModel.fromJson(res.data);
   }
 
@@ -68,8 +71,9 @@ class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
 
   @override
   Future<bool> toggleCancelOffer(String offerId) async {
-    final res =
-        await _apiClient.patch('$_offersBaseUrl/$offerId/toggle-cancel');
+    final res = await _apiClient.patch(
+      '$_offersBaseUrl/$offerId/toggle-cancel',
+    );
     return res.statusCode == 200;
   }
 
@@ -111,10 +115,7 @@ class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
   }) async {
     final res = await _apiClient.put(
       '$_offersBaseUrl/$offerId/details/$detailId',
-      data: {
-        'pricePerUnit': pricePerUnit,
-        'unit': unit,
-      },
+      data: {'pricePerUnit': pricePerUnit, 'unit': unit},
     );
     return CollectionOfferModel.fromJson(res.data);
   }

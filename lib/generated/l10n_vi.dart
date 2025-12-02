@@ -95,6 +95,12 @@ class SVi extends S {
   String get cancel => 'Hủy';
 
   @override
+  String get pricing_updated_successfully => 'Cập nhật giá thành công';
+
+  @override
+  String get pricing_deleted_successfully => 'Xóa giá thành công';
+
+  @override
   String get error_occurred => 'Đã xảy ra lỗi';
 
   @override
@@ -1110,6 +1116,19 @@ class SVi extends S {
   String get invalid_price => 'Giá không hợp lệ';
 
   @override
+  String get update_pricing => 'Cập Nhật Giá';
+
+  @override
+  String get confirm_delete => 'Xác Nhận Xóa';
+
+  @override
+  String get are_you_sure_delete_pricing =>
+      'Bạn có chắc chắn muốn xóa mục giá này?';
+
+  @override
+  String get unit_is_required => 'Đơn vị là bắt buộc';
+
+  @override
   String get submit_offer => 'Gửi đề nghị';
 
   @override
@@ -1137,6 +1156,9 @@ class SVi extends S {
 
   @override
   String get enter_your_message => 'Nhập tin nhắn của bạn...';
+
+  @override
+  String get message_is_required => 'Tin nhắn là bắt buộc';
 
   @override
   String get price_per_unit => 'Giá đơn vị';
@@ -1441,6 +1463,16 @@ class SVi extends S {
 
   @override
   String get total_price => 'Tổng giá';
+
+  @override
+  String get your_offer_price => 'Giá chào của bạn';
+
+  @override
+  String get enter_total_price_for_this_item =>
+      'Nhập tổng giá cho mặt hàng này';
+
+  @override
+  String get price_must_be_greater_than_zero => 'Giá phải lớn hơn 0';
 
   @override
   String get provided_by => 'Đánh giá bởi';
@@ -2011,4 +2043,22 @@ class SVi extends S {
 
   @override
   String get new_image => 'Ảnh mới';
+
+  @override
+  String get g => 'g';
+
+  @override
+  String get ton => 'tấn';
+
+  @override
+  String get piece => 'món';
+
+  @override
+  String get offers => 'Thu gom';
+
+  @override
+  String get failed_to_delete_pricing => 'thất bại khi xóa giá';
+
+  @override
+  String get failed_to_update_pricing => 'thất bại khi cập nhật giá';
 }

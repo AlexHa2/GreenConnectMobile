@@ -12,7 +12,7 @@ class TransactionEntity {
   final String offerId;
   final CollectionOfferEntity? offer;
   final String status; // Scheduled, InProgress, Completed, Canceled
-  final DateTime scheduledTime;
+  final DateTime? scheduledTime;
   final DateTime? checkInTime;
   final DateTime createdAt;
   final DateTime? updatedAt;
@@ -28,7 +28,7 @@ class TransactionEntity {
     required this.offerId,
     this.offer,
     required this.status,
-    required this.scheduledTime,
+    this.scheduledTime,
     this.checkInTime,
     required this.createdAt,
     this.updatedAt,
