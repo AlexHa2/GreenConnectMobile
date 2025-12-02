@@ -210,9 +210,11 @@ class TransactionSummaryCard extends StatelessWidget {
             Expanded(
               child: _SummaryItem(
                 label: s.scheduled_time,
-                value: transaction.scheduledTime.toCustomFormat(
-                  locale: s.localeName,
-                ),
+                value: transaction.scheduledTime != null
+                    ? transaction.scheduledTime!.toCustomFormat(
+                        locale: s.localeName,
+                      )
+                    : 'Chưa có lịch hẹn',
                 color: AppColors.warningUpdate,
                 icon: Icons.calendar_today_outlined,
               ),

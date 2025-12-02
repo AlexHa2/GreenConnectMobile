@@ -105,7 +105,7 @@ class TransactionActionButtons extends ConsumerWidget {
       }
     }
 
-    // Household/Business actions
+    // Household actions
     if (userRole == Role.household) {
       if (_canProcess()) {
         buttons.addAll([
@@ -120,14 +120,7 @@ class TransactionActionButtons extends ConsumerWidget {
       } else if (_canCancel()) {
         buttons.add(_buildCancelButton(context, ref));
       }
-
-      // Toggle cancel button for emergency situations (business role)
-      if (_canToggleCancel()) {
-        if (buttons.isNotEmpty) {
-          buttons.add(SizedBox(height: space));
-        }
-        buttons.add(_buildToggleCancelButton(context, ref));
-      }
+      // Note: Toggle cancel API is only for collector, not household
     }
 
     // Feedback button (all roles after completion)

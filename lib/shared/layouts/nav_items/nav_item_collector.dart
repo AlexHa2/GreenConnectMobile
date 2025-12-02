@@ -19,6 +19,11 @@ final List<NavConfig> navItemsCollector = [
     extra: {'isCollectorView': true},
   ),
   const NavConfig(
+    icon: Icons.schedule,
+    label: "Schedules",
+    routeName: '/collector-schedule-list',
+  ),
+  const NavConfig(
     icon: Icons.chat,
     label: "Complaints",
     routeName: '/collector-complaint-list',

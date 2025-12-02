@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:GreenConnectMobile/core/helper/get_location_from_address.dart';
 import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
+import 'package:GreenConnectMobile/core/helper/string_helper.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/location_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_item_data.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_detail_entity.dart';
@@ -74,6 +76,30 @@ class _CreateRecyclingPostPageState
     });
   }
 
+  /// Extract fileName from full URL
+  /// Example: https://api.com/scraps/uuid/file.jpg -> scraps/uuid/file.jpg
+  String _extractFileNameFromUrl(String url) {
+    if (url.isEmpty) return '';
+    
+    // If it already looks like a fileName (contains "scraps/"), return as is
+    if (url.startsWith('scraps/')) return url;
+    
+    // Extract fileName part from full URL
+    final uri = Uri.tryParse(url);
+    if (uri != null && uri.pathSegments.isNotEmpty) {
+      // Find the index where "scraps" starts
+      final scrapsIndex = uri.pathSegments.indexOf('scraps');
+      if (scrapsIndex != -1) {
+        // Join from "scraps" onwards
+        return uri.pathSegments.sublist(scrapsIndex).join('/');
+      }
+      // If no "scraps" found, return the last segments (fallback)
+      return uri.pathSegments.join('/');
+    }
+    
+    return url; // Return original if parsing fails
+  }
+
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
@@ -117,6 +143,7 @@ class _CreateRecyclingPostPageState
         }).firstOrNull;
 
         // Generate AI suggested description from estimatedAmount and advice
+        // Limit to 255 characters for VARCHAR(255) database constraint
         String? suggestedDesc;
         if (aiResponse.estimatedAmount.isNotEmpty) {
           suggestedDesc = aiResponse.estimatedAmount;
@@ -126,10 +153,15 @@ class _CreateRecyclingPostPageState
         } else if (aiResponse.advice.isNotEmpty) {
           suggestedDesc = aiResponse.advice;
         }
+        
+        // Truncate to 255 characters if needed
+        if (suggestedDesc != null && suggestedDesc.length > 255) {
+          suggestedDesc = suggestedDesc.substring(0, 252) + '...';
+        }
 
         setState(() {
           _isAnalyzingImage = false;
-          // Save imageUrl from AI response (already uploaded)
+          // Keep full URL from AI for UI display
           _recognizedImageUrl = aiResponse.savedImageUrl;
           _aiRecognitionData = {
             'categoryId': matchedCategory?.scrapCategoryId,
@@ -236,7 +268,10 @@ class _CreateRecyclingPostPageState
         ScrapItemData(
           categoryId: _selectedCategoryId!,
           categoryName: categoryName,
-          amountDescription: _amountDescriptionController.text.trim(),
+          // Truncate to fit VARCHAR(255) safely for UTF-8
+          amountDescription: StringHelper.truncateForVarchar255(
+            _amountDescriptionController.text.trim(),
+          ),
           // If URL from AI exists, use URL; otherwise use File (will upload later)
           imageUrl: _recognizedImageUrl,
           imageFile: _recognizedImageUrl == null ? _selectedImage : null,
@@ -439,7 +474,8 @@ class _CreateRecyclingPostPageState
                             .toList(),
                         initialCategory: itemData.categoryName,
                         initialAmountDescription: itemData.amountDescription,
-                        initialImageUrl: itemData.displayPath,
+                        initialImageUrl: itemData.imageUrl,
+                        initialImageFile: itemData.imageFile,
                       ),
                     );
 
@@ -448,35 +484,49 @@ class _CreateRecyclingPostPageState
                         (cat) => cat.categoryName == updated['category'],
                       );
 
-                      // Handle image: File path or URL
+                      // Handle image: File path or URL or no change
                       String? newImageUrl;
                       File? newImageFile;
 
-                      if (updated['image'] is String &&
-                          updated['image'] != null) {
-                        final imagePath = updated['image'] as String;
-                        // Check if file path (starts with /) or URL (http)
-                        if (imagePath.startsWith('/') ||
-                            imagePath.contains('file://')) {
-                          // This is a new File
-                          newImageFile = File(imagePath);
-                          newImageUrl = null;
-                        } else if (imagePath.startsWith('http')) {
-                          // This is a URL
-                          newImageUrl = imagePath;
-                          newImageFile = null;
+                      // Check if image was changed
+                      if (updated['imageChanged'] == true) {
+                        if (updated['image'] is String &&
+                            updated['image'] != null) {
+                          final imagePath = updated['image'] as String;
+                          // Check if file path (starts with /) or URL (http)
+                          if (imagePath.startsWith('/') ||
+                              imagePath.contains('file://')) {
+                            // This is a new File
+                            newImageFile = File(imagePath);
+                            newImageUrl = null;
+                          } else if (imagePath.startsWith('http')) {
+                            // This is a URL
+                            newImageUrl = imagePath;
+                            newImageFile = null;
+                          } else {
+                            // Local path without /
+                            newImageFile = File(imagePath);
+                            newImageUrl = null;
+                          }
                         } else {
-                          // Local path without /
-                          newImageFile = File(imagePath);
+                          // Image was removed
                           newImageUrl = null;
+                          newImageFile = null;
                         }
+                      } else {
+                        // Image not changed - keep existing
+                        newImageUrl = itemData.imageUrl;
+                        newImageFile = itemData.imageFile;
                       }
 
                       setState(() {
                         _scrapItems[index] = ScrapItemData(
                           categoryId: matchedCat.scrapCategoryId,
                           categoryName: matchedCat.categoryName,
-                          amountDescription: updated['amountDescription'] ?? '',
+                          // Truncate to fit VARCHAR(255) safely for UTF-8
+                          amountDescription: StringHelper.truncateForVarchar255(
+                            updated['amountDescription'] ?? '',
+                          ),
                           imageUrl: newImageUrl,
                           imageFile: newImageFile,
                         );
@@ -559,9 +609,10 @@ class _CreateRecyclingPostPageState
                                     (item) => ScrapPostDetailEntity(
                                       scrapCategoryId: item.categoryId,
                                       amountDescription: item.amountDescription,
-                                      imageUrl:
-                                          item.imageUrl ??
-                                          "https://media.vietnamplus.vn/images/fbc23bef0d088b23a8965bce49f85a61cd286afccaf9606b44256f5d7ef5d5fefff6aa780c9464f6499f791f5dd6f3de1d175058d9a59d4e21100ddb41c54c45/ngaymoitruong_12.jpg",
+                                      // Extract fileName from full URL before submitting
+                                      imageUrl: item.imageUrl != null
+                                          ? _extractFileNameFromUrl(item.imageUrl!)
+                                          : "https://media.vietnamplus.vn/images/fbc23bef0d088b23a8965bce49f85a61cd286afccaf9606b44256f5d7ef5d5fefff6aa780c9464f6499f791f5dd6f3de1d175058d9a59d4e21100ddb41c54c45/ngaymoitruong_12.jpg",
                                     ),
                                   )
                                   .toList(),

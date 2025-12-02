@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:GreenConnectMobile/core/enum/post_status.dart';
 import 'package:GreenConnectMobile/core/helper/get_location_from_address.dart';
 import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
+import 'package:GreenConnectMobile/core/helper/string_helper.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/location_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_item_data.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_detail_entity.dart';
@@ -140,6 +142,30 @@ class _UpdateRecyclingPostPageState
   }
 
   // Method to pick image
+  /// Extract fileName from full URL
+  /// Example: https://api.com/scraps/uuid/file.jpg -> scraps/uuid/file.jpg
+  String _extractFileNameFromUrl(String url) {
+    if (url.isEmpty) return '';
+    
+    // If it already looks like a fileName (contains "scraps/"), return as is
+    if (url.startsWith('scraps/')) return url;
+    
+    // Extract fileName part from full URL
+    final uri = Uri.tryParse(url);
+    if (uri != null && uri.pathSegments.isNotEmpty) {
+      // Find the index where "scraps" starts
+      final scrapsIndex = uri.pathSegments.indexOf('scraps');
+      if (scrapsIndex != -1) {
+        // Join from "scraps" onwards
+        return uri.pathSegments.sublist(scrapsIndex).join('/');
+      }
+      // If no "scraps" found, return the last segments (fallback)
+      return uri.pathSegments.join('/');
+    }
+    
+    return url; // Return original if parsing fails
+  }
+
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
@@ -182,6 +208,7 @@ class _UpdateRecyclingPostPageState
         }).firstOrNull;
 
         // Generate AI suggested description from estimatedAmount and advice
+        // Limit to 255 characters for VARCHAR(255) database constraint
         String? suggestedDesc;
         if (aiResponse.estimatedAmount.isNotEmpty) {
           suggestedDesc = aiResponse.estimatedAmount;
@@ -191,9 +218,15 @@ class _UpdateRecyclingPostPageState
         } else if (aiResponse.advice.isNotEmpty) {
           suggestedDesc = aiResponse.advice;
         }
+        
+        // Truncate to 255 characters if needed
+        if (suggestedDesc != null && suggestedDesc.length > 255) {
+          suggestedDesc = suggestedDesc.substring(0, 252) + '...';
+        }
 
         setState(() {
           _isAnalyzingImage = false;
+          // Keep full URL from AI for UI display
           _recognizedImageUrl = aiResponse.savedImageUrl;
           _aiRecognitionData = {
             'categoryId': matchedCategory?.scrapCategoryId,
@@ -285,7 +318,10 @@ class _UpdateRecyclingPostPageState
         ScrapItemData(
           categoryId: _selectedCategoryId!,
           categoryName: categoryName,
-          amountDescription: _amountDescriptionController.text.trim(),
+          // Truncate to fit VARCHAR(255) safely for UTF-8
+          amountDescription: StringHelper.truncateForVarchar255(
+            _amountDescriptionController.text.trim(),
+          ),
           imageUrl: _recognizedImageUrl,
           imageFile: _recognizedImageUrl == null ? _selectedImage : null,
           aiData: _aiRecognitionData,
@@ -474,11 +510,14 @@ class _UpdateRecyclingPostPageState
       for (int i = 0; i < _scrapItems.length; i++) {
         final item = _scrapItems[i];
         
-        // Extract path from URL if it's a signed URL
+        // Extract fileName from full URL for database storage
         String imageUrl = item.imageUrl ?? "https://placeholder.com/default.jpg";
         if (imageUrl.contains('?')) {
           // This is a signed URL, extract the path
           imageUrl = _extractPathFromUrl(imageUrl);
+        } else {
+          // Extract fileName from full URL (e.g., http://...scraps/uuid/file.jpg -> scraps/uuid/file.jpg)
+          imageUrl = _extractFileNameFromUrl(imageUrl);
         }
         
         final detailEntity = ScrapPostDetailEntity(
@@ -622,7 +661,8 @@ class _UpdateRecyclingPostPageState
                             .toList(),
                         initialCategory: itemData.categoryName,
                         initialAmountDescription: itemData.amountDescription,
-                        initialImageUrl: itemData.displayPath,
+                        initialImageUrl: itemData.imageUrl,
+                        initialImageFile: itemData.imageFile,
                       ),
                     );
 
@@ -678,7 +718,10 @@ class _UpdateRecyclingPostPageState
                           _scrapItems[index] = ScrapItemData(
                             categoryId: matchedCat.scrapCategoryId,
                             categoryName: matchedCat.categoryName,
-                            amountDescription: newAmountDesc,
+                            // Truncate to fit VARCHAR(255) safely for UTF-8
+                            amountDescription: StringHelper.truncateForVarchar255(
+                              newAmountDesc,
+                            ),
                             imageUrl: newImageUrl,
                             imageFile: newImageFile,
                           );

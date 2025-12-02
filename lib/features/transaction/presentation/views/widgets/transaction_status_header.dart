@@ -66,7 +66,9 @@ class TransactionStatusHeader extends StatelessWidget {
               ),
               SizedBox(height: space / 4),
               Text(
-                transaction.scheduledTime.toCustomFormat(locale: s.localeName),
+                transaction.scheduledTime != null
+                    ? transaction.scheduledTime!.toCustomFormat(locale: s.localeName)
+                    : 'Chưa có lịch hẹn',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: _getStatusColor(),

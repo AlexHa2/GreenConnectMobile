@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/config/env.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_item_data.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -14,6 +15,23 @@ class ScrapItemList extends StatelessWidget {
     required this.onUpdate,
     required this.onDelete,
   });
+
+  /// Build full URL from fileName
+  /// Example: scraps/uuid/file.jpg -> https://api.com/v1/files/scraps/uuid/file.jpg
+  String _buildImageUrl(String fileName) {
+    debugPrint('_buildImageUrl1111111: $fileName');
+    if (fileName.isEmpty) return '';
+    
+    // If already a full URL, return as is
+    if (fileName.startsWith('http://') || fileName.startsWith('https://')) {
+      return fileName;
+    }
+    
+    // Construct full URL: baseUrl + /v1/files/ + fileName
+    final baseUrl = Env.baseUrl;
+    return '$baseUrl/v1/files/$fileName';
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -153,11 +171,29 @@ class ScrapItemList extends StatelessWidget {
       );
     }
     // If URL exists, display from network
+    // Build full URL if fileName only
+    final imageUrl = _buildImageUrl(item.imageUrl!);
     return Image.network(
-      item.imageUrl!,
+      imageUrl,
       width: spacing.screenPadding * 6,
       height: spacing.screenPadding * 6,
       fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Container(
+          width: spacing.screenPadding * 6,
+          height: spacing.screenPadding * 6,
+          color: theme.dividerColor.withValues(alpha: 0.6),
+          child: Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+            ),
+          ),
+        );
+      },
       errorBuilder: (context, error, stackTrace) {
         return Container(
           width: spacing.screenPadding * 6,

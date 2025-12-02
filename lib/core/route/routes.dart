@@ -25,6 +25,7 @@ import 'package:GreenConnectMobile/features/profile/presentation/views/upgrade_v
 import 'package:GreenConnectMobile/features/reward/presentation/views/list_history_post.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transaction_detail_page_modern.dart';
+import 'package:GreenConnectMobile/features/schedule/presentation/views/schedules_list_page.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transactions_list_page.dart';
 import 'package:GreenConnectMobile/shared/layouts/collector_layout.dart';
 import 'package:GreenConnectMobile/shared/layouts/household_layout.dart';
@@ -78,9 +79,19 @@ final GoRouter greenRouter = GoRouter(
       builder: (context, state, child) => CollectorLayout(child: child),
       routes: [
         GoRoute(
+          path: '/collector-home',
+          name: 'collector-home',
+          builder: (context, state) => const CollectorListPostPage(),
+        ),
+        GoRoute(
           path: '/collector-list-post',
           name: 'collector-list-post',
           builder: (context, state) => const CollectorListPostPage(),
+        ),
+        GoRoute(
+          path: '/collector-schedule-list',
+          name: 'collector-schedule-list',
+          builder: (context, state) => const SchedulesListPage(),
         ),
         GoRoute(
           path: '/collector-profile-settings',

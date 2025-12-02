@@ -11,6 +11,7 @@ class UpdateScrapItemDialog extends StatefulWidget {
   final String? initialCategory;
   final String? initialAmountDescription;
   final String? initialImageUrl;
+  final File? initialImageFile;
   final List<String> categories;
 
   const UpdateScrapItemDialog({
@@ -19,6 +20,7 @@ class UpdateScrapItemDialog extends StatefulWidget {
     this.initialAmountDescription,
     required this.categories,
     this.initialImageUrl,
+    this.initialImageFile,
   });
 
   @override
@@ -45,6 +47,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
       text: widget.initialAmountDescription ?? '',
     );
     _currentImageUrl = widget.initialImageUrl;
+    _newPickedFile = widget.initialImageFile; // Set initial file if exists
   }
 
   Future<void> _pickImage() async {
@@ -252,10 +255,6 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
         (_currentImageUrl != null && _currentImageUrl!.isNotEmpty);
     final spacing = Theme.of(context).extension<AppSpacing>()!;
     
-    // Check if _currentImageUrl is a file path or URL
-    final bool isCurrentImageFile = _currentImageUrl != null && 
-        !_currentImageUrl!.startsWith('http');
-    
     return GestureDetector(
       onTap: _pickImage,
       child: Container(
@@ -274,9 +273,9 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                     borderRadius: BorderRadius.circular(spacing.screenPadding),
                     child: _newPickedFile != null
                         ? Image.file(_newPickedFile!, fit: BoxFit.cover)
-                        : isCurrentImageFile
-                            ? Image.file(
-                                File(_currentImageUrl!),
+                        : (_currentImageUrl != null && (_currentImageUrl!.startsWith('http://') || _currentImageUrl!.startsWith('https://')))
+                            ? Image.network(
+                                _currentImageUrl!,
                                 fit: BoxFit.cover,
                                 errorBuilder: (ctx, err, stack) => Center(
                                   child: Icon(
@@ -285,14 +284,10 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                                   ),
                                 ),
                               )
-                            : Image.network(
-                                _currentImageUrl!,
-                                fit: BoxFit.cover,
-                                errorBuilder: (ctx, err, stack) => Center(
-                                  child: Icon(
-                                    Icons.broken_image,
-                                    color: theme.disabledColor,
-                                  ),
+                            : Center(
+                                child: Icon(
+                                  Icons.broken_image,
+                                  color: theme.disabledColor,
                                 ),
                               ),
                   ),

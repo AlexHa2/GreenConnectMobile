@@ -162,7 +162,9 @@ class TransactionItemsSection extends StatelessWidget {
               ),
               SizedBox(height: space / 4),
               Text(
-                '${item.quantity} × ${item.pricePerUnit.toStringAsFixed(2)}/${item.unit}',
+                item.quantity > 0
+                    ? '${item.quantity} × ${item.pricePerUnit.toStringAsFixed(2)}/${item.unit}'
+                    : '${item.pricePerUnit.toStringAsFixed(2)}/${item.unit} (Chưa nhập số lượng)',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.textTheme.bodySmall?.color?.withValues(
                     alpha: 0.7,
@@ -175,7 +177,9 @@ class TransactionItemsSection extends StatelessWidget {
 
         // Price
         Text(
-          '${item.finalPrice.toStringAsFixed(2)} / ${s.per_unit}',
+          item.quantity > 0
+              ? '${item.finalPrice.toStringAsFixed(2)} ${s.per_unit}'
+              : '${item.pricePerUnit.toStringAsFixed(2)}/${item.unit}',
           style: theme.textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.primaryColor,
