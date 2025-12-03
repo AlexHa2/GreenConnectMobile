@@ -135,7 +135,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     } else {
       CustomToast.show(
         context,
-        S.of(context)!.login_error,
+        state.errorMessage ?? S.of(context)!.login_error,
         type: ToastType.error,
       );
     }

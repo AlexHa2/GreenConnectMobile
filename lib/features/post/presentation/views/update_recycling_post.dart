@@ -23,6 +23,7 @@ import 'package:GreenConnectMobile/features/upload/presentation/providers/upload
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
+import 'package:GreenConnectMobile/shared/widgets/address_picker_bottom_sheet.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -207,21 +208,15 @@ class _UpdateRecyclingPostPageState
               aiCategoryLower.contains(categoryLower);
         }).firstOrNull;
 
-        // Generate AI suggested description from estimatedAmount and advice
+        // Generate AI suggested description - only use estimatedAmount
         // Limit to 255 characters for VARCHAR(255) database constraint
         String? suggestedDesc;
         if (aiResponse.estimatedAmount.isNotEmpty) {
           suggestedDesc = aiResponse.estimatedAmount;
-          if (aiResponse.advice.isNotEmpty) {
-            suggestedDesc += '. ${aiResponse.advice}';
+          // Truncate to 255 characters if needed
+          if (suggestedDesc.length > 255) {
+            suggestedDesc = suggestedDesc.substring(0, 252) + '...';
           }
-        } else if (aiResponse.advice.isNotEmpty) {
-          suggestedDesc = aiResponse.advice;
-        }
-        
-        // Truncate to 255 characters if needed
-        if (suggestedDesc != null && suggestedDesc.length > 255) {
-          suggestedDesc = suggestedDesc.substring(0, 252) + '...';
         }
 
         setState(() {
@@ -268,6 +263,48 @@ class _UpdateRecyclingPostPageState
         );
       }
     }
+  }
+
+  /// Open address picker bottom sheet
+  Future<void> _openAddressPicker() async {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => AddressPickerBottomSheet(
+        initialAddress: _pickupAddressController.text.trim(),
+        onAddressSelected: (address, latitude, longitude) async {
+          setState(() {
+            _pickupAddressController.text = address;
+          });
+
+          // Validate address with geocoding
+          if (latitude != null && longitude != null) {
+            // We already have coordinates from GPS or saved location
+            setState(() {
+              _location = LocationEntity(
+                latitude: latitude,
+                longitude: longitude,
+              );
+              _addressFound = true;
+            });
+          } else {
+            // Manual address input - need to geocode
+            final loc = await getLocationFromAddress(address);
+            if (loc != null) {
+              setState(() {
+                _location = loc;
+                _addressFound = true;
+              });
+            } else {
+              setState(() {
+                _addressFound = false;
+              });
+            }
+          }
+        },
+      ),
+    );
   }
 
   // Method to handle adding item
@@ -603,25 +640,8 @@ class _UpdateRecyclingPostPageState
                   addressController: _pickupAddressController,
                   timeController: _pickupTimeController,
                   addressFound: _addressFound,
-                  onSearchAddress: () async {
-                    final loc = await getLocationFromAddress(
-                      _pickupAddressController.text.trim(),
-                    );
-                    setState(() {
-                      _location = loc;
-                      _addressFound = loc != null;
-                    });
-                    if (!mounted && !context.mounted) {
-                      return;
-                    }
-                    CustomToast.show(
-                      context,
-                      loc != null
-                          ? S.of(context)!.address_found
-                          : S.of(context)!.address_not_found,
-                      type: loc != null ? ToastType.success : ToastType.error,
-                    );
-                  },
+                  onSearchAddress: () {},  // Deprecated, kept for compatibility
+                  onGetCurrentLocation: _openAddressPicker,
                 ),
 
                 SizedBox(height: spacing.screenPadding),
