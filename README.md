@@ -147,6 +147,11 @@ flutter pub get
 cp .env.example .env
 ```
 
+Then edit `.env` and update `BASE_URL` if needed:
+```env
+BASE_URL=http://10.0.2.2:8000/api  # For Android Emulator
+```
+
 4. **🔥 Setup Firebase Configuration**
 
    Firebase configuration files are **NOT** included in version control for security reasons. You need to set them up after cloning:
@@ -185,30 +190,47 @@ cp .env.example .env
 
    > 📘 **Where to get Firebase credentials?**
    > 1. Go to [Firebase Console](https://console.firebase.google.com/)
-   > 2. Select your project
+   > 2. Select your project: `greenconnectplatform`
    > 3. Go to Project Settings > General
    > 4. Download configuration files for each platform
    > 5. Or use FlutterFire CLI: `flutterfire configure`
+   > 
+   > ⚠️ **Without real Firebase credentials, authentication won't work!**
 
-5. Run (Have to android emulator)
+5. Run the app
 
-```bash
-flutter run
-```
-
-5. Run debug (Have to android emulator)
+**Make sure Android Emulator or iOS Simulator is running first!**
 
 ```bash
+# Run in release mode
+flutter run --release
+
+# Or run in debug mode (for development)
 flutter run --debug
 ```
 
-6. Run Test
+6. Run Tests
 
 ```bash
-flutter test integration_test
-or for detail
+# Run unit tests
+flutter test
+
+# Run simple integration test (verify CI/CD setup)
+flutter test integration_test/simple_test.dart
+
+# Run authentication UI tests (some tests skipped without Firebase)
 flutter test integration_test/authentication/login_test.dart
+
+# Run with device/emulator (recommended for full integration tests)
+flutter drive --driver=test_driver/integration_test.dart \
+  --target=integration_test/simple_test.dart
 ```
+
+> 📝 **Test Files**:
+> - `simple_test.dart` - Sanity check test for CI/CD (no Firebase required)
+> - `authentication/login_test.dart` - UI/Navigation tests (Firebase-dependent tests auto-skipped)
+> 
+> See [`integration_test/CI_CD_TESTING.md`](integration_test/CI_CD_TESTING.md) for details.
 
 ## 📝 Commit Rules (Commitlint)
 
