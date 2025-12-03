@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/core/di/injector.dart';
+import 'package:GreenConnectMobile/core/error/exception_mapper.dart';
 import 'package:GreenConnectMobile/core/network/api_client.dart';
 import 'package:GreenConnectMobile/features/transaction/data/datasources/transaction_remote_datasource.dart';
 import 'package:GreenConnectMobile/features/transaction/data/models/feedback_list_response_model.dart';
@@ -50,11 +51,13 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
     required String transactionId,
     required CheckInRequest request,
   }) async {
-    final res = await _apiClient.patch(
-      '$_transactionsBaseUrl/$transactionId/check-in',
-      data: request.toJson(),
-    );
-    return res.statusCode == 200;
+    return await guard(() async {
+      final res = await _apiClient.patch(
+        '$_transactionsBaseUrl/$transactionId/check-in',
+        data: request.toJson(),
+      );
+      return res.statusCode == 200;
+    });
   }
 
   @override

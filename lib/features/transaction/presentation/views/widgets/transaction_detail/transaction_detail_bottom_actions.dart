@@ -339,13 +339,28 @@ class _CheckInButton extends ConsumerWidget {
 
     if (result == null || !context.mounted) return;
 
+    // Kiểm tra giá trị có tồn tại và không null
+    final latitude = result['latitude'];
+    final longitude = result['longitude'];
+    
+    if (latitude == null || longitude == null) {
+      if (context.mounted) {
+        CustomToast.show(
+          context,
+          'Không thể lấy vị trí. Vui lòng thử lại.',
+          type: ToastType.error,
+        );
+      }
+      return;
+    }
+
     try {
       final success = await ref
           .read(transactionViewModelProvider.notifier)
           .checkInTransaction(
             transactionId: transaction.transactionId,
-            latitude: result['latitude']!,
-            longitude: result['longitude']!,
+            latitude: latitude,
+            longitude: longitude,
           );
 
       if (context.mounted) {
@@ -360,13 +375,11 @@ class _CheckInButton extends ConsumerWidget {
           final state = ref.read(transactionViewModelProvider);
           final errorMsg = state.errorMessage;
 
-          if (errorMsg != null &&
-              (errorMsg.contains('khoảng cách') ||
-                  errorMsg.contains('distance') ||
-                  errorMsg.contains('quá xa'))) {
+          // Hiển thị message từ API backend nếu có
+          if (errorMsg != null && errorMsg.isNotEmpty) {
             CustomToast.show(
               context,
-              'Khoảng cách quá xa. Vui lòng đến gần điểm thu gom hơn (trong vòng 100m).',
+              errorMsg, // Hiển thị message chuẩn từ API
               type: ToastType.error,
             );
           } else {
@@ -594,15 +607,20 @@ class _CheckInLocationDialogState extends State<_CheckInLocationDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context).pop(),
           child: Text(s.cancel),
         ),
         ElevatedButton(
           onPressed: (_latitude != null && _longitude != null && !_isLoading)
-              ? () => Navigator.pop(context, {
-                  'latitude': _latitude,
-                  'longitude': _longitude,
-                })
+              ? () {
+                  // Đảm bảo giá trị không null và trả về Map<String, double> (non-nullable)
+                  if (_latitude != null && _longitude != null && context.mounted) {
+                    Navigator.of(context).pop<Map<String, double>>({
+                      'latitude': _latitude!,
+                      'longitude': _longitude!,
+                    });
+                  }
+                }
               : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: theme.primaryColor,

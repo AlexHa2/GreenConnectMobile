@@ -104,10 +104,21 @@ class TransactionViewModel extends Notifier<TransactionState> {
       return success;
     } catch (e, stack) {
       if (e is AppException) {
+        // Log message chuẩn từ API backend
         debugPrint('❌ ERROR CHECK-IN: ${e.message}');
+        debugPrint('📌 Error Code: ${e.statusCode}');
+        state = state.copyWith(
+          isProcessing: false,
+          errorMessage: e.message, // Lưu message từ AppException (từ API)
+        );
+      } else {
+        debugPrint('❌ UNKNOWN ERROR CHECK-IN: $e');
+        debugPrint('📌 STACK TRACE: $stack');
+        state = state.copyWith(
+          isProcessing: false,
+          errorMessage: e.toString(),
+        );
       }
-      debugPrint('📌 STACK TRACE: $stack');
-      state = state.copyWith(isProcessing: false, errorMessage: e.toString());
       return false;
     }
   }
