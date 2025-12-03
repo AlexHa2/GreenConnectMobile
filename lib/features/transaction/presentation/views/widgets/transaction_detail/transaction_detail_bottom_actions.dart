@@ -1138,7 +1138,7 @@ class _ToggleCancelButton extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         s.emergency_cancel_note,
-                        style: TextStyle(
+                        style:  TextStyle(
                           fontSize: 12,
                           color: AppColors.danger,
                           fontWeight: FontWeight.w500,

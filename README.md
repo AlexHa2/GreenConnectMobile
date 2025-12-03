@@ -147,7 +147,50 @@ flutter pub get
 cp .env.example .env
 ```
 
-4. Run (Have to android emulator)
+4. **🔥 Setup Firebase Configuration**
+
+   Firebase configuration files are **NOT** included in version control for security reasons. You need to set them up after cloning:
+
+   **Option 1: Using Setup Script (Recommended)**
+   
+   Windows (PowerShell):
+   ```powershell
+   .\setup_firebase.ps1
+   ```
+   
+   macOS/Linux:
+   ```bash
+   chmod +x setup_firebase.sh
+   ./setup_firebase.sh
+   ```
+
+   **Option 2: Manual Setup**
+   
+   Copy the template files and update with your Firebase credentials:
+   ```bash
+   # Android
+   cp android/app/google-services.json.example android/app/google-services.json
+   
+   # iOS
+   cp ios/Runner/GoogleService-Info.plist.example ios/Runner/GoogleService-Info.plist
+   
+   # Dart Firebase Options
+   cp lib/core/config/firebase_options.dart.example lib/core/config/firebase_options.dart
+   ```
+
+   **Then update these files with your actual Firebase credentials:**
+   - `android/app/google-services.json`
+   - `ios/Runner/GoogleService-Info.plist`
+   - `lib/core/config/firebase_options.dart`
+
+   > 📘 **Where to get Firebase credentials?**
+   > 1. Go to [Firebase Console](https://console.firebase.google.com/)
+   > 2. Select your project
+   > 3. Go to Project Settings > General
+   > 4. Download configuration files for each platform
+   > 5. Or use FlutterFire CLI: `flutterfire configure`
+
+5. Run (Have to android emulator)
 
 ```bash
 flutter run
