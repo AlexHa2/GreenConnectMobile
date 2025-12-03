@@ -10,6 +10,7 @@ import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 
 /// Bottom action buttons for transaction detail
@@ -474,22 +475,35 @@ class _CheckInLocationDialogState extends State<_CheckInLocationDialog> {
 
   Future<Map<String, double>?> _getLocationFromPlatform() async {
     try {
-      // Use a simple method to get location
-      // In production, install geolocator package:
-      //   dependencies:
-      //     geolocator: ^10.0.0
-      // Then use:
-      //   final position = await Geolocator.getCurrentPosition(
-      //     desiredAccuracy: LocationAccuracy.high,
-      //   );
-      //   return {
-      //     'latitude': position.latitude,
-      //     'longitude': position.longitude,
-      //   };
+      // Check location service is enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        return null;
+      }
 
-      // For now, return null to show error message
-      // User needs to install geolocator package for GPS functionality
-      return null;
+      // Check permission
+      LocationPermission permission = await Geolocator.checkPermission();
+      
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          return null;
+        }
+      }
+      
+      if (permission == LocationPermission.deniedForever) {
+        return null;
+      }
+
+      // Get current position
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      
+      return {
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+      };
     } catch (e) {
       return null;
     }

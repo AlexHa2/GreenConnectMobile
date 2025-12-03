@@ -128,7 +128,18 @@ class _UpgradeVerificationScreenState
             : s.verification_updated_successfully,
         type: ToastType.success,
       );
-      context.pop(true); // Return true to indicate success
+      
+      // If creating new verification (upgrade), logout user
+      if (widget.mode == VerificationMode.create) {
+        context.pop(true); // Close verification screen
+        // Wait a bit for toast to show
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (!mounted) return;
+        // Navigate to login and clear all previous routes
+        context.go('/');
+      } else {
+        context.pop(true); // Return true to indicate success
+      }
     } catch (e) {
       if (!mounted) return;
       CustomToast.show(

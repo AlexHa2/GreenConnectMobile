@@ -10,7 +10,9 @@ class PostInfoForm extends StatelessWidget {
   final TextEditingController addressController;
   final TextEditingController timeController;
   final VoidCallback onSearchAddress;
+  final VoidCallback? onGetCurrentLocation;
   final bool addressFound;
+  final bool isLoadingLocation;
 
   const PostInfoForm({
     super.key,
@@ -21,6 +23,8 @@ class PostInfoForm extends StatelessWidget {
     required this.timeController,
     required this.onSearchAddress,
     required this.addressFound,
+    this.onGetCurrentLocation,
+    this.isLoadingLocation = false,
   });
 
   @override
@@ -67,26 +71,90 @@ class PostInfoForm extends StatelessWidget {
             ),
 
             SizedBox(height: spacing.screenPadding),
-            AppInputField(
-              label: S.of(context)!.pickup_address,
-              controller: addressController,
-              hint: S.of(context)!.street_address_location_hint,
-              maxLines: 2,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  addressFound ? Icons.check_circle : Icons.search,
-                  color: addressFound
-                      ? theme.primaryColor
-                      : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  S.of(context)!.pickup_address,
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                onPressed: onSearchAddress,
-              ),
-              validator: (v){
-                if (v == null || v.isEmpty) {
-                  return S.of(context)!.error_required;
-                }
-                return null;
-              },
+                const SizedBox(height: 8),
+                
+                // Address Display with Badge
+                if (addressController.text.isNotEmpty)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                      color: theme.primaryColor.withValues(alpha:0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: theme.primaryColor.withValues(alpha:0.3),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          color: theme.primaryColor,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            addressController.text,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ),
+                        if (addressFound)
+                          Icon(
+                            Icons.verified,
+                            color: theme.primaryColor,
+                            size: 18,
+                          ),
+                      ],
+                    ),
+                  ),
+                
+                // Address Picker Button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: onGetCurrentLocation,
+                    icon: const Icon(Icons.edit_location_alt),
+                    label: Text(
+                      addressController.text.isEmpty
+                          ? S.of(context)!.select_address
+                          : S.of(context)!.change_address,
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      side: BorderSide(color: theme.primaryColor),
+                    ),
+                  ),
+                ),
+                
+                // Hidden validator field
+                TextFormField(
+                  controller: addressController,
+                  decoration: const InputDecoration(
+                    
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                    constraints: BoxConstraints(maxHeight: 0),
+                  ),
+                  style: const TextStyle(fontSize: 0, height: 0),
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return S.of(context)!.error_required;
+                    }
+                    return null;
+                  },
+                ),
+              ],
             ),
 
             SizedBox(height: spacing.screenPadding),

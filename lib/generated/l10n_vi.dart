@@ -642,6 +642,54 @@ class SVi extends S {
   String get country_length_error => 'Phải nhỏ hơn 50 ký tự';
 
   @override
+  String get use_current_location => 'Sử dụng vị trí hiện tại';
+
+  @override
+  String get getting_location => 'Đang lấy vị trí của bạn...';
+
+  @override
+  String get location_permission_denied =>
+      'Quyền truy cập vị trí bị từ chối. Vui lòng bật quyền truy cập vị trí trong cài đặt.';
+
+  @override
+  String get location_service_disabled =>
+      'Dịch vụ vị trí đang bị tắt. Vui lòng bật để sử dụng tính năng này.';
+
+  @override
+  String get location_permission_denied_forever =>
+      'Quyền truy cập vị trí bị từ chối vĩnh viễn. Vui lòng bật trong cài đặt ứng dụng.';
+
+  @override
+  String get location_fetched_successfully => 'Đã lấy vị trí thành công!';
+
+  @override
+  String get error_getting_location => 'Lỗi khi lấy vị trí. Vui lòng thử lại.';
+
+  @override
+  String get please_enter_address => 'Vui lòng nhập địa chỉ.';
+
+  @override
+  String get enter_full_address => 'Nhập địa chỉ đầy đủ';
+
+  @override
+  String get confirm => 'Xác nhận';
+
+  @override
+  String get failed_to_get_address =>
+      'Không thể lấy địa chỉ từ vị trí. Vui lòng nhập thủ công.';
+
+  @override
+  String get validating_address => 'Đang xác thực địa chỉ...';
+
+  @override
+  String get address_validation_failed =>
+      'Không thể xác minh địa chỉ này. Vui lòng kiểm tra và thử lại.';
+
+  @override
+  String get address_validated_successfully =>
+      'Địa chỉ đã được xác minh thành công!';
+
+  @override
   String get an_error_occurred_please_try_again =>
       'Lỗi khi thực hiện tác vụ và điều hướng';
 
@@ -774,6 +822,66 @@ class SVi extends S {
 
   @override
   String get address_found => 'Địa chỉ hợp lệ';
+
+  @override
+  String get select_address => 'Chọn địa chỉ';
+
+  @override
+  String get change_address => 'Đổi địa chỉ';
+
+  @override
+  String get saved_locations => 'Địa chỉ đã lưu';
+
+  @override
+  String get no_saved_locations => 'Chưa có địa chỉ đã lưu';
+
+  @override
+  String get add_new_location => 'Thêm địa chỉ mới';
+
+  @override
+  String get save_this_location => 'Lưu địa chỉ này';
+
+  @override
+  String get location_name => 'Tên địa chỉ';
+
+  @override
+  String get location_name_hint => 'vd: Nhà, Văn phòng, Kho hàng';
+
+  @override
+  String get set_as_default => 'Đặt làm mặc định';
+
+  @override
+  String get edit_location => 'Sửa địa chỉ';
+
+  @override
+  String get delete_location => 'Xóa địa chỉ';
+
+  @override
+  String get confirm_delete_location => 'Bạn có chắc muốn xóa địa chỉ này?';
+
+  @override
+  String get location_saved_successfully => 'Đã lưu địa chỉ thành công!';
+
+  @override
+  String get location_deleted_successfully => 'Đã xóa địa chỉ thành công!';
+
+  @override
+  String get getting_current_location => 'Đang lấy vị trí của bạn...';
+
+  @override
+  String get manual_address => 'Nhập địa chỉ thủ công';
+
+  @override
+  String get or_divider => 'HOẶC';
+
+  @override
+  String get skip => 'Bỏ qua';
+
+  @override
+  String get please_enter_location_name => 'Vui lòng nhập tên địa chỉ';
+
+  @override
+  String get unset_default => 'Bỏ mặc định';
 
   @override
   String get error_invalid_number => 'phải lớn hơn không';

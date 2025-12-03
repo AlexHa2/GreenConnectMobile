@@ -1345,6 +1345,90 @@ abstract class S {
   /// **'Must be less than 50 charactors'**
   String get country_length_error;
 
+  /// No description provided for @use_current_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Current Location'**
+  String get use_current_location;
+
+  /// No description provided for @getting_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting your location...'**
+  String get getting_location;
+
+  /// No description provided for @location_permission_denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission denied. Please enable location access in settings.'**
+  String get location_permission_denied;
+
+  /// No description provided for @location_service_disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location services are disabled. Please enable them to use this feature.'**
+  String get location_service_disabled;
+
+  /// No description provided for @location_permission_denied_forever.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission permanently denied. Please enable it in app settings.'**
+  String get location_permission_denied_forever;
+
+  /// No description provided for @location_fetched_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Location fetched successfully!'**
+  String get location_fetched_successfully;
+
+  /// No description provided for @error_getting_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Error getting location. Please try again.'**
+  String get error_getting_location;
+
+  /// No description provided for @please_enter_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an address.'**
+  String get please_enter_address;
+
+  /// No description provided for @enter_full_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter full address'**
+  String get enter_full_address;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @failed_to_get_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get address from location. Please enter manually.'**
+  String get failed_to_get_address;
+
+  /// No description provided for @validating_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Validating address...'**
+  String get validating_address;
+
+  /// No description provided for @address_validation_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not verify this address. Please check and try again.'**
+  String get address_validation_failed;
+
+  /// No description provided for @address_validated_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Address verified successfully!'**
+  String get address_validated_successfully;
+
   /// No description provided for @an_error_occurred_please_try_again.
   ///
   /// In en, this message translates to:
@@ -1602,6 +1686,126 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Address was found'**
   String get address_found;
+
+  /// No description provided for @select_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Address'**
+  String get select_address;
+
+  /// No description provided for @change_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Address'**
+  String get change_address;
+
+  /// No description provided for @saved_locations.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Locations'**
+  String get saved_locations;
+
+  /// No description provided for @no_saved_locations.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved locations yet'**
+  String get no_saved_locations;
+
+  /// No description provided for @add_new_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Location'**
+  String get add_new_location;
+
+  /// No description provided for @save_this_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Save This Location'**
+  String get save_this_location;
+
+  /// No description provided for @location_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Name'**
+  String get location_name;
+
+  /// No description provided for @location_name_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Home, Office, Warehouse'**
+  String get location_name_hint;
+
+  /// No description provided for @set_as_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as default'**
+  String get set_as_default;
+
+  /// No description provided for @edit_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Location'**
+  String get edit_location;
+
+  /// No description provided for @delete_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Location'**
+  String get delete_location;
+
+  /// No description provided for @confirm_delete_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this location?'**
+  String get confirm_delete_location;
+
+  /// No description provided for @location_saved_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Location saved successfully!'**
+  String get location_saved_successfully;
+
+  /// No description provided for @location_deleted_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Location deleted successfully!'**
+  String get location_deleted_successfully;
+
+  /// No description provided for @getting_current_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting your location...'**
+  String get getting_current_location;
+
+  /// No description provided for @manual_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Address Manually'**
+  String get manual_address;
+
+  /// No description provided for @or_divider.
+  ///
+  /// In en, this message translates to:
+  /// **'OR'**
+  String get or_divider;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// No description provided for @please_enter_location_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter location name'**
+  String get please_enter_location_name;
+
+  /// No description provided for @unset_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Unset as default'**
+  String get unset_default;
 
   /// No description provided for @error_invalid_number.
   ///

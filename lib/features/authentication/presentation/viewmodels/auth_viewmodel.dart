@@ -25,7 +25,7 @@ class AuthViewModel extends Notifier<AuthState> {
   // -------------------------------------------------------------------------
 
   Future<void> sendOtp(String phoneNumber) async {
-    state = state.copyWith(isLoading: true, errorMessage: null);
+    state = state.copyWith(isLoading: true, errorMessage: null, errorCode: null);
 
     await _sendOtpUsecase.call(
       phoneNumber: phoneNumber,
@@ -36,7 +36,20 @@ class AuthViewModel extends Notifier<AuthState> {
         );
       },
       onVerificationFailed: (e) {
-        state = state.copyWith(isLoading: false, errorMessage: e.message);
+        // Handle Firebase error
+        String errorMsg = e.message ?? 'Unknown error';
+        int? errorCode;
+        
+        // Parse Firebase error code if available
+        if (e.code.isNotEmpty) {
+          errorMsg = '${e.code}: ${e.message}';
+        }
+        
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: errorMsg,
+          errorCode: errorCode,
+        );
       },
       onVerificationCompleted: (credential) async {
         // OTP auto-verified
@@ -46,7 +59,18 @@ class AuthViewModel extends Notifier<AuthState> {
           );
           state = state.copyWith(isLoading: false, userCredential: userCred);
         } catch (e) {
-          state = state.copyWith(isLoading: false, errorMessage: e.toString());
+          if (e is AppException) {
+            state = state.copyWith(
+              isLoading: false,
+              errorMessage: e.message,
+              errorCode: e.statusCode,
+            );
+          } else {
+            state = state.copyWith(
+              isLoading: false,
+              errorMessage: e.toString(),
+            );
+          }
         }
       },
     );
@@ -60,7 +84,7 @@ class AuthViewModel extends Notifier<AuthState> {
       return;
     }
 
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, errorMessage: null, errorCode: null);
 
     try {
       final userCred = await _verifyOtpUsecase.call(
@@ -70,7 +94,18 @@ class AuthViewModel extends Notifier<AuthState> {
 
       state = state.copyWith(isLoading: false, userCredential: userCred);
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      if (e is AppException) {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: e.message,
+          errorCode: e.statusCode,
+        );
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: e.toString(),
+        );
+      }
     }
   }
 

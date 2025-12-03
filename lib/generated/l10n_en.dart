@@ -643,6 +643,54 @@ class SEn extends S {
   String get country_length_error => 'Must be less than 50 charactors';
 
   @override
+  String get use_current_location => 'Use Current Location';
+
+  @override
+  String get getting_location => 'Getting your location...';
+
+  @override
+  String get location_permission_denied =>
+      'Location permission denied. Please enable location access in settings.';
+
+  @override
+  String get location_service_disabled =>
+      'Location services are disabled. Please enable them to use this feature.';
+
+  @override
+  String get location_permission_denied_forever =>
+      'Location permission permanently denied. Please enable it in app settings.';
+
+  @override
+  String get location_fetched_successfully => 'Location fetched successfully!';
+
+  @override
+  String get error_getting_location =>
+      'Error getting location. Please try again.';
+
+  @override
+  String get please_enter_address => 'Please enter an address.';
+
+  @override
+  String get enter_full_address => 'Enter full address';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get failed_to_get_address =>
+      'Failed to get address from location. Please enter manually.';
+
+  @override
+  String get validating_address => 'Validating address...';
+
+  @override
+  String get address_validation_failed =>
+      'Could not verify this address. Please check and try again.';
+
+  @override
+  String get address_validated_successfully => 'Address verified successfully!';
+
+  @override
   String get an_error_occurred_please_try_again =>
       'an error occurred please try again';
 
@@ -777,6 +825,67 @@ class SEn extends S {
 
   @override
   String get address_found => 'Address was found';
+
+  @override
+  String get select_address => 'Select Address';
+
+  @override
+  String get change_address => 'Change Address';
+
+  @override
+  String get saved_locations => 'Saved Locations';
+
+  @override
+  String get no_saved_locations => 'No saved locations yet';
+
+  @override
+  String get add_new_location => 'Add New Location';
+
+  @override
+  String get save_this_location => 'Save This Location';
+
+  @override
+  String get location_name => 'Location Name';
+
+  @override
+  String get location_name_hint => 'e.g., Home, Office, Warehouse';
+
+  @override
+  String get set_as_default => 'Set as default';
+
+  @override
+  String get edit_location => 'Edit Location';
+
+  @override
+  String get delete_location => 'Delete Location';
+
+  @override
+  String get confirm_delete_location =>
+      'Are you sure you want to delete this location?';
+
+  @override
+  String get location_saved_successfully => 'Location saved successfully!';
+
+  @override
+  String get location_deleted_successfully => 'Location deleted successfully!';
+
+  @override
+  String get getting_current_location => 'Getting your location...';
+
+  @override
+  String get manual_address => 'Enter Address Manually';
+
+  @override
+  String get or_divider => 'OR';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get please_enter_location_name => 'Please enter location name';
+
+  @override
+  String get unset_default => 'Unset as default';
 
   @override
   String get error_invalid_number => 'Must be large than 0';
