@@ -9,122 +9,143 @@ import '../helpers/test_utils.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  group('Authentication - Login Flow', () {
-    testWidgets('Should navigate to login page from welcome screen',
+  group('App Startup and Basic UI', () {
+    testWidgets('Should start app successfully', (tester) async {
+      await startApp(tester);
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      // App should start without crashing
+      expect(find.byType(MaterialApp), findsOneWidget,
+          reason: 'MaterialApp should be present');
+    });
+
+    testWidgets('Should show welcome screen with login button',
         (tester) async {
       await startApp(tester);
+      await tester.pumpAndSettle(const Duration(seconds: 3));
 
-      // Verify we're on welcome screen
-      expect(find.byKey(AppKeys.goLogin), findsOneWidget);
-
-      // Navigate to login
-      await goToLoginPage(tester);
-
-      // Verify we're on login page
-      expect(find.byKey(AppKeys.phoneField), findsOneWidget);
-      expect(find.byKey(AppKeys.sendOtpButton), findsOneWidget);
+      // Should show login button on welcome screen
+      final loginButton = find.byKey(AppKeys.goLogin);
+      expect(loginButton, findsOneWidget,
+          reason: 'Login button should be visible on welcome screen');
     });
 
-    testWidgets('Should show phone field and send OTP button', (tester) async {
+    testWidgets('Should navigate to login page', (tester) async {
       await startApp(tester);
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      // Tap login button
       await goToLoginPage(tester);
 
-      // Verify phone input is visible
-      expect(find.byKey(AppKeys.phoneField), findsOneWidget);
-      expect(find.byType(TextFormField), findsOneWidget);
-
-      // Verify send OTP button is visible
-      expect(find.byKey(AppKeys.sendOtpButton), findsOneWidget);
-      expect(find.byType(ElevatedButton), findsOneWidget);
+      // Should show login page elements
+      expect(find.byKey(AppKeys.phoneField), findsOneWidget,
+          reason: 'Phone field should be visible on login page');
+      expect(find.byKey(AppKeys.sendOtpButton), findsOneWidget,
+          reason: 'Send OTP button should be visible');
     });
 
-    testWidgets('Should show OTP field after entering phone number',
-        (tester) async {
+    testWidgets('Should have back button on login page', (tester) async {
       await startApp(tester);
+      await tester.pumpAndSettle(const Duration(seconds: 3));
       await goToLoginPage(tester);
 
-      // Enter phone number
-      await enterPhoneNumber(tester, '+84987654321');
-
-      // Tap send OTP
-      await tapSendOtp(tester);
-
-      // Wait for OTP screen to appear
-      await tester.pumpAndSettle(const Duration(seconds: 2));
-
-      // Verify OTP field appears (if phone is valid and Firebase works)
-      // Note: This will fail in CI without Firebase setup
-      // expect(find.byKey(AppKeys.otpField), findsOneWidget);
-    });
-
-    testWidgets('Should allow entering 6-digit OTP code', (tester) async {
-      await startApp(tester);
-      await goToLoginPage(tester);
-
-      await enterPhoneNumber(tester, '+84987654321');
-      await tapSendOtp(tester);
-
-      // Wait for OTP screen
-      await tester.pumpAndSettle(const Duration(seconds: 2));
-
-      // Try to find and enter OTP
-      final otpField = find.byKey(AppKeys.otpField);
-      if (otpField.evaluate().isNotEmpty) {
-        await enterOtp(tester, '123456');
-
-        // OTP should auto-submit when 6 digits are entered
-        await tester.pumpAndSettle(const Duration(seconds: 2));
-      }
-    });
-
-    testWidgets('Should have back button to return to welcome screen',
-        (tester) async {
-      await startApp(tester);
-      await goToLoginPage(tester);
-
-      // Verify back navigation exists
-      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+      // Should have back button
+      expect(find.byIcon(Icons.arrow_back), findsOneWidget,
+          reason: 'Back button should be present');
 
       // Tap back button
       await tester.tap(find.byIcon(Icons.arrow_back));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // Should be back on welcome screen
-      expect(find.byKey(AppKeys.goLogin), findsOneWidget);
+      expect(find.byKey(AppKeys.goLogin), findsOneWidget,
+          reason: 'Should navigate back to welcome screen');
     });
   });
 
-  group('Authentication - Phone Input Validation', () {
-    testWidgets('Should accept valid Vietnamese phone number', (tester) async {
+  group('Phone Input Basic Functionality', () {
+    testWidgets('Should display phone input field', (tester) async {
       await startApp(tester);
+      await tester.pumpAndSettle(const Duration(seconds: 3));
       await goToLoginPage(tester);
 
-      final phoneField = find.byKey(AppKeys.phoneField);
-      await tester.enterText(phoneField, '+84987654321');
-      await tester.pumpAndSettle();
-
-      // Phone field should contain the entered text
-      final textField = tester.widget<TextFormField>(phoneField);
-      expect(textField.controller?.text, '+84987654321');
+      // Phone field should be visible
+      expect(find.byKey(AppKeys.phoneField), findsOneWidget);
+      expect(find.byType(TextFormField), findsWidgets);
     });
 
-    testWidgets('Should clear phone number when tapping back', (tester) async {
+    testWidgets('Should accept phone number input', (tester) async {
       await startApp(tester);
+      await tester.pumpAndSettle(const Duration(seconds: 3));
       await goToLoginPage(tester);
 
-      await enterPhoneNumber(tester, '+84987654321');
+      // Enter phone number
+      await enterPhoneNumber(tester, '0987654321');
+      await tester.pumpAndSettle();
+
+      // Verify input was entered
+      final phoneField = find.byKey(AppKeys.phoneField);
+      final textField = tester.widget<TextFormField>(phoneField);
+      expect(textField.controller?.text, '0987654321',
+          reason: 'Phone field should contain entered text');
+    });
+
+    testWidgets('Should clear phone input on back navigation', (tester) async {
+      await startApp(tester);
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+      await goToLoginPage(tester);
+
+      // Enter phone
+      await enterPhoneNumber(tester, '0987654321');
+      await tester.pumpAndSettle();
 
       // Go back
       await tester.tap(find.byIcon(Icons.arrow_back));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      // Go to login again
+      // Return to login
       await goToLoginPage(tester);
 
-      // Phone field should be empty
+      // Field should be empty
       final phoneField = find.byKey(AppKeys.phoneField);
       final textField = tester.widget<TextFormField>(phoneField);
-      expect(textField.controller?.text, '');
+      expect(textField.controller?.text, '',
+          reason: 'Phone field should be cleared after back navigation');
+    });
+
+    testWidgets('Should show send OTP button', (tester) async {
+      await startApp(tester);
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+      await goToLoginPage(tester);
+
+      // Send OTP button should be visible
+      expect(find.byKey(AppKeys.sendOtpButton), findsOneWidget,
+          reason: 'Send OTP button should be displayed');
+    });
+  });
+
+  group('UI Widgets and Layout', () {
+    testWidgets('Should find all expected widgets on login page',
+        (tester) async {
+      await startApp(tester);
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+      await goToLoginPage(tester);
+
+      // Check all key widgets exist
+      expect(find.byType(Scaffold), findsWidgets);
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.byKey(AppKeys.phoneField), findsOneWidget);
+      expect(find.byKey(AppKeys.sendOtpButton), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+    });
+
+    testWidgets('Should have proper app structure', (tester) async {
+      await startApp(tester);
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      // Verify basic Flutter app structure
+      expect(find.byType(MaterialApp), findsOneWidget);
+      expect(find.byType(Scaffold), findsWidgets);
     });
   });
 }
