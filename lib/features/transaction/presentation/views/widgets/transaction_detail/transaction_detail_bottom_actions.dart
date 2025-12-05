@@ -63,8 +63,8 @@ class TransactionDetailBottomActions extends ConsumerWidget {
     final theme = Theme.of(context);
     final spacing = theme.extension<AppSpacing>()!.screenPadding;
 
-    // Show review/complain buttons for completed transactions
-    if (_isCompleted) {
+    // Show review/complain buttons for completed transactions (household only)
+    if (_isCompleted && _isHousehold) {
       return Container(
         padding: EdgeInsets.all(spacing),
         decoration: BoxDecoration(
@@ -81,6 +81,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
           child: _CompletedTransactionActions(
             transactionId: transaction.transactionId,
             onActionCompleted: onActionCompleted,
+            userRole: userRole,
           ),
         ),
       );
@@ -1266,17 +1267,23 @@ class _ToggleCancelButton extends ConsumerWidget {
 class _CompletedTransactionActions extends StatelessWidget {
   final String transactionId;
   final VoidCallback onActionCompleted;
+  final Role userRole;
 
   const _CompletedTransactionActions({
     required this.transactionId,
     required this.onActionCompleted,
+    required this.userRole,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final spacing = theme.extension<AppSpacing>()!.screenPadding;
+    final spacing = Theme.of(context).extension<AppSpacing>()!.screenPadding;
     final s = S.of(context)!;
+
+    // Only show review/complaint buttons for household users
+    if (userRole != Role.household) {
+      return const SizedBox.shrink();
+    }
 
     return Row(
       children: [
@@ -1297,7 +1304,7 @@ class _CompletedTransactionActions extends StatelessWidget {
             label: Text(s.write_review),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.warning,
-              foregroundColor: theme.scaffoldBackgroundColor,
+              foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(vertical: spacing),
               elevation: 0,
               shape: RoundedRectangleBorder(

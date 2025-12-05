@@ -70,8 +70,9 @@ class TransactionListCard extends StatelessWidget {
               _TransactionPriceChip(price: transaction.totalPrice),
             ],
 
-            // Action buttons for completed transactions
-            if (transaction.statusEnum == TransactionStatus.completed) ...[
+            // Action buttons for completed transactions (only for household)
+            if (transaction.statusEnum == TransactionStatus.completed && 
+                userRole == Role.household) ...[
               SizedBox(height: space * 1.2),
               _TransactionActionButtons(
                 onReviewTap: onReviewTap,

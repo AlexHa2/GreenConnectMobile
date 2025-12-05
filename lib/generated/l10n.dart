@@ -379,6 +379,24 @@ abstract class S {
   /// **'Enter your OTP'**
   String get otp_hint;
 
+  /// No description provided for @otp_security_message.
+  ///
+  /// In en, this message translates to:
+  /// **'We will send OTP code to your phone number'**
+  String get otp_security_message;
+
+  /// No description provided for @country_flag.
+  ///
+  /// In en, this message translates to:
+  /// **'🇻🇳'**
+  String get country_flag;
+
+  /// No description provided for @country_code.
+  ///
+  /// In en, this message translates to:
+  /// **'+84'**
+  String get country_code;
+
   /// No description provided for @house_hold.
   ///
   /// In en, this message translates to:
@@ -408,6 +426,36 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Failed to redeem reward'**
   String get failed_to_redeem_reward;
+
+  /// No description provided for @no_rewards_message.
+  ///
+  /// In en, this message translates to:
+  /// **'No rewards message'**
+  String get no_rewards_message;
+
+  /// No description provided for @reward_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward Details'**
+  String get reward_details;
+
+  /// No description provided for @value.
+  ///
+  /// In en, this message translates to:
+  /// **'value'**
+  String get value;
+
+  /// No description provided for @points.
+  ///
+  /// In en, this message translates to:
+  /// **'points'**
+  String get points;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
 
   /// No description provided for @collector.
   ///
@@ -523,12 +571,6 @@ abstract class S {
   /// **'Keep recycling to grow your tree'**
   String get keep_your_tree;
 
-  /// No description provided for @points.
-  ///
-  /// In en, this message translates to:
-  /// **'points'**
-  String get points;
-
   /// No description provided for @accepted.
   ///
   /// In en, this message translates to:
@@ -582,12 +624,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Post Title'**
   String get post_title;
-
-  /// No description provided for @description.
-  ///
-  /// In en, this message translates to:
-  /// **'Description'**
-  String get description;
 
   /// No description provided for @pickup_address.
   ///
@@ -997,12 +1033,6 @@ abstract class S {
   /// **'Latest posts'**
   String get latest_posts;
 
-  /// No description provided for @value.
-  ///
-  /// In en, this message translates to:
-  /// **'value'**
-  String get value;
-
   /// No description provided for @status.
   ///
   /// In en, this message translates to:
@@ -1284,6 +1314,18 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Enter your phone number'**
   String get enter_phone_number;
+
+  /// No description provided for @enter_otp_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter OTP Code'**
+  String get enter_otp_code;
+
+  /// No description provided for @secure_login.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure login with OTP'**
+  String get secure_login;
 
   /// No description provided for @verification.
   ///
@@ -4506,6 +4548,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Other'**
   String get other_gender;
+
+  /// No description provided for @buyed.
+  ///
+  /// In en, this message translates to:
+  /// **'Buyed'**
+  String get buyed;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
