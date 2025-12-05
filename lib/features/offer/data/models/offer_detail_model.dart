@@ -8,6 +8,7 @@ class OfferDetailModel {
   final ScrapCategoryModel? scrapCategory;
   final double pricePerUnit;
   final String unit;
+  final String? imageUrl;
 
   OfferDetailModel({
     required this.offerDetailId,
@@ -16,6 +17,7 @@ class OfferDetailModel {
     this.scrapCategory,
     required this.pricePerUnit,
     required this.unit,
+    this.imageUrl,
   });
 
   factory OfferDetailModel.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class OfferDetailModel {
           : null,
       pricePerUnit: (json['pricePerUnit'] as num).toDouble(),
       unit: json['unit'],
+      imageUrl: json['imageUrl'] as String?,
     );
   }
 
@@ -39,6 +42,7 @@ class OfferDetailModel {
       'scrapCategory': scrapCategory?.toJson(),
       'pricePerUnit': pricePerUnit,
       'unit': unit,
+      'imageUrl': imageUrl,
     };
   }
 
@@ -50,6 +54,7 @@ class OfferDetailModel {
       scrapCategory: scrapCategory?.toEntity(),
       pricePerUnit: pricePerUnit,
       unit: unit,
+      imageUrl: imageUrl,
     );
   }
 }

@@ -1,62 +1,82 @@
+import 'package:GreenConnectMobile/features/reward/presentation/providers/reward_providers.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RewardStore extends StatefulWidget {
+class RewardStore extends ConsumerStatefulWidget {
   const RewardStore({super.key});
 
   @override
-  State<RewardStore> createState() => _RewardStoreState();
+  ConsumerState<RewardStore> createState() => _RewardStoreState();
 }
 
-class _RewardStoreState extends State<RewardStore> {
-  int points = 850;
-  int cartTotal = 0;
-  int itemCount = 0;
-
-  final List<Map<String, dynamic>> rewards = [
-    {'name': 'Plant A Tree', 'image': 'assets/images/leaf_2.png', 'cost': 100},
-    {'name': 'Eco Bag', 'image': 'assets/images/leaf_2.png', 'cost': 100},
-    {'name': 'Solar Charger', 'image': 'assets/images/leaf_2.png', 'cost': 100},
-    {
-      'name': 'Reusable Bottle',
-      'image': 'assets/images/leaf_2.png',
-      'cost': 100,
-    },
-    {
-      'name':
-          'Compost KitCompost KitCompost KitCompost KitCompost KitCompost KitCompost Kit',
-      'image': 'assets/images/leaf_2.png',
-      'cost': 100,
-    },
-    {
-      'name': 'LED Bulbs Pack',
-      'image': 'assets/images/leaf_2.png',
-      'cost': 100,
-    },
-  ];
-
-  void addToCart(int cost) {
-    if (points >= cartTotal + cost) {
-      setState(() {
-        cartTotal += cost;
-        itemCount++;
-      });
-    }
+class _RewardStoreState extends ConsumerState<RewardStore> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch reward items on page load
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(rewardViewModelProvider.notifier).fetchRewardItems();
+    });
   }
 
-  void redeem() {
-    if (itemCount == 0) return;
-    setState(() {
-      points -= cartTotal;
-      cartTotal = 0;
-      itemCount = 0;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(S.of(context)!.items_redeemed_successfully)),
+  Future<void> _onRefresh() async {
+    await ref.read(rewardViewModelProvider.notifier).fetchRewardItems();
+  }
+
+  void _onRedeemItem(int rewardItemId) async {
+    final s = S.of(context);
+    if (s == null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(s.confirm),
+        content: Text(s.confirm_redeem_reward),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(s.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(s.confirm),
+          ),
+        ],
+      ),
     );
+
+    if (confirmed == true && mounted) {
+      await ref
+          .read(rewardViewModelProvider.notifier)
+          .redeemReward(rewardItemId);
+
+      final state = ref.read(rewardViewModelProvider);
+      if (state.successMessage != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(s.reward_redeemed_successfully),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        // Clear message after showing
+        ref.read(rewardViewModelProvider.notifier).clearMessages();
+      } else if (state.errorMessage != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(state.errorMessage!),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        // Clear message after showing
+        ref.read(rewardViewModelProvider.notifier).clearMessages();
+      }
+    }
   }
 
   @override
@@ -65,7 +85,11 @@ class _RewardStoreState extends State<RewardStore> {
     final spacing = theme.extension<AppSpacing>()!;
     final s = S.of(context)!;
     final space = spacing.screenPadding;
-    final logo = 'assets/images/leaf_2.png';
+    final defaultImage = 'assets/images/leaf_2.png';
+
+    final rewardState = ref.watch(rewardViewModelProvider);
+    final rewardItems = rewardState.rewardItems ?? [];
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -75,143 +99,299 @@ class _RewardStoreState extends State<RewardStore> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(space),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${s.your_point}: $points',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.primaryColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: space),
-            Expanded(
-              child: GridView.builder(
-                itemCount: rewards.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisExtent: space * 20,
-                  crossAxisSpacing: space,
-                  mainAxisSpacing: space,
-                ),
-                itemBuilder: (context, index) {
-                  final item = rewards[index];
-                  return Container(
-                    margin: EdgeInsets.all(space / 2),
-                    decoration: BoxDecoration(
-                      color: theme.cardColor,
-                      borderRadius: BorderRadius.circular(space),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.primaryColorDark.withValues(alpha: 0.08),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: rewardState.isLoading && rewardItems.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(theme.primaryColor),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(space),
-                            topRight: Radius.circular(space),
+                    SizedBox(height: space),
+                    Text(
+                      s.loading,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.textTheme.bodySmall?.color,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : rewardState.errorMessage != null && rewardItems.isEmpty
+            ? Center(
+                child: Padding(
+                  padding: EdgeInsets.all(space * 2),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: theme.colorScheme.error,
+                      ),
+                      SizedBox(height: space),
+                      Text(
+                        rewardState.errorMessage!,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyLarge,
+                      ),
+                      SizedBox(height: space * 2),
+                      ElevatedButton.icon(
+                        onPressed: _onRefresh,
+                        icon: const Icon(Icons.refresh),
+                        label: Text(s.try_again),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : rewardItems.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.card_giftcard_outlined,
+                      size: 64,
+                      color: theme.disabledColor,
+                    ),
+                    SizedBox(height: space),
+                    Text(s.no_rewards_available),
+                  ],
+                ),
+              )
+            : Padding(
+                padding: EdgeInsets.all(space),
+                child: GridView.builder(
+                  itemCount: rewardItems.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisExtent: space * 22,
+                    crossAxisSpacing: space,
+                    mainAxisSpacing: space,
+                  ),
+                  itemBuilder: (context, index) {
+                    final item = rewardItems[index];
+                    final hasImage = item.imageUrl.isNotEmpty;
+
+                    return Container(
+                      margin: EdgeInsets.all(space / 2),
+                      decoration: BoxDecoration(
+                        color: theme.cardColor,
+                        borderRadius: BorderRadius.circular(space),
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.primaryColorDark.withValues(
+                              alpha: 0.08,
+                            ),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
-                          child: Stack(
-                            children: [
-                              Container(
-                                height: 100,
-                                width: double.infinity,
-                                color: theme.textTheme.bodyMedium?.color
-                                    ?.withValues(alpha: 0.1),
-                                child: Image.asset(logo, fit: BoxFit.cover),
-                              ),
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: Container(
-                                  padding: EdgeInsets.all(space / 2),
-                                  decoration: BoxDecoration(
-                                    gradient: AppColors.linearSecondary,
-                                    borderRadius: BorderRadius.circular(space),
-                                  ),
-                                  child: Text(
-                                    '⭐ ${item['cost']}',
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: theme.primaryColorDark,
-                                      fontWeight: FontWeight.bold,
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Image section with loading indicator
+                          ClipRRect(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(space),
+                              topRight: Radius.circular(space),
+                            ),
+                            child: Stack(
+                              children: [
+                                SizedBox(
+                                  height: 120,
+                                  width: double.infinity,
+                                  child: hasImage
+                                      ? Image.network(
+                                          item.imageUrl,
+                                          fit: BoxFit.cover,
+                                          loadingBuilder: (context, child, loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            }
+                                            return Container(
+                                              color: theme.primaryColor
+                                                  .withValues(alpha: 0.05),
+                                              child: Center(
+                                                child: SizedBox(
+                                                  width: 30,
+                                                  height: 30,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 3,
+                                                    value:
+                                                        loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                  .cumulativeBytesLoaded /
+                                                              loadingProgress
+                                                                  .expectedTotalBytes!
+                                                        : null,
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation(
+                                                          theme.primaryColor,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Container(
+                                                  color: theme.primaryColor
+                                                      .withValues(alpha: 0.05),
+                                                  child: Image.asset(
+                                                    defaultImage,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                );
+                                              },
+                                        )
+                                      : Container(
+                                          color: theme.primaryColor.withValues(
+                                            alpha: 0.05,
+                                          ),
+                                          child: Image.asset(
+                                            defaultImage,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                ),
+                                // Points badge
+                                Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: space * 0.75,
+                                      vertical: space * 0.4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      gradient: AppColors.linearSecondary,
+                                      borderRadius: BorderRadius.circular(
+                                        space * 0.75,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: theme.colorScheme.onSurface.withValues(
+                                            alpha: 0.2,
+                                          ),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.stars,
+                                          size: 14,
+                                          color: AppColors.warningUpdate,
+                                        ),
+                                        SizedBox(width: space * 0.25),
+                                        Text(
+                                          '${item.pointsCost}',
+                                          style: theme.textTheme.labelSmall
+                                              ?.copyWith(
+                                                color: theme.primaryColorDark,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: space,
-                            vertical: space / 2,
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                item['name'],
-                                textAlign: TextAlign.center,
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
+                                // Type badge
+                                Positioned(
+                                  top: 8,
+                                  left: 8,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: space * 0.6,
+                                      vertical: space * 0.3,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: item.type == 'Credit'
+                                          ? Colors.blue.withValues(alpha: 0.9)
+                                          : theme.primaryColor.withValues(alpha: 0.9),
+                                      borderRadius: BorderRadius.circular(
+                                        space * 0.5,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      item.type,
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                            color: theme.scraffoldBackgroundColor,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 10,
+                                          ),
+                                    ),
+                                  ),
                                 ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(height: space),
-                              GradientButton(
-                                text: s.add,
-                                onPressed: () => addToCart(item['cost']),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                          // Content section
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.all(space * 0.75),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.itemName,
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  SizedBox(height: space * 0.4),
+                                  Expanded(
+                                    child: Text(
+                                      item.description,
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .textTheme
+                                                .bodySmall
+                                                ?.color
+                                                ?.withValues(alpha: 0.7),
+                                          ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  SizedBox(height: space * 0.5),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: GradientButton(
+                                      text: s.redeem,
+                                      onPressed: rewardState.isRedeeming
+                                          ? null
+                                          : () => _onRedeemItem(
+                                              item.rewardItemId,
+                                            ),
+                                      isEnabled: !rewardState.isRedeeming,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            SizedBox(height: space),
-            Container(
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(space),
-                border: Border.all(color: theme.dividerColor),
-              ),
-              padding: EdgeInsets.symmetric(
-                vertical: space,
-                horizontal: space * 1.2,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    '${s.cart_total}: ⭐ $cartTotal',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: space / 2),
-                  GradientButton(
-                    text: '${s.redeem} ($itemCount ${s.items})',
-                    onPressed: redeem,
-                    isEnabled: itemCount > 0,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

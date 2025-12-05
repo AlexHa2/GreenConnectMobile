@@ -13,6 +13,7 @@ class AppColors {
   static const Color warning = Color(0xFFFFD83D); // Warning or alert color
   static const Color danger = Color(0xFFC72323); // Error or destructive color
   static const Color warningUpdate = Color(0xFFF96E38); // Warning for updates
+  static const Color info = Color(0xFF3498DB);
 
   // ===== Borders & Inputs =====
   static const Color border = Color(0xFFEEEEEE); // Light gray border

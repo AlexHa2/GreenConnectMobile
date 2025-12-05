@@ -2,23 +2,23 @@ import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart'
 import 'package:GreenConnectMobile/features/profile/domain/entities/profile_entity.dart';
 
 class ProfileModel extends UserModel {
-  final String profileId;
-  final String dateOfBirth;
-  final String address;
-  final String gender;
-
   ProfileModel({
-    required this.profileId,
+    required super.profileId,
     required super.userId,
     required super.fullName,
     required super.phoneNumber,
+    super.dateOfBirth,
+    super.address,
+    super.gender,
     required super.pointBalance,
+    super.creditBalance,
     required super.rank,
     required super.roles,
     super.avatarUrl,
-    required this.dateOfBirth,
-    required this.address,
-    required this.gender,
+    super.buyerType,
+    super.bankCode,
+    super.bankAccountNumber,
+    super.bankAccountName,
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
@@ -27,13 +27,18 @@ class ProfileModel extends UserModel {
       userId: json['userId'] ?? '',
       fullName: json['fullName'] ?? '',
       phoneNumber: json['phoneNumber'] ?? '',
+      dateOfBirth: json['dateOfBirth'],
+      address: json['address'],
+      gender: json['gender'],
       pointBalance: json['pointBalance'] ?? 0,
+      creditBalance: json['creditBalance'],
       rank: json['rank'] ?? '',
       roles: List<String>.from(json['roles'] ?? []),
       avatarUrl: json['avatarUrl'],
-      dateOfBirth: json['dateOfBirth'] ?? '',
-      address: json['address'] ?? '',
-      gender: json['gender'] ?? '',
+      buyerType: json['buyerType'],
+      bankCode: json['bankCode'],
+      bankAccountNumber: json['bankAccountNumber'],
+      bankAccountName: json['bankAccountName'],
     );
   }
 
@@ -44,30 +49,40 @@ class ProfileModel extends UserModel {
       'userId': userId,
       'fullName': fullName,
       'phoneNumber': phoneNumber,
-      'pointBalance': pointBalance,
-      'rank': rank,
-      'roles': roles,
-      'avatarUrl': avatarUrl,
       'dateOfBirth': dateOfBirth,
       'address': address,
       'gender': gender,
+      'pointBalance': pointBalance,
+      'creditBalance': creditBalance,
+      'rank': rank,
+      'roles': roles,
+      'avatarUrl': avatarUrl,
+      'buyerType': buyerType,
+      'bankCode': bankCode,
+      'bankAccountNumber': bankAccountNumber,
+      'bankAccountName': bankAccountName,
     };
   }
 
   @override
   ProfileEntity toEntity() {
     return ProfileEntity(
-      profileId: profileId,
+      profileId: profileId!,
       userId: userId,
       fullName: fullName,
       phoneNumber: phoneNumber,
-      pointBalance: pointBalance,
-      rank: rank,
-      roles: roles,
-      avatarUrl: avatarUrl,
       dateOfBirth: dateOfBirth,
       address: address,
       gender: gender,
+      pointBalance: pointBalance,
+      creditBalance: creditBalance,
+      rank: rank,
+      roles: roles,
+      avatarUrl: avatarUrl,
+      buyerType: buyerType,
+      bankCode: bankCode,
+      bankAccountNumber: bankAccountNumber,
+      bankAccountName: bankAccountName,
     );
   }
 }

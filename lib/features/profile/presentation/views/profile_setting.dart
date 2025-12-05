@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:GreenConnectMobile/core/di/injector.dart';
 import 'package:GreenConnectMobile/core/enum/buyer_type_status.dart';
 import 'package:GreenConnectMobile/core/enum/role.dart';
@@ -110,6 +109,47 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
     }
   }
 
+  void _showEditProfileDialog(BuildContext context, dynamic user, S s) {
+    final UserUpdateModel userUpdateModel = UserUpdateModel(
+      fullName: user?.fullName ?? '',
+      address: user?.address ?? '',
+      gender: user?.gender ?? '',
+      dateOfBirth: user?.dateOfBirth ?? '',
+      bankCode: user?.bankCode,
+      bankAccountNumber: user?.bankAccountNumber,
+      bankAccountName: user?.bankAccountName,
+    );
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => UpdateProfileDialog(
+        user: userUpdateModel,
+        onUpdated: () async {
+          final notifier = ref.read(profileViewModelProvider.notifier);
+          await notifier.getMe();
+          final newState = ref.read(profileViewModelProvider);
+          if (!mounted) return;
+          if (newState.user!.fullName.isNotEmpty) {
+            if (!mounted || !context.mounted) return;
+            CustomToast.show(
+              context,
+              s.profile_updated_successfully,
+              type: ToastType.success,
+            );
+          } else {
+            if (!mounted || !context.mounted) return;
+            CustomToast.show(
+              context,
+              s.error_occurred_while_updating_profile,
+              type: ToastType.error,
+            );
+          }
+        },
+      ),
+    );
+  }
+
   Widget _buildVerificationButtons(
     BuildContext context,
     dynamic user,
@@ -141,7 +181,7 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const UpgradeVerificationScreen(
+                    builder: (_) => const UpgradeVerificationPage(
                       mode: VerificationMode.create,
                     ),
                   ),
@@ -178,7 +218,7 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => UpgradeVerificationScreen(
+                    builder: (_) => UpgradeVerificationPage(
                       mode: VerificationMode.update,
                       initialBuyerType: isIndividualCollector
                           ? BuyerTypeStatus.business
@@ -253,75 +293,107 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
               },
             ),
             SizedBox(height: spacing.screenPadding * 2),
+
+            // Personal Information Card
             CardProfileSetting(
               title: "${s.profile} ${s.information}",
-              icon: Icons.info_outline,
-              onEdit: () {
-                final UserUpdateModel userUpdateModel = UserUpdateModel(
-                  fullName: user?.fullName ?? '',
-                  address: user?.address ?? '',
-                  gender: user?.gender ?? '',
-                  dateOfBirth: user?.dateOfBirth ?? '',
-                );
-                showDialog(
-                  context: context,
-                  builder: (_) => UpdateProfileDialog(
-                    user: userUpdateModel,
-                    onUpdated: () async {
-                      final notifier = ref.read(
-                        profileViewModelProvider.notifier,
-                      );
-                      await notifier.getMe();
-                      final newState = ref.read(profileViewModelProvider);
-                      if (!mounted) return;
-                      if (newState.user!.fullName.isNotEmpty) {
-                        if (!mounted || !context.mounted) return;
-                        CustomToast.show(
-                          context,
-                          s.profile_updated_successfully,
-                          type: ToastType.success,
-                        );
-                      } else {
-                        if (!mounted || !context.mounted) return;
-                        CustomToast.show(
-                          context,
-                          s.error_occurred_while_updating_profile,
-                          type: ToastType.error,
-                        );
-                      }
-                    },
-                  ),
-                );
-              },
+              icon: Icons.person_outline,
+              onEdit: () => _showEditProfileDialog(context, user, s),
               children: [
                 CardInforProfileSetting(
-                  icon: Icons.person_outline,
-                  label: "${s.fullname}:",
-                  value: user?.fullName ?? "",
+                  icon: Icons.badge_outlined,
+                  label: s.fullname,
+                  value: user?.fullName ?? s.not_updated,
                 ),
                 CardInforProfileSetting(
-                  icon: Icons.phone,
-                  label: "${s.phone_number}:",
-                  value: user?.phoneNumber ?? "",
-                ),
-                CardInforProfileSetting(
-                  icon: Icons.location_on_outlined,
-                  label: "${s.street_address}:",
-                  value: user?.address ?? "",
+                  icon: Icons.phone_outlined,
+                  label: s.phone_number,
+                  value: user?.phoneNumber ?? s.not_updated,
                 ),
                 CardInforProfileSetting(
                   icon: Icons.wc_outlined,
-                  label: "${s.gender}:",
-                  value: user?.gender == "Male" ? s.male : s.female,
+                  label: s.gender,
+                  value: user?.gender == "Male"
+                      ? s.male
+                      : (user?.gender == "Female" ? s.female : s.other_gender),
                 ),
                 CardInforProfileSetting(
                   icon: Icons.cake_outlined,
-                  label: "${s.date_of_birth}:",
-                  value: user?.dateOfBirth ?? "",
+                  label: s.date_of_birth,
+                  value: user?.dateOfBirth ?? s.not_updated,
+                ),
+                CardInforProfileSetting(
+                  icon: Icons.location_on_outlined,
+                  label: s.street_address,
+                  value: user?.address ?? s.not_updated,
                 ),
               ],
             ),
             SizedBox(height: spacing.screenPadding * 2),
+
+            // Account Statistics Card
+            CardProfileSetting(
+              title: s.account_information,
+              icon: Icons.account_circle_outlined,
+              children: [
+                CardInforProfileSetting(
+                  icon: Icons.military_tech_outlined,
+                  label: s.member_rank,
+                  value: user?.rank ?? s.not_determined,
+                ),
+                CardInforProfileSetting(
+                  icon: Icons.stars_outlined,
+                  label: s.points_balance,
+                  value: '${user?.pointBalance ?? 0} ${s.points}',
+                ),
+                CardInforProfileSetting(
+                  icon: Icons.account_balance_wallet_outlined,
+                  label: s.credit_balance,
+                  value: '${user?.creditBalance ?? 0} VNĐ',
+                ),
+                if (user?.buyerType != null && user!.buyerType!.isNotEmpty)
+                  CardInforProfileSetting(
+                    icon: Icons.business_center_outlined,
+                    label: s.account_type,
+                    value: user.buyerType == 'Individual'
+                        ? s.buyer_type_individual
+                        : s.buyer_type_business,
+                  ),
+              ],
+            ),
+            SizedBox(height: spacing.screenPadding * 2),
+
+            // Banking Information Card
+            CardProfileSetting(
+              title: s.banking_information,
+              icon: Icons.account_balance,
+              onEdit: () => _showEditProfileDialog(context, user, s),
+              children: [
+                CardInforProfileSetting(
+                  icon: Icons.account_balance,
+                  label: s.bank_code,
+                  value: (user?.bankCode?.isNotEmpty ?? false)
+                      ? user!.bankCode!
+                      : s.not_linked,
+                ),
+                CardInforProfileSetting(
+                  icon: Icons.credit_card,
+                  label: s.account_number,
+                  value: (user?.bankAccountNumber?.isNotEmpty ?? false)
+                      ? user!.bankAccountNumber!
+                      : s.not_updated,
+                ),
+                CardInforProfileSetting(
+                  icon: Icons.person_outline,
+                  label: s.account_holder_name,
+                  value: (user?.bankAccountName?.isNotEmpty ?? false)
+                      ? user!.bankAccountName!
+                      : s.not_updated,
+                ),
+              ],
+            ),
+            SizedBox(height: spacing.screenPadding * 2),
+
             CardProfileSetting(
               title: s.settings,
               icon: Icons.settings_outlined,

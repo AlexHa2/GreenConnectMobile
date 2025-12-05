@@ -31,6 +31,22 @@ class FeedbackListHeader extends StatelessWidget {
         children: [
           Row(
             children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios_rounded,
+                    color: theme.colorScheme.primary,
+                    size: 20,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                  tooltip: s.back,
+                ),
+              ),
+              SizedBox(width: spacing),
               Expanded(
                 child: Text(
                   s.feedback.toUpperCase(),

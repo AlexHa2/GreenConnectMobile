@@ -2,6 +2,7 @@ import 'package:GreenConnectMobile/core/di/profile_injector.dart';
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
+import 'package:GreenConnectMobile/features/message/presentation/providers/message_providers.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/transaction_detail_app_bar.dart';
@@ -11,6 +12,7 @@ import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_leaf_loading.dart';
+import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,10 +20,7 @@ import 'package:go_router/go_router.dart';
 class TransactionDetailPageModern extends ConsumerStatefulWidget {
   final String transactionId;
 
-  const TransactionDetailPageModern({
-    super.key,
-    required this.transactionId,
-  });
+  const TransactionDetailPageModern({super.key, required this.transactionId});
 
   @override
   ConsumerState<TransactionDetailPageModern> createState() =>
@@ -102,12 +101,7 @@ class _TransactionDetailPageModernState
     );
   }
 
-  Widget _buildBody(
-    dynamic state,
-    ThemeData theme,
-    AppSpacing spacing,
-    S s,
-  ) {
+  Widget _buildBody(dynamic state, ThemeData theme, AppSpacing spacing, S s) {
     if (state.isLoadingDetail) {
       return const Center(
         key: ValueKey('loading'),
@@ -169,10 +163,7 @@ class _TransactionDetailContent extends StatelessWidget {
             child: Column(
               children: [
                 // Top app bar
-                TransactionDetailAppBar(
-                  onBack: onBack,
-                  onRefresh: onRefresh,
-                ),
+                TransactionDetailAppBar(onBack: onBack, onRefresh: onRefresh),
 
                 // Scrollable content
                 Expanded(
@@ -211,7 +202,207 @@ class _TransactionDetailContent extends StatelessWidget {
             onActionCompleted: onActionCompleted,
           ),
         ),
+
+        // Floating chat button
+        Positioned(
+          right: 16,
+          bottom: 100,
+          child: _ChatFloatingButton(
+            transaction: transaction,
+            userRole: userRole,
+          ),
+        ),
       ],
+    );
+  }
+}
+
+/// Floating chat button
+class _ChatFloatingButton extends ConsumerWidget {
+  final TransactionEntity transaction;
+  final Role userRole;
+
+  const _ChatFloatingButton({
+    required this.transaction,
+    required this.userRole,
+  });
+
+  Future<void> _openChat(BuildContext context, WidgetRef ref) async {
+    try {
+      final otherUserName = userRole == Role.household
+          ? transaction.scrapCollector.fullName
+          : transaction.household.fullName;
+
+      if (!context.mounted) return;
+
+      final s = S.of(context)!;
+
+      // Show loading toast
+      CustomToast.show(
+        context,
+        '${s.opening_chat_with} $otherUserName...',
+        type: ToastType.info,
+      );
+
+      // Step 1: Try to fetch existing chat rooms
+      await ref
+          .read(messageViewModelProvider.notifier)
+          .fetchChatRooms(page: 1, size: 100);
+
+      if (!context.mounted) return;
+
+      final messageState = ref.read(messageViewModelProvider);
+      final chatRooms = messageState.chatRooms?.chatRooms ?? [];
+
+      // Step 2: Check if chat room exists for this transaction
+      final existingRoom = chatRooms
+          .where((room) => room.transactionId == transaction.transactionId)
+          .firstOrNull;
+
+      if (existingRoom != null) {
+        // Chat room exists - Navigate directly
+        if (context.mounted) {
+          context.go(
+            '/chat-detail',
+            extra: {
+              'transactionId': transaction.transactionId,
+              'chatRoomId': existingRoom.chatRoomId,
+              'partnerName': existingRoom.partnerName,
+              'partnerAvatar': existingRoom.partnerAvatar,
+            },
+          );
+        }
+      } else {
+        // Chat room doesn't exist - Create by sending first message
+        if (!context.mounted) return;
+
+        // Show creating chat room toast
+        CustomToast.show(
+          context,
+          s.chat_creating_room,
+          type: ToastType.info,
+        );
+
+        // Send initial "Hello" message to create chat room
+        final success = await ref
+            .read(messageViewModelProvider.notifier)
+            .sendMessageWithTransaction(
+              transactionId: transaction.transactionId,
+              content: 'Hello! 👋',
+            );
+
+        if (!success) {
+          if (context.mounted) {
+            CustomToast.show(
+              context,
+              s.chat_failed_create_room,
+              type: ToastType.error,
+            );
+          }
+          return;
+        }
+
+        // Step 3: Fetch chat rooms again to get the newly created room
+        await ref
+            .read(messageViewModelProvider.notifier)
+            .fetchChatRooms(page: 1, size: 100);
+
+        if (!context.mounted) return;
+
+        final updatedState = ref.read(messageViewModelProvider);
+        final updatedRooms = updatedState.chatRooms?.chatRooms ?? [];
+
+        // Find the newly created chat room
+        final newRoom = updatedRooms
+            .where((room) => room.transactionId == transaction.transactionId)
+            .firstOrNull;
+
+        if (newRoom == null) {
+          if (context.mounted) {
+            CustomToast.show(
+              context,
+              s.chat_failed_load_room,
+              type: ToastType.error,
+            );
+          }
+          return;
+        }
+
+        // Navigate to the newly created chat room
+        if (context.mounted) {
+          CustomToast.show(
+            context,
+            s.chat_room_created_success,
+            type: ToastType.success,
+          );
+
+          context.push(
+            '/chat-detail',
+            extra: {
+              'transactionId': transaction.transactionId,
+              'chatRoomId': newRoom.chatRoomId,
+              'partnerName': newRoom.partnerName,
+              'partnerAvatar': newRoom.partnerAvatar,
+            },
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        CustomToast.show(
+          context,
+          'Error: ${e.toString()}',
+          type: ToastType.error,
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final s = S.of(context)!;
+
+    return Material(
+      elevation: 6,
+      borderRadius: BorderRadius.circular(16),
+      color: theme.primaryColor,
+      child: InkWell(
+        onTap: () => _openChat(context, ref),
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              colors: [
+                theme.primaryColor,
+                theme.primaryColor.withValues(alpha: 0.8),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.chat_bubble_rounded,
+                color: theme.scaffoldBackgroundColor,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                s.message,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.scaffoldBackgroundColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -270,11 +461,6 @@ class _TransactionErrorState extends StatelessWidget {
     final theme = Theme.of(context);
     final s = S.of(context)!;
 
-    return Center(
-      child: Text(
-        s.login_error,
-        style: theme.textTheme.bodyLarge,
-      ),
-    );
+    return Center(child: Text(s.login_error, style: theme.textTheme.bodyLarge));
   }
 }

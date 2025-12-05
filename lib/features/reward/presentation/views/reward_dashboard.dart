@@ -133,7 +133,9 @@ class RewardDashboard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  context.push('/reward-store');
+                },
                 icon: Icon(
                   Icons.card_giftcard,
                   color: theme.brightness == Brightness.light
@@ -156,7 +158,7 @@ class RewardDashboard extends StatelessWidget {
 
             Align(
               alignment: Alignment.centerLeft,
-              child: Text(s.recent_activity, style: theme.textTheme.titleLarge),
+              child: Text(s.recent_post, style: theme.textTheme.titleLarge),
             ),
             SizedBox(height: space),
             const ActivityCard(

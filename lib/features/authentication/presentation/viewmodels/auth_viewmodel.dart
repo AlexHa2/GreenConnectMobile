@@ -25,7 +25,11 @@ class AuthViewModel extends Notifier<AuthState> {
   // -------------------------------------------------------------------------
 
   Future<void> sendOtp(String phoneNumber) async {
-    state = state.copyWith(isLoading: true, errorMessage: null, errorCode: null);
+    state = state.copyWith(
+      isLoading: true,
+      errorMessage: null,
+      errorCode: null,
+    );
 
     await _sendOtpUsecase.call(
       phoneNumber: phoneNumber,
@@ -39,12 +43,12 @@ class AuthViewModel extends Notifier<AuthState> {
         // Handle Firebase error
         String errorMsg = e.message ?? 'Unknown error';
         int? errorCode;
-        
+
         // Parse Firebase error code if available
         if (e.code.isNotEmpty) {
           errorMsg = '${e.code}: ${e.message}';
         }
-        
+
         state = state.copyWith(
           isLoading: false,
           errorMessage: errorMsg,
@@ -84,7 +88,11 @@ class AuthViewModel extends Notifier<AuthState> {
       return;
     }
 
-    state = state.copyWith(isLoading: true, errorMessage: null, errorCode: null);
+    state = state.copyWith(
+      isLoading: true,
+      errorMessage: null,
+      errorCode: null,
+    );
 
     try {
       final userCred = await _verifyOtpUsecase.call(
@@ -101,10 +109,7 @@ class AuthViewModel extends Notifier<AuthState> {
           errorCode: e.statusCode,
         );
       } else {
-        state = state.copyWith(
-          isLoading: false,
-          errorMessage: e.toString(),
-        );
+        state = state.copyWith(isLoading: false, errorMessage: e.toString());
       }
     }
   }
@@ -126,7 +131,7 @@ class AuthViewModel extends Notifier<AuthState> {
         debugPrint('❌ ERROR LOGIN SYSTEM: ${e.message}');
         state = state.copyWith(
           isLoading: false,
-          errorMessage: e.toString(),
+          errorMessage: e.message,
           errorCode: e.statusCode,
         );
       } else {

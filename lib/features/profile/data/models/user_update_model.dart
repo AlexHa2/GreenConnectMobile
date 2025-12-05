@@ -6,6 +6,9 @@ class UserUpdateModel extends UserUpdateEntity {
     required super.address,
     required super.gender,
     required super.dateOfBirth,
+    super.bankCode,
+    super.bankAccountNumber,
+    super.bankAccountName,
   });
 
   @override
@@ -15,16 +18,26 @@ class UserUpdateModel extends UserUpdateEntity {
       address: json['address'] ?? '',
       gender: json['gender'] ?? '',
       dateOfBirth: json['dateOfBirth'] ?? '',
+      bankCode: json['bankCode'],
+      bankAccountNumber: json['bankAccountNumber'],
+      bankAccountName: json['bankAccountName'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    final Map<String, dynamic> data = {
       'fullName': fullName,
       'address': address,
       'gender': gender,
       'dateOfBirth': dateOfBirth,
     };
+    
+    // Only include bank fields if they are not null
+    if (bankCode != null) data['bankCode'] = bankCode;
+    if (bankAccountNumber != null) data['bankAccountNumber'] = bankAccountNumber;
+    if (bankAccountName != null) data['bankAccountName'] = bankAccountName;
+    
+    return data;
   }
 
 }
