@@ -14,16 +14,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class HouseholdListPostScreen extends ConsumerStatefulWidget {
-  const HouseholdListPostScreen({super.key});
+class HouseholdListPostPage extends ConsumerStatefulWidget {
+  const HouseholdListPostPage({super.key});
 
   @override
-  ConsumerState<HouseholdListPostScreen> createState() =>
-      _HouseholdListPostScreenState();
+  ConsumerState<HouseholdListPostPage> createState() =>
+      _HouseholdListPostPageState();
 }
 
-class _HouseholdListPostScreenState
-    extends ConsumerState<HouseholdListPostScreen> {
+class _HouseholdListPostPageState
+    extends ConsumerState<HouseholdListPostPage> {
   final ScrollController _scrollController = ScrollController();
 
   int _page = 1;

@@ -131,15 +131,38 @@ class _ComplaintListPageState extends ConsumerState<ComplaintListPage> {
         title: Text(s.complaint_list),
         centerTitle: true,
         elevation: 0,
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconButton(
             icon: Icon(
-              _sortAscending ? Icons.arrow_upward : Icons.arrow_downward,
-              color: theme.primaryColor,
+              Icons.arrow_back_ios_rounded,
+              color: theme.colorScheme.primary,
+              size: 20,
             ),
-            onPressed: _toggleSort,
-            tooltip: s.sort_by_date,
+            onPressed: () => context.pop(),
+            tooltip: s.back,
+          ),
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: Icon(
+                _sortAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                color: theme.colorScheme.primary,
+                size: 20,
+              ),
+              onPressed: _toggleSort,
+              tooltip: s.sort_by_date,
+            ),
           ),
         ],
       ),

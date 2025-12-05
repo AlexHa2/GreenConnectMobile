@@ -69,6 +69,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     context.go('/');
   }
 
+  void _clearLoginState() {
+    phoneController.clear();
+    otpController.clear();
+    timer?.cancel();
+    setState(() {
+      _phoneApiError = null;
+      _otpApiError = null;
+      seconds = 30;
+      isCounting = false;
+    });
+    ref.invalidate(authViewModelProvider);
+  }
+
   Future<void> _sendOtp() async {
     setState(() {
       _phoneApiError = null;
@@ -196,6 +209,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       final loginState = ref.read(authViewModelProvider);
       if (_handleLoginError(loginState)) return;
 
+      // Clear all login state after successful login
+      _clearLoginState();
+      
       _navigateByRoles(loginState);
     } finally {
       appLoading.value = false;

@@ -65,12 +65,16 @@ class _HouseholdLayoutState extends State<HouseholdLayout> {
     switch (label.toLowerCase()) {
       case "home":
         return s.home;
+      case "posts":
+        return s.post;
       case "complaints":
         return s.complaints;
       case "transactions":
         return s.transactions;
       case "feedbacks":
         return s.feedbacks;
+      case "messages":
+        return s.messages;
       case "profile":
         return s.profile;
       default:

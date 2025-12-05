@@ -7,6 +7,7 @@ class OfferDetailEntity {
   final ScrapCategoryEntity? scrapCategory;
   final double pricePerUnit;
   final String unit;
+  final String? imageUrl;
 
   OfferDetailEntity({
     required this.offerDetailId,
@@ -15,5 +16,6 @@ class OfferDetailEntity {
     this.scrapCategory,
     required this.pricePerUnit,
     required this.unit,
+    this.imageUrl,
   });
 }

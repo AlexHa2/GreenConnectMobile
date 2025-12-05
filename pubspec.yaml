@@ -49,6 +49,8 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   firebase_auth: ^6.1.2
   firebase_core: ^4.2.1
+  firebase_messaging: ^16.0.4
+  flutter_local_notifications: ^18.0.1
   rename_app: ^1.6.5
   phone_numbers_parser: ^9.0.16
   flutter_secure_storage: ^9.2.4
