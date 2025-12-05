@@ -211,7 +211,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
       // Clear all login state after successful login
       _clearLoginState();
-      
+
       _navigateByRoles(loginState);
     } finally {
       appLoading.value = false;
@@ -230,52 +230,181 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
-        backgroundColor: theme.cardColor,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
-          onPressed: _handleBackNavigation,
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: theme.cardColor.withValues(alpha: 0.9),
+            borderRadius: BorderRadius.circular(spacing.screenPadding),
+            boxShadow: [
+              BoxShadow(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios_new,
+              color: theme.iconTheme.color,
+              size: 20,
+            ),
+            onPressed: _handleBackNavigation,
+          ),
         ),
-        title: Text(S.of(context)!.back, style: theme.textTheme.titleLarge),
-        shape: Border(bottom: BorderSide(color: theme.dividerColor)),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(spacing.screenPadding),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                SizedBox(height: size.height * 0.05),
-                Text(
-                  S.of(context)!.welcome_login_primary,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 40),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              theme.primaryColor.withValues(alpha: 0.05),
+              theme.scaffoldBackgroundColor,
+              theme.scaffoldBackgroundColor,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: spacing.screenPadding,
+              vertical: spacing.screenPadding / 2,
+            ),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    SizedBox(height: size.height * 0.02),
 
-                if (isOtpSent)
-                  OtpInputCard(
-                    controller: otpController,
-                    phoneNumber: phoneController.text.trim(),
-                    errorText: _otpApiError,
-                    isLoading: isLoading,
-                    isCounting: isCounting,
-                    secondsRemaining: seconds,
-                    onCompleted: (value) => _verifyAndLogin(),
-                    onResend: () => _sendOtp(),
-                  )
-                else
-                  PhoneInputCard(
-                    controller: phoneController,
-                    errorText: _phoneApiError,
-                    isLoading: isLoading,
-                    onSendOtp: _sendOtp,
-                  ),
-              ],
+                    // Hero Illustration
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: ScaleTransition(
+                            scale: animation,
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: Container(
+                        key: ValueKey(isOtpSent),
+                        width: size.width * 0.35,
+                        height: size.width * 0.35,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              theme.primaryColor.withValues(alpha: 0.2),
+                              theme.primaryColor.withValues(alpha: 0.05),
+                            ],
+                          ),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            isOtpSent
+                                ? Icons.verified_user_rounded
+                                : Icons.phone_android_rounded,
+                            size: size.width * 0.18,
+                            color: theme.primaryColor,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: size.height * 0.03),
+
+                    // Welcome Text with Animation
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      duration: const Duration(milliseconds: 600),
+                      builder: (context, value, child) {
+                        return Opacity(
+                          opacity: value,
+                          child: Transform.translate(
+                            offset: Offset(0, 20 * (1 - value)),
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Text(
+                            isOtpSent
+                                ? S.of(context)!.verification
+                                : S.of(context)!.welcome_login_primary,
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            isOtpSent
+                                ? S.of(context)!.enter_the_code
+                                : 'Đăng nhập để tiếp tục sử dụng ứng dụng',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.textTheme.bodySmall?.color,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: size.height * 0.04),
+
+                    // Animated Card Switcher
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 400),
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0.1, 0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: isOtpSent
+                          ? OtpInputCard(
+                              key: const ValueKey('otp'),
+                              controller: otpController,
+                              phoneNumber: phoneController.text.trim(),
+                              errorText: _otpApiError,
+                              isLoading: isLoading,
+                              isCounting: isCounting,
+                              secondsRemaining: seconds,
+                              onCompleted: (value) => _verifyAndLogin(),
+                              onResend: () => _sendOtp(),
+                            )
+                          : PhoneInputCard(
+                              key: const ValueKey('phone'),
+                              controller: phoneController,
+                              errorText: _phoneApiError,
+                              isLoading: isLoading,
+                              onSendOtp: _sendOtp,
+                            ),
+                    ),
+
+                    SizedBox(height: size.height * 0.02),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

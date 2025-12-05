@@ -646,7 +646,7 @@ class _CreateRecyclingPostPageState
                               if (context.mounted) {
                                 navigateWithLoading(
                                   context,
-                                  route: '/list-post',
+                                  route: '/household-list-post',
                                 );
                               }
                             } else {

@@ -1,3 +1,6 @@
+import 'package:GreenConnectMobile/core/di/profile_injector.dart';
+import 'package:GreenConnectMobile/core/enum/role.dart';
+import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/providers/offer_providers.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/action_buttons_section.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/collector_info_section.dart';
@@ -29,17 +32,35 @@ class OfferDetailPage extends ConsumerStatefulWidget {
 }
 
 class _OfferDetailPageState extends ConsumerState<OfferDetailPage> {
+  final TokenStorageService _tokenStorage = sl<TokenStorageService>();
   late OfferActionHandler _actionHandler;
   bool _hasChanges = false;
+  Role _userRole = Role.household;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadUserRole();
       ref
           .read(offerViewModelProvider.notifier)
           .fetchOfferDetail(widget.offerId);
     });
+  }
+
+  Future<void> _loadUserRole() async {
+    final user = await _tokenStorage.getUserData();
+    if (user != null && user.roles.isNotEmpty) {
+      setState(() {
+        if (Role.hasRole(user.roles, Role.household)) {
+          _userRole = Role.household;
+        } else if (Role.hasRole(user.roles, Role.individualCollector)) {
+          _userRole = Role.individualCollector;
+        } else if (Role.hasRole(user.roles, Role.businessCollector)) {
+          _userRole = Role.businessCollector;
+        }
+      });
+    }
   }
 
   @override
@@ -200,6 +221,7 @@ class _OfferDetailPageState extends ConsumerState<OfferDetailPage> {
                     s: s,
                     offerStatus: offer.status,
                     mustTakeAll: offer.scrapPost?.mustTakeAll,
+                    userRole: _userRole,
                     onUpdate: widget.isCollectorView
                         ? (detailId, price, unit) =>
                             _handleUpdateOfferDetail(

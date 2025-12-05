@@ -152,6 +152,16 @@ class SVi extends S {
   String get otp_hint => 'Nhập OTP';
 
   @override
+  String get otp_security_message =>
+      'Chúng tôi sẽ gửi mã OTP đến số điện thoại của bạn';
+
+  @override
+  String get country_flag => '🇻🇳';
+
+  @override
+  String get country_code => '+84';
+
+  @override
   String get house_hold => 'Hộ gia đình';
 
   @override
@@ -166,6 +176,21 @@ class SVi extends S {
 
   @override
   String get failed_to_redeem_reward => 'Không thể đổi phần thưởng';
+
+  @override
+  String get no_rewards_message => 'Không có tin nhắn phần thưởng';
+
+  @override
+  String get reward_details => 'Chi tiết phần thưởng';
+
+  @override
+  String get value => 'Giá trị';
+
+  @override
+  String get points => 'điểm';
+
+  @override
+  String get description => 'Mô tả';
 
   @override
   String get collector => 'Người thu gom';
@@ -227,9 +252,6 @@ class SVi extends S {
   String get keep_your_tree => 'Tiếp tục tái chế để trồng cây của bạn';
 
   @override
-  String get points => 'điểm';
-
-  @override
   String get accepted => 'Được chấp nhận';
 
   @override
@@ -255,9 +277,6 @@ class SVi extends S {
 
   @override
   String get post_title => 'Tiêu đề bài đăng';
-
-  @override
-  String get description => 'Mô tả';
 
   @override
   String get pickup_address => 'Địa chỉ lấy';
@@ -466,9 +485,6 @@ class SVi extends S {
   String get latest_posts => 'Các bài đăng mới nhất';
 
   @override
-  String get value => 'Giá trị';
-
-  @override
   String get status => 'Trạng thái';
 
   @override
@@ -484,7 +500,7 @@ class SVi extends S {
   String get cart_total => 'Tổng giỏ hàng';
 
   @override
-  String get redeem => 'Phần thưởng';
+  String get redeem => 'Lấy gói';
 
   @override
   String get items_redeemed_successfully => 'Đã đổi quà thành công!';
@@ -613,7 +629,13 @@ class SVi extends S {
   String get resend_otp => 'Gửi lại otp';
 
   @override
-  String get enter_phone_number => 'Enter your phone number';
+  String get enter_phone_number => 'Nhập số điện thoại của bạn';
+
+  @override
+  String get enter_otp_code => 'Nhập mã OTP';
+
+  @override
+  String get secure_login => 'Đăng nhập bảo mật với OTP';
 
   @override
   String get verification => 'Xác thực số điện thoại';
@@ -2302,4 +2324,7 @@ class SVi extends S {
 
   @override
   String get other_gender => 'Khác';
+
+  @override
+  String get buyed => 'Đã mua';
 }
