@@ -214,7 +214,7 @@ class OfferItemCard extends StatelessWidget {
               ),
               SizedBox(height: space * 0.5),
               DropdownButtonFormField<String>(
-                value: unit,
+                initialValue: unit,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(space * 0.75),
@@ -225,10 +225,10 @@ class OfferItemCard extends StatelessWidget {
                   ),
                 ),
                 items: [
-                  DropdownMenuItem(value: 'kg', child: Text(s.kg)),
-                  DropdownMenuItem(value: 'g', child: Text(s.g)),
-                  DropdownMenuItem(value: 'ton', child: Text(s.ton)),
-                  DropdownMenuItem(value: 'piece', child: Text(s.piece)),
+                  DropdownMenuItem(value: s.kg, child: Text(s.kg)),
+                  DropdownMenuItem(value: s.g, child: Text(s.g)),
+                  DropdownMenuItem(value: s.ton, child: Text(s.ton)),
+                  DropdownMenuItem(value: s.piece, child: Text(s.piece)),
                 ],
                 onChanged: (value) {
                   if (value != null) onUnitChanged(value);

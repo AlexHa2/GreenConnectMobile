@@ -76,7 +76,7 @@ class MessageItem extends StatelessWidget {
       ),
       leading: CircleAvatar(
         radius: spacing.screenPadding * 2,
-        backgroundColor: theme.primaryColor.withOpacity(0.1),
+        backgroundColor: theme.primaryColor.withValues(alpha: 0.1),
         child: Text(
           message.avatarInitials,
           style: theme.textTheme.titleLarge?.copyWith(

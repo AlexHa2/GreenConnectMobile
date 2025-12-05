@@ -18,16 +18,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class PostDetailsScreen extends ConsumerStatefulWidget {
+class PostDetailsPage extends ConsumerStatefulWidget {
   final Map<String, dynamic> initialData;
 
-  const PostDetailsScreen({super.key, required this.initialData});
+  const PostDetailsPage({super.key, required this.initialData});
 
   @override
-  ConsumerState<PostDetailsScreen> createState() => _PostDetailsScreenState();
+  ConsumerState<PostDetailsPage> createState() => _PostDetailsPageState();
 }
 
-class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
+class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
   late String scrapPostId;
 
   @override
@@ -337,13 +337,9 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
               )
             else if (hasEntity)
               ...entity.scrapPostDetails.map((detail) {
-                // For collector view, only show available items
-                if (isCollectorView) {
-                  final itemStatus = PostDetailStatus.parseStatus(detail.status ?? 'available');
-                  if (itemStatus != PostDetailStatus.available) {
-                    return const SizedBox.shrink();
-                  }
-                }
+                final itemStatus = PostDetailStatus.parseStatus(
+                  detail.status ?? 'available',
+                );
                 return Padding(
                   padding: EdgeInsets.only(bottom: spacing.screenPadding / 2),
                   child: PostItemNoAction(
@@ -351,6 +347,8 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
                     category: detail.scrapCategory?.categoryName ?? s.unknown,
                     packageInformation: detail.amountDescription,
                     imageUrl: detail.imageUrl,
+                    status: itemStatus,
+                    isCollectorView: isCollectorView,
                   ),
                 );
               })
@@ -358,6 +356,9 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
               ...(widget.initialData['scrapItems'] as List<dynamic>? ?? []).map(
                 (item) {
                   final map = item as Map<String, dynamic>;
+                  final itemStatus = PostDetailStatus.parseStatus(
+                    map['status'] ?? 'available',
+                  );
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: PostItemNoAction(
@@ -365,6 +366,8 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
                       category: map['category'] ?? '',
                       packageInformation: map['amountDescription'] ?? '',
                       imageUrl: map['imageUrl'] ?? '',
+                      status: itemStatus,
+                      isCollectorView: isCollectorView,
                     ),
                   );
                 },
@@ -374,8 +377,9 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
           ],
         ),
       ),
-      floatingActionButton: isCollectorView && 
-              hasEntity && 
+      floatingActionButton:
+          isCollectorView &&
+              hasEntity &&
               PostStatus.parseStatus(status) != PostStatus.fullyBooked
           ? FloatingActionButton.extended(
               backgroundColor: theme.primaryColor,
@@ -395,7 +399,9 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
                   if (result == true && context.mounted) {
                     // Offer created successfully - refresh post detail
                     // Toast already shown in bottom sheet, just refresh
-                    ref.read(scrapPostViewModelProvider.notifier).fetchDetail(scrapPostId);
+                    ref
+                        .read(scrapPostViewModelProvider.notifier)
+                        .fetchDetail(scrapPostId);
                   }
                 });
               },

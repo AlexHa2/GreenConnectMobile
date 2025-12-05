@@ -27,6 +27,32 @@ class CollectionOfferModel {
   });
 
   factory CollectionOfferModel.fromJson(Map<String, dynamic> json) {
+    // Build a map of scrapCategoryId -> imageUrl from scrapPostDetails
+    final Map<int, String?> imageUrlMap = {};
+    if (json['scrapPost'] != null &&
+        json['scrapPost']['scrapPostDetails'] != null) {
+      for (var detail in json['scrapPost']['scrapPostDetails'] as List) {
+        final categoryId = detail['scrapCategoryId'] as int?;
+        final imageUrl = detail['imageUrl'] as String?;
+        if (categoryId != null) {
+          imageUrlMap[categoryId] = imageUrl;
+        }
+      }
+    }
+
+    // Parse offerDetails and inject imageUrl
+    final List<OfferDetailModel> offerDetailsList = [];
+    if (json['offerDetails'] != null) {
+      for (var offerDetailJson in json['offerDetails'] as List) {
+        final categoryId = offerDetailJson['scrapCategoryId'] as int?;
+        // Inject imageUrl from the map
+        if (categoryId != null && imageUrlMap.containsKey(categoryId)) {
+          offerDetailJson['imageUrl'] = imageUrlMap[categoryId];
+        }
+        offerDetailsList.add(OfferDetailModel.fromJson(offerDetailJson));
+      }
+    }
+
     return CollectionOfferModel(
       collectionOfferId: json['collectionOfferId'],
       scrapPostId: json['scrapPostId'],
@@ -36,19 +62,15 @@ class CollectionOfferModel {
       scrapCollector: json['scrapCollector'] != null
           ? CollectorModel.fromJson(json['scrapCollector'])
           : json['collector'] != null
-              ? CollectorModel.fromJson(json['collector'])
-              : null,
+          ? CollectorModel.fromJson(json['collector'])
+          : null,
       status: OfferStatus.parseStatus(json['status']),
       createdAt: DateTime.parse(json['createdAt']),
-      offerDetails: json['offerDetails'] != null
-          ? (json['offerDetails'] as List)
-              .map((e) => OfferDetailModel.fromJson(e))
-              .toList()
-          : [],
+      offerDetails: offerDetailsList,
       scheduleProposals: json['scheduleProposals'] != null
           ? (json['scheduleProposals'] as List)
-              .map((e) => ScheduleProposalModel.fromJson(e))
-              .toList()
+                .map((e) => ScheduleProposalModel.fromJson(e))
+                .toList()
           : [],
     );
   }

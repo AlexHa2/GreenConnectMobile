@@ -47,6 +47,9 @@ class ProfileRemoteDatasource {
           'address': update.address,
           'gender': update.gender,
           'dateOfBirth': update.dateOfBirth,
+          'bankCode': update.bankCode,
+          'bankAccountNumber': update.bankAccountNumber,
+          'bankAccountName': update.bankAccountName
         },
       );
       final updatedProfile = ProfileModel.fromJson(resUpdateProfile.data);

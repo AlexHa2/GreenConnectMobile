@@ -116,26 +116,75 @@ class PricingInfoSection extends StatelessWidget {
                           child: Row(
                             children: [
                               // Category icon
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: theme.primaryColor.withValues(
-                                    alpha: 0.1,
+                              GestureDetector(
+                                onTap:
+                                    detail.imageUrl != null &&
+                                        detail.imageUrl!.isNotEmpty
+                                    ? () => _showFullImage(
+                                        context,
+                                        detail.imageUrl!,
+                                      )
+                                    : null,
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: theme.primaryColor.withValues(
+                                      alpha: 0.1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      spacing / 2,
+                                    ),
                                   ),
-                                  borderRadius: BorderRadius.circular(
-                                    spacing / 2,
-                                  ),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                    spacing / 2,
-                                  ),
-                                  child: Image.asset(
-                                    'assets/images/green_connect_logo.png',
-                                    width: 40,
-                                    height: 40,
-                                    fit: BoxFit.cover,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                      spacing / 2,
+                                    ),
+                                    child:
+                                        detail.imageUrl != null &&
+                                            detail.imageUrl!.isNotEmpty
+                                        ? Image.network(
+                                            detail.imageUrl!,
+                                            width: 40,
+                                            height: 40,
+                                            fit: BoxFit.cover,
+                                            loadingBuilder: (context, child, loadingProgress) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              }
+                                              return Center(
+                                                child: SizedBox(
+                                                  width: 20,
+                                                  height: 20,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    color: theme.primaryColor,
+                                                    value:
+                                                        loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                  .cumulativeBytesLoaded /
+                                                              loadingProgress
+                                                                  .expectedTotalBytes!
+                                                        : null,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            errorBuilder: (_, _, _) => Image.asset(
+                                              'assets/images/green_connect_logo.png',
+                                              width: 40,
+                                              height: 40,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          )
+                                        : Image.asset(
+                                            'assets/images/green_connect_logo.png',
+                                            width: 40,
+                                            height: 40,
+                                            fit: BoxFit.cover,
+                                          ),
                                   ),
                                 ),
                               ),
@@ -368,13 +417,52 @@ class PricingInfoSection extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(spacing / 2),
-                      child: Image.asset(
-                        'assets/images/green_connect_logo.png',
-                        width: 20,
-                        height: 20,
-                        fit: BoxFit.cover,
+                    GestureDetector(
+                      onTap:
+                          detail.imageUrl != null && detail.imageUrl!.isNotEmpty
+                          ? () => _showFullImage(context, detail.imageUrl!)
+                          : null,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(spacing / 2),
+                        child:
+                            detail.imageUrl != null &&
+                                detail.imageUrl!.isNotEmpty
+                            ? Image.network(
+                                detail.imageUrl!,
+                                width: 20,
+                                height: 20,
+                                fit: BoxFit.cover,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: Center(
+                                          child: SizedBox(
+                                            width: 12,
+                                            height: 12,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 1.5,
+                                              color: theme.primaryColor,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                errorBuilder: (_, __, ___) => Image.asset(
+                                  'assets/images/green_connect_logo.png',
+                                  width: 20,
+                                  height: 20,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Image.asset(
+                                'assets/images/green_connect_logo.png',
+                                width: 20,
+                                height: 20,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                     SizedBox(width: spacing / 2),
@@ -397,7 +485,7 @@ class PricingInfoSection extends StatelessWidget {
                 controller: priceController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(spacing/2),
+                    borderRadius: BorderRadius.circular(spacing / 2),
                   ),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(
@@ -415,7 +503,7 @@ class PricingInfoSection extends StatelessWidget {
                 controller: unitController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(spacing/2),
+                    borderRadius: BorderRadius.circular(spacing / 2),
                   ),
                 ),
               ),
@@ -440,9 +528,9 @@ class PricingInfoSection extends StatelessWidget {
               }
 
               if (unit.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(s.unit_is_required)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(s.unit_is_required)));
                 return;
               }
 
@@ -497,13 +585,51 @@ class PricingInfoSection extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(spacing / 4),
-                    child: Image.asset(
-                      'assets/images/green_connect_logo.png',
-                      width: 20,
-                      height: 20,
-                      fit: BoxFit.cover,
+                  GestureDetector(
+                    onTap:
+                        detail.imageUrl != null && detail.imageUrl!.isNotEmpty
+                        ? () => _showFullImage(context, detail.imageUrl!)
+                        : null,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(spacing / 4),
+                      child:
+                          detail.imageUrl != null && detail.imageUrl!.isNotEmpty
+                          ? Image.network(
+                              detail.imageUrl!,
+                              width: 20,
+                              height: 20,
+                              fit: BoxFit.cover,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: Center(
+                                        child: SizedBox(
+                                          width: 12,
+                                          height: 12,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 1.5,
+                                            color: theme.primaryColor,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                              errorBuilder: (_, __, ___) => Image.asset(
+                                'assets/images/green_connect_logo.png',
+                                width: 20,
+                                height: 20,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : Image.asset(
+                              'assets/images/green_connect_logo.png',
+                              width: 20,
+                              height: 20,
+                              fit: BoxFit.cover,
+                            ),
                     ),
                   ),
                   SizedBox(width: spacing / 2),
@@ -549,6 +675,87 @@ class PricingInfoSection extends StatelessWidget {
             child: Text(s.delete),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showFullImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.all(spacing),
+        child: Stack(
+          children: [
+            Center(
+              child: InteractiveViewer(
+                minScale: 0.5,
+                maxScale: 4.0,
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.contain,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(
+                            color: Colors.white,
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                          SizedBox(height: spacing),
+                          Text(
+                            loadingProgress.expectedTotalBytes != null
+                                ? '${(loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! * 100).toStringAsFixed(0)}%'
+                                : 'Loading...',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  errorBuilder: (_, __, ___) => Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.white,
+                          size: 48,
+                        ),
+                        SizedBox(height: spacing),
+                        Text(
+                          'Cannot load image',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IconButton(
+                icon: Container(
+                  padding: EdgeInsets.all(spacing / 2),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.close, color: Colors.white),
+                ),
+                onPressed: () => Navigator.pop(dialogContext),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

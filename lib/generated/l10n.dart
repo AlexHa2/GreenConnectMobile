@@ -385,6 +385,30 @@ abstract class S {
   /// **'Household'**
   String get house_hold;
 
+  /// No description provided for @confirm_redeem_reward.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to redeem this reward?'**
+  String get confirm_redeem_reward;
+
+  /// No description provided for @no_rewards_available.
+  ///
+  /// In en, this message translates to:
+  /// **'No rewards available'**
+  String get no_rewards_available;
+
+  /// No description provided for @reward_redeemed_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward redeemed successfully!'**
+  String get reward_redeemed_successfully;
+
+  /// No description provided for @failed_to_redeem_reward.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to redeem reward'**
+  String get failed_to_redeem_reward;
+
   /// No description provided for @collector.
   ///
   /// In en, this message translates to:
@@ -943,17 +967,35 @@ abstract class S {
   /// **'Redeem Rewards'**
   String get redeem_rewards;
 
-  /// No description provided for @recent_activity.
+  /// No description provided for @recent_post.
   ///
   /// In en, this message translates to:
   /// **'Revent Activity'**
-  String get recent_activity;
+  String get recent_post;
 
   /// No description provided for @view_all_history.
   ///
   /// In en, this message translates to:
   /// **'View All History'**
   String get view_all_history;
+
+  /// No description provided for @features.
+  ///
+  /// In en, this message translates to:
+  /// **'Features'**
+  String get features;
+
+  /// No description provided for @quick_access_features.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick access to features'**
+  String get quick_access_features;
+
+  /// No description provided for @latest_posts.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest posts'**
+  String get latest_posts;
 
   /// No description provided for @value.
   ///
@@ -1132,14 +1174,86 @@ abstract class S {
   /// No description provided for @message_hint.
   ///
   /// In en, this message translates to:
-  /// **'Message .....'**
+  /// **'Search messages...'**
   String get message_hint;
+
+  /// No description provided for @message_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading messages...'**
+  String get message_loading;
+
+  /// No description provided for @message_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get message_retry;
+
+  /// No description provided for @message_no_messages.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet'**
+  String get message_no_messages;
+
+  /// No description provided for @message_no_messages_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Your messages will appear here'**
+  String get message_no_messages_description;
+
+  /// No description provided for @message_yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get message_yesterday;
+
+  /// No description provided for @message_no_message_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet'**
+  String get message_no_message_yet;
+
+  /// No description provided for @type_message_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get type_message_hint;
 
   /// No description provided for @online.
   ///
   /// In en, this message translates to:
   /// **'Online'**
   String get online;
+
+  /// No description provided for @chat_opening_with.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening chat with {name}...'**
+  String chat_opening_with(Object name);
+
+  /// No description provided for @chat_creating_room.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating chat room...'**
+  String get chat_creating_room;
+
+  /// No description provided for @chat_room_created_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat room created successfully!'**
+  String get chat_room_created_success;
+
+  /// No description provided for @chat_failed_create_room.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create chat room'**
+  String get chat_failed_create_room;
+
+  /// No description provided for @chat_failed_load_room.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load chat room'**
+  String get chat_failed_load_room;
 
   /// No description provided for @invalid_phone_number.
   ///
@@ -4248,6 +4362,150 @@ abstract class S {
   /// In en, this message translates to:
   /// **'failed to update pricing'**
   String get failed_to_update_pricing;
+
+  /// No description provided for @opening_chat_with.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening chat with'**
+  String get opening_chat_with;
+
+  /// No description provided for @notifications_error.
+  ///
+  /// In en, this message translates to:
+  /// **'notifications error'**
+  String get notifications_error;
+
+  /// No description provided for @unread.
+  ///
+  /// In en, this message translates to:
+  /// **'unread'**
+  String get unread;
+
+  /// No description provided for @notifications_mark_read_error.
+  ///
+  /// In en, this message translates to:
+  /// **'notifications mark read error'**
+  String get notifications_mark_read_error;
+
+  /// No description provided for @notification_type_post.
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get notification_type_post;
+
+  /// No description provided for @notification_type_offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer'**
+  String get notification_type_offer;
+
+  /// No description provided for @notification_type_transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction'**
+  String get notification_type_transaction;
+
+  /// No description provided for @notification_type_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get notification_type_message;
+
+  /// No description provided for @notification_type_chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get notification_type_chat;
+
+  /// No description provided for @notification_type_feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get notification_type_feedback;
+
+  /// No description provided for @notification_type_complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint'**
+  String get notification_type_complaint;
+
+  /// No description provided for @account_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Information'**
+  String get account_information;
+
+  /// No description provided for @banking_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Banking Information'**
+  String get banking_information;
+
+  /// No description provided for @member_rank.
+  ///
+  /// In en, this message translates to:
+  /// **'Member Rank'**
+  String get member_rank;
+
+  /// No description provided for @points_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Balance'**
+  String get points_balance;
+
+  /// No description provided for @credit_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit Balance'**
+  String get credit_balance;
+
+  /// No description provided for @account_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Type'**
+  String get account_type;
+
+  /// No description provided for @bank_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Code'**
+  String get bank_code;
+
+  /// No description provided for @account_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Number'**
+  String get account_number;
+
+  /// No description provided for @account_holder_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Holder Name'**
+  String get account_holder_name;
+
+  /// No description provided for @not_linked.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Linked'**
+  String get not_linked;
+
+  /// No description provided for @not_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Updated'**
+  String get not_updated;
+
+  /// No description provided for @not_determined.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Determined'**
+  String get not_determined;
+
+  /// No description provided for @other_gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other_gender;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

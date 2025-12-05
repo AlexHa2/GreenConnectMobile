@@ -155,6 +155,19 @@ class SVi extends S {
   String get house_hold => 'Hộ gia đình';
 
   @override
+  String get confirm_redeem_reward =>
+      'Bạn có chắc chắn muốn đổi phần thưởng này?';
+
+  @override
+  String get no_rewards_available => 'Không có phần thưởng nào';
+
+  @override
+  String get reward_redeemed_successfully => 'Đổi phần thưởng thành công!';
+
+  @override
+  String get failed_to_redeem_reward => 'Không thể đổi phần thưởng';
+
+  @override
   String get collector => 'Người thu gom';
 
   @override
@@ -438,10 +451,19 @@ class SVi extends S {
   String get redeem_rewards => 'Đổi thưởng';
 
   @override
-  String get recent_activity => 'Các hoạt động gần đây';
+  String get recent_post => 'Bài đăng gần đây';
 
   @override
   String get view_all_history => 'Xem tất cả lịch sử';
+
+  @override
+  String get features => 'Chức năng';
+
+  @override
+  String get quick_access_features => 'Truy cập nhanh các tính năng';
+
+  @override
+  String get latest_posts => 'Các bài đăng mới nhất';
 
   @override
   String get value => 'Giá trị';
@@ -534,10 +556,49 @@ class SVi extends S {
   String get message => 'Tin nhắn';
 
   @override
-  String get message_hint => 'Tin nhắn .....';
+  String get message_hint => 'Tìm kiếm tin nhắn...';
+
+  @override
+  String get message_loading => 'Đang tải tin nhắn...';
+
+  @override
+  String get message_retry => 'Thử lại';
+
+  @override
+  String get message_no_messages => 'Chưa có tin nhắn';
+
+  @override
+  String get message_no_messages_description =>
+      'Tin nhắn của bạn sẽ xuất hiện ở đây';
+
+  @override
+  String get message_yesterday => 'Hôm qua';
+
+  @override
+  String get message_no_message_yet => 'Chưa có tin nhắn';
+
+  @override
+  String get type_message_hint => 'Nhập tin nhắn...';
 
   @override
   String get online => 'Đang hoạt động';
+
+  @override
+  String chat_opening_with(Object name) {
+    return 'Đang mở chat với $name...';
+  }
+
+  @override
+  String get chat_creating_room => 'Đang tạo phòng chat...';
+
+  @override
+  String get chat_room_created_success => 'Phòng chat đã được tạo thành công!';
+
+  @override
+  String get chat_failed_create_room => 'Không thể tạo phòng chat';
+
+  @override
+  String get chat_failed_load_room => 'Không thể tải phòng chat';
 
   @override
   String get invalid_phone_number => 'Số điện thoại không hợp lệ';
@@ -2169,4 +2230,76 @@ class SVi extends S {
 
   @override
   String get failed_to_update_pricing => 'thất bại khi cập nhật giá';
+
+  @override
+  String get opening_chat_with => 'Mở nhắn tin với';
+
+  @override
+  String get notifications_error => 'Lỗi thông báo';
+
+  @override
+  String get unread => 'Chưa đọc';
+
+  @override
+  String get notifications_mark_read_error => 'Lỗi khi đánh dấu đã đọc';
+
+  @override
+  String get notification_type_post => 'Bài đăng';
+
+  @override
+  String get notification_type_offer => 'Đề nghị';
+
+  @override
+  String get notification_type_transaction => 'Giao dịch';
+
+  @override
+  String get notification_type_message => 'Tin nhắn';
+
+  @override
+  String get notification_type_chat => 'Trò chuyện';
+
+  @override
+  String get notification_type_feedback => 'Đánh giá';
+
+  @override
+  String get notification_type_complaint => 'Khiếu nại';
+
+  @override
+  String get account_information => 'Thông tin tài khoản';
+
+  @override
+  String get banking_information => 'Thông tin ngân hàng';
+
+  @override
+  String get member_rank => 'Hạng thành viên';
+
+  @override
+  String get points_balance => 'Điểm tích lũy';
+
+  @override
+  String get credit_balance => 'Số dư tín dụng';
+
+  @override
+  String get account_type => 'Loại tài khoản';
+
+  @override
+  String get bank_code => 'Mã ngân hàng';
+
+  @override
+  String get account_number => 'Số tài khoản';
+
+  @override
+  String get account_holder_name => 'Tên chủ tài khoản';
+
+  @override
+  String get not_linked => 'Chưa liên kết';
+
+  @override
+  String get not_updated => 'Chưa cập nhật';
+
+  @override
+  String get not_determined => 'Chưa xác định';
+
+  @override
+  String get other_gender => 'Khác';
 }

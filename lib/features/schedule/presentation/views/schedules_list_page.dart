@@ -245,8 +245,8 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
                               pickedDate!.year,
                               pickedDate!.month,
                               pickedDate!.day,
-                              pickedTime!.hour,
-                              pickedTime!.minute,
+                              pickedTime.hour,
+                              pickedTime.minute,
                             );
                           });
                         }
@@ -356,7 +356,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
     String responseMessage,
   ) async {
     final s = S.of(context)!;
-    final theme = Theme.of(context);
+    // final theme = Theme.of(context);
 
     final request = UpdateScheduleRequest(
       proposedTime: proposedTime,
@@ -500,7 +500,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
                               data: Theme.of(context).copyWith(
                                 colorScheme: ColorScheme.light(
                                   primary: theme.primaryColor,
-                                  onPrimary: Colors.white,
+                                  onPrimary: theme.scaffoldBackgroundColor,
                                   surface: theme.scaffoldBackgroundColor,
                                 ),
                               ),
@@ -515,8 +515,8 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
                               pickedDate!.year,
                               pickedDate!.month,
                               pickedDate!.day,
-                              pickedTime!.hour,
-                              pickedTime!.minute,
+                              pickedTime.hour,
+                              pickedTime.minute,
                             );
                           });
                         }

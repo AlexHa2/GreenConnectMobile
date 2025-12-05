@@ -2,15 +2,15 @@ import 'package:GreenConnectMobile/core/helper/app_router_observer.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/login_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/register_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/welcome_page.dart';
-import 'package:GreenConnectMobile/features/complaint/presentation/views/complaint_detail_screen.dart';
+import 'package:GreenConnectMobile/features/complaint/presentation/views/complaint_detail_page.dart';
 import 'package:GreenConnectMobile/features/complaint/presentation/views/complaint_list_page.dart';
-import 'package:GreenConnectMobile/features/complaint/presentation/views/create_complaint_screen.dart';
+import 'package:GreenConnectMobile/features/complaint/presentation/views/create_complaint_page.dart';
 import 'package:GreenConnectMobile/features/feedback/presentation/views/create_feedback_page.dart';
 import 'package:GreenConnectMobile/features/feedback/presentation/views/feedback_detail_page.dart';
 import 'package:GreenConnectMobile/features/feedback/presentation/views/feedback_list_page.dart';
 import 'package:GreenConnectMobile/features/message/presentation/views/chat_message_detail.dart';
 import 'package:GreenConnectMobile/features/message/presentation/views/message.dart';
-import 'package:GreenConnectMobile/features/notification/presentation/views/widgets/notification.dart';
+import 'package:GreenConnectMobile/features/notification/presentation/views/notifications_page.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/offer_detail_page.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/offers_list_page.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/collector_list_post.dart';
@@ -23,12 +23,14 @@ import 'package:GreenConnectMobile/features/profile/presentation/views/profile_s
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setup.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/upgrade_verification.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/list_history_post.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/reward_dashboard.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
-import 'package:GreenConnectMobile/features/transaction/presentation/views/transaction_detail_page_modern.dart';
 import 'package:GreenConnectMobile/features/schedule/presentation/views/schedules_list_page.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/views/transaction_detail_page_modern.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transactions_list_page.dart';
 import 'package:GreenConnectMobile/shared/layouts/collector_layout.dart';
 import 'package:GreenConnectMobile/shared/layouts/household_layout.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouterObserver = AppRouterObserver();
@@ -49,29 +51,19 @@ final GoRouter greenRouter = GoRouter(
           },
         ),
         GoRoute(
-          path: '/household-notifications',
-          name: 'household-notifications',
-          builder: (context, state) => const NotificationScreen(),
+          path: '/reward-dashboard',
+          name: 'reward-dashboard',
+          builder: (context, state) => const RewardDashboard(),
+        ),
+        GoRoute(
+          path: '/household-list-message',
+          name: 'household-list-message',
+          builder: (context, state) => const MessageListPage(),
         ),
         GoRoute(
           path: '/household-profile-settings',
           name: 'household-profile-settings',
           builder: (context, state) => const ProfileSetting(),
-        ),
-        GoRoute(
-          path: '/household-list-transactions',
-          name: 'household-list-transactions',
-          builder: (context, state) => const TransactionsListPage(),
-        ),
-        GoRoute(
-          path: '/household-feedback-list',
-          name: 'household-feedback-list',
-          builder: (context, state) => const FeedbackListPage(),
-        ),
-        GoRoute(
-          path: '/household-complaint-list',
-          name: 'household-complaint-list',
-          builder: (context, state) => const ComplaintListPage(),
         ),
       ],
     ),
@@ -127,21 +119,37 @@ final GoRouter greenRouter = GoRouter(
       ],
     ),
     GoRoute(
-      path: '/upgrade-verification',
-      name: 'upgrade-verification',
-      builder: (context, state) => const UpgradeVerificationScreen(),
+      path: '/household-list-post',
+      name: 'household-list-post',
+      builder: (context, state) => const HouseholdListPostPage(),
     ),
     GoRoute(
-      path: '/list-post',
-      name: 'list-post',
-      builder: (context, state) => const HouseholdListPostScreen(),
+      path: '/household-list-transactions',
+      name: 'household-list-transactions',
+      builder: (context, state) => const TransactionsListPage(),
     ),
+    GoRoute(
+      path: '/household-feedback-list',
+      name: 'household-feedback-list',
+      builder: (context, state) => const FeedbackListPage(),
+    ),
+    GoRoute(
+      path: '/household-complaint-list',
+      name: 'household-complaint-list',
+      builder: (context, state) => const ComplaintListPage(),
+    ),
+    GoRoute(
+      path: '/upgrade-verification',
+      name: 'upgrade-verification',
+      builder: (context, state) => const UpgradeVerificationPage(),
+    ),
+
     GoRoute(
       path: '/detail-post',
       name: 'detail-post',
       builder: (context, state) {
         final initialData = state.extra as Map<String, dynamic>? ?? {};
-        return PostDetailsScreen(initialData: initialData);
+        return PostDetailsPage(initialData: initialData);
       },
     ),
     GoRoute(
@@ -158,6 +166,11 @@ final GoRouter greenRouter = GoRouter(
       },
     ),
     GoRoute(path: '/', builder: (context, state) => const WelcomePage()),
+    GoRoute(
+      path: '/notifications',
+      name: 'notifications',
+      builder: (context, state) => const NotificationsPage(),
+    ),
     GoRoute(
       path: '/register',
       name: 'register',
@@ -179,21 +192,22 @@ final GoRouter greenRouter = GoRouter(
       builder: (context, state) => const HouseholdRewardHistory(),
     ),
     GoRoute(
-      path: '/reward-store',
-      name: 'reward-store',
-      builder: (context, state) => const RewardStore(),
-    ),
-    GoRoute(
       path: '/list-message',
       name: 'list-message',
-      builder: (context, state) => const MessageListScreen(),
+      builder: (context, state) => const MessageListPage(),
     ),
     GoRoute(
       name: 'chat-detail',
       path: '/chat-detail',
       builder: (context, state) {
         final initialData = state.extra as Map<String, dynamic>? ?? {};
-        return ChatDetailScreen(initialData: initialData);
+        return ChatDetailPage(
+          key: ValueKey(initialData['chatRoomId']),
+          transactionId: initialData['transactionId'] as String,
+          chatRoomId: initialData['chatRoomId'] as String,
+          partnerName: initialData['partnerName'] as String,
+          partnerAvatar: initialData['partnerAvatar'] as String?,
+        );
       },
     ),
     GoRoute(
@@ -268,5 +282,12 @@ final GoRouter greenRouter = GoRouter(
         );
       },
     ),
+   GoRoute(
+      path: '/reward-store',
+      name: 'reward-store',
+      builder: (context, state) => const RewardStore(),
+    ),
+
+    
   ],
 );

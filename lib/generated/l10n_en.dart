@@ -154,6 +154,19 @@ class SEn extends S {
   String get house_hold => 'Household';
 
   @override
+  String get confirm_redeem_reward =>
+      'Are you sure you want to redeem this reward?';
+
+  @override
+  String get no_rewards_available => 'No rewards available';
+
+  @override
+  String get reward_redeemed_successfully => 'Reward redeemed successfully!';
+
+  @override
+  String get failed_to_redeem_reward => 'Failed to redeem reward';
+
+  @override
   String get collector => 'Collector';
 
   @override
@@ -439,10 +452,19 @@ class SEn extends S {
   String get redeem_rewards => 'Redeem Rewards';
 
   @override
-  String get recent_activity => 'Revent Activity';
+  String get recent_post => 'Revent Activity';
 
   @override
   String get view_all_history => 'View All History';
+
+  @override
+  String get features => 'Features';
+
+  @override
+  String get quick_access_features => 'Quick access to features';
+
+  @override
+  String get latest_posts => 'Latest posts';
 
   @override
   String get value => 'value';
@@ -534,10 +556,49 @@ class SEn extends S {
   String get message => 'Message';
 
   @override
-  String get message_hint => 'Message .....';
+  String get message_hint => 'Search messages...';
+
+  @override
+  String get message_loading => 'Loading messages...';
+
+  @override
+  String get message_retry => 'Retry';
+
+  @override
+  String get message_no_messages => 'No messages yet';
+
+  @override
+  String get message_no_messages_description =>
+      'Your messages will appear here';
+
+  @override
+  String get message_yesterday => 'Yesterday';
+
+  @override
+  String get message_no_message_yet => 'No messages yet';
+
+  @override
+  String get type_message_hint => 'Type a message...';
 
   @override
   String get online => 'Online';
+
+  @override
+  String chat_opening_with(Object name) {
+    return 'Opening chat with $name...';
+  }
+
+  @override
+  String get chat_creating_room => 'Creating chat room...';
+
+  @override
+  String get chat_room_created_success => 'Chat room created successfully!';
+
+  @override
+  String get chat_failed_create_room => 'Failed to create chat room';
+
+  @override
+  String get chat_failed_load_room => 'Failed to load chat room';
 
   @override
   String get invalid_phone_number => 'Invalid phone number';
@@ -2175,4 +2236,76 @@ class SEn extends S {
 
   @override
   String get failed_to_update_pricing => 'failed to update pricing';
+
+  @override
+  String get opening_chat_with => 'Opening chat with';
+
+  @override
+  String get notifications_error => 'notifications error';
+
+  @override
+  String get unread => 'unread';
+
+  @override
+  String get notifications_mark_read_error => 'notifications mark read error';
+
+  @override
+  String get notification_type_post => 'Post';
+
+  @override
+  String get notification_type_offer => 'Offer';
+
+  @override
+  String get notification_type_transaction => 'Transaction';
+
+  @override
+  String get notification_type_message => 'Message';
+
+  @override
+  String get notification_type_chat => 'Chat';
+
+  @override
+  String get notification_type_feedback => 'Feedback';
+
+  @override
+  String get notification_type_complaint => 'Complaint';
+
+  @override
+  String get account_information => 'Account Information';
+
+  @override
+  String get banking_information => 'Banking Information';
+
+  @override
+  String get member_rank => 'Member Rank';
+
+  @override
+  String get points_balance => 'Points Balance';
+
+  @override
+  String get credit_balance => 'Credit Balance';
+
+  @override
+  String get account_type => 'Account Type';
+
+  @override
+  String get bank_code => 'Bank Code';
+
+  @override
+  String get account_number => 'Account Number';
+
+  @override
+  String get account_holder_name => 'Account Holder Name';
+
+  @override
+  String get not_linked => 'Not Linked';
+
+  @override
+  String get not_updated => 'Not Updated';
+
+  @override
+  String get not_determined => 'Not Determined';
+
+  @override
+  String get other_gender => 'Other';
 }

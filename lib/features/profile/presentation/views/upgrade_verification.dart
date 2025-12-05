@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:GreenConnectMobile/core/enum/buyer_type_status.dart';
+import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/profile/data/models/verification_model.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/providers/profile_providers.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/widgets/upload_card.dart';
@@ -18,23 +19,23 @@ import 'package:image_picker/image_picker.dart';
 
 enum VerificationMode { create, update }
 
-class UpgradeVerificationScreen extends ConsumerStatefulWidget {
+class UpgradeVerificationPage extends ConsumerStatefulWidget {
   final VerificationMode mode;
   final BuyerTypeStatus? initialBuyerType;
-  
-  const UpgradeVerificationScreen({
+
+  const UpgradeVerificationPage({
     super.key,
     this.mode = VerificationMode.create,
     this.initialBuyerType,
   });
 
   @override
-  ConsumerState<UpgradeVerificationScreen> createState() =>
-      _UpgradeVerificationScreenState();
+  ConsumerState<UpgradeVerificationPage> createState() =>
+      _UpgradeVerificationPageState();
 }
 
-class _UpgradeVerificationScreenState
-    extends ConsumerState<UpgradeVerificationScreen> {
+class _UpgradeVerificationPageState
+    extends ConsumerState<UpgradeVerificationPage> {
   Uint8List? frontBytes;
   Uint8List? backBytes;
 
@@ -128,12 +129,16 @@ class _UpgradeVerificationScreenState
             : s.verification_updated_successfully,
         type: ToastType.success,
       );
-      
+
       // If creating new verification (upgrade), logout user
       if (widget.mode == VerificationMode.create) {
-        context.pop(true); // Close verification screen
         // Wait a bit for toast to show
         await Future.delayed(const Duration(milliseconds: 500));
+
+        // Clear all auth data (logout)
+        final tokenStorage = TokenStorageService();
+        await tokenStorage.clearAuthData();
+
         if (!mounted) return;
         // Navigate to login and clear all previous routes
         context.go('/');
