@@ -2,23 +2,21 @@ import 'package:GreenConnectMobile/core/error/failure.dart';
 import 'package:GreenConnectMobile/features/reward/domain/usecases/get_reward_history_usecase.dart';
 import 'package:GreenConnectMobile/features/reward/domain/usecases/get_reward_items_usecase.dart';
 import 'package:GreenConnectMobile/features/reward/domain/usecases/redeem_reward_usecase.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/providers/reward_providers.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/viewmodels/states/reward_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RewardViewModel extends Notifier<RewardState> {
-  final GetRewardItemsUseCase getRewardItemsUseCase;
-  final GetRewardHistoryUseCase getRewardHistoryUseCase;
-  final RedeemRewardUseCase redeemRewardUseCase;
-
-  RewardViewModel({
-    required this.getRewardItemsUseCase,
-    required this.getRewardHistoryUseCase,
-    required this.redeemRewardUseCase,
-  });
+  late GetRewardItemsUseCase _getRewardItemsUseCase;
+  late GetRewardHistoryUseCase _getRewardHistoryUseCase;
+  late RedeemRewardUseCase _redeemRewardUseCase;
 
   @override
   RewardState build() {
+    _getRewardItemsUseCase = ref.read(getRewardItemsUsecaseProvider);
+    _getRewardHistoryUseCase = ref.read(getRewardHistoryUsecaseProvider);
+    _redeemRewardUseCase = ref.read(redeemRewardUsecaseProvider);
     return RewardState();
   }
 
@@ -30,7 +28,7 @@ class RewardViewModel extends Notifier<RewardState> {
     );
 
     try {
-      final items = await getRewardItemsUseCase();
+      final items = await _getRewardItemsUseCase();
 
       state = state.copyWith(
         isLoading: false,
@@ -61,7 +59,7 @@ class RewardViewModel extends Notifier<RewardState> {
     );
 
     try {
-      final history = await getRewardHistoryUseCase();
+      final history = await _getRewardHistoryUseCase();
 
       state = state.copyWith(
         isLoading: false,
@@ -93,7 +91,7 @@ class RewardViewModel extends Notifier<RewardState> {
     );
 
     try {
-      final success = await redeemRewardUseCase(rewardItemId);
+      final success = await _redeemRewardUseCase(rewardItemId);
 
       if (success) {
         // Refresh reward items first

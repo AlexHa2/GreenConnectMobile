@@ -201,12 +201,10 @@ class _OffersListPageState extends ConsumerState<OffersListPage> {
           ),
         ),
         centerTitle: true,
-        leading: widget.isCollectorView
-            ? null
-            : IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: theme.iconTheme.color),
-                onPressed: () => Navigator.pop(context),
-              ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: theme.iconTheme.color),
+          onPressed: () => Navigator.pop(context),
+        ),
         automaticallyImplyLeading: !widget.isCollectorView,
       ),
       body: Column(

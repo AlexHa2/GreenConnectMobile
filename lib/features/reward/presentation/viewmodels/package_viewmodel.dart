@@ -1,21 +1,19 @@
 import 'package:GreenConnectMobile/core/error/failure.dart';
 import 'package:GreenConnectMobile/features/reward/domain/usecases/get_package_by_id_usecase.dart';
 import 'package:GreenConnectMobile/features/reward/domain/usecases/get_packages_usecase.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/providers/package_providers.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/viewmodels/states/package_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PackageViewModel extends Notifier<PackageState> {
-  final GetPackagesUseCase getPackagesUseCase;
-  final GetPackageByIdUseCase getPackageByIdUseCase;
-
-  PackageViewModel({
-    required this.getPackagesUseCase,
-    required this.getPackageByIdUseCase,
-  });
+  late GetPackagesUseCase _getPackagesUseCase;
+  late GetPackageByIdUseCase _getPackageByIdUseCase;
 
   @override
   PackageState build() {
+    _getPackagesUseCase = ref.read(getPackagesUsecaseProvider);
+    _getPackageByIdUseCase = ref.read(getPackageByIdUsecaseProvider);
     return PackageState();
   }
 
@@ -33,7 +31,7 @@ class PackageViewModel extends Notifier<PackageState> {
     );
 
     try {
-      final packages = await getPackagesUseCase(
+      final packages = await _getPackagesUseCase(
         pageNumber: pageNumber,
         pageSize: pageSize,
         sortByPrice: sortByPrice,
@@ -70,11 +68,11 @@ class PackageViewModel extends Notifier<PackageState> {
     );
 
     try {
-      final package = await getPackageByIdUseCase(packageId);
+      final packageDetail = await _getPackageByIdUseCase(packageId);
 
       state = state.copyWith(
         isLoading: false,
-        selectedPackage: package,
+        selectedPackage: packageDetail,
         errorMessage: null,
         errorCode: null,
       );
