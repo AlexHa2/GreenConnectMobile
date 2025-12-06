@@ -151,6 +151,16 @@ class SEn extends S {
   String get otp_hint => 'Enter your OTP';
 
   @override
+  String get otp_security_message =>
+      'We will send OTP code to your phone number';
+
+  @override
+  String get country_flag => '🇻🇳';
+
+  @override
+  String get country_code => '+84';
+
+  @override
   String get house_hold => 'Household';
 
   @override
@@ -165,6 +175,21 @@ class SEn extends S {
 
   @override
   String get failed_to_redeem_reward => 'Failed to redeem reward';
+
+  @override
+  String get no_rewards_message => 'No rewards message';
+
+  @override
+  String get reward_details => 'Reward Details';
+
+  @override
+  String get value => 'value';
+
+  @override
+  String get points => 'points';
+
+  @override
+  String get description => 'Description';
 
   @override
   String get collector => 'Collector';
@@ -226,9 +251,6 @@ class SEn extends S {
   String get keep_your_tree => 'Keep recycling to grow your tree';
 
   @override
-  String get points => 'points';
-
-  @override
   String get accepted => 'Accepted';
 
   @override
@@ -254,9 +276,6 @@ class SEn extends S {
 
   @override
   String get post_title => 'Post Title';
-
-  @override
-  String get description => 'Description';
 
   @override
   String get pickup_address => 'Pickup Address';
@@ -467,9 +486,6 @@ class SEn extends S {
   String get latest_posts => 'Latest posts';
 
   @override
-  String get value => 'value';
-
-  @override
   String get status => 'Status';
 
   @override
@@ -615,6 +631,12 @@ class SEn extends S {
 
   @override
   String get enter_phone_number => 'Enter your phone number';
+
+  @override
+  String get enter_otp_code => 'Enter OTP Code';
+
+  @override
+  String get secure_login => 'Secure login with OTP';
 
   @override
   String get verification => 'Verification';
@@ -2328,6 +2350,7 @@ class SEn extends S {
   String get other_gender => 'Other';
 
   @override
+
   String get functions => 'Functions';
 
   @override
@@ -2427,4 +2450,7 @@ class SEn extends S {
 
   @override
   String get preview_level_up => 'Preview Level Up';
+
+  String get buyed => 'Buyed';
+
 }

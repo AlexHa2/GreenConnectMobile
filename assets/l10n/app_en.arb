@@ -47,11 +47,19 @@
   "username_hint":"Enter your username",
   "phone_number_hint": "Enter your phone number",
   "otp_hint": "Enter your OTP",
+  "otp_security_message": "We will send OTP code to your phone number",
+  "country_flag": "🇻🇳",
+  "country_code": "+84",
   "house_hold": "Household",
   "confirm_redeem_reward": "Are you sure you want to redeem this reward?",
   "no_rewards_available": "No rewards available",
   "reward_redeemed_successfully": "Reward redeemed successfully!",
   "failed_to_redeem_reward": "Failed to redeem reward",
+  "no_rewards_message": "No rewards available at the moment.\nPlease check back later!",
+  "reward_details": "Reward Details",
+  "value": "Value",
+  "points": "points",
+  "description": "Description",
   "collector": "Collector",
   "profile_setup_primary": "Your green tree is growing",
   "profile_setup": "Profile Setup",
@@ -201,6 +209,8 @@
   "invalid_phone_number_length":"phone number must be lager 9 numbers",
   "resend_otp":"Resend otp",
   "enter_phone_number":"Enter your phone number",
+  "enter_otp_code":"Enter OTP Code",
+  "secure_login":"Secure login with OTP",
   "verification":"Verification",
   "enter_the_code":"Enter the code sent to the number",
   "didnt_get_code":"Didn't receive code?",
@@ -824,4 +834,7 @@
   "percent_to_level":"{percent}% to Level {level}",
   "percent_to_level_placeholder":"{percent}% to Level {level}",
   "preview_level_up":"Preview Level Up"
+  "no_rewards_message": "No rewards message",
+  "buyed": "Buyed"
+
 }

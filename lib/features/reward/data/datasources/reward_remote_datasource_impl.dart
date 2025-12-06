@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/di/auth_injector.dart';
 import 'package:GreenConnectMobile/core/helper/query_helper.dart';
 import 'package:GreenConnectMobile/core/network/api_client.dart';
 import 'package:GreenConnectMobile/features/reward/data/datasources/reward_remote_datasource.dart';
@@ -7,13 +8,11 @@ import 'package:GreenConnectMobile/features/reward/data/models/reward_history_mo
 import 'package:GreenConnectMobile/features/reward/data/models/reward_item_model.dart';
 
 class RewardRemoteDataSourceImpl implements RewardRemoteDataSource {
-  final ApiClient apiClient;
+  final ApiClient _apiClient = sl<ApiClient>();
 
   static const String _packagesUrl = '/v1/packages';
   static const String _rewardsUrl = '/v1/rewards';
   static const String _rewardHistoryUrl = '/v1/rewards/my-history';
-
-  RewardRemoteDataSourceImpl(this.apiClient);
 
   @override
   Future<PaginatedPackagesModel> getPackages({
@@ -32,7 +31,7 @@ class RewardRemoteDataSourceImpl implements RewardRemoteDataSource {
     };
 
     final url = withQuery(_packagesUrl, queryParams);
-    final response = await apiClient.get(url);
+    final response = await _apiClient.get(url);
 
     return PaginatedPackagesModel.fromJson(
       response.data as Map<String, dynamic>,
@@ -41,13 +40,13 @@ class RewardRemoteDataSourceImpl implements RewardRemoteDataSource {
 
   @override
   Future<PackageModel> getPackageById(String packageId) async {
-    final response = await apiClient.get('$_packagesUrl/$packageId');
+    final response = await _apiClient.get('$_packagesUrl/$packageId');
     return PackageModel.fromJson(response.data as Map<String, dynamic>);
   }
 
   @override
   Future<List<RewardItemModel>> getRewardItems() async {
-    final response = await apiClient.get(_rewardsUrl);
+    final response = await _apiClient.get(_rewardsUrl);
 
     if (response.data is List) {
       return (response.data as List)
@@ -60,7 +59,7 @@ class RewardRemoteDataSourceImpl implements RewardRemoteDataSource {
 
   @override
   Future<List<RewardHistoryModel>> getRewardHistory() async {
-    final response = await apiClient.get(_rewardHistoryUrl);
+    final response = await _apiClient.get(_rewardHistoryUrl);
 
     if (response.data is List) {
       return (response.data as List)
@@ -76,7 +75,7 @@ class RewardRemoteDataSourceImpl implements RewardRemoteDataSource {
   @override
   Future<bool> redeemReward(int rewardItemId) async {
     try {
-      await apiClient.post('$_rewardsUrl/$rewardItemId/redeem');
+      await _apiClient.post('$_rewardsUrl/$rewardItemId/redeem');
       return true;
     } catch (e) {
       return false;

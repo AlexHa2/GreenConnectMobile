@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/core/enum/offer_status.dart';
+import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/features/offer/domain/entities/offer_detail_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
@@ -13,6 +14,7 @@ class PricingInfoSection extends StatelessWidget {
   final S s;
   final OfferStatus? offerStatus;
   final bool? mustTakeAll;
+  final Role? userRole;
   final Function(String detailId, double price, String unit)? onUpdate;
   final Function(String detailId)? onDelete;
 
@@ -24,6 +26,7 @@ class PricingInfoSection extends StatelessWidget {
     required this.s,
     this.offerStatus,
     this.mustTakeAll,
+    this.userRole,
     this.onUpdate,
     this.onDelete,
   });
@@ -93,7 +96,10 @@ class PricingInfoSection extends StatelessWidget {
                     children: [
                       // Pricing items
                       ...offerDetails.map((detail) {
+                        // Only allow edit/delete for collector users (not household)
+                        final isCollector = userRole != null && userRole != Role.household;
                         final canEdit =
+                            isCollector &&
                             offerStatus != null &&
                             offerStatus != OfferStatus.accepted;
                         final canDelete =
@@ -746,10 +752,10 @@ class PricingInfoSection extends StatelessWidget {
                 icon: Container(
                   padding: EdgeInsets.all(spacing / 2),
                   decoration: BoxDecoration(
-                    color: Colors.black54,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.close, color: Colors.white),
+                  child: Icon(Icons.close, color: theme.scaffoldBackgroundColor),
                 ),
                 onPressed: () => Navigator.pop(dialogContext),
               ),

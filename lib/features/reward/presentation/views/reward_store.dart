@@ -1,8 +1,11 @@
 import 'package:GreenConnectMobile/features/reward/presentation/providers/reward_providers.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_empty_state.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_error_state.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_item_card.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_loading_state.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
-import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
-import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
+import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -34,6 +37,7 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: Text(s.confirm),
         content: Text(s.confirm_redeem_reward),
         actions: [
@@ -56,12 +60,10 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
 
       final state = ref.read(rewardViewModelProvider);
       if (state.successMessage != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(s.reward_redeemed_successfully),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 3),
-          ),
+        CustomToast.show(
+          context,
+          s.reward_redeemed_successfully,
+          type: ToastType.success,
         );
         // Clear message after showing
         ref.read(rewardViewModelProvider.notifier).clearMessages();
@@ -73,6 +75,11 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
             duration: const Duration(seconds: 3),
           ),
         );
+        CustomToast.show(
+          context,
+          state.errorMessage ?? s.error_occurred,
+          type: ToastType.error,
+        );
         // Clear message after showing
         ref.read(rewardViewModelProvider.notifier).clearMessages();
       }
@@ -81,11 +88,9 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final spacing = theme.extension<AppSpacing>()!;
-    final s = S.of(context)!;
+    final spacing = Theme.of(context).extension<AppSpacing>()!;
     final space = spacing.screenPadding;
-    final defaultImage = 'assets/images/leaf_2.png';
+    final s = S.of(context)!;
 
     final rewardState = ref.watch(rewardViewModelProvider);
     final rewardItems = rewardState.rewardItems ?? [];
@@ -102,65 +107,20 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
       body: RefreshIndicator(
         onRefresh: _onRefresh,
         child: rewardState.isLoading && rewardItems.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(theme.primaryColor),
-                    ),
-                    SizedBox(height: space),
-                    Text(
-                      s.loading,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.textTheme.bodySmall?.color,
-                      ),
-                    ),
-                  ],
-                ),
-              )
+            ? const RewardLoadingState()
             : rewardState.errorMessage != null && rewardItems.isEmpty
-            ? Center(
-                child: Padding(
-                  padding: EdgeInsets.all(space * 2),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: theme.colorScheme.error,
-                      ),
-                      SizedBox(height: space),
-                      Text(
-                        rewardState.errorMessage!,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyLarge,
-                      ),
-                      SizedBox(height: space * 2),
-                      ElevatedButton.icon(
-                        onPressed: _onRefresh,
-                        icon: const Icon(Icons.refresh),
-                        label: Text(s.try_again),
-                      ),
-                    ],
-                  ),
-                ),
+            ? RewardErrorState(
+                errorMessage: rewardState.errorMessage!,
+                errorTitle: s.error_occurred,
+                retryButtonText: s.try_again,
+                onRetry: _onRefresh,
               )
             : rewardItems.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.card_giftcard_outlined,
-                      size: 64,
-                      color: theme.disabledColor,
-                    ),
-                    SizedBox(height: space),
-                    Text(s.no_rewards_available),
-                  ],
-                ),
+            ? RewardEmptyState(
+                title: s.no_rewards_available,
+                message: s.no_rewards_message,
+                refreshButtonText: s.try_again,
+                onRefresh: _onRefresh,
               )
             : Padding(
                 padding: EdgeInsets.all(space),
@@ -388,6 +348,11 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
                           ),
                         ],
                       ),
+                    return RewardItemCard(
+                      item: item,
+                      redeemButtonText: s.redeem,
+                      isRedeeming: rewardState.isRedeeming,
+                      onRedeem: () => _onRedeemItem(item.rewardItemId),
                     );
                   },
                 ),

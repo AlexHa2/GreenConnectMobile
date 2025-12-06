@@ -114,7 +114,7 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
       appBar: AppBar(
         leading: BackButton(
           onPressed: () =>
-              isCollectorView ? context.pop() : context.push('/list-post'),
+              isCollectorView ? context.pop() : context.push('/household-list-post'),
         ),
         title: Text(s.detail),
         centerTitle: true,

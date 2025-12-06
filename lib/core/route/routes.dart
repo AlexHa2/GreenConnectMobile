@@ -157,7 +157,6 @@ final GoRouter greenRouter = GoRouter(
       name: 'upgrade-verification',
       builder: (context, state) => const UpgradeVerificationPage(),
     ),
-
     GoRoute(
       path: '/detail-post',
       name: 'detail-post',
@@ -292,12 +291,10 @@ final GoRouter greenRouter = GoRouter(
         );
       },
     ),
-   GoRoute(
+    GoRoute(
       path: '/reward-store',
       name: 'reward-store',
       builder: (context, state) => const RewardStore(),
     ),
-
-    
   ],
 );
