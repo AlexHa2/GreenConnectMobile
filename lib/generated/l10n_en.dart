@@ -1447,6 +1447,20 @@ class SEn extends S {
   String get scheduleRescheduleButton => 'Reschedule';
 
   @override
+  String get scheduleEditButton => 'Edit';
+
+  @override
+  String get scheduleAddNew => 'Add New Schedule';
+
+  @override
+  String get scheduleConflictError =>
+      'There is already a pending schedule proposal. Please wait for household response.';
+
+  @override
+  String get scheduleCannotEditError =>
+      'Cannot edit because the proposal has been Accepted or Rejected.';
+
+  @override
   String get scheduleConfirmAccept => 'Confirm Accept Schedule';
 
   @override
@@ -1472,6 +1486,10 @@ class SEn extends S {
 
   @override
   String get scheduleRejectSuccess => 'Schedule rejected successfully';
+
+  @override
+  String get scheduleRescheduleSuccess =>
+      'New schedule proposal created successfully';
 
   @override
   String get scheduleAcceptNote =>
@@ -2308,4 +2326,105 @@ class SEn extends S {
 
   @override
   String get other_gender => 'Other';
+
+  @override
+  String get functions => 'Functions';
+
+  @override
+  String get recent_posts => 'Recent Posts';
+
+  @override
+  String get orders_completed => 'Orders Completed';
+
+  @override
+  String get rating_with_completion_rate => 'Rating with order completion rate';
+
+  @override
+  String get completion_rate => 'Completion Rate';
+
+  @override
+  String get no_recent_posts => 'No recent posts';
+
+  @override
+  String get collector_dashboard => 'Collector';
+
+  @override
+  String get monthly_earnings => 'Monthly Earnings';
+
+  @override
+  String get this_month => 'This Month';
+
+  @override
+  String get completed_orders => 'Completed Orders';
+
+  @override
+  String get work_statistics => 'Work Statistics';
+
+  @override
+  String get received_orders => 'Received Orders';
+
+  @override
+  String get level => 'Level';
+
+  @override
+  String get quick_actions => 'Quick Actions';
+
+  @override
+  String get new_posts_to_collect => 'New posts to collect';
+
+  @override
+  String get your_earnings => 'Your Earnings';
+
+  @override
+  String get track_performance_impact => 'Track your performance and impact';
+
+  @override
+  String get earnings_overview => 'Earnings Overview';
+
+  @override
+  String get average_weekly_earnings => 'Average Weekly Earnings';
+
+  @override
+  String get tap_to_see_detailed_breakdown => 'Tap to see detailed breakdown';
+
+  @override
+  String get eco_impact => 'Eco Impact';
+
+  @override
+  String get recycled => 'Recycled';
+
+  @override
+  String get co2_saved => 'CO₂ Saved';
+
+  @override
+  String get trees => 'Trees';
+
+  @override
+  String recycled_this_month(Object amount) {
+    return 'Recycled $amount this month';
+  }
+
+  @override
+  String recycled_this_month_placeholder(Object amount) {
+    return '$amount';
+  }
+
+  @override
+  String get keep_up_amazing_work => 'Keep up the amazing work!';
+
+  @override
+  String get level_progress => 'Level Progress';
+
+  @override
+  String percent_to_level(Object level, Object percent) {
+    return '$percent% to Level $level';
+  }
+
+  @override
+  String percent_to_level_placeholder(Object level, Object percent) {
+    return '$percent% to Level $level';
+  }
+
+  @override
+  String get preview_level_up => 'Preview Level Up';
 }

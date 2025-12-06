@@ -9,7 +9,7 @@ class UpdateScheduleRequest {
 
   Map<String, String> toQueryParams() {
     return {
-      'proposedTime': proposedTime.toIso8601String(),
+      'proposedTime': proposedTime.toUtc().toIso8601String(),
       'responseMessage': responseMessage,
     };
   }

@@ -637,7 +637,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
     final s = S.of(context)!;
 
     final request = CreateScheduleRequest(
-      proposedTime: proposedTime.toIso8601String(),
+      proposedTime: proposedTime.toUtc().toIso8601String(),
       responseMessage: responseMessage,
     );
 

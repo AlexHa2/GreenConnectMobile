@@ -328,7 +328,7 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
                                       item.type,
                                       style: theme.textTheme.labelSmall
                                           ?.copyWith(
-                                            color: theme.scraffoldBackgroundColor,
+                                            color: theme.scaffoldBackgroundColor,
                                             fontWeight: FontWeight.w600,
                                             fontSize: 10,
                                           ),

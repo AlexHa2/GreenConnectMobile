@@ -12,31 +12,36 @@ final List<NavConfig> navItemsCollector = [
     label: "Posts",
     routeName: '/collector-list-post',
   ),
+  // const NavConfig(
+  //   icon: Icons.local_offer,
+  //   label: "Offers",
+  //   routeName: '/collector-offer-list',
+  //   extra: {'isCollectorView': true},
+  // ),
+  // const NavConfig(
+  //   icon: Icons.schedule,
+  //   label: "Schedules",
+  //   routeName: '/collector-schedule-list',
+  // ),
+  // const NavConfig(
+  //   icon: Icons.chat,
+  //   label: "Complaints",
+  //   routeName: '/collector-complaint-list',
+  // ),
+  // const NavConfig(
+  //   icon: Icons.receipt,
+  //   label: "Transactions",
+  //   routeName: '/collector-list-transactions',
+  // ),
+  // const NavConfig(
+  //   icon: Icons.feedback,
+  //   label: "Feedbacks",
+  //   routeName: '/collector-feedback-list',
+  // ),
   const NavConfig(
-    icon: Icons.local_offer,
-    label: "Offers",
-    routeName: '/collector-offer-list',
-    extra: {'isCollectorView': true},
-  ),
-  const NavConfig(
-    icon: Icons.schedule,
-    label: "Schedules",
-    routeName: '/collector-schedule-list',
-  ),
-  const NavConfig(
-    icon: Icons.chat,
-    label: "Complaints",
-    routeName: '/collector-complaint-list',
-  ),
-  const NavConfig(
-    icon: Icons.receipt,
-    label: "Transactions",
-    routeName: '/collector-list-transactions',
-  ),
-  const NavConfig(
-    icon: Icons.feedback,
-    label: "Feedbacks",
-    routeName: '/collector-feedback-list',
+    icon: Icons.message,
+    label: "Message",
+    routeName: '/list-message',
   ),
   const NavConfig(
     icon: Icons.settings,

@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/enum/offer_status.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/providers/offer_providers.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/action_buttons_section.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/collector_info_section.dart';
@@ -221,11 +222,29 @@ class _OfferDetailPageState extends ConsumerState<OfferDetailPage> {
                     spacing: spacing,
                     s: s,
                     isHouseholdView: !widget.isCollectorView,
+                    offerStatus: offer.status.label,
                     onRejectSchedule: !widget.isCollectorView
                         ? (scheduleId) => _actionHandler
                             .handleProcessSchedule(
                               scheduleId: scheduleId,
                               isAccepted: false,
+                            )
+                        : null,
+                    onReschedule: widget.isCollectorView &&
+                            offer.status == OfferStatus.pending
+                        ? (proposedTime, responseMessage) =>
+                            _actionHandler.handleReschedule(
+                              proposedTime: proposedTime,
+                              responseMessage: responseMessage,
+                            )
+                        : null,
+                    onUpdateSchedule: widget.isCollectorView &&
+                            offer.status == OfferStatus.pending
+                        ? (scheduleId, proposedTime, responseMessage) =>
+                            _actionHandler.handleUpdateSchedule(
+                              scheduleId: scheduleId,
+                              proposedTime: proposedTime,
+                              responseMessage: responseMessage,
                             )
                         : null,
                   ),

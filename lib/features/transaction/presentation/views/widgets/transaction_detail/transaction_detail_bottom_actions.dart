@@ -331,7 +331,7 @@ class _CheckInButton extends ConsumerWidget {
     // final spacing = theme.extension<AppSpacing>()!.screenPadding;
 
     // Show check-in dialog with GPS location
-    final result = await showDialog<Map<String, double>?>(
+    final result = await showDialog<Map<String, dynamic>?>(
       context: context,
       builder: (context) =>
           _CheckInLocationDialog(transactionId: transaction.transactionId),
@@ -339,13 +339,27 @@ class _CheckInButton extends ConsumerWidget {
 
     if (result == null || !context.mounted) return;
 
+    final latitude = result['latitude'] as double?;
+    final longitude = result['longitude'] as double?;
+
+    if (latitude == null || longitude == null) {
+      if (context.mounted) {
+        CustomToast.show(
+          context,
+          'Không thể lấy vị trí. Vui lòng thử lại.',
+          type: ToastType.error,
+        );
+      }
+      return;
+    }
+
     try {
       final success = await ref
           .read(transactionViewModelProvider.notifier)
           .checkInTransaction(
             transactionId: transaction.transactionId,
-            latitude: result['latitude']!,
-            longitude: result['longitude']!,
+            latitude: latitude,
+            longitude: longitude,
           );
 
       if (context.mounted) {
@@ -355,7 +369,12 @@ class _CheckInButton extends ConsumerWidget {
             s.check_in_success,
             type: ToastType.success,
           );
-          onActionCompleted();
+          // Delay callback to ensure Navigator is not locked after pop
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              onActionCompleted();
+            }
+          });
         } else {
           final state = ref.read(transactionViewModelProvider);
           final errorMsg = state.errorMessage;
@@ -594,12 +613,12 @@ class _CheckInLocationDialogState extends State<_CheckInLocationDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context).pop(),
           child: Text(s.cancel),
         ),
         ElevatedButton(
           onPressed: (_latitude != null && _longitude != null && !_isLoading)
-              ? () => Navigator.pop(context, {
+              ? () => Navigator.of(context).pop({
                   'latitude': _latitude,
                   'longitude': _longitude,
                 })
@@ -813,7 +832,7 @@ class _InputScrapQuantityDialogState extends State<_InputScrapQuantityDialog> {
         content: Text('Không tìm thấy danh sách ve chai để nhập số lượng.'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.of(context).pop(),
             child: Text(s.cancel),
           ),
         ],
@@ -957,7 +976,7 @@ class _InputScrapQuantityDialogState extends State<_InputScrapQuantityDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isLoading ? null : () => Navigator.pop(context),
+          onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
           child: Text(s.cancel),
         ),
         ElevatedButton(
@@ -974,7 +993,7 @@ class _InputScrapQuantityDialogState extends State<_InputScrapQuantityDialog> {
                     );
                     return;
                   }
-                  Navigator.pop(context, details);
+                  Navigator.of(context).pop(details);
                 },
           style: ElevatedButton.styleFrom(
             backgroundColor: theme.primaryColor,
@@ -1167,11 +1186,11 @@ class _ToggleCancelButton extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.of(context).pop(false),
             child: Text(s.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
               backgroundColor: isCanceled
                   ? AppColors.warningUpdate

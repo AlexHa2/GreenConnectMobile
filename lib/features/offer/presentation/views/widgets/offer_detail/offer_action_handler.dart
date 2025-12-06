@@ -1,6 +1,8 @@
 import 'package:GreenConnectMobile/core/enum/offer_status.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/providers/offer_providers.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/confirm_dialog_helper.dart';
+import 'package:GreenConnectMobile/features/schedule/domain/entities/create_schedule_request.dart';
+import 'package:GreenConnectMobile/features/schedule/domain/entities/update_schedule_request.dart';
 import 'package:GreenConnectMobile/features/schedule/presentation/providers/schedule_providers.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
@@ -230,6 +232,136 @@ class OfferActionHandler {
             type: ToastType.error,
           );
         }
+      }
+    }
+  }
+
+  Future<void> handleReschedule({
+    required DateTime proposedTime,
+    required String responseMessage,
+  }) async {
+    final s = S.of(context)!;
+    
+    try {
+      final success = await ref
+          .read(scheduleViewModelProvider.notifier)
+          .createSchedule(
+            offerId: offerId,
+            request: CreateScheduleRequest(
+              proposedTime: proposedTime.toUtc().toIso8601String(),
+              responseMessage: responseMessage,
+            ),
+          );
+
+      if (context.mounted) {
+        if (success) {
+          CustomToast.show(
+            context,
+            s.scheduleRescheduleSuccess,
+            type: ToastType.success,
+          );
+          await _refreshOfferDetail();
+          onActionCompleted?.call();
+        } else {
+          final errorMessage = ref.read(scheduleViewModelProvider).errorMessage ?? '';
+          // Check if it's a 409 conflict error
+          String displayMessage = errorMessage;
+          if (errorMessage.contains('DATABASE_CONFLICT') || 
+              errorMessage.contains('database error') ||
+              errorMessage.contains('duplicate')) {
+            displayMessage = s.scheduleConflictError ?? 
+                'Đã có lịch hẹn đang chờ xử lý. Vui lòng đợi household phản hồi.';
+          } else if (errorMessage.isNotEmpty) {
+            displayMessage = errorMessage;
+          } else {
+            displayMessage = s.action_failed;
+          }
+          
+          CustomToast.show(
+            context,
+            displayMessage,
+            type: ToastType.error,
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        String errorMsg = s.action_failed;
+        if (e.toString().contains('DATABASE_CONFLICT') || 
+            e.toString().contains('409')) {
+          errorMsg = s.scheduleConflictError ?? 
+              'Đã có lịch hẹn đang chờ xử lý. Vui lòng đợi household phản hồi.';
+        }
+        CustomToast.show(
+          context,
+          errorMsg,
+          type: ToastType.error,
+        );
+      }
+    }
+  }
+
+  Future<void> handleUpdateSchedule({
+    required String scheduleId,
+    required DateTime proposedTime,
+    required String responseMessage,
+  }) async {
+    final s = S.of(context)!;
+    
+    try {
+      final success = await ref
+          .read(scheduleViewModelProvider.notifier)
+          .updateSchedule(
+            scheduleId: scheduleId,
+            request: UpdateScheduleRequest(
+              proposedTime: proposedTime,
+              responseMessage: responseMessage,
+            ),
+          );
+
+      if (context.mounted) {
+        if (success) {
+          CustomToast.show(
+            context,
+            s.scheduleUpdateSuccess,
+            type: ToastType.success,
+          );
+          await _refreshOfferDetail();
+          onActionCompleted?.call();
+        } else {
+          final errorMessage = ref.read(scheduleViewModelProvider).errorMessage ?? '';
+          String displayMessage = errorMessage;
+          if (errorMessage.contains('Không thể sửa') || 
+              errorMessage.contains('đã được Chấp nhận') ||
+              errorMessage.contains('đã được Từ chối')) {
+            displayMessage = s.scheduleCannotEditError ?? 
+                'Không thể sửa vì đề xuất đã được Chấp nhận hoặc Từ chối.';
+          } else if (errorMessage.isNotEmpty) {
+            displayMessage = errorMessage;
+          } else {
+            displayMessage = s.action_failed;
+          }
+          
+          CustomToast.show(
+            context,
+            displayMessage,
+            type: ToastType.error,
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        String errorMsg = s.action_failed;
+        if (e.toString().contains('Không thể sửa') || 
+            e.toString().contains('400')) {
+          errorMsg = s.scheduleCannotEditError ?? 
+              'Không thể sửa vì đề xuất đã được Chấp nhận hoặc Từ chối.';
+        }
+        CustomToast.show(
+          context,
+          errorMsg,
+          type: ToastType.error,
+        );
       }
     }
   }
