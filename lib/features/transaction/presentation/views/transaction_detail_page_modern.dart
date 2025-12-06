@@ -262,7 +262,7 @@ class _ChatFloatingButton extends ConsumerWidget {
       if (existingRoom != null) {
         // Chat room exists - Navigate directly
         if (context.mounted) {
-          context.go(
+          context.push(
             '/chat-detail',
             extra: {
               'transactionId': transaction.transactionId,

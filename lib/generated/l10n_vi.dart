@@ -1467,6 +1467,20 @@ class SVi extends S {
   String get scheduleRescheduleButton => 'Đổi lịch';
 
   @override
+  String get scheduleEditButton => 'Chỉnh sửa';
+
+  @override
+  String get scheduleAddNew => 'Thêm lịch hẹn mới';
+
+  @override
+  String get scheduleConflictError =>
+      'Đã có lịch hẹn đang chờ xử lý. Vui lòng đợi household phản hồi.';
+
+  @override
+  String get scheduleCannotEditError =>
+      'Không thể sửa vì đề xuất đã được Chấp nhận hoặc Từ chối.';
+
+  @override
   String get scheduleConfirmAccept => 'Xác nhận chấp nhận lịch hẹn';
 
   @override
@@ -1491,6 +1505,9 @@ class SVi extends S {
 
   @override
   String get scheduleRejectSuccess => 'Từ chối lịch hẹn thành công';
+
+  @override
+  String get scheduleRescheduleSuccess => 'Đã tạo lịch hẹn mới thành công';
 
   @override
   String get scheduleAcceptNote =>
@@ -2326,5 +2343,108 @@ class SVi extends S {
   String get other_gender => 'Khác';
 
   @override
+
+  String get functions => 'Chức năng';
+
+  @override
+  String get recent_posts => 'Bài đăng gần đây';
+
+  @override
+  String get orders_completed => 'Số đơn đã hoàn thành';
+
+  @override
+  String get rating_with_completion_rate =>
+      'Đánh giá với tỷ lệ hoàn thành đơn hàng';
+
+  @override
+  String get completion_rate => 'Tỷ lệ hoàn thành';
+
+  @override
+  String get no_recent_posts => 'Chưa có bài đăng gần đây';
+
+  @override
+  String get collector_dashboard => 'Người thu gom';
+
+  @override
+  String get monthly_earnings => 'Thu nhập tháng này';
+
+  @override
+  String get this_month => 'Tháng này';
+
+  @override
+  String get completed_orders => 'Đơn hoàn thành';
+
+  @override
+  String get work_statistics => 'Thống kê công việc';
+
+  @override
+  String get received_orders => 'Đơn đã nhận';
+
+  @override
+  String get level => 'Cấp độ';
+
+  @override
+  String get quick_actions => 'Thao tác nhanh';
+
+  @override
+  String get new_posts_to_collect => 'Bài đăng mới để thu gom';
+
+  @override
+  String get your_earnings => 'Thu nhập của bạn';
+
+  @override
+  String get track_performance_impact => 'Theo dõi hiệu suất và tác động';
+
+  @override
+  String get earnings_overview => 'Tổng quan thu nhập';
+
+  @override
+  String get average_weekly_earnings => 'Thu nhập trung bình hàng tuần';
+
+  @override
+  String get tap_to_see_detailed_breakdown => 'Nhấn để xem chi tiết';
+
+  @override
+  String get eco_impact => 'Tác động môi trường';
+
+  @override
+  String get recycled => 'Đã tái chế';
+
+  @override
+  String get co2_saved => 'CO₂ đã tiết kiệm';
+
+  @override
+  String get trees => 'Cây';
+
+  @override
+  String recycled_this_month(Object amount) {
+    return 'Đã tái chế $amount tháng này';
+  }
+
+  @override
+  String recycled_this_month_placeholder(Object amount) {
+    return '$amount';
+  }
+
+  @override
+  String get keep_up_amazing_work => 'Tiếp tục phát huy!';
+
+  @override
+  String get level_progress => 'Tiến độ cấp độ';
+
+  @override
+  String percent_to_level(Object level, Object percent) {
+    return '$percent% đến Cấp $level';
+  }
+
+  @override
+  String percent_to_level_placeholder(Object level, Object percent) {
+    return '$percent% đến Cấp $level';
+  }
+
+  @override
+  String get preview_level_up => 'Xem trước nâng cấp';
+
   String get buyed => 'Đã mua';
+
 }

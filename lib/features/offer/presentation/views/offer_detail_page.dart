@@ -1,3 +1,5 @@
+
+import 'package:GreenConnectMobile/core/enum/offer_status.dart';
 import 'package:GreenConnectMobile/core/di/profile_injector.dart';
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
@@ -243,11 +245,29 @@ class _OfferDetailPageState extends ConsumerState<OfferDetailPage> {
                     spacing: spacing,
                     s: s,
                     isHouseholdView: !widget.isCollectorView,
+                    offerStatus: offer.status.label,
                     onRejectSchedule: !widget.isCollectorView
                         ? (scheduleId) => _actionHandler
                             .handleProcessSchedule(
                               scheduleId: scheduleId,
                               isAccepted: false,
+                            )
+                        : null,
+                    onReschedule: widget.isCollectorView &&
+                            offer.status == OfferStatus.pending
+                        ? (proposedTime, responseMessage) =>
+                            _actionHandler.handleReschedule(
+                              proposedTime: proposedTime,
+                              responseMessage: responseMessage,
+                            )
+                        : null,
+                    onUpdateSchedule: widget.isCollectorView &&
+                            offer.status == OfferStatus.pending
+                        ? (scheduleId, proposedTime, responseMessage) =>
+                            _actionHandler.handleUpdateSchedule(
+                              scheduleId: scheduleId,
+                              proposedTime: proposedTime,
+                              responseMessage: responseMessage,
                             )
                         : null,
                   ),

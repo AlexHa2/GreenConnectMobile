@@ -13,6 +13,9 @@ class ScheduleProposalsSection extends StatelessWidget {
   final S s;
   final bool isHouseholdView;
   final Function(String scheduleId)? onRejectSchedule;
+  final Function(DateTime proposedTime, String responseMessage)? onReschedule;
+  final Function(String scheduleId, DateTime proposedTime, String responseMessage)? onUpdateSchedule;
+  final String? offerStatus;
 
   const ScheduleProposalsSection({
     super.key,
@@ -22,6 +25,9 @@ class ScheduleProposalsSection extends StatelessWidget {
     required this.s,
     this.isHouseholdView = false,
     this.onRejectSchedule,
+    this.onReschedule,
+    this.onUpdateSchedule,
+    this.offerStatus,
   });
 
   @override
@@ -81,6 +87,49 @@ class ScheduleProposalsSection extends StatelessWidget {
             ),
           ),
           Divider(height: 1, color: theme.dividerColor),
+
+          // Add new schedule button for collector
+          if (!isHouseholdView &&
+              offerStatus == 'Pending' &&
+              onReschedule != null) ...[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: spacing),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => _showRescheduleDialog(
+                    context,
+                    null,
+                  ),
+                  icon: Icon(
+                    Icons.add_circle_outline_rounded,
+                    size: 20,
+                    color: theme.primaryColor,
+                  ),
+                  label: Text(
+                    s.scheduleRescheduleButton ?? 'Thêm lịch hẹn mới',
+                    style: TextStyle(
+                      color: theme.primaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: theme.primaryColor,
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(spacing / 2),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: spacing * 0.75,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Divider(height: 1, color: theme.dividerColor),
+          ],
 
           // Content
           Padding(
@@ -239,6 +288,50 @@ class ScheduleProposalsSection extends StatelessWidget {
                               ),
                             ],
 
+                            // Edit button for collector view when schedule is pending
+                            if (!isHouseholdView &&
+                                schedule.status ==
+                                    ScheduleProposalStatus.pending &&
+                                offerStatus == 'Pending' &&
+                                onUpdateSchedule != null) ...[
+                              SizedBox(height: spacing * 0.75),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  onPressed: () => _showUpdateScheduleDialog(
+                                    context,
+                                    schedule,
+                                  ),
+                                  icon: Icon(
+                                    Icons.edit_rounded,
+                                    size: 18,
+                                    color: theme.primaryColor,
+                                  ),
+                                  label: Text(
+                                    s.scheduleEditButton ?? 'Chỉnh sửa',
+                                    style: TextStyle(
+                                      color: theme.primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: theme.primaryColor,
+                                      width: 1.5,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        spacing / 2,
+                                      ),
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: spacing * 0.75,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+
                             // Swipe to reject indicator for household view
                             if (isHouseholdView &&
                                 schedule.status ==
@@ -334,6 +427,180 @@ class ScheduleProposalsSection extends StatelessWidget {
     }
   }
 
+  void _showUpdateScheduleDialog(
+    BuildContext context,
+    ScheduleProposalEntity schedule,
+  ) {
+    DateTime selectedDate = schedule.proposedTime;
+    TimeOfDay selectedTime = TimeOfDay.fromDateTime(schedule.proposedTime);
+    final messageController = TextEditingController(
+      text: schedule.responseMessage,
+    );
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          backgroundColor: theme.cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(spacing),
+          ),
+          title: Text(
+            s.scheduleEditButton ?? 'Chỉnh sửa lịch hẹn',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  s.proposed_time,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: spacing / 2),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          final pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: selectedDate,
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                            builder: (context, child) {
+                              return Theme(
+                                data: Theme.of(context).copyWith(
+                                  colorScheme: ColorScheme.light(
+                                    primary: theme.primaryColor,
+                                    onPrimary: theme.colorScheme.onPrimary,
+                                  ),
+                                ),
+                                child: child!,
+                              );
+                            },
+                          );
+                          if (pickedDate != null) {
+                            setState(() {
+                              selectedDate = pickedDate;
+                            });
+                          }
+                        },
+                        icon: Icon(Icons.calendar_today, size: 18),
+                        label: Text(
+                          '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: theme.primaryColor),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: spacing / 2),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          final pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: selectedTime,
+                            builder: (context, child) {
+                              return Theme(
+                                data: Theme.of(context).copyWith(
+                                  colorScheme: ColorScheme.light(
+                                    primary: theme.primaryColor,
+                                    onPrimary: theme.colorScheme.onPrimary,
+                                  ),
+                                ),
+                                child: child!,
+                              );
+                            },
+                          );
+                          if (pickedTime != null) {
+                            setState(() {
+                              selectedTime = pickedTime;
+                            });
+                          }
+                        },
+                        icon: Icon(Icons.access_time, size: 18),
+                        label: Text(
+                          '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: theme.primaryColor),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: spacing),
+                Text(
+                  s.response_message,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: spacing / 2),
+                TextField(
+                  controller: messageController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: s.response_message,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(spacing / 2),
+                    ),
+                    filled: true,
+                    fillColor: theme.scaffoldBackgroundColor,
+                  ),
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(
+                s.cancel,
+                style: TextStyle(color: theme.textTheme.bodySmall?.color),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final proposedDateTime = DateTime(
+                  selectedDate.year,
+                  selectedDate.month,
+                  selectedDate.day,
+                  selectedTime.hour,
+                  selectedTime.minute,
+                );
+                Navigator.pop(dialogContext);
+                onUpdateSchedule?.call(
+                  schedule.scheduleProposalId,
+                  proposedDateTime,
+                  messageController.text.trim(),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.primaryColor,
+                foregroundColor: theme.colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(spacing / 2),
+                ),
+              ),
+              child: Text(s.update),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showRejectConfirmDialog(BuildContext context, String scheduleId) {
     showDialog(
       context: context,
@@ -375,6 +642,183 @@ class ScheduleProposalsSection extends StatelessWidget {
             child: Text(s.scheduleRejectButton),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showRescheduleDialog(
+    BuildContext context,
+    ScheduleProposalEntity? schedule,
+  ) {
+    DateTime selectedDate = schedule?.proposedTime ?? DateTime.now().add(const Duration(days: 1));
+    TimeOfDay selectedTime = schedule != null 
+        ? TimeOfDay.fromDateTime(schedule.proposedTime)
+        : TimeOfDay.now();
+    final messageController = TextEditingController(
+      text: schedule?.responseMessage ?? '',
+    );
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          backgroundColor: theme.cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(spacing),
+          ),
+          title: Text(
+            schedule == null 
+                ? (s.scheduleAddNew ?? 'Thêm lịch hẹn mới')
+                : (s.scheduleRescheduleButton ?? 'Hẹn lại giờ'),
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  s.proposed_time,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: spacing / 2),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          final pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: selectedDate,
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                            builder: (context, child) {
+                              return Theme(
+                                data: Theme.of(context).copyWith(
+                                  colorScheme: ColorScheme.light(
+                                    primary: theme.primaryColor,
+                                    onPrimary: theme.colorScheme.onPrimary,
+                                  ),
+                                ),
+                                child: child!,
+                              );
+                            },
+                          );
+                          if (pickedDate != null) {
+                            setState(() {
+                              selectedDate = pickedDate;
+                            });
+                          }
+                        },
+                        icon: Icon(Icons.calendar_today, size: 18),
+                        label: Text(
+                          '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: theme.primaryColor),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: spacing / 2),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          final pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: selectedTime,
+                            builder: (context, child) {
+                              return Theme(
+                                data: Theme.of(context).copyWith(
+                                  colorScheme: ColorScheme.light(
+                                    primary: theme.primaryColor,
+                                    onPrimary: theme.colorScheme.onPrimary,
+                                  ),
+                                ),
+                                child: child!,
+                              );
+                            },
+                          );
+                          if (pickedTime != null) {
+                            setState(() {
+                              selectedTime = pickedTime;
+                            });
+                          }
+                        },
+                        icon: Icon(Icons.access_time, size: 18),
+                        label: Text(
+                          '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: theme.primaryColor),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: spacing),
+                Text(
+                  s.response_message,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: spacing / 2),
+                TextField(
+                  controller: messageController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: s.response_message,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(spacing / 2),
+                    ),
+                    filled: true,
+                    fillColor: theme.scaffoldBackgroundColor,
+                  ),
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(
+                s.cancel,
+                style: TextStyle(color: theme.textTheme.bodySmall?.color),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final proposedDateTime = DateTime(
+                  selectedDate.year,
+                  selectedDate.month,
+                  selectedDate.day,
+                  selectedTime.hour,
+                  selectedTime.minute,
+                );
+                Navigator.pop(dialogContext);
+                onReschedule?.call(
+                  proposedDateTime,
+                  messageController.text.trim(),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.primaryColor,
+                foregroundColor: theme.colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(spacing / 2),
+                ),
+              ),
+              child: Text(s.scheduleRescheduleButton ?? 'Xác nhận'),
+            ),
+          ],
+        ),
       ),
     );
   }

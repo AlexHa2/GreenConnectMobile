@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/core/helper/app_router_observer.dart';
+import 'package:GreenConnectMobile/features/collector/presentation/views/collector_home_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/login_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/register_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/welcome_page.dart';
@@ -73,7 +74,7 @@ final GoRouter greenRouter = GoRouter(
         GoRoute(
           path: '/collector-home',
           name: 'collector-home',
-          builder: (context, state) => const CollectorListPostPage(),
+          builder: (context, state) => const CollectorHomePage(),
         ),
         GoRoute(
           path: '/collector-list-post',
@@ -106,6 +107,11 @@ final GoRouter greenRouter = GoRouter(
           builder: (context, state) => const ComplaintListPage(),
         ),
         GoRoute(
+        path: '/list-message',
+        name: 'list-message',
+        builder: (context, state) => const MessageListPage(),
+        ),
+        GoRoute(
           path: '/collector-offer-list',
           name: 'collector-offer-list',
           builder: (context, state) {
@@ -116,6 +122,14 @@ final GoRouter greenRouter = GoRouter(
             );
           },
         ),
+        // GoRoute(
+        //   path: '/collector-detail-post',
+        //   name: 'collector-detail-post',
+        //   builder: (context, state) {
+        //     final initialData = state.extra as Map<String, dynamic>? ?? {};
+        //     return PostDetailsPage(initialData: initialData);
+        //   },
+        // ),
       ],
     ),
     GoRoute(
@@ -190,11 +204,7 @@ final GoRouter greenRouter = GoRouter(
       name: 'post-history',
       builder: (context, state) => const HouseholdRewardHistory(),
     ),
-    GoRoute(
-      path: '/list-message',
-      name: 'list-message',
-      builder: (context, state) => const MessageListPage(),
-    ),
+    
     GoRoute(
       name: 'chat-detail',
       path: '/chat-detail',

@@ -2887,6 +2887,30 @@ abstract class S {
   /// **'Reschedule'**
   String get scheduleRescheduleButton;
 
+  /// No description provided for @scheduleEditButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get scheduleEditButton;
+
+  /// No description provided for @scheduleAddNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Schedule'**
+  String get scheduleAddNew;
+
+  /// No description provided for @scheduleConflictError.
+  ///
+  /// In en, this message translates to:
+  /// **'There is already a pending schedule proposal. Please wait for household response.'**
+  String get scheduleConflictError;
+
+  /// No description provided for @scheduleCannotEditError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot edit because the proposal has been Accepted or Rejected.'**
+  String get scheduleCannotEditError;
+
   /// No description provided for @scheduleConfirmAccept.
   ///
   /// In en, this message translates to:
@@ -2934,6 +2958,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Schedule rejected successfully'**
   String get scheduleRejectSuccess;
+
+  /// No description provided for @scheduleRescheduleSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'New schedule proposal created successfully'**
+  String get scheduleRescheduleSuccess;
 
   /// No description provided for @scheduleAcceptNote.
   ///
@@ -4549,11 +4579,198 @@ abstract class S {
   /// **'Other'**
   String get other_gender;
 
+
+  /// No description provided for @functions.
+  ///
+  /// In en, this message translates to:
+  /// **'Functions'**
+  String get functions;
+
+  /// No description provided for @recent_posts.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Posts'**
+  String get recent_posts;
+
+  /// No description provided for @orders_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders Completed'**
+  String get orders_completed;
+
+  /// No description provided for @rating_with_completion_rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating with order completion rate'**
+  String get rating_with_completion_rate;
+
+  /// No description provided for @completion_rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Completion Rate'**
+  String get completion_rate;
+
+  /// No description provided for @no_recent_posts.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent posts'**
+  String get no_recent_posts;
+
+  /// No description provided for @collector_dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Collector'**
+  String get collector_dashboard;
+
+  /// No description provided for @monthly_earnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Earnings'**
+  String get monthly_earnings;
+
+  /// No description provided for @this_month.
+  ///
+  /// In en, this message translates to:
+  /// **'This Month'**
+  String get this_month;
+
+  /// No description provided for @completed_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Orders'**
+  String get completed_orders;
+
+  /// No description provided for @work_statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Work Statistics'**
+  String get work_statistics;
+
+  /// No description provided for @received_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Received Orders'**
+  String get received_orders;
+
+  /// No description provided for @level.
+  ///
+  /// In en, this message translates to:
+  /// **'Level'**
+  String get level;
+
+  /// No description provided for @quick_actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get quick_actions;
+
+  /// No description provided for @new_posts_to_collect.
+  ///
+  /// In en, this message translates to:
+  /// **'New posts to collect'**
+  String get new_posts_to_collect;
+
+  /// No description provided for @your_earnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Earnings'**
+  String get your_earnings;
+
+  /// No description provided for @track_performance_impact.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your performance and impact'**
+  String get track_performance_impact;
+
+  /// No description provided for @earnings_overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings Overview'**
+  String get earnings_overview;
+
+  /// No description provided for @average_weekly_earnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Average Weekly Earnings'**
+  String get average_weekly_earnings;
+
+  /// No description provided for @tap_to_see_detailed_breakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to see detailed breakdown'**
+  String get tap_to_see_detailed_breakdown;
+
+  /// No description provided for @eco_impact.
+  ///
+  /// In en, this message translates to:
+  /// **'Eco Impact'**
+  String get eco_impact;
+
+  /// No description provided for @recycled.
+  ///
+  /// In en, this message translates to:
+  /// **'Recycled'**
+  String get recycled;
+
+  /// No description provided for @co2_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'CO₂ Saved'**
+  String get co2_saved;
+
+  /// No description provided for @trees.
+  ///
+  /// In en, this message translates to:
+  /// **'Trees'**
+  String get trees;
+
+  /// No description provided for @recycled_this_month.
+  ///
+  /// In en, this message translates to:
+  /// **'Recycled {amount} this month'**
+  String recycled_this_month(Object amount);
+
+  /// No description provided for @recycled_this_month_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount}'**
+  String recycled_this_month_placeholder(Object amount);
+
+  /// No description provided for @keep_up_amazing_work.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep up the amazing work!'**
+  String get keep_up_amazing_work;
+
+  /// No description provided for @level_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Progress'**
+  String get level_progress;
+
+  /// No description provided for @percent_to_level.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% to Level {level}'**
+  String percent_to_level(Object level, Object percent);
+
+  /// No description provided for @percent_to_level_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% to Level {level}'**
+  String percent_to_level_placeholder(Object level, Object percent);
+
+  /// No description provided for @preview_level_up.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview Level Up'**
+  String get preview_level_up;
   /// No description provided for @buyed.
   ///
   /// In en, this message translates to:
   /// **'Buyed'**
   String get buyed;
+
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
