@@ -4,7 +4,9 @@ import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_e
 import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_item_card.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_loading_state.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
+import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -88,9 +90,11 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
 
   @override
   Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<AppSpacing>()!;
+    final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!;
     final space = spacing.screenPadding;
     final s = S.of(context)!;
+    final defaultImage = 'assets/images/leaf_2.png';
 
     final rewardState = ref.watch(rewardViewModelProvider);
     final rewardItems = rewardState.rewardItems ?? [];
@@ -249,7 +253,7 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const Icon(
+                                        Icon(
                                           Icons.stars,
                                           size: 14,
                                           color: AppColors.warningUpdate,
@@ -348,11 +352,6 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
                           ),
                         ],
                       ),
-                    return RewardItemCard(
-                      item: item,
-                      redeemButtonText: s.redeem,
-                      isRedeeming: rewardState.isRedeeming,
-                      onRedeem: () => _onRedeemItem(item.rewardItemId),
                     );
                   },
                 ),

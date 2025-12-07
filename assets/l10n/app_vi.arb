@@ -832,7 +832,7 @@
   "level_progress":"Tiến độ cấp độ",
   "percent_to_level":"{percent}% đến Cấp {level}",
   "percent_to_level_placeholder":"{percent}% đến Cấp {level}",
-  "preview_level_up":"Xem trước nâng cấp"
+  "preview_level_up":"Xem trước nâng cấp",
   "no_rewards_message": "Không có tin nhắn phần thưởng",
   "buyed": "Đã mua"
 

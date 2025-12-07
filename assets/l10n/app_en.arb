@@ -833,7 +833,7 @@
   "level_progress":"Level Progress",
   "percent_to_level":"{percent}% to Level {level}",
   "percent_to_level_placeholder":"{percent}% to Level {level}",
-  "preview_level_up":"Preview Level Up"
+  "preview_level_up":"Preview Level Up",
   "no_rewards_message": "No rewards message",
   "buyed": "Buyed"
 

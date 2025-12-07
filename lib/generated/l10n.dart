@@ -4579,7 +4579,6 @@ abstract class S {
   /// **'Other'**
   String get other_gender;
 
-
   /// No description provided for @functions.
   ///
   /// In en, this message translates to:
@@ -4765,12 +4764,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Preview Level Up'**
   String get preview_level_up;
+
   /// No description provided for @buyed.
   ///
   /// In en, this message translates to:
   /// **'Buyed'**
   String get buyed;
-
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

@@ -2343,7 +2343,6 @@ class SVi extends S {
   String get other_gender => 'Khác';
 
   @override
-
   String get functions => 'Chức năng';
 
   @override
@@ -2445,6 +2444,6 @@ class SVi extends S {
   @override
   String get preview_level_up => 'Xem trước nâng cấp';
 
+  @override
   String get buyed => 'Đã mua';
-
 }

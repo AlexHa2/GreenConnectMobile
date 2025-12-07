@@ -2350,7 +2350,6 @@ class SEn extends S {
   String get other_gender => 'Other';
 
   @override
-
   String get functions => 'Functions';
 
   @override
@@ -2451,6 +2450,6 @@ class SEn extends S {
   @override
   String get preview_level_up => 'Preview Level Up';
 
+  @override
   String get buyed => 'Buyed';
-
 }
