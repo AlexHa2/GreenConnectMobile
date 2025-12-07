@@ -1119,6 +1119,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               space: space,
               theme: theme,
             ),
+            
           ],
         ),
       ],
