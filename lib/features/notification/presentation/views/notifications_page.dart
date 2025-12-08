@@ -110,6 +110,10 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context)!.notifications),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => context.pop(),
+        ),
         actions: [
           if (state.unreadCount > 0)
             Center(
@@ -317,16 +321,13 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     final entityId = notification.entityId;
 
     if (entityType == null) return;
-    
+
     switch (entityType) {
       case 'message':
       case 'chat':
         // Check user role to navigate to correct message page
         if (_currentUser != null) {
-          final isHousehold = Role.hasRole(
-            _currentUser!.roles,
-            Role.household,
-          );
+          final isHousehold = Role.hasRole(_currentUser!.roles, Role.household);
           if (isHousehold) {
             context.push('/household-list-message');
           } else {

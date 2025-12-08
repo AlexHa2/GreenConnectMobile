@@ -1,8 +1,9 @@
+import 'package:GreenConnectMobile/core/enum/buyer_type_status.dart';
 import 'package:GreenConnectMobile/core/helper/app_router_observer.dart';
-import 'package:GreenConnectMobile/features/collector/presentation/views/collector_home_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/login_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/register_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/welcome_page.dart';
+import 'package:GreenConnectMobile/features/collector/presentation/views/collector_home_page.dart';
 import 'package:GreenConnectMobile/features/complaint/presentation/views/complaint_detail_page.dart';
 import 'package:GreenConnectMobile/features/complaint/presentation/views/complaint_list_page.dart';
 import 'package:GreenConnectMobile/features/complaint/presentation/views/create_complaint_page.dart';
@@ -14,6 +15,10 @@ import 'package:GreenConnectMobile/features/message/presentation/views/message.d
 import 'package:GreenConnectMobile/features/notification/presentation/views/notifications_page.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/offer_detail_page.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/offers_list_page.dart';
+import 'package:GreenConnectMobile/features/package/domain/entities/package_entity.dart';
+import 'package:GreenConnectMobile/features/package/presentation/views/package_detail_page.dart';
+import 'package:GreenConnectMobile/features/package/presentation/views/package_list_page.dart';
+import 'package:GreenConnectMobile/features/package/presentation/views/payment_webview_page.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/collector_list_post.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/create_post.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/house_hold_home.dart';
@@ -35,8 +40,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouterObserver = AppRouterObserver();
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter greenRouter = GoRouter(
+  navigatorKey: _rootNavigatorKey,
   observers: [appRouterObserver],
   initialLocation: '/',
   routes: [
@@ -107,9 +114,9 @@ final GoRouter greenRouter = GoRouter(
           builder: (context, state) => const ComplaintListPage(),
         ),
         GoRoute(
-        path: '/list-message',
-        name: 'list-message',
-        builder: (context, state) => const MessageListPage(),
+          path: '/list-message',
+          name: 'list-message',
+          builder: (context, state) => const MessageListPage(),
         ),
         GoRoute(
           path: '/collector-offer-list',
@@ -153,11 +160,6 @@ final GoRouter greenRouter = GoRouter(
       builder: (context, state) => const ComplaintListPage(),
     ),
     GoRoute(
-      path: '/upgrade-verification',
-      name: 'upgrade-verification',
-      builder: (context, state) => const UpgradeVerificationPage(),
-    ),
-    GoRoute(
       path: '/detail-post',
       name: 'detail-post',
       builder: (context, state) {
@@ -182,6 +184,7 @@ final GoRouter greenRouter = GoRouter(
     GoRoute(
       path: '/notifications',
       name: 'notifications',
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const NotificationsPage(),
     ),
     GoRoute(
@@ -204,7 +207,7 @@ final GoRouter greenRouter = GoRouter(
       name: 'post-history',
       builder: (context, state) => const HouseholdRewardHistory(),
     ),
-    
+
     GoRoute(
       name: 'chat-detail',
       path: '/chat-detail',
@@ -295,6 +298,45 @@ final GoRouter greenRouter = GoRouter(
       path: '/reward-store',
       name: 'reward-store',
       builder: (context, state) => const RewardStore(),
+    ),
+    GoRoute(
+      path: '/upgrade-verification',
+      name: 'upgrade-verification',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final initialBuyerType = extra?['initialBuyerType'] as BuyerTypeStatus?;
+        return UpgradeVerificationPage(initialBuyerType: initialBuyerType);
+      },
+    ),
+    GoRoute(
+      path: '/package-list',
+      name: 'package-list',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const PackageListPage(),
+    ),
+    GoRoute(
+      path: '/package-detail',
+      name: 'package-detail',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        final package = initialData['package'] as PackageEntity;
+        return PackageDetailPage(package: package);
+      },
+    ),
+    GoRoute(
+      path: '/payment-webview',
+      name: 'payment-webview',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final data = state.extra as Map<String, dynamic>;
+        return PaymentWebViewPage(
+          paymentUrl: data['paymentUrl'] as String,
+          transactionRef: data['transactionRef'] as String?,
+          packageName: data['packageName'] as String?,
+        );
+      },
     ),
   ],
 );

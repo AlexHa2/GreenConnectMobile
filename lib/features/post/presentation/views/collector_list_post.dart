@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:GreenConnectMobile/core/enum/post_status.dart';
 import 'package:GreenConnectMobile/core/helper/post_status_helper.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/paginated_scrap_post_entity.dart';
@@ -34,7 +33,7 @@ class _CollectorListPostPageState extends ConsumerState<CollectorListPostPage> {
   String? _searchTitle;
   Timer? _debounce;
   bool _sortByLocation = false;
-  bool _sortByCreateAt = true;
+  bool _sortByCreateAt = false;
 
   final List<ScrapPostEntity> _posts = [];
 

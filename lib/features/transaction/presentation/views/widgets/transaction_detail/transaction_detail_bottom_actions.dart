@@ -1,5 +1,6 @@
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
+import 'package:GreenConnectMobile/core/error/failure.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/confirm_dialog_helper.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_request.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
@@ -197,40 +198,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
     }
 
     // No action buttons to show
-    // return const SizedBox.shrink();
-
-    return Container(
-      padding: EdgeInsets.all(spacing),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        boxShadow: [
-          BoxShadow(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Row(
-          children: [
-            Expanded(
-              child: _RejectButton(
-                transactionId: transaction.transactionId,
-                onActionCompleted: onActionCompleted,
-              ),
-            ),
-            SizedBox(width: spacing),
-            Expanded(
-              child: _ApproveButton(
-                transactionId: transaction.transactionId,
-                onActionCompleted: onActionCompleted,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 }
 
@@ -503,14 +471,14 @@ class _CheckInLocationDialogState extends State<_CheckInLocationDialog> {
 
       // Check permission
       LocationPermission permission = await Geolocator.checkPermission();
-      
+
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           return null;
         }
       }
-      
+
       if (permission == LocationPermission.deniedForever) {
         return null;
       }
@@ -519,11 +487,8 @@ class _CheckInLocationDialogState extends State<_CheckInLocationDialog> {
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
-      
-      return {
-        'latitude': position.latitude,
-        'longitude': position.longitude,
-      };
+
+      return {'latitude': position.latitude, 'longitude': position.longitude};
     } catch (e) {
       return null;
     }
@@ -619,10 +584,9 @@ class _CheckInLocationDialogState extends State<_CheckInLocationDialog> {
         ),
         ElevatedButton(
           onPressed: (_latitude != null && _longitude != null && !_isLoading)
-              ? () => Navigator.of(context).pop({
-                  'latitude': _latitude,
-                  'longitude': _longitude,
-                })
+              ? () => Navigator.of(
+                  context,
+                ).pop({'latitude': _latitude, 'longitude': _longitude})
               : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: theme.primaryColor,
@@ -1027,37 +991,20 @@ class _ApproveButton extends ConsumerWidget {
   });
 
   Future<void> _handleComplete(BuildContext context, WidgetRef ref) async {
-    final s = S.of(context)!;
-
-    // Show confirmation dialog
-    final confirmed = await ConfirmDialogHelper.show(
+    // Show payment method selection bottom sheet
+    final result = await showModalBottomSheet<bool>(
       context: context,
-      title: s.completed,
-      message: s.approve_message,
-      confirmText: s.completed,
-      isDestructive: false,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _PaymentMethodBottomSheet(
+        transactionId: transactionId,
+        onActionCompleted: onActionCompleted,
+      ),
     );
 
-    if (confirmed != true || !context.mounted) return;
-
-    try {
-      // Call API to complete transaction
-      await ref
-          .read(transactionViewModelProvider.notifier)
-          .processTransaction(transactionId: transactionId, isAccepted: true);
-
-      if (context.mounted) {
-        CustomToast.show(
-          context,
-          s.transaction_approved,
-          type: ToastType.success,
-        );
-        onActionCompleted();
-      }
-    } catch (e) {
-      if (context.mounted) {
-        CustomToast.show(context, s.operation_failed, type: ToastType.error);
-      }
+    // If payment was successful, trigger the callback
+    if (result == true) {
+      onActionCompleted();
     }
   }
 
@@ -1172,7 +1119,7 @@ class _ToggleCancelButton extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         s.emergency_cancel_note,
-                        style:  TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: AppColors.danger,
                           fontWeight: FontWeight.w500,
@@ -1277,6 +1224,811 @@ class _ToggleCancelButton extends ConsumerWidget {
         disabledBackgroundColor: isCanceled
             ? AppColors.warningUpdate.withValues(alpha: 0.05)
             : AppColors.danger.withValues(alpha: 0.05),
+      ),
+    );
+  }
+}
+
+/// Payment Method Selection Bottom Sheet
+class _PaymentMethodBottomSheet extends ConsumerWidget {
+  final String transactionId;
+  final VoidCallback onActionCompleted;
+
+  const _PaymentMethodBottomSheet({
+    required this.transactionId,
+    required this.onActionCompleted,
+  });
+
+  Future<void> _handleCashPayment(BuildContext context, WidgetRef ref) async {
+    final s = S.of(context)!;
+
+    // Show confirmation dialog
+    final confirmed = await ConfirmDialogHelper.show(
+      context: context,
+      title: s.completed,
+      message: 'Xác nhận thanh toán bằng tiền mặt?',
+      confirmText: s.completed,
+      isDestructive: false,
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      // Call API to complete transaction with cash payment
+      await ref
+          .read(transactionViewModelProvider.notifier)
+          .processTransaction(transactionId: transactionId, isAccepted: true);
+
+      if (context.mounted) {
+        CustomToast.show(
+          context,
+          s.transaction_approved,
+          type: ToastType.success,
+        );
+        Navigator.of(context).pop(true); // Return success
+      }
+    } catch (e) {
+      if (context.mounted) {
+        CustomToast.show(context, s.operation_failed, type: ToastType.error);
+      }
+    }
+  }
+
+  Future<void> _handleBankTransfer(BuildContext context, WidgetRef ref) async {
+    // Navigate to QR code screen
+    final result = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (context) => _QRCodePaymentScreen(
+          transactionId: transactionId,
+          onActionCompleted: onActionCompleted,
+        ),
+      ),
+    );
+
+    if (result == true && context.mounted) {
+      Navigator.of(context).pop(true); // Return success to main screen
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!.screenPadding;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      padding: EdgeInsets.all(spacing),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Chọn phương thức thanh toán',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Cash payment option
+            InkWell(
+              onTap: () => _handleCashPayment(context, ref),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.money,
+                        color: AppColors.primary,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Tiền mặt',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Thanh toán trực tiếp bằng tiền mặt',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.6,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Bank transfer option
+            InkWell(
+              onTap: () => _handleBankTransfer(context, ref),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.qr_code,
+                        color: AppColors.primary,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Chuyển khoản',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Quét mã QR để chuyển khoản',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.6,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// QR Code Payment Screen
+class _QRCodePaymentScreen extends ConsumerStatefulWidget {
+  final String transactionId;
+  final VoidCallback onActionCompleted;
+
+  const _QRCodePaymentScreen({
+    required this.transactionId,
+    required this.onActionCompleted,
+  });
+
+  @override
+  ConsumerState<_QRCodePaymentScreen> createState() =>
+      _QRCodePaymentScreenState();
+}
+
+class _QRCodePaymentScreenState extends ConsumerState<_QRCodePaymentScreen> {
+  String? _qrCodeUrl;
+  bool _isLoadingQR = true;
+  String? _errorMessage;
+  bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadQRCode();
+    });
+  }
+
+  Future<void> _loadQRCode() async {
+    if (!mounted) return;
+
+    setState(() {
+      _isLoadingQR = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final viewModel = ref.read(transactionViewModelProvider.notifier);
+      final qrCode = await viewModel.getTransactionQRCode(widget.transactionId);
+
+      if (mounted) {
+        setState(() {
+          _qrCodeUrl = qrCode;
+          _isLoadingQR = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('❌ ERROR LOADING QR CODE: $e');
+
+      // Check if error is BusinessException (400, 404, 409) - show bank update UI
+      // These typically mean missing or invalid bank account info
+      if (e is BusinessException) {
+        if (mounted) {
+          setState(() {
+            _errorMessage =
+                'BANK_INFO_REQUIRED'; // Special marker for bank update UI
+            _isLoadingQR = false;
+          });
+        }
+        return;
+      }
+
+      // For UnauthorizedException - also show bank update UI
+      if (e is UnauthorizedException) {
+        if (mounted) {
+          setState(() {
+            _errorMessage = 'BANK_INFO_REQUIRED';
+            _isLoadingQR = false;
+          });
+        }
+        return;
+      }
+
+      // For other errors (ServerException, NetworkException, etc.)
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString();
+          _isLoadingQR = false;
+        });
+      }
+    }
+  }
+
+  void _navigateToBankSettings() async {
+    // Navigate to profile settings and wait for result
+    final result = await context.push('/household-profile-settings');
+
+    // When user comes back, try to load QR code again
+    if (mounted && result != false) {
+      _loadQRCode();
+    }
+  }
+
+  Future<void> _handleComplete() async {
+    final s = S.of(context)!;
+
+    // Show confirmation dialog
+    final confirmed = await ConfirmDialogHelper.show(
+      context: context,
+      title: 'Xác nhận thanh toán',
+      message: 'Bạn đã hoàn tất chuyển khoản?',
+      confirmText: s.completed,
+      isDestructive: false,
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _isProcessing = true);
+
+    try {
+      // Call API to complete transaction
+      await ref
+          .read(transactionViewModelProvider.notifier)
+          .processTransaction(
+            transactionId: widget.transactionId,
+            isAccepted: true,
+          );
+
+      if (mounted) {
+        CustomToast.show(
+          context,
+          s.transaction_approved,
+          type: ToastType.success,
+        );
+        Navigator.of(context).pop(true); // Return success
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isProcessing = false);
+        CustomToast.show(context, s.operation_failed, type: ToastType.error);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!.screenPadding;
+    final s = S.of(context)!;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Thanh toán chuyển khoản'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(false),
+        ),
+      ),
+      body: _isLoadingQR
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Đang tải mã QR...'),
+                ],
+              ),
+            )
+          : _errorMessage != null
+          ? _errorMessage == 'BANK_INFO_REQUIRED'
+                ? _buildBankInfoRequiredUI(theme, spacing)
+                : _buildGenericErrorUI(theme, spacing)
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  padding: EdgeInsets.all(spacing),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - spacing * 2,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 16),
+                        Text(
+                          'Quét mã QR để thanh toán',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Sử dụng ứng dụng ngân hàng để quét mã QR',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // QR Code Image
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.1,
+                                ),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: _qrCodeUrl != null
+                              ? Image.network(
+                                  _qrCodeUrl!,
+                                  width: 240,
+                                  height: 240,
+                                  fit: BoxFit.contain,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                        if (loadingProgress == null)
+                                          return child;
+                                        return SizedBox(
+                                          width: 240,
+                                          height: 240,
+                                          child: Center(
+                                            child: CircularProgressIndicator(
+                                              value:
+                                                  loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        loadingProgress
+                                                            .expectedTotalBytes!
+                                                  : null,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    debugPrint('❌ QR IMAGE ERROR: $error');
+                                    return SizedBox(
+                                      width: 240,
+                                      height: 240,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.broken_image,
+                                            size: 48,
+                                            color: AppColors.danger,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          const Text('Không thể tải ảnh QR'),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                )
+                              : const SizedBox(
+                                  width: 240,
+                                  height: 240,
+                                  child: Center(child: Text('Không có mã QR')),
+                                ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Instructions
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    color: AppColors.primary,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Hướng dẫn',
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              _buildInstruction(
+                                '1',
+                                'Mở ứng dụng ngân hàng',
+                                theme,
+                              ),
+                              _buildInstruction('2', 'Chọn quét mã QR', theme),
+                              _buildInstruction('3', 'Quét mã trên', theme),
+                              _buildInstruction(
+                                '4',
+                                'Xác nhận thanh toán',
+                                theme,
+                              ),
+                              _buildInstruction('5', 'Nhấn "Hoàn tất"', theme),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Complete button
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _isProcessing ? null : _handleComplete,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.primaryColor,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              disabledBackgroundColor: theme.primaryColor
+                                  .withValues(alpha: 0.6),
+                            ),
+                            child: _isProcessing
+                                ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        theme.scaffoldBackgroundColor,
+                                      ),
+                                    ),
+                                  )
+                                : Text(
+                                    s.completed,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: theme.scaffoldBackgroundColor,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+
+  Widget _buildInstruction(String number, String text, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            number,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(child: Text(text, style: theme.textTheme.bodySmall)),
+        ],
+      ),
+    );
+  }
+
+  /// Build UI when bank info is required
+  Widget _buildBankInfoRequiredUI(ThemeData theme, double spacing) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(spacing * 2),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Friendly icon
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: AppColors.warningUpdate.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.account_balance_wallet,
+                size: 64,
+                color: AppColors.warningUpdate,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Title
+            Text(
+              'Cần thông tin tài khoản ngân hàng',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+
+            // Description
+            Text(
+              'Để nhận thanh toán qua QR code, bạn cần cập nhật thông tin tài khoản ngân hàng trong phần cài đặt hồ sơ.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+
+            // Info card with steps
+            Container(
+              padding: EdgeInsets.all(spacing),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.2),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        size: 20,
+                        color: AppColors.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Thông tin cần cập nhật:',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _buildInfoItem('• Số tài khoản ngân hàng', theme),
+                  _buildInfoItem('• Tên chủ tài khoản', theme),
+                  _buildInfoItem('• Tên ngân hàng', theme),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            // Action buttons
+            Column(
+              children: [
+                // Primary action - Navigate to settings
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _navigateToBankSettings,
+                    icon: const Icon(Icons.settings),
+                    label: const Text(
+                      'Cập nhật ngay',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.primaryColor,
+                      foregroundColor: theme.scaffoldBackgroundColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Secondary action - Go back
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text(
+                      'Quay lại',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: BorderSide(color: theme.primaryColor, width: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Build UI for generic errors (500, network, etc.)
+  Widget _buildGenericErrorUI(ThemeData theme, double spacing) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(spacing * 2),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: AppColors.danger),
+            const SizedBox(height: 16),
+            Text(
+              'Không thể tải mã QR',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _errorMessage ?? 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: _loadQRCode,
+              icon: const Icon(Icons.refresh),
+              label: const Text(
+                'Thử lại',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.primaryColor,
+                foregroundColor: theme.scaffoldBackgroundColor,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoItem(String text, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(
+        text,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+        ),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/error/exception_mapper.dart';
 import 'package:GreenConnectMobile/features/transaction/data/datasources/transaction_remote_datasource.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/check_in_request.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/feedback_list_response.dart';
@@ -19,19 +20,23 @@ class TransactionRepositoryImpl implements TransactionRepository {
     required int pageNumber,
     required int pageSize,
   }) async {
-    final result = await _remoteDataSource.getAllTransactions(
-      sortByCreateAt: sortByCreateAt,
-      sortByUpdateAt: sortByUpdateAt,
-      pageNumber: pageNumber,
-      pageSize: pageSize,
-    );
-    return result.toEntity();
+    return guard(() async {
+      final result = await _remoteDataSource.getAllTransactions(
+        sortByCreateAt: sortByCreateAt,
+        sortByUpdateAt: sortByUpdateAt,
+        pageNumber: pageNumber,
+        pageSize: pageSize,
+      );
+      return result.toEntity();
+    });
   }
 
   @override
   Future<TransactionEntity> getTransactionDetail(String transactionId) async {
-    final result = await _remoteDataSource.getTransactionDetail(transactionId);
-    return result.toEntity();
+    return guard(() async {
+      final result = await _remoteDataSource.getTransactionDetail(transactionId);
+      return result.toEntity();
+    });
   }
 
   @override
@@ -39,10 +44,12 @@ class TransactionRepositoryImpl implements TransactionRepository {
     required String transactionId,
     required CheckInRequest request,
   }) async {
-    return await _remoteDataSource.checkIn(
-      transactionId: transactionId,
-      request: request,
-    );
+    return guard(() async {
+      return await _remoteDataSource.checkIn(
+        transactionId: transactionId,
+        request: request,
+      );
+    });
   }
 
   @override
@@ -50,11 +57,13 @@ class TransactionRepositoryImpl implements TransactionRepository {
     required String transactionId,
     required List<TransactionDetailRequest> details,
   }) async {
-    final result = await _remoteDataSource.updateTransactionDetails(
-      transactionId: transactionId,
-      details: details,
-    );
-    return result.map((e) => e.toEntity()).toList();
+    return guard(() async {
+      final result = await _remoteDataSource.updateTransactionDetails(
+        transactionId: transactionId,
+        details: details,
+      );
+      return result.map((e) => e.toEntity()).toList();
+    });
   }
 
   @override
@@ -62,15 +71,19 @@ class TransactionRepositoryImpl implements TransactionRepository {
     required String transactionId,
     required bool isAccepted,
   }) async {
-    return await _remoteDataSource.processTransaction(
-      transactionId: transactionId,
-      isAccepted: isAccepted,
-    );
+    return guard(() async {
+      return await _remoteDataSource.processTransaction(
+        transactionId: transactionId,
+        isAccepted: isAccepted,
+      );
+    });
   }
 
   @override
   Future<bool> toggleCancelTransaction(String transactionId) async {
-    return await _remoteDataSource.toggleCancelTransaction(transactionId);
+    return guard(() async {
+      return await _remoteDataSource.toggleCancelTransaction(transactionId);
+    });
   }
 
   @override
@@ -80,13 +93,15 @@ class TransactionRepositoryImpl implements TransactionRepository {
     required int pageSize,
     bool? sortByCreateAt,
   }) async {
-    final result = await _remoteDataSource.getTransactionFeedbacks(
-      transactionId: transactionId,
-      pageNumber: pageNumber,
-      pageSize: pageSize,
-      sortByCreateAt: sortByCreateAt,
-    );
-    return result.toEntity();
+    return guard(() async {
+      final result = await _remoteDataSource.getTransactionFeedbacks(
+        transactionId: transactionId,
+        pageNumber: pageNumber,
+        pageSize: pageSize,
+        sortByCreateAt: sortByCreateAt,
+      );
+      return result.toEntity();
+    });
   }
 
   @override
@@ -98,14 +113,23 @@ class TransactionRepositoryImpl implements TransactionRepository {
     required int pageNumber,
     required int pageSize,
   }) async {
-    final result = await _remoteDataSource.getTransactionsByOfferId(
-      offerId: offerId,
-      status: status,
-      sortByCreateAtDesc: sortByCreateAtDesc,
-      sortByUpdateAtDesc: sortByUpdateAtDesc,
-      pageNumber: pageNumber,
-      pageSize: pageSize,
-    );
-    return result.toEntity();
+    return guard(() async {
+      final result = await _remoteDataSource.getTransactionsByOfferId(
+        offerId: offerId,
+        status: status,
+        sortByCreateAtDesc: sortByCreateAtDesc,
+        sortByUpdateAtDesc: sortByUpdateAtDesc,
+        pageNumber: pageNumber,
+        pageSize: pageSize,
+      );
+      return result.toEntity();
+    });
+  }
+
+  @override
+  Future<String> getTransactionQRCode(String transactionId) async {
+    return guard(() async {
+      return await _remoteDataSource.getTransactionQRCode(transactionId);
+    });
   }
 }

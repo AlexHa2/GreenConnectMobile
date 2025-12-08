@@ -1,9 +1,9 @@
 import 'package:GreenConnectMobile/features/reward/domain/entities/reward_item_entity.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/providers/reward_providers.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_description_section.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_detail_hero_image.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_info_section.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_points_cost_card.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/reward_description_section.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/reward_detail_hero_image.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/reward_info_section.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/reward_points_cost_card.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';

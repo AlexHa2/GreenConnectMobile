@@ -47,4 +47,6 @@ abstract class TransactionRepository {
     required int pageNumber,
     required int pageSize,
   });
+
+  Future<String> getTransactionQRCode(String transactionId);
 }
