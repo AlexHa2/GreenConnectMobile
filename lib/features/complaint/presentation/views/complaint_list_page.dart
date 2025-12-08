@@ -143,7 +143,15 @@ class _ComplaintListPageState extends ConsumerState<ComplaintListPage> {
               color: theme.colorScheme.primary,
               size: 20,
             ),
-            onPressed: () => context.pop(),
+            onPressed: () {
+              // Sử dụng context.pop() từ go_router, an toàn hơn
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                // Nếu không có màn hình nào để pop, điều hướng về home
+                context.go('/collector-home');
+              }
+            },
             tooltip: s.back,
           ),
         ),

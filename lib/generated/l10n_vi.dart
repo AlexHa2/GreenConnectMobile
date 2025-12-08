@@ -2201,7 +2201,7 @@ class SVi extends S {
   String get complainant => 'Người khiếu nại';
 
   @override
-  String get accused => 'Người bị tố cáo';
+  String get accused => 'bị tố cáo';
 
   @override
   String get created_at => 'Tạo lúc';
@@ -2534,6 +2534,8 @@ class SVi extends S {
   @override
   String get buyed => 'Đã mua';
 
+
+
   @override
   String get no_transaction_history => 'Không có lịch sử giao dịch';
 
@@ -2713,4 +2715,5 @@ class SVi extends S {
 
   @override
   String get filter_by_period => 'Lọc Theo Thời Gian';
+
 }

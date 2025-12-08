@@ -1,6 +1,7 @@
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// Filter header with title and filter button
 class TransactionListHeader extends StatelessWidget {
@@ -46,7 +47,15 @@ class TransactionListHeader extends StatelessWidget {
                 color: theme.colorScheme.primary,
                 size: 20,
               ),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                // Sử dụng context.pop() từ go_router, an toàn hơn
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  // Nếu không có màn hình nào để pop, điều hướng về home
+                  context.go('/collector-home');
+                }
+              },
               tooltip: s.back,
             ),
           ),

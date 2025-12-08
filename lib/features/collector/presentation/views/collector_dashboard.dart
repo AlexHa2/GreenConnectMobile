@@ -78,7 +78,7 @@ class _CollectorDashboardState extends State<CollectorDashboard> {
                     ),
                   ),
                   NotificationIconButton(
-                    count: 5,
+                    count: unreadCount,
                     onPressed: () {
                       context.push('/notifications');
                     },

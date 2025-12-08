@@ -2208,7 +2208,7 @@ class SEn extends S {
   String get complainant => 'Complainant';
 
   @override
-  String get accused => 'Accused';
+  String get accused => 'accused';
 
   @override
   String get created_at => 'Created At';
@@ -2540,6 +2540,8 @@ class SEn extends S {
   @override
   String get buyed => 'Buyed';
 
+
+
   @override
   String get no_transaction_history => 'No transaction history available';
 
@@ -2716,4 +2718,5 @@ class SEn extends S {
 
   @override
   String get filter_by_period => 'Filter by Period';
+
 }

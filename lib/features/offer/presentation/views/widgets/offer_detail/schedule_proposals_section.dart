@@ -234,7 +234,7 @@ class ScheduleProposalsSection extends StatelessWidget {
                                 DateFormat(
                                   'EEEE, dd MMMM yyyy - HH:mm',
                                   Localizations.localeOf(context).languageCode,
-                                ).format(schedule.proposedTime),
+                                ).format(schedule.proposedTime.toLocal()),
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -428,8 +428,9 @@ class ScheduleProposalsSection extends StatelessWidget {
     BuildContext context,
     ScheduleProposalEntity schedule,
   ) {
-    DateTime selectedDate = schedule.proposedTime;
-    TimeOfDay selectedTime = TimeOfDay.fromDateTime(schedule.proposedTime);
+    final localTime = schedule.proposedTime.toLocal();
+    DateTime selectedDate = localTime;
+    TimeOfDay selectedTime = TimeOfDay.fromDateTime(localTime);
     final messageController = TextEditingController(
       text: schedule.responseMessage,
     );
@@ -649,10 +650,18 @@ class ScheduleProposalsSection extends StatelessWidget {
     BuildContext context,
     ScheduleProposalEntity? schedule,
   ) {
+
+    DateTime selectedDate = schedule != null
+        ? schedule.proposedTime.toLocal()
+        : DateTime.now().add(const Duration(days: 1));
+    TimeOfDay selectedTime = schedule != null 
+        ? TimeOfDay.fromDateTime(schedule.proposedTime.toLocal())
+
     DateTime selectedDate =
         schedule?.proposedTime ?? DateTime.now().add(const Duration(days: 1));
     TimeOfDay selectedTime = schedule != null
         ? TimeOfDay.fromDateTime(schedule.proposedTime)
+
         : TimeOfDay.now();
     final messageController = TextEditingController(
       text: schedule?.responseMessage ?? '',

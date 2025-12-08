@@ -860,6 +860,9 @@
   "percent_to_level":"{percent}% đến Cấp {level}",
   "percent_to_level_placeholder":"{percent}% đến Cấp {level}",
   "preview_level_up":"Xem trước nâng cấp",
+  "no_rewards_message": "Không có tin nhắn phần thưởng",
+  "accused":"bị tố cáo",
+
   "buyed": "Đã mua",
   "no_transaction_history":"Không có lịch sử giao dịch",
   "dont_have_scheduled_time":"Chưa có thời gian hẹn",

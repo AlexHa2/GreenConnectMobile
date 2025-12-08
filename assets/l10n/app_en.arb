@@ -861,7 +861,10 @@
   "percent_to_level":"{percent}% to Level {level}",
   "percent_to_level_placeholder":"{percent}% to Level {level}",
   "preview_level_up":"Preview Level Up",
+  "no_rewards_message": "No rewards message",
   "buyed": "Buyed",
+  "accused":"accused",
+ 
   "no_transaction_history":"No transaction history available",
   "dont_have_scheduled_time":"No scheduled time",
   "payment_method_title":"Select Payment Method",

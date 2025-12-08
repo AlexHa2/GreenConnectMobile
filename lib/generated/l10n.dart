@@ -4294,7 +4294,7 @@ abstract class S {
   /// No description provided for @accused.
   ///
   /// In en, this message translates to:
-  /// **'Accused'**
+  /// **'accused'**
   String get accused;
 
   /// No description provided for @created_at.
@@ -4933,6 +4933,8 @@ abstract class S {
   /// **'Buyed'**
   String get buyed;
 
+
+
   /// No description provided for @no_transaction_history.
   ///
   /// In en, this message translates to:
@@ -5274,6 +5276,7 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Filter by Period'**
   String get filter_by_period;
+
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

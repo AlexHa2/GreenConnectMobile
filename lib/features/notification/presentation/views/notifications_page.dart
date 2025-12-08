@@ -322,6 +322,26 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
 
     if (entityType == null) return;
 
+    
+    // Xác định role của user
+    final isHousehold = _currentUser != null && 
+        Role.hasRole(_currentUser!.roles, Role.household);
+    final isCollector = _currentUser != null && 
+        (Role.hasRole(_currentUser!.roles, Role.individualCollector) ||
+         Role.hasRole(_currentUser!.roles, Role.businessCollector));
+    
+    switch (entityType) {
+      case 'message':
+      case 'chat':
+        // Check user role to navigate to correct message page
+        if (_currentUser != null) {
+          if (isHousehold) {
+            context.push('/household-list-message');
+          } else if (isCollector) {
+            context.push('/collector-list-message');
+          }
+
+
     // Determine user role
     final isHousehold =
         _currentUser != null &&
@@ -340,40 +360,73 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
           context.go('/household-list-message');
         } else if (isCollector) {
           context.go('/list-message');
+
         }
         break;
 
       case 'post':
         if (entityId == null) return;
+
+        context.push('/detail-post', extra: {
+          'postId': entityId,
+          'isCollectorView': isCollector,
+        });
+
         // Both roles use same post detail route
         context.push('/detail-post', extra: {'postId': entityId});
+
         break;
 
       case 'transaction':
         if (entityId == null) return;
+
+        context.push('/transaction-detail', extra: {
+          'transactionId': entityId,
+        });
+
         // Both roles use same transaction detail route
         context.push('/transaction-detail', extra: {'transactionId': entityId});
+
         break;
 
       case 'offer':
         if (entityId == null) return;
+
+        context.push('/offer-detail', extra: {
+          'offerId': entityId,
+          'isCollectorView': isCollector,
+        });
+
         // Pass role-specific flag to offer detail
         context.push(
           '/offer-detail',
           extra: {'offerId': entityId, 'isCollectorView': isCollector},
         );
+
         break;
 
       case 'feedback':
         if (entityId == null) return;
+
+        context.push('/feedback-detail', extra: {
+          'feedbackId': entityId,
+        });
+
         // Both roles use same feedback detail route
         context.push('/feedback-detail', extra: {'feedbackId': entityId});
+
         break;
 
       case 'complaint':
         if (entityId == null) return;
+
+        context.push('/complaint-detail', extra: {
+          'complaintId': entityId,
+        });
+
         // Both roles use same complaint detail route
         context.push('/complaint-detail', extra: {'complaintId': entityId});
+
         break;
 
       case 'schedule':

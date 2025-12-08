@@ -381,28 +381,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
             ),
           ),
 
-          // Additional Statistics Cards
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                space * 2,
-                0,
-                space * 2,
-                space * 2,
-              ),
-              child: reportAsync.when(
-                data: (report) => _buildAdditionalStatsSection(
-                  context,
-                  space,
-                  theme,
-                  s,
-                  report: report,
-                ),
-                loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
-              ),
-            ),
-          ),
+          
 
           // Level Progress Card
           SliverToBoxAdapter(
@@ -441,12 +420,17 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
     S s, {
     required double totalEarning,
   }) {
-    final maxValue = weeklyEarnings.reduce((a, b) => a > b ? a : b);
-    
     return Container(
-      padding: EdgeInsets.all(space * 2.5),
+      padding: EdgeInsets.all(space * 3),
       decoration: BoxDecoration(
-        color: theme.cardColor,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.cardColor,
+            theme.primaryColor.withValues(alpha: 0.05),
+          ],
+        ),
         borderRadius: BorderRadius.circular(space * 2.5),
         boxShadow: [
           BoxShadow(
@@ -471,181 +455,105 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(space * 0.8),
+                    padding: EdgeInsets.all(space * 1.2),
                     decoration: BoxDecoration(
-                      color: theme.primaryColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(space * 1),
+                      gradient: LinearGradient(
+                        colors: [
+                          theme.primaryColor,
+                          theme.primaryColor.withValues(alpha: 0.8),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(space * 1.5),
                     ),
                     child: Icon(
-                      Icons.trending_up_rounded,
-                      color: theme.primaryColor,
-                      size: space * 1.8,
+                      Icons.account_balance_wallet_rounded,
+                      color: theme.colorScheme.onPrimary,
+                      size: space * 2.5,
                     ),
                   ),
-                  SizedBox(width: space),
-                  Text(
-                    s.earnings_overview,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: space * 1.9,
-                      letterSpacing: -0.3,
-                    ),
+                  SizedBox(width: space * 1.2),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        s.earnings_overview,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: space * 1.9,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                      SizedBox(height: space * 0.3),
+                      Text(
+                        s.average_weekly_earnings,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontSize: space * 1.1,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              Container(
-                padding: EdgeInsets.all(space * 0.6),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(space * 0.8),
-                ),
-                child: Icon(
-                  Icons.more_vert_rounded,
-                  color: theme.colorScheme.onSurfaceVariant,
-                  size: space * 1.5,
-                ),
-              ),
             ],
           ),
-          SizedBox(height: space * 2),
-          Text(
-            s.average_weekly_earnings,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontSize: space * 1.1,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: space * 0.5),
+          SizedBox(height: space * 3.5),
+          // Số tiền lớn và nổi bật
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '\$',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  color: theme.primaryColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: space * 2.5,
+              Padding(
+                padding: EdgeInsets.only(top: space * 0.5),
+                child: Text(
+                  '\$',
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    color: theme.primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: space * 3.5,
+                  ),
                 ),
               ),
+              SizedBox(width: space * 0.5),
               Text(
                 totalEarning.toStringAsFixed(0),
                 style: theme.textTheme.headlineLarge?.copyWith(
                   color: theme.primaryColor,
-                  fontWeight: FontWeight.w800,
-                  fontSize: space * 4,
-                  letterSpacing: -1,
+                  fontWeight: FontWeight.w900,
+                  fontSize: space * 5.5,
+                  letterSpacing: -1.5,
+                  height: 1.1,
                 ),
               ),
             ],
           ),
           SizedBox(height: space * 2.5),
-          // Bar Chart
-          SizedBox(
-            height: space * 13,
-            child: _barAnimation != null
-                ? AnimatedBuilder(
-                    animation: _barAnimation!,
-                    builder: (context, child) {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: List.generate(weeklyEarnings.length, (index) {
-                          if (index == 2) {
-                            return SizedBox(width: space * 2);
-                          }
-                          final value = weeklyEarnings[index];
-                          final height = (value / maxValue) * space * 10 * _barAnimation!.value;
-                          return Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                TweenAnimationBuilder<double>(
-                                  tween: Tween(begin: 0.0, end: height > 0 ? height : space * 0.5),
-                                  duration: Duration(milliseconds: 800 + (index * 100)),
-                                  curve: Curves.easeOutCubic,
-                                  builder: (context, animatedHeight, child) {
-                                    return Container(
-                                      width: double.infinity,
-                                      height: animatedHeight,
-                                      margin: EdgeInsets.symmetric(horizontal: space * 0.4),
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.bottomCenter,
-                                          end: Alignment.topCenter,
-                                          colors: [
-                                            theme.primaryColor,
-                                            theme.primaryColor.withValues(alpha: 0.7),
-                                          ],
-                                        ),
-                                        borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(space * 0.8),
-                                          bottom: Radius.circular(space * 0.5),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                SizedBox(height: space * 0.8),
-                                Text(
-                                  weekDays[index],
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    fontSize: space * 0.95,
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                      );
-                    },
-                  )
-                : const SizedBox.shrink(),
-          ),
-          SizedBox(height: space * 1),
-          // Y-axis labels
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildYAxisLabel('0', space, theme),
-              _buildYAxisLabel('6', space, theme),
-              _buildYAxisLabel('12', space, theme),
-              _buildYAxisLabel('18', space, theme),
-              _buildYAxisLabel('24', space, theme),
-            ],
-          ),
-          SizedBox(height: space * 2),
-          Center(
-            child: InkWell(
-              onTap: () {},
+          // Thông tin bổ sung
+          Container(
+            padding: EdgeInsets.all(space * 1.2),
+            decoration: BoxDecoration(
+              color: theme.primaryColor.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(space * 1.5),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: space * 1.5,
-                  vertical: space * 0.8,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.trending_up_rounded,
+                  color: theme.primaryColor,
+                  size: space * 2,
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      size: space * 1.2,
+                SizedBox(width: space),
+                Expanded(
+                  child: Text(
+                    s.tap_to_see_detailed_breakdown,
+                    style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
+                      fontSize: space * 1.05,
+                      fontWeight: FontWeight.w500,
                     ),
-                    SizedBox(width: space * 0.5),
-                    Text(
-                      s.tap_to_see_detailed_breakdown,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontSize: space * 0.95,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
@@ -1113,12 +1021,13 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
             _buildStatCard(
               context,
               icon: Icons.gavel_rounded,
-              label: 'Bị tố cáo',
+              label: s.accused,
               value: report.totalAccused.toString(),
               color: Colors.purple,
               space: space,
               theme: theme,
             ),
+            
           ],
         ),
       ],
