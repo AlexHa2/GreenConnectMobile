@@ -430,7 +430,7 @@ abstract class S {
   /// No description provided for @no_rewards_message.
   ///
   /// In en, this message translates to:
-  /// **'No rewards message'**
+  /// **'No rewards available at the moment.\nPlease check back later!'**
   String get no_rewards_message;
 
   /// No description provided for @reward_details.
@@ -1248,6 +1248,114 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Type a message...'**
   String get type_message_hint;
+
+  /// No description provided for @packages.
+  ///
+  /// In en, this message translates to:
+  /// **'Packages'**
+  String get packages;
+
+  /// No description provided for @package_list.
+  ///
+  /// In en, this message translates to:
+  /// **'Package List'**
+  String get package_list;
+
+  /// No description provided for @package_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Details'**
+  String get package_details;
+
+  /// No description provided for @search_packages.
+  ///
+  /// In en, this message translates to:
+  /// **'Search packages...'**
+  String get search_packages;
+
+  /// No description provided for @filter_packages.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Packages'**
+  String get filter_packages;
+
+  /// No description provided for @all_packages.
+  ///
+  /// In en, this message translates to:
+  /// **'All Packages'**
+  String get all_packages;
+
+  /// No description provided for @freemium_packages.
+  ///
+  /// In en, this message translates to:
+  /// **'Freemium'**
+  String get freemium_packages;
+
+  /// No description provided for @paid_packages.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get paid_packages;
+
+  /// No description provided for @sort_by_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by Price'**
+  String get sort_by_price;
+
+  /// No description provided for @price_low_to_high.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: Low to High'**
+  String get price_low_to_high;
+
+  /// No description provided for @price_high_to_low.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: High to Low'**
+  String get price_high_to_low;
+
+  /// No description provided for @no_packages_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages found'**
+  String get no_packages_found;
+
+  /// No description provided for @no_packages_message.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages available at the moment.\nPlease check back later!'**
+  String get no_packages_message;
+
+  /// No description provided for @connection_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Amount'**
+  String get connection_amount;
+
+  /// No description provided for @package_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Type'**
+  String get package_type;
+
+  /// No description provided for @select_package.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Package'**
+  String get select_package;
+
+  /// No description provided for @free.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get free;
+
+  /// No description provided for @package_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Price'**
+  String get package_price;
 
   /// No description provided for @online.
   ///
@@ -2200,7 +2308,7 @@ abstract class S {
   /// No description provided for @cccd_upload_warning.
   ///
   /// In en, this message translates to:
-  /// **'Please upload both sides of your ID!'**
+  /// **'Please upload  front side of your ID!'**
   String get cccd_upload_warning;
 
   /// No description provided for @cccd_submit_success.
@@ -2212,8 +2320,32 @@ abstract class S {
   /// No description provided for @cccd_warning_rules.
   ///
   /// In en, this message translates to:
-  /// **'Do not cover your face, avoid blur, and do not take angled shots.\nVerification time: 24 - 48 hours.'**
+  /// **'Do not cover your face, avoid blur, and do not take angled shots.\nVerification time: Instant verification with AI.'**
   String get cccd_warning_rules;
+
+  /// No description provided for @invalid_id_card_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Please upload a valid ID card front image. Make sure the image is clear and shows the front side of your ID card.'**
+  String get invalid_id_card_image;
+
+  /// No description provided for @ai_verification_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to verify ID card. Please ensure you upload a clear front image of your ID card.'**
+  String get ai_verification_error;
+
+  /// No description provided for @verification_already_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have a pending verification request. Please wait for approval.'**
+  String get verification_already_pending;
+
+  /// No description provided for @verification_conflict_error.
+  ///
+  /// In en, this message translates to:
+  /// **'A verification request already exists. Please contact support if you need to update it.'**
+  String get verification_conflict_error;
 
   /// No description provided for @buyer_type.
   ///
@@ -4459,6 +4591,36 @@ abstract class S {
   /// **'notifications mark read error'**
   String get notifications_mark_read_error;
 
+  /// No description provided for @dismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
+
+  /// No description provided for @refresh_notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh notifications'**
+  String get refresh_notifications;
+
+  /// No description provided for @oops_something_went_wrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Oops! Something went wrong'**
+  String get oops_something_went_wrong;
+
+  /// No description provided for @no_notifications_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get no_notifications_yet;
+
+  /// No description provided for @receive_notifications_here.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll receive notifications here'**
+  String get receive_notifications_here;
+
   /// No description provided for @notification_type_post.
   ///
   /// In en, this message translates to:
@@ -4578,7 +4740,6 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Other'**
   String get other_gender;
-
 
   /// No description provided for @functions.
   ///
@@ -4765,12 +4926,354 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Preview Level Up'**
   String get preview_level_up;
+
   /// No description provided for @buyed.
   ///
   /// In en, this message translates to:
   /// **'Buyed'**
   String get buyed;
 
+  /// No description provided for @no_transaction_history.
+  ///
+  /// In en, this message translates to:
+  /// **'No transaction history available'**
+  String get no_transaction_history;
+
+  /// No description provided for @dont_have_scheduled_time.
+  ///
+  /// In en, this message translates to:
+  /// **'No scheduled time'**
+  String get dont_have_scheduled_time;
+
+  /// No description provided for @payment_method_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Payment Method'**
+  String get payment_method_title;
+
+  /// No description provided for @payment_cash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get payment_cash;
+
+  /// No description provided for @payment_cash_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay directly with cash'**
+  String get payment_cash_description;
+
+  /// No description provided for @payment_bank_transfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer'**
+  String get payment_bank_transfer;
+
+  /// No description provided for @payment_bank_transfer_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code to transfer'**
+  String get payment_bank_transfer_description;
+
+  /// No description provided for @confirm_cash_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm cash payment?'**
+  String get confirm_cash_payment;
+
+  /// No description provided for @qr_payment_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer Payment'**
+  String get qr_payment_title;
+
+  /// No description provided for @scan_qr_to_pay.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code to pay'**
+  String get scan_qr_to_pay;
+
+  /// No description provided for @use_banking_app.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your banking app to scan the QR code'**
+  String get use_banking_app;
+
+  /// No description provided for @loading_qr_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading QR code...'**
+  String get loading_qr_code;
+
+  /// No description provided for @cannot_load_qr.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot load QR code'**
+  String get cannot_load_qr;
+
+  /// No description provided for @instruction_open_banking_app.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Open your banking app'**
+  String get instruction_open_banking_app;
+
+  /// No description provided for @instruction_scan_qr.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Select QR code scanning feature'**
+  String get instruction_scan_qr;
+
+  /// No description provided for @instruction_complete_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Complete payment as instructed'**
+  String get instruction_complete_payment;
+
+  /// No description provided for @instruction_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Press Complete button after transfer'**
+  String get instruction_confirm;
+
+  /// No description provided for @confirm_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Payment'**
+  String get confirm_payment;
+
+  /// No description provided for @confirm_payment_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Have you completed the transfer?'**
+  String get confirm_payment_message;
+
+  /// No description provided for @bank_info_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Account Information Required'**
+  String get bank_info_required;
+
+  /// No description provided for @bank_info_required_message.
+  ///
+  /// In en, this message translates to:
+  /// **'To receive payments via QR code, you need to update your bank account information in profile settings.'**
+  String get bank_info_required_message;
+
+  /// No description provided for @required_bank_info_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Required Information:'**
+  String get required_bank_info_title;
+
+  /// No description provided for @required_bank_account_number.
+  ///
+  /// In en, this message translates to:
+  /// **'• Bank account number'**
+  String get required_bank_account_number;
+
+  /// No description provided for @required_bank_account_holder.
+  ///
+  /// In en, this message translates to:
+  /// **'• Account holder name'**
+  String get required_bank_account_holder;
+
+  /// No description provided for @required_bank_name.
+  ///
+  /// In en, this message translates to:
+  /// **'• Bank name'**
+  String get required_bank_name;
+
+  /// No description provided for @go_to_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Settings'**
+  String get go_to_settings;
+
+  /// No description provided for @update_bank_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Bank Information'**
+  String get update_bank_info;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
+
+  /// No description provided for @enter_actual_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Actual Scrap Quantity'**
+  String get enter_actual_quantity;
+
+  /// No description provided for @after_weighing_instruction.
+  ///
+  /// In en, this message translates to:
+  /// **'After weighing, enter the actual quantity for each scrap type. The system will automatically recalculate the total.'**
+  String get after_weighing_instruction;
+
+  /// No description provided for @no_data.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get no_data;
+
+  /// No description provided for @no_scrap_list.
+  ///
+  /// In en, this message translates to:
+  /// **'No scrap list found to enter quantity.'**
+  String get no_scrap_list;
+
+  /// No description provided for @enter_at_least_one.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter at least one scrap type'**
+  String get enter_at_least_one;
+
+  /// No description provided for @actual_quantity_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Actual quantity updated successfully'**
+  String get actual_quantity_updated;
+
+  /// No description provided for @check_in_before_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check-in before entering quantity'**
+  String get check_in_before_quantity;
+
+  /// No description provided for @invalid_scrap_category.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid scrap category. Please check again.'**
+  String get invalid_scrap_category;
+
+  /// No description provided for @instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Instructions'**
+  String get instructions;
+
+  /// No description provided for @available_points.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Points'**
+  String get available_points;
+
+  /// No description provided for @my_rewards.
+  ///
+  /// In en, this message translates to:
+  /// **'My Rewards'**
+  String get my_rewards;
+
+  /// No description provided for @leaderboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaderboard'**
+  String get leaderboard;
+
+  /// No description provided for @coming_soon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get coming_soon;
+
+  /// No description provided for @recent_activities.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activities'**
+  String get recent_activities;
+
+  /// No description provided for @no_recent_activities.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent activities yet'**
+  String get no_recent_activities;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @used.
+  ///
+  /// In en, this message translates to:
+  /// **'Used'**
+  String get used;
+
+  /// No description provided for @no_active_rewards.
+  ///
+  /// In en, this message translates to:
+  /// **'No active rewards yet'**
+  String get no_active_rewards;
+
+  /// No description provided for @no_used_rewards.
+  ///
+  /// In en, this message translates to:
+  /// **'No used rewards yet'**
+  String get no_used_rewards;
+
+  /// No description provided for @redeem_rewards_from_store.
+  ///
+  /// In en, this message translates to:
+  /// **'Redeem rewards from the store to see them here'**
+  String get redeem_rewards_from_store;
+
+  /// No description provided for @used_rewards_appear_here.
+  ///
+  /// In en, this message translates to:
+  /// **'Your used rewards will appear here'**
+  String get used_rewards_appear_here;
+
+  /// No description provided for @total_redeemed.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Redeemed'**
+  String get total_redeemed;
+
+  /// No description provided for @points_spent.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Spent'**
+  String get points_spent;
+
+  /// No description provided for @all_time.
+  ///
+  /// In en, this message translates to:
+  /// **'All Time'**
+  String get all_time;
+
+  /// No description provided for @past_week.
+  ///
+  /// In en, this message translates to:
+  /// **'Past Week'**
+  String get past_week;
+
+  /// No description provided for @past_month.
+  ///
+  /// In en, this message translates to:
+  /// **'Past Month'**
+  String get past_month;
+
+  /// No description provided for @past_year.
+  ///
+  /// In en, this message translates to:
+  /// **'Past Year'**
+  String get past_year;
+
+  /// No description provided for @credits.
+  ///
+  /// In en, this message translates to:
+  /// **'Credits'**
+  String get credits;
+
+  /// No description provided for @filter_by_period.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Period'**
+  String get filter_by_period;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

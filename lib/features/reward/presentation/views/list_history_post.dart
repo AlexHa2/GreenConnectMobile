@@ -1,5 +1,5 @@
 import 'package:GreenConnectMobile/features/reward/presentation/providers/reward_providers.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/views/widges/activity_card.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/activity_card.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -95,7 +95,8 @@ class _HouseholdRewardHistoryState
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              "no transaction history available",
+                              s.no_transaction_history,
+                              
                               style: theme.textTheme.bodyLarge,
                             ),
                             const SizedBox(height: 16),

@@ -1,8 +1,8 @@
 import 'package:GreenConnectMobile/core/enum/offer_status.dart';
+import 'package:GreenConnectMobile/core/helper/date_time_extension.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class StatusHeaderSection extends StatelessWidget {
   final OfferStatus status;
@@ -67,7 +67,7 @@ class StatusHeaderSection extends StatelessWidget {
               ),
               SizedBox(height: spacing / 4),
               Text(
-                DateFormat('dd/MM/yyyy HH:mm').format(createdAt),
+                createdAt.toCustomFormat(locale: s.localeName),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: _getStatusColor(status, theme),

@@ -68,7 +68,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
 
     if (mounted) {
       final state = ref.read(notificationViewModelProvider);
-      if (state.errorMessage == null) {
+      if (state.errorMessage != null) {
         CustomToast.show(
           context,
           S.of(context)!.notifications_error,
@@ -96,7 +96,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
             content: Text(next.errorMessage!),
             backgroundColor: theme.colorScheme.error,
             action: SnackBarAction(
-              label: 'Dismiss',
+              label: S.of(context)!.dismiss,
               textColor: theme.colorScheme.onError,
               onPressed: () {
                 viewModel.clearError();
@@ -110,6 +110,10 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context)!.notifications),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => context.pop(),
+        ),
         actions: [
           if (state.unreadCount > 0)
             Center(
@@ -140,7 +144,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
             onPressed: state.isLoading
                 ? null
                 : () => viewModel.refreshNotifications(),
-            tooltip: 'Refresh notifications',
+            tooltip: S.of(context)!.refresh_notifications,
           ),
         ],
       ),
@@ -149,7 +153,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
           _buildBody(state, viewModel, theme),
           if (state.isMarkingRead)
             Container(
-              color: Colors.black12,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               child: Center(
                 child: CircularProgressIndicator(
                   color: theme.colorScheme.primary,
@@ -182,7 +186,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Oops! Something went wrong',
+                S.of(context)!.oops_something_went_wrong,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -202,7 +206,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
               ElevatedButton.icon(
                 onPressed: () => viewModel.fetchNotifications(),
                 icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
+                label: Text(S.of(context)!.retry),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
@@ -234,7 +238,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No notifications yet',
+                    S.of(context)!.no_notifications_yet,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -243,7 +247,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'You\'ll receive notifications here',
+                    S.of(context)!.receive_notifications_here,
                     style: TextStyle(
                       fontSize: 14,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -317,42 +321,86 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     final entityId = notification.entityId;
 
     if (entityType == null) return;
-    
+
+    // Determine user role
+    final isHousehold =
+        _currentUser != null &&
+        Role.hasRole(_currentUser!.roles, Role.household);
+    final isCollector =
+        _currentUser != null &&
+        (Role.hasRole(_currentUser!.roles, Role.individualCollector) ||
+            Role.hasRole(_currentUser!.roles, Role.businessCollector));
+
     switch (entityType) {
       case 'message':
       case 'chat':
-        // Check user role to navigate to correct message page
-        if (_currentUser != null) {
-          final isHousehold = Role.hasRole(
-            _currentUser!.roles,
-            Role.household,
-          );
-          if (isHousehold) {
-            context.push('/household-list-message');
-          } else {
-            context.push('/collector-list-message');
-          }
+        // Pop notification page first, then navigate to message list based on role
+        context.pop();
+        if (isHousehold) {
+          context.go('/household-list-message');
+        } else if (isCollector) {
+          context.go('/list-message');
         }
         break;
+
       case 'post':
         if (entityId == null) return;
+        // Both roles use same post detail route
         context.push('/detail-post', extra: {'postId': entityId});
         break;
+
       case 'transaction':
         if (entityId == null) return;
+        // Both roles use same transaction detail route
         context.push('/transaction-detail', extra: {'transactionId': entityId});
         break;
+
       case 'offer':
         if (entityId == null) return;
-        context.push('/offer-detail', extra: {'offerId': entityId});
+        // Pass role-specific flag to offer detail
+        context.push(
+          '/offer-detail',
+          extra: {'offerId': entityId, 'isCollectorView': isCollector},
+        );
         break;
+
       case 'feedback':
         if (entityId == null) return;
+        // Both roles use same feedback detail route
         context.push('/feedback-detail', extra: {'feedbackId': entityId});
         break;
+
       case 'complaint':
         if (entityId == null) return;
+        // Both roles use same complaint detail route
         context.push('/complaint-detail', extra: {'complaintId': entityId});
+        break;
+
+      case 'schedule':
+        if (entityId == null) return;
+        // Schedule is collector-specific - pop first then go
+        if (isCollector) {
+          context.pop();
+          context.go('/collector-schedule-list');
+        }
+        break;
+
+      case 'package':
+        if (entityId == null) return;
+        // Package feature - navigate to package list or detail
+        context.push('/package-list');
+        break;
+
+      case 'reward':
+        // Reward is household-specific - pop first then go
+        if (isHousehold) {
+          context.pop();
+          context.go('/rewards');
+        }
+        break;
+
+      default:
+        // Unknown entity type, do nothing
         break;
     }
   }

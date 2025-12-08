@@ -149,4 +149,16 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
     );
     return TransactionListResponseModel.fromJson(res.data);
   }
+
+  @override
+  Future<String> getTransactionQRCode(String transactionId) async {
+    final res = await _apiClient.get(
+      '$_transactionsBaseUrl/$transactionId/qr-code',
+    );
+    // API returns QR code URL in qrUrl field
+    if (res.data is Map && res.data['qrUrl'] != null) {
+      return res.data['qrUrl'] as String;
+    }
+    throw Exception('Invalid QR code response format: qrUrl not found');
+  }
 }

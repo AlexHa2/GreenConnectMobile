@@ -1,12 +1,13 @@
 import 'dart:typed_data';
 
+import 'package:GreenConnectMobile/core/di/injector.dart';
 import 'package:GreenConnectMobile/core/enum/buyer_type_status.dart';
+import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
+import 'package:GreenConnectMobile/features/authentication/presentation/providers/auth_provider.dart';
 import 'package:GreenConnectMobile/features/profile/data/models/verification_model.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/providers/profile_providers.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/widgets/upload_card.dart';
-import 'package:GreenConnectMobile/features/upload/domain/entities/upload_request_entity.dart';
-import 'package:GreenConnectMobile/features/upload/presentation/providers/upload_provider.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -14,20 +15,14 @@ import 'package:GreenConnectMobile/shared/widgets/custom_leaf_loading.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-enum VerificationMode { create, update }
-
+/// Verification page for upgrading account (Individual to Business)
+/// Uses direct file upload via multipart/form-data
 class UpgradeVerificationPage extends ConsumerStatefulWidget {
-  final VerificationMode mode;
   final BuyerTypeStatus? initialBuyerType;
 
-  const UpgradeVerificationPage({
-    super.key,
-    this.mode = VerificationMode.create,
-    this.initialBuyerType,
-  });
+  const UpgradeVerificationPage({super.key, this.initialBuyerType});
 
   @override
   ConsumerState<UpgradeVerificationPage> createState() =>
@@ -37,10 +32,6 @@ class UpgradeVerificationPage extends ConsumerStatefulWidget {
 class _UpgradeVerificationPageState
     extends ConsumerState<UpgradeVerificationPage> {
   Uint8List? frontBytes;
-  Uint8List? backBytes;
-
-  String? frontFilePath;
-  String? backFilePath;
 
   late BuyerTypeStatus buyerType;
 
@@ -50,38 +41,14 @@ class _UpgradeVerificationPageState
     buyerType = widget.initialBuyerType ?? BuyerTypeStatus.individual;
   }
 
-  Future<String?> uploadCCCD(Uint8List imageBytes, String fileName) async {
-    final uploadVM = ref.read(uploadViewModelProvider.notifier);
-    try {
-      final contentType = "image/${fileName.split('.').last}";
-
-      await uploadVM.requestUploadUrl(
-        UploadFileRequest(fileName: fileName, contentType: contentType),
-      );
-
-      final uploadState = ref.read(uploadViewModelProvider);
-      if (uploadState.uploadUrl == null) return null;
-
-      await uploadVM.uploadBinary(
-        uploadUrl: uploadState.uploadUrl!.uploadUrl,
-        fileBytes: imageBytes,
-        contentType: contentType,
-      );
-
-      return uploadState.uploadUrl!.filePath;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Future<void> pickImage(bool isFront) async {
+  Future<void> pickImage() async {
     final picker = ImagePicker();
     final XFile? file = await picker.pickImage(source: ImageSource.gallery);
     if (file == null) return;
 
     final bytes = await file.readAsBytes();
     setState(() {
-      isFront ? frontBytes = bytes : backBytes = bytes;
+      frontBytes = bytes;
     });
   }
 
@@ -89,91 +56,93 @@ class _UpgradeVerificationPageState
     final s = S.of(context)!;
     final profileVM = ref.read(profileViewModelProvider.notifier);
 
-    if (frontBytes == null || backBytes == null) {
+    // Validation
+    if (frontBytes == null) {
       CustomToast.show(context, s.cccd_upload_warning, type: ToastType.warning);
       return;
     }
 
-    try {
-      final frontUrl = await uploadCCCD(frontBytes!, "front.jpg");
-      final backUrl = await uploadCCCD(backBytes!, "back.jpg");
+    // Send files directly to API via multipart/form-data
+    final verificationModel = VerificationModel.fromFiles(
+      buyerType: buyerType
+          .label, // Use label to capitalize first letter (Individual/Business)
+      frontImageBytes: frontBytes!,
+      backImageBytes: frontBytes!, // Using same front image as placeholder
+      frontImageName: 'front.jpg',
+      backImageName: 'back.jpg',
+    );
 
-      if (frontUrl == null || backUrl == null) {
-        if (!mounted) return;
-        CustomToast.show(
-          context,
-          s.cannot_get_uploadurl,
-          type: ToastType.error,
-        );
-        return;
-      }
+    // Always use verifyUser() - backend handles both create and update
+    await profileVM.verifyUser(verificationModel);
 
-      final verificationModel = VerificationModel(
-        buyerType: buyerType.toJson(),
-        documentFrontUrl: frontUrl,
-        documentBackUrl: backUrl,
-      );
+    // Check state after verification
+    final state = ref.read(profileViewModelProvider);
 
-      // Use different API based on mode
-      if (widget.mode == VerificationMode.create) {
-        await profileVM.verifyUser(verificationModel);
+    if (!mounted) return;
+
+    if (state.errorMessage != null) {
+      // Show error from ViewModel with appropriate message
+      String errorMessage;
+
+      if (state.errorMessage == 'AI_VERIFICATION_ERROR') {
+        // Special handling for AI verification error
+        errorMessage = s.ai_verification_error;
+      } else if (state.errorMessage == 'VERIFICATION_CONFLICT') {
+        // Special handling for duplicate verification
+        errorMessage = s.verification_already_pending;
+      } else if (state.errorMessage!.contains('AI_ERROR') ||
+          state.errorMessage!.contains('FPT.AI')) {
+        // Fallback for AI errors
+        errorMessage = s.ai_verification_error;
+      } else if (state.errorMessage!.contains('DATABASE_CONFLICT') ||
+          state.errorMessage!.contains('duplicate')) {
+        // Fallback for conflict errors
+        errorMessage = s.verification_already_pending;
       } else {
-        await profileVM.updateVerification(verificationModel);
+        // Use the error message from server
+        errorMessage = state.errorMessage!;
       }
 
-      if (!mounted) return;
+      CustomToast.show(context, errorMessage, type: ToastType.error);
+    } else if (state.verified) {
+      // Success - show message and logout
       CustomToast.show(
         context,
-        widget.mode == VerificationMode.create
-            ? s.send_verification_info
-            : s.verification_updated_successfully,
+        s.send_verification_info,
         type: ToastType.success,
       );
 
-      // If creating new verification (upgrade), logout user
-      if (widget.mode == VerificationMode.create) {
-        // Wait a bit for toast to show
-        await Future.delayed(const Duration(milliseconds: 500));
+      // Wait a bit for toast to show
+      await Future.delayed(const Duration(milliseconds: 1500));
 
-        // Clear all auth data (logout)
-        final tokenStorage = TokenStorageService();
-        await tokenStorage.clearAuthData();
-
-        if (!mounted) return;
-        // Navigate to login and clear all previous routes
-        context.go('/');
-      } else {
-        context.pop(true); // Return true to indicate success
-      }
-    } catch (e) {
       if (!mounted) return;
-      CustomToast.show(
-        context,
-        s.error_occurred_while_updating_avatar,
-        type: ToastType.error,
-      );
+
+      // Perform logout after successful verification
+      final tokenStorage = sl<TokenStorageService>();
+      await tokenStorage.clearAuthData();
+      ref.read(authViewModelProvider.notifier).reset();
+
+      if (!mounted) return;
+      // Navigate to login screen
+      navigateWithLoading(context, route: '/');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final s = S.of(context)!;
-    final uploadState = ref.watch(uploadViewModelProvider);
     final profileState = ref.watch(profileViewModelProvider);
     final spacing = Theme.of(context).extension<AppSpacing>()!;
     final theme = Theme.of(context);
 
-    final isLoading = uploadState.isLoading || profileState.isLoading;
+    // Only check profile loading (direct upload, no separate upload service needed)
+    final isLoading = profileState.isLoading;
 
     return Stack(
       children: [
         Scaffold(
           appBar: AppBar(
-            title: Text(
-              widget.mode == VerificationMode.create
-                  ? s.account_verification
-                  : s.update_verification,
-            ),
+            title: Text(s.account_verification),
             centerTitle: true,
           ),
           body: SingleChildScrollView(
@@ -181,12 +150,7 @@ class _UpgradeVerificationPageState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  widget.mode == VerificationMode.create
-                      ? s.upgrade_to_collector
-                      : s.update_account_type,
-                  style: theme.textTheme.titleLarge,
-                ),
+                Text(s.upgrade_to_collector, style: theme.textTheme.titleLarge),
                 SizedBox(height: spacing.screenPadding),
 
                 Text(s.cccd_guide_text, style: theme.textTheme.bodyMedium),
@@ -212,17 +176,18 @@ class _UpgradeVerificationPageState
 
                 SizedBox(height: spacing.screenPadding * 2),
 
-                UploadCard(
-                  title: s.front_image,
-                  imageBytes: frontBytes,
-                  onTap: () => pickImage(true),
-                ),
-                SizedBox(height: spacing.screenPadding * 2),
-
-                UploadCard(
-                  title: s.back_image,
-                  imageBytes: backBytes,
-                  onTap: () => pickImage(false),
+                // Upload ID card front image
+                SizedBox(height: spacing.screenPadding / 2),
+                IgnorePointer(
+                  ignoring: isLoading,
+                  child: Opacity(
+                    opacity: isLoading ? 0.5 : 1.0,
+                    child: UploadCard(
+                      title: s.front_image,
+                      imageBytes: frontBytes,
+                      onTap: pickImage,
+                    ),
+                  ),
                 ),
                 SizedBox(height: spacing.screenPadding * 3),
 
@@ -260,12 +225,27 @@ class _UpgradeVerificationPageState
                       padding: EdgeInsets.symmetric(
                         vertical: spacing.screenPadding,
                       ),
+                      disabledBackgroundColor: theme.disabledColor,
                     ),
-                    child: Text(
-                      widget.mode == VerificationMode.create
-                          ? s.submit_verification
-                          : s.update_verification,
-                    ),
+                    child: isLoading
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    theme.colorScheme.onPrimary,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: spacing.screenPadding),
+                              Text(s.cccd_submit_success),
+                            ],
+                          )
+                        : Text(s.submit_verification),
                   ),
                 ),
                 SizedBox(height: spacing.screenPadding * 3),

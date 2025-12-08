@@ -1,4 +1,4 @@
-import 'package:GreenConnectMobile/features/reward/presentation/views/widges/achivement_card.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/achivement_card.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 

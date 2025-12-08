@@ -5,6 +5,7 @@ import 'package:GreenConnectMobile/features/transaction/domain/usecases/check_in
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_all_transactions_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_transaction_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_transaction_feedbacks_usecase.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_transaction_qr_code_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_transactions_by_offer_id_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/process_transaction_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/toggle_cancel_transaction_usecase.dart';
@@ -82,6 +83,12 @@ final getTransactionsByOfferIdUsecaseProvider =
     Provider<GetTransactionsByOfferIdUsecase>((ref) {
   return GetTransactionsByOfferIdUsecase(
       ref.read(transactionRepositoryProvider));
+});
+
+// Get transaction QR code
+final getTransactionQRCodeUsecaseProvider =
+    Provider<GetTransactionQRCodeUsecase>((ref) {
+  return GetTransactionQRCodeUsecase(ref.read(transactionRepositoryProvider));
 });
 
 /// =============
