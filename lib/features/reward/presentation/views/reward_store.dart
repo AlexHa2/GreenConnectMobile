@@ -1,8 +1,8 @@
 import 'package:GreenConnectMobile/features/reward/presentation/providers/reward_providers.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_empty_state.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_error_state.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_item_card.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/widgets/reward_loading_state.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/reward_empty_state.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/reward_error_state.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/reward_item_card.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/reward_loading_state.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -56,34 +56,42 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
     );
 
     if (confirmed == true && mounted) {
+      // Clear previous messages before redeeming
+      ref.read(rewardViewModelProvider.notifier).clearMessages();
+      
       await ref
           .read(rewardViewModelProvider.notifier)
           .redeemReward(rewardItemId);
 
+      if (!mounted) return;
+
       final state = ref.read(rewardViewModelProvider);
-      if (state.successMessage != null && mounted) {
+      
+      // Check for success
+      if (state.successMessage != null) {
         CustomToast.show(
           context,
           s.reward_redeemed_successfully,
           type: ToastType.success,
         );
-        // Clear message after showing
         ref.read(rewardViewModelProvider.notifier).clearMessages();
-      } else if (state.errorMessage != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(state.errorMessage!),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
+      } 
+      // Check for error - show the actual error message from API
+      else if (state.errorMessage != null) {
         CustomToast.show(
           context,
-          state.errorMessage ?? s.error_occurred,
+          state.errorMessage!,
           type: ToastType.error,
         );
-        // Clear message after showing
         ref.read(rewardViewModelProvider.notifier).clearMessages();
+      }
+      // If isRedeeming is false but no success/error message, something went wrong
+      else if (!state.isRedeeming) {
+        CustomToast.show(
+          context,
+          s.error_occurred,
+          type: ToastType.error,
+        );
       }
     }
   }
@@ -94,7 +102,10 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
     final spacing = theme.extension<AppSpacing>()!;
     final space = spacing.screenPadding;
     final s = S.of(context)!;
+
     final defaultImage = 'assets/images/leaf_2.png';
+
+
 
     final rewardState = ref.watch(rewardViewModelProvider);
     final rewardItems = rewardState.rewardItems ?? [];
@@ -138,6 +149,7 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
                   ),
                   itemBuilder: (context, index) {
                     final item = rewardItems[index];
+
                     final hasImage = item.imageUrl.isNotEmpty;
 
                     return Container(
@@ -352,6 +364,13 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
                           ),
                         ],
                       ),
+
+                    return RewardItemCard(
+                      item: item,
+                      redeemButtonText: s.redeem,
+                      isRedeeming: rewardState.isRedeeming,
+                      onRedeem: () => _onRedeemItem(item.rewardItemId),
+
                     );
                   },
                 ),

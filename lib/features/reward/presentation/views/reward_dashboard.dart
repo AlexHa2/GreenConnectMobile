@@ -1,7 +1,7 @@
-import 'package:GreenConnectMobile/features/reward/presentation/views/widges/achievements_section.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/views/widges/action_card.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/views/widges/dashboard_header.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/views/widges/points_card.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/achievements_section.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/action_card.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/dashboard_header.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/widgets/points_card.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';

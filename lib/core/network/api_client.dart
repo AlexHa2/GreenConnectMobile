@@ -61,4 +61,42 @@ class ApiClient {
   Future<Response> delete(String path, {dynamic data, Options? options}) async {
     return _dio.delete(path, data: data, options: options);
   }
+
+  /// Post request with multipart/form-data
+  /// Used for file uploads
+  Future<Response> postMultipart(
+    String path,
+    FormData formData, {
+    Options? options,
+  }) async {
+    return _dio.post(
+      path,
+      data: formData,
+      options: options ??
+          Options(
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          ),
+    );
+  }
+
+  /// Patch request with multipart/form-data
+  /// Used for updating with file uploads
+  Future<Response> patchMultipart(
+    String path,
+    FormData formData, {
+    Options? options,
+  }) async {
+    return _dio.patch(
+      path,
+      data: formData,
+      options: options ??
+          Options(
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          ),
+    );
+  }
 }

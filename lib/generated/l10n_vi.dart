@@ -178,7 +178,8 @@ class SVi extends S {
   String get failed_to_redeem_reward => 'Không thể đổi phần thưởng';
 
   @override
-  String get no_rewards_message => 'Không có tin nhắn phần thưởng';
+  String get no_rewards_message =>
+      'Hiện tại chưa có phần thưởng nào.\nVui lòng quay lại sau!';
 
   @override
   String get reward_details => 'Chi tiết phần thưởng';
@@ -374,7 +375,7 @@ class SVi extends S {
   String get search_by_name_trash => 'tìm kiếm theo loại rác';
 
   @override
-  String get all => 'Tất cả';
+  String get all => 'Tất Cả';
 
   @override
   String get list => 'Danh sách';
@@ -595,6 +596,61 @@ class SVi extends S {
 
   @override
   String get type_message_hint => 'Nhập tin nhắn...';
+
+  @override
+  String get packages => 'Gói dịch vụ';
+
+  @override
+  String get package_list => 'Danh sách gói';
+
+  @override
+  String get package_details => 'Chi tiết gói';
+
+  @override
+  String get search_packages => 'Tìm kiếm gói...';
+
+  @override
+  String get filter_packages => 'Lọc gói';
+
+  @override
+  String get all_packages => 'Tất cả gói';
+
+  @override
+  String get freemium_packages => 'Miễn phí';
+
+  @override
+  String get paid_packages => 'Trả phí';
+
+  @override
+  String get sort_by_price => 'Sắp xếp theo giá';
+
+  @override
+  String get price_low_to_high => 'Giá: Thấp đến Cao';
+
+  @override
+  String get price_high_to_low => 'Giá: Cao đến Thấp';
+
+  @override
+  String get no_packages_found => 'Không tìm thấy gói nào';
+
+  @override
+  String get no_packages_message =>
+      'Hiện không có gói nào.\nVui lòng quay lại sau!';
+
+  @override
+  String get connection_amount => 'Số lượng kết nối';
+
+  @override
+  String get package_type => 'Loại gói';
+
+  @override
+  String get select_package => 'Chọn gói';
+
+  @override
+  String get free => 'Miễn phí';
+
+  @override
+  String get package_price => 'Giá gói';
 
   @override
   String get online => 'Đang hoạt động';
@@ -1092,14 +1148,30 @@ class SVi extends S {
   String get submit_verification => 'Gửi xác thực';
 
   @override
-  String get cccd_upload_warning => 'Vui lòng tải đủ 2 mặt CCCD!';
+  String get cccd_upload_warning => 'Vui lòng tải đủ 1 mặt CCCD!';
 
   @override
   String get cccd_submit_success => 'Đang gửi yêu cầu xác thực...';
 
   @override
   String get cccd_warning_rules =>
-      'Không che mặt, không bị mờ, không chụp nghiêng/góc khuất.\nThời gian xác minh: trong vòng 24 - 48 giờ.';
+      'Không che mặt, không bị mờ, không chụp nghiêng/góc khuất.\nThời gian xác minh: ngay lập tức với AI.';
+
+  @override
+  String get invalid_id_card_image =>
+      'Vui lòng tải lên ảnh mặt trước căn cước công dân hợp lệ. Đảm bảo ảnh rõ nét và hiển thị mặt trước của CCCD.';
+
+  @override
+  String get ai_verification_error =>
+      'Không thể xác minh căn cước công dân. Vui lòng đảm bảo bạn tải lên ảnh mặt trước CCCD rõ ràng.';
+
+  @override
+  String get verification_already_pending =>
+      'Bạn đã có yêu cầu xác minh đang chờ duyệt. Vui lòng đợi phê duyệt.';
+
+  @override
+  String get verification_conflict_error =>
+      'Đã tồn tại yêu cầu xác minh. Vui lòng liên hệ hỗ trợ nếu cần cập nhật.';
 
   @override
   String get buyer_type => 'Loại người thu gom';
@@ -2283,6 +2355,21 @@ class SVi extends S {
   String get notifications_mark_read_error => 'Lỗi khi đánh dấu đã đọc';
 
   @override
+  String get dismiss => 'Bỏ qua';
+
+  @override
+  String get refresh_notifications => 'Làm mới thông báo';
+
+  @override
+  String get oops_something_went_wrong => 'Rất tiếc! Đã có lỗi xảy ra';
+
+  @override
+  String get no_notifications_yet => 'Chưa có thông báo nào';
+
+  @override
+  String get receive_notifications_here => 'Bạn sẽ nhận thông báo tại đây';
+
+  @override
   String get notification_type_post => 'Bài đăng';
 
   @override
@@ -2383,7 +2470,7 @@ class SVi extends S {
   String get level => 'Cấp độ';
 
   @override
-  String get quick_actions => 'Thao tác nhanh';
+  String get quick_actions => 'Thao Tác Nhanh';
 
   @override
   String get new_posts_to_collect => 'Bài đăng mới để thu gom';
@@ -2446,4 +2533,187 @@ class SVi extends S {
 
   @override
   String get buyed => 'Đã mua';
+
+
+
+  @override
+  String get no_transaction_history => 'Không có lịch sử giao dịch';
+
+  @override
+  String get dont_have_scheduled_time => 'Chưa có thời gian hẹn';
+
+  @override
+  String get payment_method_title => 'Chọn phương thức thanh toán';
+
+  @override
+  String get payment_cash => 'Tiền mặt';
+
+  @override
+  String get payment_cash_description => 'Thanh toán trực tiếp bằng tiền mặt';
+
+  @override
+  String get payment_bank_transfer => 'Chuyển khoản';
+
+  @override
+  String get payment_bank_transfer_description => 'Quét mã QR để chuyển khoản';
+
+  @override
+  String get confirm_cash_payment => 'Xác nhận thanh toán bằng tiền mặt?';
+
+  @override
+  String get qr_payment_title => 'Thanh toán chuyển khoản';
+
+  @override
+  String get scan_qr_to_pay => 'Quét mã QR để thanh toán';
+
+  @override
+  String get use_banking_app => 'Sử dụng ứng dụng ngân hàng để quét mã QR';
+
+  @override
+  String get loading_qr_code => 'Đang tải mã QR...';
+
+  @override
+  String get cannot_load_qr => 'Không thể tải mã QR';
+
+  @override
+  String get instruction_open_banking_app => '1. Mở ứng dụng ngân hàng của bạn';
+
+  @override
+  String get instruction_scan_qr => '2. Chọn tính năng quét mã QR';
+
+  @override
+  String get instruction_complete_payment =>
+      '3. Hoàn tất thanh toán theo hướng dẫn';
+
+  @override
+  String get instruction_confirm =>
+      '4. Nhấn nút Hoàn thành sau khi chuyển khoản';
+
+  @override
+  String get confirm_payment => 'Xác nhận thanh toán';
+
+  @override
+  String get confirm_payment_message => 'Bạn đã hoàn tất chuyển khoản?';
+
+  @override
+  String get bank_info_required => 'Cần thông tin tài khoản ngân hàng';
+
+  @override
+  String get bank_info_required_message =>
+      'Để nhận thanh toán qua QR code, bạn cần cập nhật thông tin tài khoản ngân hàng trong phần cài đặt hồ sơ.';
+
+  @override
+  String get required_bank_info_title => 'Thông tin cần thiết:';
+
+  @override
+  String get required_bank_account_number => '• Số tài khoản ngân hàng';
+
+  @override
+  String get required_bank_account_holder => '• Tên chủ tài khoản';
+
+  @override
+  String get required_bank_name => '• Tên ngân hàng';
+
+  @override
+  String get go_to_settings => 'Đi đến Cài đặt';
+
+  @override
+  String get update_bank_info => 'Cập nhật thông tin ngân hàng';
+
+  @override
+  String get later => 'Để sau';
+
+  @override
+  String get enter_actual_quantity => 'Nhập số lượng ve chai thực tế';
+
+  @override
+  String get after_weighing_instruction =>
+      'Sau khi cân đo, nhập số lượng thực tế cho từng loại ve chai. Hệ thống sẽ tự động tính lại tổng tiền.';
+
+  @override
+  String get no_data => 'Không có dữ liệu';
+
+  @override
+  String get no_scrap_list =>
+      'Không tìm thấy danh sách ve chai để nhập số lượng.';
+
+  @override
+  String get enter_at_least_one => 'Vui lòng nhập ít nhất một loại ve chai';
+
+  @override
+  String get actual_quantity_updated => 'Đã cập nhật số lượng thành công';
+
+  @override
+  String get check_in_before_quantity =>
+      'Vui lòng check-in trước khi nhập số lượng';
+
+  @override
+  String get invalid_scrap_category =>
+      'Loại ve chai không hợp lệ. Vui lòng kiểm tra lại.';
+
+  @override
+  String get instructions => 'Hướng dẫn';
+
+  @override
+  String get available_points => 'Điểm Khả Dụng';
+
+  @override
+  String get my_rewards => 'Phần Thưởng Của Tôi';
+
+  @override
+  String get leaderboard => 'Bảng Xếp Hạng';
+
+  @override
+  String get coming_soon => 'Sắp Ra Mắt';
+
+  @override
+  String get recent_activities => 'Hoạt Động Gần Đây';
+
+  @override
+  String get no_recent_activities => 'Chưa có hoạt động gần đây';
+
+  @override
+  String get active => 'Đang Hoạt Động';
+
+  @override
+  String get used => 'Đã Sử Dụng';
+
+  @override
+  String get no_active_rewards => 'Chưa có phần thưởng đang hoạt động';
+
+  @override
+  String get no_used_rewards => 'Chưa có phần thưởng đã sử dụng';
+
+  @override
+  String get redeem_rewards_from_store =>
+      'Đổi phần thưởng từ cửa hàng để xem chúng ở đây';
+
+  @override
+  String get used_rewards_appear_here =>
+      'Phần thưởng đã sử dụng sẽ xuất hiện ở đây';
+
+  @override
+  String get total_redeemed => 'Tổng Đã Đổi';
+
+  @override
+  String get points_spent => 'Điểm Đã Chi';
+
+  @override
+  String get all_time => 'Tất Cả Thời Gian';
+
+  @override
+  String get past_week => 'Tuần Trước';
+
+  @override
+  String get past_month => 'Tháng Trước';
+
+  @override
+  String get past_year => 'Năm Trước';
+
+  @override
+  String get credits => 'Tín Dụng';
+
+  @override
+  String get filter_by_period => 'Lọc Theo Thời Gian';
+
 }

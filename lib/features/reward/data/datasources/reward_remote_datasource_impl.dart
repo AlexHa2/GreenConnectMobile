@@ -74,11 +74,7 @@ class RewardRemoteDataSourceImpl implements RewardRemoteDataSource {
 
   @override
   Future<bool> redeemReward(int rewardItemId) async {
-    try {
-      await _apiClient.post('$_rewardsUrl/$rewardItemId/redeem');
-      return true;
-    } catch (e) {
-      return false;
-    }
+    await _apiClient.post('$_rewardsUrl/$rewardItemId/redeem');
+    return true;
   }
 }

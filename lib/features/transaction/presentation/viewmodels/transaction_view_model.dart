@@ -5,6 +5,7 @@ import 'package:GreenConnectMobile/features/transaction/domain/usecases/check_in
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_all_transactions_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_transaction_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_transaction_feedbacks_usecase.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_transaction_qr_code_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_transactions_by_offer_id_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/process_transaction_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/toggle_cancel_transaction_usecase.dart';
@@ -23,6 +24,7 @@ class TransactionViewModel extends Notifier<TransactionState> {
   late ToggleCancelTransactionUsecase _toggleCancel;
   late GetTransactionFeedbacksUsecase _getFeedbacks;
   late GetTransactionsByOfferIdUsecase _getTransactionsByOfferId;
+  late GetTransactionQRCodeUsecase _getTransactionQRCode;
 
   @override
   TransactionState build() {
@@ -35,6 +37,7 @@ class TransactionViewModel extends Notifier<TransactionState> {
     _getFeedbacks = ref.read(getTransactionFeedbacksUsecaseProvider);
     _getTransactionsByOfferId =
         ref.read(getTransactionsByOfferIdUsecaseProvider);
+    _getTransactionQRCode = ref.read(getTransactionQRCodeUsecaseProvider);
     return TransactionState();
   }
 
@@ -247,6 +250,24 @@ class TransactionViewModel extends Notifier<TransactionState> {
       }
       debugPrint('📌 STACK TRACE: $stack');
       state = state.copyWith(isLoadingList: false, errorMessage: e.toString());
+    }
+  }
+
+  /// Get transaction QR code
+  Future<String?> getTransactionQRCode(String transactionId) async {
+    state = state.copyWith(isProcessing: true, errorMessage: null);
+
+    try {
+      final qrCode = await _getTransactionQRCode(transactionId);
+      state = state.copyWith(isProcessing: false);
+      return qrCode;
+    } catch (e, stack) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR GET TRANSACTION QR CODE: ${e.message}');
+      }
+      debugPrint('📌 STACK TRACE: $stack');
+      state = state.copyWith(isProcessing: false, errorMessage: e.toString());
+      return null;
     }
   }
 }

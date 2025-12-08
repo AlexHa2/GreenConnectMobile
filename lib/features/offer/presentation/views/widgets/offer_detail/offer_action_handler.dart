@@ -24,19 +24,21 @@ class OfferActionHandler {
 
   Future<void> handleAcceptOffer() async {
     final s = S.of(context)!;
-    
+
     // Get current offer data to check for pending schedules
     final offerState = ref.read(offerViewModelProvider);
     final offer = offerState.detailData;
-    final hasPendingSchedules = offer?.scheduleProposals.any(
-      (schedule) => schedule.status == ScheduleProposalStatus.pending,
-    ) ?? false;
+    final hasPendingSchedules =
+        offer?.scheduleProposals.any(
+          (schedule) => schedule.status == ScheduleProposalStatus.pending,
+        ) ??
+        false;
 
     // Show enhanced confirmation dialog
     final confirmed = await ConfirmDialogHelper.show(
       context: context,
       title: s.confirm_accept,
-      message: hasPendingSchedules 
+      message: hasPendingSchedules
           ? "${s.accept_offer_message}\n\nViệc chấp nhận sẽ tự động chấp nhận tất cả lịch hẹn đang chờ."
           : s.accept_offer_message,
       confirmText: s.accept_offer,
@@ -81,19 +83,21 @@ class OfferActionHandler {
 
   Future<void> handleRejectOffer() async {
     final s = S.of(context)!;
-    
+
     // Get current offer data to check for pending schedules
     final offerState = ref.read(offerViewModelProvider);
     final offer = offerState.detailData;
-    final hasPendingSchedules = offer?.scheduleProposals.any(
-      (schedule) => schedule.status == ScheduleProposalStatus.pending,
-    ) ?? false;
+    final hasPendingSchedules =
+        offer?.scheduleProposals.any(
+          (schedule) => schedule.status == ScheduleProposalStatus.pending,
+        ) ??
+        false;
 
     // Show enhanced confirmation dialog
     final confirmed = await ConfirmDialogHelper.show(
       context: context,
       title: s.confirm_reject,
-      message: hasPendingSchedules 
+      message: hasPendingSchedules
           ? "${s.reject_offer_message}\n\nViệc từ chối sẽ tự động từ chối tất cả lịch hẹn đang chờ."
           : s.reject_offer_message,
       confirmText: s.reject_offer,
@@ -241,7 +245,7 @@ class OfferActionHandler {
     required String responseMessage,
   }) async {
     final s = S.of(context)!;
-    
+
     try {
       final success = await ref
           .read(scheduleViewModelProvider.notifier)
@@ -263,40 +267,31 @@ class OfferActionHandler {
           await _refreshOfferDetail();
           onActionCompleted?.call();
         } else {
-          final errorMessage = ref.read(scheduleViewModelProvider).errorMessage ?? '';
+          final errorMessage =
+              ref.read(scheduleViewModelProvider).errorMessage ?? '';
           // Check if it's a 409 conflict error
           String displayMessage = errorMessage;
-          if (errorMessage.contains('DATABASE_CONFLICT') || 
+          if (errorMessage.contains('DATABASE_CONFLICT') ||
               errorMessage.contains('database error') ||
               errorMessage.contains('duplicate')) {
-            displayMessage = s.scheduleConflictError ?? 
-                'Đã có lịch hẹn đang chờ xử lý. Vui lòng đợi household phản hồi.';
+            displayMessage = s.scheduleConflictError;
           } else if (errorMessage.isNotEmpty) {
             displayMessage = errorMessage;
           } else {
             displayMessage = s.action_failed;
           }
-          
-          CustomToast.show(
-            context,
-            displayMessage,
-            type: ToastType.error,
-          );
+
+          CustomToast.show(context, displayMessage, type: ToastType.error);
         }
       }
     } catch (e) {
       if (context.mounted) {
         String errorMsg = s.action_failed;
-        if (e.toString().contains('DATABASE_CONFLICT') || 
+        if (e.toString().contains('DATABASE_CONFLICT') ||
             e.toString().contains('409')) {
-          errorMsg = s.scheduleConflictError ?? 
-              'Đã có lịch hẹn đang chờ xử lý. Vui lòng đợi household phản hồi.';
+          errorMsg = s.scheduleConflictError;
         }
-        CustomToast.show(
-          context,
-          errorMsg,
-          type: ToastType.error,
-        );
+        CustomToast.show(context, errorMsg, type: ToastType.error);
       }
     }
   }
@@ -307,7 +302,7 @@ class OfferActionHandler {
     required String responseMessage,
   }) async {
     final s = S.of(context)!;
-    
+
     try {
       final success = await ref
           .read(scheduleViewModelProvider.notifier)
@@ -329,39 +324,30 @@ class OfferActionHandler {
           await _refreshOfferDetail();
           onActionCompleted?.call();
         } else {
-          final errorMessage = ref.read(scheduleViewModelProvider).errorMessage ?? '';
+          final errorMessage =
+              ref.read(scheduleViewModelProvider).errorMessage ?? '';
           String displayMessage = errorMessage;
-          if (errorMessage.contains('Không thể sửa') || 
+          if (errorMessage.contains('Không thể sửa') ||
               errorMessage.contains('đã được Chấp nhận') ||
               errorMessage.contains('đã được Từ chối')) {
-            displayMessage = s.scheduleCannotEditError ?? 
-                'Không thể sửa vì đề xuất đã được Chấp nhận hoặc Từ chối.';
+            displayMessage = s.scheduleCannotEditError;
           } else if (errorMessage.isNotEmpty) {
             displayMessage = errorMessage;
           } else {
             displayMessage = s.action_failed;
           }
-          
-          CustomToast.show(
-            context,
-            displayMessage,
-            type: ToastType.error,
-          );
+
+          CustomToast.show(context, displayMessage, type: ToastType.error);
         }
       }
     } catch (e) {
       if (context.mounted) {
         String errorMsg = s.action_failed;
-        if (e.toString().contains('Không thể sửa') || 
+        if (e.toString().contains('Không thể sửa') ||
             e.toString().contains('400')) {
-          errorMsg = s.scheduleCannotEditError ?? 
-              'Không thể sửa vì đề xuất đã được Chấp nhận hoặc Từ chối.';
+          errorMsg = s.scheduleCannotEditError;
         }
-        CustomToast.show(
-          context,
-          errorMsg,
-          type: ToastType.error,
-        );
+        CustomToast.show(context, errorMsg, type: ToastType.error);
       }
     }
   }

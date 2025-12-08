@@ -14,7 +14,12 @@ class ScheduleProposalsSection extends StatelessWidget {
   final bool isHouseholdView;
   final Function(String scheduleId)? onRejectSchedule;
   final Function(DateTime proposedTime, String responseMessage)? onReschedule;
-  final Function(String scheduleId, DateTime proposedTime, String responseMessage)? onUpdateSchedule;
+  final Function(
+    String scheduleId,
+    DateTime proposedTime,
+    String responseMessage,
+  )?
+  onUpdateSchedule;
   final String? offerStatus;
 
   const ScheduleProposalsSection({
@@ -97,33 +102,25 @@ class ScheduleProposalsSection extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () => _showRescheduleDialog(
-                    context,
-                    null,
-                  ),
+                  onPressed: () => _showRescheduleDialog(context, null),
                   icon: Icon(
                     Icons.add_circle_outline_rounded,
                     size: 20,
                     color: theme.primaryColor,
                   ),
                   label: Text(
-                    s.scheduleRescheduleButton ?? 'Thêm lịch hẹn mới',
+                    s.scheduleRescheduleButton,
                     style: TextStyle(
                       color: theme.primaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: theme.primaryColor,
-                      width: 1.5,
-                    ),
+                    side: BorderSide(color: theme.primaryColor, width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(spacing / 2),
                     ),
-                    padding: EdgeInsets.symmetric(
-                      vertical: spacing * 0.75,
-                    ),
+                    padding: EdgeInsets.symmetric(vertical: spacing * 0.75),
                   ),
                 ),
               ),
@@ -308,7 +305,7 @@ class ScheduleProposalsSection extends StatelessWidget {
                                     color: theme.primaryColor,
                                   ),
                                   label: Text(
-                                    s.scheduleEditButton ?? 'Chỉnh sửa',
+                                    s.scheduleEditButton,
                                     style: TextStyle(
                                       color: theme.primaryColor,
                                       fontWeight: FontWeight.w600,
@@ -447,7 +444,7 @@ class ScheduleProposalsSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(spacing),
           ),
           title: Text(
-            s.scheduleEditButton ?? 'Chỉnh sửa lịch hẹn',
+            s.scheduleEditButton,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -473,7 +470,9 @@ class ScheduleProposalsSection extends StatelessWidget {
                             context: context,
                             initialDate: selectedDate,
                             firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                            lastDate: DateTime.now().add(
+                              const Duration(days: 365),
+                            ),
                             builder: (context, child) {
                               return Theme(
                                 data: Theme.of(context).copyWith(
@@ -492,7 +491,7 @@ class ScheduleProposalsSection extends StatelessWidget {
                             });
                           }
                         },
-                        icon: Icon(Icons.calendar_today, size: 18),
+                        icon: const Icon(Icons.calendar_today, size: 18),
                         label: Text(
                           '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
                           style: theme.textTheme.bodyMedium,
@@ -527,7 +526,7 @@ class ScheduleProposalsSection extends StatelessWidget {
                             });
                           }
                         },
-                        icon: Icon(Icons.access_time, size: 18),
+                        icon: const Icon(Icons.access_time, size: 18),
                         label: Text(
                           '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
                           style: theme.textTheme.bodyMedium,
@@ -651,11 +650,18 @@ class ScheduleProposalsSection extends StatelessWidget {
     BuildContext context,
     ScheduleProposalEntity? schedule,
   ) {
+
     DateTime selectedDate = schedule != null
         ? schedule.proposedTime.toLocal()
         : DateTime.now().add(const Duration(days: 1));
     TimeOfDay selectedTime = schedule != null 
         ? TimeOfDay.fromDateTime(schedule.proposedTime.toLocal())
+
+    DateTime selectedDate =
+        schedule?.proposedTime ?? DateTime.now().add(const Duration(days: 1));
+    TimeOfDay selectedTime = schedule != null
+        ? TimeOfDay.fromDateTime(schedule.proposedTime)
+
         : TimeOfDay.now();
     final messageController = TextEditingController(
       text: schedule?.responseMessage ?? '',
@@ -670,9 +676,9 @@ class ScheduleProposalsSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(spacing),
           ),
           title: Text(
-            schedule == null 
-                ? (s.scheduleAddNew ?? 'Thêm lịch hẹn mới')
-                : (s.scheduleRescheduleButton ?? 'Hẹn lại giờ'),
+            schedule == null
+                ? (s.scheduleAddNew)
+                : (s.scheduleRescheduleButton),
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -698,7 +704,9 @@ class ScheduleProposalsSection extends StatelessWidget {
                             context: context,
                             initialDate: selectedDate,
                             firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                            lastDate: DateTime.now().add(
+                              const Duration(days: 365),
+                            ),
                             builder: (context, child) {
                               return Theme(
                                 data: Theme.of(context).copyWith(
@@ -717,7 +725,7 @@ class ScheduleProposalsSection extends StatelessWidget {
                             });
                           }
                         },
-                        icon: Icon(Icons.calendar_today, size: 18),
+                        icon: const Icon(Icons.calendar_today, size: 18),
                         label: Text(
                           '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
                           style: theme.textTheme.bodyMedium,
@@ -752,7 +760,7 @@ class ScheduleProposalsSection extends StatelessWidget {
                             });
                           }
                         },
-                        icon: Icon(Icons.access_time, size: 18),
+                        icon: const Icon(Icons.access_time, size: 18),
                         label: Text(
                           '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
                           style: theme.textTheme.bodyMedium,
@@ -818,7 +826,7 @@ class ScheduleProposalsSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(spacing / 2),
                 ),
               ),
-              child: Text(s.scheduleRescheduleButton ?? 'Xác nhận'),
+              child: Text(s.scheduleRescheduleButton),
             ),
           ],
         ),

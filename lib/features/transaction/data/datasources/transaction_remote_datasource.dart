@@ -55,4 +55,7 @@ abstract class TransactionRemoteDataSource {
     required int pageNumber,
     required int pageSize,
   });
+
+  /// GET /v1/transactions/{id}/qr-code
+  Future<String> getTransactionQRCode(String transactionId);
 }

@@ -10,7 +10,7 @@ final List<NavConfig> navItemsHousehold = [
   const NavConfig(
     icon: Icons.gif_box,
     label: "Rewards",
-    routeName: '/reward-dashboard',
+    routeName: '/rewards',
   ),
   const NavConfig(
     icon: Icons.message,
