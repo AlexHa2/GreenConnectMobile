@@ -2362,6 +2362,21 @@ class SEn extends S {
   String get notifications_mark_read_error => 'notifications mark read error';
 
   @override
+  String get dismiss => 'Dismiss';
+
+  @override
+  String get refresh_notifications => 'Refresh notifications';
+
+  @override
+  String get oops_something_went_wrong => 'Oops! Something went wrong';
+
+  @override
+  String get no_notifications_yet => 'No notifications yet';
+
+  @override
+  String get receive_notifications_here => 'You\'ll receive notifications here';
+
+  @override
   String get notification_type_post => 'Post';
 
   @override
@@ -2640,4 +2655,65 @@ class SEn extends S {
 
   @override
   String get instructions => 'Instructions';
+
+  @override
+  String get available_points => 'Available Points';
+
+  @override
+  String get my_rewards => 'My Rewards';
+
+  @override
+  String get leaderboard => 'Leaderboard';
+
+  @override
+  String get coming_soon => 'Coming Soon';
+
+  @override
+  String get recent_activities => 'Recent Activities';
+
+  @override
+  String get no_recent_activities => 'No recent activities yet';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get used => 'Used';
+
+  @override
+  String get no_active_rewards => 'No active rewards yet';
+
+  @override
+  String get no_used_rewards => 'No used rewards yet';
+
+  @override
+  String get redeem_rewards_from_store =>
+      'Redeem rewards from the store to see them here';
+
+  @override
+  String get used_rewards_appear_here => 'Your used rewards will appear here';
+
+  @override
+  String get total_redeemed => 'Total Redeemed';
+
+  @override
+  String get points_spent => 'Points Spent';
+
+  @override
+  String get all_time => 'All Time';
+
+  @override
+  String get past_week => 'Past Week';
+
+  @override
+  String get past_month => 'Past Month';
+
+  @override
+  String get past_year => 'Past Year';
+
+  @override
+  String get credits => 'Credits';
+
+  @override
+  String get filter_by_period => 'Filter by Period';
 }

@@ -4591,6 +4591,36 @@ abstract class S {
   /// **'notifications mark read error'**
   String get notifications_mark_read_error;
 
+  /// No description provided for @dismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
+
+  /// No description provided for @refresh_notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh notifications'**
+  String get refresh_notifications;
+
+  /// No description provided for @oops_something_went_wrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Oops! Something went wrong'**
+  String get oops_something_went_wrong;
+
+  /// No description provided for @no_notifications_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get no_notifications_yet;
+
+  /// No description provided for @receive_notifications_here.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll receive notifications here'**
+  String get receive_notifications_here;
+
   /// No description provided for @notification_type_post.
   ///
   /// In en, this message translates to:
@@ -5124,6 +5154,126 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Instructions'**
   String get instructions;
+
+  /// No description provided for @available_points.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Points'**
+  String get available_points;
+
+  /// No description provided for @my_rewards.
+  ///
+  /// In en, this message translates to:
+  /// **'My Rewards'**
+  String get my_rewards;
+
+  /// No description provided for @leaderboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaderboard'**
+  String get leaderboard;
+
+  /// No description provided for @coming_soon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get coming_soon;
+
+  /// No description provided for @recent_activities.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activities'**
+  String get recent_activities;
+
+  /// No description provided for @no_recent_activities.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent activities yet'**
+  String get no_recent_activities;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @used.
+  ///
+  /// In en, this message translates to:
+  /// **'Used'**
+  String get used;
+
+  /// No description provided for @no_active_rewards.
+  ///
+  /// In en, this message translates to:
+  /// **'No active rewards yet'**
+  String get no_active_rewards;
+
+  /// No description provided for @no_used_rewards.
+  ///
+  /// In en, this message translates to:
+  /// **'No used rewards yet'**
+  String get no_used_rewards;
+
+  /// No description provided for @redeem_rewards_from_store.
+  ///
+  /// In en, this message translates to:
+  /// **'Redeem rewards from the store to see them here'**
+  String get redeem_rewards_from_store;
+
+  /// No description provided for @used_rewards_appear_here.
+  ///
+  /// In en, this message translates to:
+  /// **'Your used rewards will appear here'**
+  String get used_rewards_appear_here;
+
+  /// No description provided for @total_redeemed.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Redeemed'**
+  String get total_redeemed;
+
+  /// No description provided for @points_spent.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Spent'**
+  String get points_spent;
+
+  /// No description provided for @all_time.
+  ///
+  /// In en, this message translates to:
+  /// **'All Time'**
+  String get all_time;
+
+  /// No description provided for @past_week.
+  ///
+  /// In en, this message translates to:
+  /// **'Past Week'**
+  String get past_week;
+
+  /// No description provided for @past_month.
+  ///
+  /// In en, this message translates to:
+  /// **'Past Month'**
+  String get past_month;
+
+  /// No description provided for @past_year.
+  ///
+  /// In en, this message translates to:
+  /// **'Past Year'**
+  String get past_year;
+
+  /// No description provided for @credits.
+  ///
+  /// In en, this message translates to:
+  /// **'Credits'**
+  String get credits;
+
+  /// No description provided for @filter_by_period.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Period'**
+  String get filter_by_period;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

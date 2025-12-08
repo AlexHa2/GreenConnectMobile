@@ -29,8 +29,10 @@ import 'package:GreenConnectMobile/features/profile/presentation/views/profile_s
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setup.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/upgrade_verification.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/list_history_post.dart';
-import 'package:GreenConnectMobile/features/reward/presentation/views/reward_dashboard.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/my_rewards_page.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/reward_history_page.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
+import 'package:GreenConnectMobile/features/reward/presentation/views/rewards_page.dart';
 import 'package:GreenConnectMobile/features/schedule/presentation/views/schedules_list_page.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transaction_detail_page_modern.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transactions_list_page.dart';
@@ -59,9 +61,9 @@ final GoRouter greenRouter = GoRouter(
           },
         ),
         GoRoute(
-          path: '/reward-dashboard',
-          name: 'reward-dashboard',
-          builder: (context, state) => const RewardDashboard(),
+          path: '/rewards',
+          name: 'rewards',
+          builder: (context, state) => const RewardsPage(),
         ),
         GoRoute(
           path: '/household-list-message',
@@ -297,7 +299,20 @@ final GoRouter greenRouter = GoRouter(
     GoRoute(
       path: '/reward-store',
       name: 'reward-store',
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const RewardStore(),
+    ),
+    GoRoute(
+      path: '/my-rewards',
+      name: 'my-rewards',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const MyRewardsPage(),
+    ),
+    GoRoute(
+      path: '/reward-history',
+      name: 'reward-history',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const RewardHistoryPage(),
     ),
     GoRoute(
       path: '/upgrade-verification',

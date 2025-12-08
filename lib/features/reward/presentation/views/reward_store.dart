@@ -54,34 +54,42 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
     );
 
     if (confirmed == true && mounted) {
+      // Clear previous messages before redeeming
+      ref.read(rewardViewModelProvider.notifier).clearMessages();
+      
       await ref
           .read(rewardViewModelProvider.notifier)
           .redeemReward(rewardItemId);
 
+      if (!mounted) return;
+
       final state = ref.read(rewardViewModelProvider);
-      if (state.successMessage != null && mounted) {
+      
+      // Check for success
+      if (state.successMessage != null) {
         CustomToast.show(
           context,
           s.reward_redeemed_successfully,
           type: ToastType.success,
         );
-        // Clear message after showing
         ref.read(rewardViewModelProvider.notifier).clearMessages();
-      } else if (state.errorMessage != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(state.errorMessage!),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
+      } 
+      // Check for error - show the actual error message from API
+      else if (state.errorMessage != null) {
         CustomToast.show(
           context,
-          state.errorMessage ?? s.error_occurred,
+          state.errorMessage!,
           type: ToastType.error,
         );
-        // Clear message after showing
         ref.read(rewardViewModelProvider.notifier).clearMessages();
+      }
+      // If isRedeeming is false but no success/error message, something went wrong
+      else if (!state.isRedeeming) {
+        CustomToast.show(
+          context,
+          s.error_occurred,
+          type: ToastType.error,
+        );
       }
     }
   }
@@ -93,7 +101,7 @@ class _RewardStoreState extends ConsumerState<RewardStore> {
     final s = S.of(context)!;
     final rewardState = ref.watch(rewardViewModelProvider);
     final rewardItems = rewardState.rewardItems ?? [];
-    
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

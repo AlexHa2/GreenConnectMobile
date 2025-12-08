@@ -375,7 +375,7 @@ class SVi extends S {
   String get search_by_name_trash => 'tìm kiếm theo loại rác';
 
   @override
-  String get all => 'Tất cả';
+  String get all => 'Tất Cả';
 
   @override
   String get list => 'Danh sách';
@@ -2355,6 +2355,21 @@ class SVi extends S {
   String get notifications_mark_read_error => 'Lỗi khi đánh dấu đã đọc';
 
   @override
+  String get dismiss => 'Bỏ qua';
+
+  @override
+  String get refresh_notifications => 'Làm mới thông báo';
+
+  @override
+  String get oops_something_went_wrong => 'Rất tiếc! Đã có lỗi xảy ra';
+
+  @override
+  String get no_notifications_yet => 'Chưa có thông báo nào';
+
+  @override
+  String get receive_notifications_here => 'Bạn sẽ nhận thông báo tại đây';
+
+  @override
   String get notification_type_post => 'Bài đăng';
 
   @override
@@ -2455,7 +2470,7 @@ class SVi extends S {
   String get level => 'Cấp độ';
 
   @override
-  String get quick_actions => 'Thao tác nhanh';
+  String get quick_actions => 'Thao Tác Nhanh';
 
   @override
   String get new_posts_to_collect => 'Bài đăng mới để thu gom';
@@ -2636,4 +2651,66 @@ class SVi extends S {
 
   @override
   String get instructions => 'Hướng dẫn';
+
+  @override
+  String get available_points => 'Điểm Khả Dụng';
+
+  @override
+  String get my_rewards => 'Phần Thưởng Của Tôi';
+
+  @override
+  String get leaderboard => 'Bảng Xếp Hạng';
+
+  @override
+  String get coming_soon => 'Sắp Ra Mắt';
+
+  @override
+  String get recent_activities => 'Hoạt Động Gần Đây';
+
+  @override
+  String get no_recent_activities => 'Chưa có hoạt động gần đây';
+
+  @override
+  String get active => 'Đang Hoạt Động';
+
+  @override
+  String get used => 'Đã Sử Dụng';
+
+  @override
+  String get no_active_rewards => 'Chưa có phần thưởng đang hoạt động';
+
+  @override
+  String get no_used_rewards => 'Chưa có phần thưởng đã sử dụng';
+
+  @override
+  String get redeem_rewards_from_store =>
+      'Đổi phần thưởng từ cửa hàng để xem chúng ở đây';
+
+  @override
+  String get used_rewards_appear_here =>
+      'Phần thưởng đã sử dụng sẽ xuất hiện ở đây';
+
+  @override
+  String get total_redeemed => 'Tổng Đã Đổi';
+
+  @override
+  String get points_spent => 'Điểm Đã Chi';
+
+  @override
+  String get all_time => 'Tất Cả Thời Gian';
+
+  @override
+  String get past_week => 'Tuần Trước';
+
+  @override
+  String get past_month => 'Tháng Trước';
+
+  @override
+  String get past_year => 'Năm Trước';
+
+  @override
+  String get credits => 'Tín Dụng';
+
+  @override
+  String get filter_by_period => 'Lọc Theo Thời Gian';
 }
