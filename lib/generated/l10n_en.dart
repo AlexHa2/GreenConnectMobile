@@ -2136,7 +2136,7 @@ class SEn extends S {
   String get complainant => 'Complainant';
 
   @override
-  String get accused => 'Accused';
+  String get accused => 'accused';
 
   @override
   String get created_at => 'Created At';

@@ -318,41 +318,56 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
 
     if (entityType == null) return;
     
+    // Xác định role của user
+    final isHousehold = _currentUser != null && 
+        Role.hasRole(_currentUser!.roles, Role.household);
+    final isCollector = _currentUser != null && 
+        (Role.hasRole(_currentUser!.roles, Role.individualCollector) ||
+         Role.hasRole(_currentUser!.roles, Role.businessCollector));
+    
     switch (entityType) {
       case 'message':
       case 'chat':
         // Check user role to navigate to correct message page
         if (_currentUser != null) {
-          final isHousehold = Role.hasRole(
-            _currentUser!.roles,
-            Role.household,
-          );
           if (isHousehold) {
             context.push('/household-list-message');
-          } else {
+          } else if (isCollector) {
             context.push('/collector-list-message');
           }
         }
         break;
       case 'post':
         if (entityId == null) return;
-        context.push('/detail-post', extra: {'postId': entityId});
+        context.push('/detail-post', extra: {
+          'postId': entityId,
+          'isCollectorView': isCollector,
+        });
         break;
       case 'transaction':
         if (entityId == null) return;
-        context.push('/transaction-detail', extra: {'transactionId': entityId});
+        context.push('/transaction-detail', extra: {
+          'transactionId': entityId,
+        });
         break;
       case 'offer':
         if (entityId == null) return;
-        context.push('/offer-detail', extra: {'offerId': entityId});
+        context.push('/offer-detail', extra: {
+          'offerId': entityId,
+          'isCollectorView': isCollector,
+        });
         break;
       case 'feedback':
         if (entityId == null) return;
-        context.push('/feedback-detail', extra: {'feedbackId': entityId});
+        context.push('/feedback-detail', extra: {
+          'feedbackId': entityId,
+        });
         break;
       case 'complaint':
         if (entityId == null) return;
-        context.push('/complaint-detail', extra: {'complaintId': entityId});
+        context.push('/complaint-detail', extra: {
+          'complaintId': entityId,
+        });
         break;
     }
   }

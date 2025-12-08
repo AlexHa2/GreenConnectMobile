@@ -834,6 +834,7 @@
   "percent_to_level_placeholder":"{percent}% đến Cấp {level}",
   "preview_level_up":"Xem trước nâng cấp",
   "no_rewards_message": "Không có tin nhắn phần thưởng",
-  "buyed": "Đã mua"
+  "buyed": "Đã mua",
+  "accused":"bị tố cáo"
 
 }

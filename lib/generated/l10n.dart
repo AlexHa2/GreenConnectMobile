@@ -4162,7 +4162,7 @@ abstract class S {
   /// No description provided for @accused.
   ///
   /// In en, this message translates to:
-  /// **'Accused'**
+  /// **'accused'**
   String get accused;
 
   /// No description provided for @created_at.

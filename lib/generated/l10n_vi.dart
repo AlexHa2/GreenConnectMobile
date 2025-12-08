@@ -2129,7 +2129,7 @@ class SVi extends S {
   String get complainant => 'Người khiếu nại';
 
   @override
-  String get accused => 'Người bị tố cáo';
+  String get accused => 'bị tố cáo';
 
   @override
   String get created_at => 'Tạo lúc';
