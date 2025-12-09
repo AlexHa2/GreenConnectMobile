@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:GreenConnectMobile/core/di/injector.dart';
 import 'package:GreenConnectMobile/core/enum/buyer_type_status.dart';
 import 'package:GreenConnectMobile/core/enum/role.dart';
@@ -26,7 +27,8 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileSetting extends ConsumerStatefulWidget {
-  const ProfileSetting({super.key});
+  final bool? haveLayout;
+  const ProfileSetting({super.key, this.haveLayout = true});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -36,6 +38,8 @@ class ProfileSetting extends ConsumerStatefulWidget {
 
 class _ProfileSettingState extends ConsumerState<ProfileSetting> {
   bool _isNavigatingToVerification = false;
+
+  bool get _haveLayout => widget.haveLayout ?? true;
 
   @override
   void initState() {
@@ -179,20 +183,24 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
             child: ElevatedButton.icon(
               icon: const Icon(Icons.verified_rounded),
               label: Text(s.upgrade_to_collector),
-              onPressed: _isNavigatingToVerification ? null : () async {
-                if (_isNavigatingToVerification) return;
-                setState(() => _isNavigatingToVerification = true);
-                try {
-                  final result = await context.push('/upgrade-verification');
-                  if (result == true && mounted) {
-                    ref.read(profileViewModelProvider.notifier).getMe();
-                  }
-                } finally {
-                  if (mounted) {
-                    setState(() => _isNavigatingToVerification = false);
-                  }
-                }
-              },
+              onPressed: _isNavigatingToVerification
+                  ? null
+                  : () async {
+                      if (_isNavigatingToVerification) return;
+                      setState(() => _isNavigatingToVerification = true);
+                      try {
+                        final result = await context.push(
+                          '/upgrade-verification',
+                        );
+                        if (result == true && mounted) {
+                          ref.read(profileViewModelProvider.notifier).getMe();
+                        }
+                      } finally {
+                        if (mounted) {
+                          setState(() => _isNavigatingToVerification = false);
+                        }
+                      }
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.primaryColor,
                 foregroundColor: theme.scaffoldBackgroundColor,
@@ -217,27 +225,29 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
               label: Text(
                 '${s.switch_account_type} (${isIndividualCollector ? s.buyer_type_business : s.buyer_type_individual})',
               ),
-              onPressed: _isNavigatingToVerification ? null : () async {
-                if (_isNavigatingToVerification) return;
-                setState(() => _isNavigatingToVerification = true);
-                try {
-                  final result = await context.push(
-                    '/upgrade-verification',
-                    extra: {
-                      'initialBuyerType': isIndividualCollector
-                          ? BuyerTypeStatus.business
-                          : BuyerTypeStatus.individual,
+              onPressed: _isNavigatingToVerification
+                  ? null
+                  : () async {
+                      if (_isNavigatingToVerification) return;
+                      setState(() => _isNavigatingToVerification = true);
+                      try {
+                        final result = await context.push(
+                          '/upgrade-verification',
+                          extra: {
+                            'initialBuyerType': isIndividualCollector
+                                ? BuyerTypeStatus.business
+                                : BuyerTypeStatus.individual,
+                          },
+                        );
+                        if (result == true && mounted) {
+                          ref.read(profileViewModelProvider.notifier).getMe();
+                        }
+                      } finally {
+                        if (mounted) {
+                          setState(() => _isNavigatingToVerification = false);
+                        }
+                      }
                     },
-                  );
-                  if (result == true && mounted) {
-                    ref.read(profileViewModelProvider.notifier).getMe();
-                  }
-                } finally {
-                  if (mounted) {
-                    setState(() => _isNavigatingToVerification = false);
-                  }
-                }
-              },
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: theme.primaryColor),
                 foregroundColor: theme.primaryColor,
@@ -281,7 +291,7 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
     }
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: !_haveLayout,
         title: Text("${s.profile} - ${user?.fullName ?? ''}"),
         centerTitle: true,
         elevation: 0,

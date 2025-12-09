@@ -322,26 +322,6 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
 
     if (entityType == null) return;
 
-    
-    // Xác định role của user
-    final isHousehold = _currentUser != null && 
-        Role.hasRole(_currentUser!.roles, Role.household);
-    final isCollector = _currentUser != null && 
-        (Role.hasRole(_currentUser!.roles, Role.individualCollector) ||
-         Role.hasRole(_currentUser!.roles, Role.businessCollector));
-    
-    switch (entityType) {
-      case 'message':
-      case 'chat':
-        // Check user role to navigate to correct message page
-        if (_currentUser != null) {
-          if (isHousehold) {
-            context.push('/household-list-message');
-          } else if (isCollector) {
-            context.push('/collector-list-message');
-          }
-
-
     // Determine user role
     final isHousehold =
         _currentUser != null &&

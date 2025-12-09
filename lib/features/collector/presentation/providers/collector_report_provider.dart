@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:GreenConnectMobile/core/di/injector.dart';
 import 'package:GreenConnectMobile/features/collector/domain/entities/collector_report_entity.dart';
 import 'package:GreenConnectMobile/features/collector/domain/repository/collector_report_repository.dart';
@@ -10,7 +12,20 @@ final collectorReportRepositoryProvider =
 
 // Use a stable key for the provider to prevent unnecessary refetches
 final collectorReportProvider = FutureProvider.family
-    .autoDispose<CollectorReportEntity, String>((ref, weekKey) {
+    .autoDispose<CollectorReportEntity, String>((ref, weekKey) async {
+  // Keep the provider alive to prevent automatic retry on error
+  final link = ref.keepAlive();
+  
+  // Dispose the keepAlive after 5 minutes of inactivity
+  Timer? timer;
+  ref.onDispose(() => timer?.cancel());
+  ref.onCancel(() {
+    timer = Timer(const Duration(minutes: 5), link.close);
+  });
+  ref.onResume(() {
+    timer?.cancel();
+  });
+  
   final repository = ref.watch(collectorReportRepositoryProvider);
   
   // Parse the weekKey back to dates
@@ -18,9 +33,14 @@ final collectorReportProvider = FutureProvider.family
   final start = DateTime.parse(parts[0]);
   final end = DateTime.parse(parts[1]);
   
-  return repository.getCollectorReport(
-    start: start,
-    end: end,
-  );
+  try {
+    return await repository.getCollectorReport(
+      start: start,
+      end: end,
+    );
+  } catch (e) {
+    // Keep the error state, don't retry automatically
+    rethrow;
+  }
 });
 

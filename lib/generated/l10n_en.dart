@@ -177,8 +177,7 @@ class SEn extends S {
   String get failed_to_redeem_reward => 'Failed to redeem reward';
 
   @override
-  String get no_rewards_message =>
-      'No rewards available at the moment.\nPlease check back later!';
+  String get no_rewards_message => 'No rewards message';
 
   @override
   String get reward_details => 'Reward Details';
@@ -2540,8 +2539,6 @@ class SEn extends S {
   @override
   String get buyed => 'Buyed';
 
-
-
   @override
   String get no_transaction_history => 'No transaction history available';
 
@@ -2719,4 +2716,147 @@ class SEn extends S {
   @override
   String get filter_by_period => 'Filter by Period';
 
+  @override
+  String get from_posts => 'From Posts';
+
+  @override
+  String get total_posts => 'Total Posts';
+
+  @override
+  String get location_fetch_error =>
+      'Could not get location. Please try again.';
+
+  @override
+  String get distance_too_far_error =>
+      'Distance too far. Please get closer to the collection point (within 100m).';
+
+  @override
+  String get location_permission_error =>
+      'Could not get location. Please enable GPS and grant location permission.';
+
+  @override
+  String get location_fetched_successfully_toast =>
+      'Location fetched successfully';
+
+  @override
+  String location_coordinates(String latitude, String longitude) {
+    return 'Lat: $latitude, Long: $longitude';
+  }
+
+  @override
+  String get quantity_updated_successfully => 'Quantity updated successfully';
+
+  @override
+  String get check_in_first_error => 'Please check-in before entering quantity';
+
+  @override
+  String get invalid_scrap_category_error =>
+      'Invalid scrap category. Please check again.';
+
+  @override
+  String get enter_quantity => 'Enter Quantity';
+
+  @override
+  String get no_data_found => 'No Data';
+
+  @override
+  String get no_scrap_items_to_input =>
+      'No scrap items found to enter quantity.';
+
+  @override
+  String get weighing_instruction =>
+      'After weighing, enter the actual quantity for each scrap type. The system will automatically recalculate the total amount.';
+
+  @override
+  String scrap_category_placeholder(int id) {
+    return 'Scrap Type $id';
+  }
+
+  @override
+  String price_display(String price, String currency, String unit) {
+    return 'Price: $price $currency/$unit';
+  }
+
+  @override
+  String quantity_with_unit(String unit) {
+    return 'Quantity ($unit)';
+  }
+
+  @override
+  String get enter_actual_quantity_hint => 'Enter actual quantity';
+
+  @override
+  String get please_enter_quantity => 'Please enter quantity';
+
+  @override
+  String get invalid_quantity => 'Invalid quantity';
+
+  @override
+  String get enter_at_least_one_item_toast =>
+      'Please enter at least one scrap type';
+
+  @override
+  String get scan_qr_for_transfer => 'Scan QR code to transfer';
+
+  @override
+  String get bank_transfer_payment => 'Bank Transfer Payment';
+
+  @override
+  String get cannot_load_qr_image => 'Cannot load QR image';
+
+  @override
+  String get no_qr_code => 'No QR code';
+
+  @override
+  String get instructions_title => 'Instructions';
+
+  @override
+  String get instruction_step_1 => '1. Open banking app';
+
+  @override
+  String get instruction_step_2 => '2. Select scan QR code';
+
+  @override
+  String get instruction_step_3 => '3. Scan the code above';
+
+  @override
+  String get instruction_step_4 => '4. Confirm payment';
+
+  @override
+  String get instruction_step_5 => '5. Press \'Completed\'';
+
+  @override
+  String get transfer_complete_prompt => 'Have you completed the transfer?';
+
+  @override
+  String get bank_info_needed => 'Bank Information Needed';
+
+  @override
+  String get bank_info_needed_description =>
+      'To receive payment via QR code, you need to update your bank account information in your profile settings.';
+
+  @override
+  String get info_to_update => 'Information to update:';
+
+  @override
+  String get bank_account_number_list => '• Bank account number';
+
+  @override
+  String get account_holder_name_list => '• Account holder name';
+
+  @override
+  String get bank_name => '• Bank name';
+
+  @override
+  String get update_now => 'Update Now';
+
+  @override
+  String get cannot_load_qr_code => 'Không thể tải mã QR.';
+
+  @override
+  String get cannot_load_qr_code_en => 'Unable to load QR code.';
+
+  @override
+  String get generic_error_message =>
+      'Something went wrong. Please try again later.';
 }

@@ -1,18 +1,14 @@
+import 'package:GreenConnectMobile/features/post/domain/entities/household_report_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 
 class StatsRow extends StatelessWidget {
-  final String acceptedCount;
-  final String completedCount;
-  final String availableCount;
-  const StatsRow({
-    super.key,
-    required this.acceptedCount,
-    required this.completedCount,
-    required this.availableCount,
-  });
+  final bool isLoading;
+  final List<PostStatusModel> postModels;
+
+  const StatsRow({super.key, this.isLoading = false, required this.postModels});
 
   @override
   Widget build(BuildContext context) {
@@ -20,34 +16,77 @@ class StatsRow extends StatelessWidget {
     final spacing = Theme.of(context).extension<AppSpacing>()!;
     final s = S.of(context)!;
 
+    if (isLoading) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: spacing.screenPadding),
+        child: Row(
+          children: List.generate(
+            3,
+            (index) => Expanded(
+              child: Container(
+                margin: EdgeInsets.only(
+                  right: index < 2 ? spacing.screenPadding : 0,
+                ),
+                height: 100,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(spacing.screenPadding),
+                ),
+                child: Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Map post status to display info
+    final statusMap = {
+      for (var model in postModels) model.postStatus: model.totalPosts,
+    };
+
+    final openCount = statusMap['Open'] ?? 0;
+    final partiallyBookedCount = statusMap['PartiallyBooked'] ?? 0;
+    final fullyBookedCount = statusMap['FullyBooked'] ?? 0;
+    final completedCount = statusMap['Completed'] ?? 0;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: spacing.screenPadding),
       child: Row(
         children: [
           Expanded(
             child: _StatCard(
-              icon: Icons.check_circle_outline_rounded,
-              value: acceptedCount,
-              label: s.accepted,
-              color: theme.primaryColor,
-            ),
-          ),
-          SizedBox(width: spacing.screenPadding),
-          Expanded(
-            child: _StatCard(
-              icon: Icons.done_all_rounded,
-              value: completedCount,
-              label: s.completed,
+              icon: Icons.article_outlined,
+              value: openCount.toString(),
+              label: s.open,
               color: AppColors.info,
             ),
           ),
           SizedBox(width: spacing.screenPadding),
           Expanded(
             child: _StatCard(
-              icon: Icons.inventory_2_outlined,
-              value: availableCount,
-              label: s.available,
+              icon: Icons.schedule_rounded,
+              value: (partiallyBookedCount + fullyBookedCount).toString(),
+              label: s.booked,
               color: AppColors.warningUpdate,
+            ),
+          ),
+          SizedBox(width: spacing.screenPadding),
+          Expanded(
+            child: _StatCard(
+              icon: Icons.done_all_rounded,
+              value: completedCount.toString(),
+              label: s.completed,
+              color: theme.primaryColor,
             ),
           ),
         ],

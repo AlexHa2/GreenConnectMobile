@@ -1,9 +1,21 @@
 import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 
 class ImpactCard extends StatelessWidget {
-  const ImpactCard({super.key});
+  final bool isLoading;
+  final int pointBalance;
+  final int earnPointFromPosts;
+  final int totalMyPosts;
+
+  const ImpactCard({
+    super.key,
+    this.isLoading = false,
+    required this.pointBalance,
+    required this.earnPointFromPosts,
+    required this.totalMyPosts,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,12 +27,7 @@ class ImpactCard extends StatelessWidget {
     return Container(
       margin: EdgeInsets.all(spacing.screenPadding),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF29C562), Color(0xFF70D194)],
-          stops: [0.60, 1.0],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: AppColors.linearPrimary,
         borderRadius: BorderRadius.circular(spacing.screenPadding * 2),
         boxShadow: [
           BoxShadow(
@@ -64,8 +71,9 @@ class ImpactCard extends StatelessWidget {
                             Text(
                               s.keep_your_tree,
                               style: textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onPrimary
-                                    .withValues(alpha: 0.9),
+                                color: theme.colorScheme.onPrimary.withValues(
+                                  alpha: 0.9,
+                                ),
                               ),
                             ),
                           ],
@@ -74,8 +82,9 @@ class ImpactCard extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.all(spacing.screenPadding),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.onPrimary
-                              .withValues(alpha: 0.2),
+                          color: theme.colorScheme.onPrimary.withValues(
+                            alpha: 0.2,
+                          ),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -90,44 +99,103 @@ class ImpactCard extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.all(spacing.screenPadding),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.onPrimary.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(spacing.screenPadding),
+                      color: theme.colorScheme.onPrimary.withValues(
+                        alpha: 0.15,
+                      ),
+                      borderRadius: BorderRadius.circular(
+                        spacing.screenPadding,
+                      ),
                     ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "150",
-                              style: textTheme.headlineMedium?.copyWith(
+                    child: isLoading
+                        ? Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(spacing.screenPadding),
+                              child: CircularProgressIndicator(
                                 color: theme.colorScheme.onPrimary,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text(
-                              "/ 500 ${s.points}",
-                              style: textTheme.titleMedium?.copyWith(
-                                color: theme.colorScheme.onPrimary
-                                    .withValues(alpha: 0.8),
+                          )
+                        : Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        pointBalance.toString(),
+                                        style: textTheme.headlineMedium
+                                            ?.copyWith(
+                                              color:
+                                                  theme.colorScheme.onPrimary,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                      Text(
+                                        s.points,
+                                        style: textTheme.bodySmall?.copyWith(
+                                          color: theme.colorScheme.onPrimary
+                                              .withValues(alpha: 0.8),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.all(
+                                      spacing.screenPadding,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: theme.colorScheme.onPrimary
+                                          .withValues(alpha: 0.2),
+                                      borderRadius: BorderRadius.circular(
+                                        spacing.screenPadding,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          '+$earnPointFromPosts',
+                                          style: textTheme.titleLarge?.copyWith(
+                                            color: theme.colorScheme.onPrimary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          s.from_posts,
+                                          style: textTheme.bodySmall?.copyWith(
+                                            color: theme.colorScheme.onPrimary
+                                                .withValues(alpha: 0.8),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: spacing.screenPadding),
-                        ClipRRect(
-                          borderRadius:
-                              BorderRadius.circular(spacing.screenPadding),
-                          child: LinearProgressIndicator(
-                            value: 150 / 500,
-                            backgroundColor: theme.colorScheme.onPrimary
-                                .withValues(alpha: 0.2),
-                            color: theme.colorScheme.onPrimary,
-                            minHeight: 10,
+                              SizedBox(height: spacing.screenPadding * 1.5),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.article_outlined,
+                                    color: theme.colorScheme.onPrimary,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: spacing.screenPadding / 2),
+                                  Text(
+                                    '${s.total_posts}: $totalMyPosts',
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.onPrimary
+                                          .withValues(alpha: 0.9),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
                   ),
                 ],
               ),

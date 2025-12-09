@@ -35,8 +35,9 @@ class TransactionViewModel extends Notifier<TransactionState> {
     _processTransaction = ref.read(processTransactionUsecaseProvider);
     _toggleCancel = ref.read(toggleCancelTransactionUsecaseProvider);
     _getFeedbacks = ref.read(getTransactionFeedbacksUsecaseProvider);
-    _getTransactionsByOfferId =
-        ref.read(getTransactionsByOfferIdUsecaseProvider);
+    _getTransactionsByOfferId = ref.read(
+      getTransactionsByOfferIdUsecaseProvider,
+    );
     _getTransactionQRCode = ref.read(getTransactionQRCodeUsecaseProvider);
     return TransactionState();
   }
@@ -79,8 +80,10 @@ class TransactionViewModel extends Notifier<TransactionState> {
         debugPrint('❌ ERROR FETCH TRANSACTION DETAIL: ${e.message}');
       }
       debugPrint('📌 STACK TRACE: $stack');
-      state =
-          state.copyWith(isLoadingDetail: false, errorMessage: e.toString());
+      state = state.copyWith(
+        isLoadingDetail: false,
+        errorMessage: e.toString(),
+      );
     }
   }
 
@@ -264,10 +267,16 @@ class TransactionViewModel extends Notifier<TransactionState> {
     } catch (e, stack) {
       if (e is AppException) {
         debugPrint('❌ ERROR GET TRANSACTION QR CODE: ${e.message}');
+        debugPrint('📊 Status Code: ${e.statusCode}');
       }
       debugPrint('📌 STACK TRACE: $stack');
-      state = state.copyWith(isProcessing: false, errorMessage: e.toString());
-      return null;
+      state = state.copyWith(
+        isProcessing: false,
+        errorMessage: e.toString(),
+        errorCode: e is AppException ? e.statusCode : null,
+      );
+      // Re-throw the exception so UI can handle it properly
+      rethrow;
     }
   }
 }

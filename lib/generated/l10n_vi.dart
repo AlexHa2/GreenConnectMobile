@@ -178,8 +178,7 @@ class SVi extends S {
   String get failed_to_redeem_reward => 'Không thể đổi phần thưởng';
 
   @override
-  String get no_rewards_message =>
-      'Hiện tại chưa có phần thưởng nào.\nVui lòng quay lại sau!';
+  String get no_rewards_message => 'Không có tin nhắn phần thưởng';
 
   @override
   String get reward_details => 'Chi tiết phần thưởng';
@@ -2534,8 +2533,6 @@ class SVi extends S {
   @override
   String get buyed => 'Đã mua';
 
-
-
   @override
   String get no_transaction_history => 'Không có lịch sử giao dịch';
 
@@ -2716,4 +2713,146 @@ class SVi extends S {
   @override
   String get filter_by_period => 'Lọc Theo Thời Gian';
 
+  @override
+  String get from_posts => 'Từ Bài Đăng';
+
+  @override
+  String get total_posts => 'Tổng Bài Đăng';
+
+  @override
+  String get location_fetch_error => 'Không thể lấy vị trí. Vui lòng thử lại.';
+
+  @override
+  String get distance_too_far_error =>
+      'Khoảng cách quá xa. Vui lòng đến gần điểm thu gom hơn (trong vòng 100m).';
+
+  @override
+  String get location_permission_error =>
+      'Không thể lấy vị trí. Vui lòng bật GPS và cấp quyền vị trí.';
+
+  @override
+  String get location_fetched_successfully_toast => 'Đã lấy vị trí thành công';
+
+  @override
+  String location_coordinates(String latitude, String longitude) {
+    return 'Lat: $latitude, Long: $longitude';
+  }
+
+  @override
+  String get quantity_updated_successfully => 'Đã cập nhật số lượng thành công';
+
+  @override
+  String get check_in_first_error =>
+      'Vui lòng check-in trước khi nhập số lượng';
+
+  @override
+  String get invalid_scrap_category_error =>
+      'Loại ve chai không hợp lệ. Vui lòng kiểm tra lại.';
+
+  @override
+  String get enter_quantity => 'Nhập số lượng';
+
+  @override
+  String get no_data_found => 'Không có dữ liệu';
+
+  @override
+  String get no_scrap_items_to_input =>
+      'Không tìm thấy danh sách ve chai để nhập số lượng.';
+
+  @override
+  String get weighing_instruction =>
+      'Sau khi cân đo, nhập số lượng thực tế cho từng loại ve chai. Hệ thống sẽ tự động tính lại tổng tiền.';
+
+  @override
+  String scrap_category_placeholder(int id) {
+    return 'Loại ve chai $id';
+  }
+
+  @override
+  String price_display(String price, String currency, String unit) {
+    return 'Giá: $price $currency/$unit';
+  }
+
+  @override
+  String quantity_with_unit(String unit) {
+    return 'Số lượng ($unit)';
+  }
+
+  @override
+  String get enter_actual_quantity_hint => 'Nhập số lượng thực tế';
+
+  @override
+  String get please_enter_quantity => 'Vui lòng nhập số lượng';
+
+  @override
+  String get invalid_quantity => 'Số lượng không hợp lệ';
+
+  @override
+  String get enter_at_least_one_item_toast =>
+      'Vui lòng nhập ít nhất một loại ve chai';
+
+  @override
+  String get scan_qr_for_transfer => 'Quét mã QR để chuyển khoản';
+
+  @override
+  String get bank_transfer_payment => 'Thanh toán chuyển khoản';
+
+  @override
+  String get cannot_load_qr_image => 'Không thể tải ảnh QR';
+
+  @override
+  String get no_qr_code => 'Không có mã QR';
+
+  @override
+  String get instructions_title => 'Hướng dẫn';
+
+  @override
+  String get instruction_step_1 => '1. Mở ứng dụng ngân hàng';
+
+  @override
+  String get instruction_step_2 => '2. Chọn quét mã QR';
+
+  @override
+  String get instruction_step_3 => '3. Quét mã trên';
+
+  @override
+  String get instruction_step_4 => '4. Xác nhận thanh toán';
+
+  @override
+  String get instruction_step_5 => '5. Nhấn \'Hoàn tất\'';
+
+  @override
+  String get transfer_complete_prompt => 'Bạn đã hoàn tất chuyển khoản?';
+
+  @override
+  String get bank_info_needed => 'Cần thông tin tài khoản ngân hàng';
+
+  @override
+  String get bank_info_needed_description =>
+      'Để nhận thanh toán qua QR code, bạn cần cập nhật thông tin tài khoản ngân hàng trong phần cài đặt hồ sơ.';
+
+  @override
+  String get info_to_update => 'Thông tin cần cập nhật:';
+
+  @override
+  String get bank_account_number_list => '• Số tài khoản ngân hàng';
+
+  @override
+  String get account_holder_name_list => '• Tên chủ tài khoản';
+
+  @override
+  String get bank_name => '• Tên ngân hàng';
+
+  @override
+  String get update_now => 'Cập nhật ngay';
+
+  @override
+  String get cannot_load_qr_code => 'Không thể tải mã QR.';
+
+  @override
+  String get cannot_load_qr_code_en => 'Unable to load QR code.';
+
+  @override
+  String get generic_error_message =>
+      'Không thể tải mã QR vào lúc này. Vui lòng thử lại sau.';
 }
