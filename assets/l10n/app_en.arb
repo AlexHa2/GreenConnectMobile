@@ -1003,7 +1003,18 @@
   "update_now": "Update Now",
   "cannot_load_qr_code": "Không thể tải mã QR.",
   "cannot_load_qr_code_en": "Unable to load QR code.",
-  "generic_error_message": "Something went wrong. Please try again later."
+  "generic_error_message": "Something went wrong. Please try again later.",
+  "payment_success_title": "Payment Successful",
+  "payment_success_message": "Your payment was successful!",
+  "payment_order_info": "Order Information",
+  "payment_amount": "Amount",
+  "payment_bank": "Bank",
+  "payment_transaction_no": "Transaction No.",
+  "payment_ref": "Reference",
+  "payment_time": "Time",
+  "payment_error_code":"Payment error code",
+  "payment_retry":"Payment retry"
+   
 
  
 }

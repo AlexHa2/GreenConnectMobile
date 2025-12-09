@@ -5526,6 +5526,66 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Something went wrong. Please try again later.'**
   String get generic_error_message;
+
+  /// No description provided for @payment_success_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Successful'**
+  String get payment_success_title;
+
+  /// No description provided for @payment_success_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment was successful!'**
+  String get payment_success_message;
+
+  /// No description provided for @payment_order_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Information'**
+  String get payment_order_info;
+
+  /// No description provided for @payment_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get payment_amount;
+
+  /// No description provided for @payment_bank.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank'**
+  String get payment_bank;
+
+  /// No description provided for @payment_transaction_no.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction No.'**
+  String get payment_transaction_no;
+
+  /// No description provided for @payment_ref.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get payment_ref;
+
+  /// No description provided for @payment_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get payment_time;
+
+  /// No description provided for @payment_error_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment error code'**
+  String get payment_error_code;
+
+  /// No description provided for @payment_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment retry'**
+  String get payment_retry;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

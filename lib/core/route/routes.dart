@@ -18,6 +18,8 @@ import 'package:GreenConnectMobile/features/offer/presentation/views/offers_list
 import 'package:GreenConnectMobile/features/package/domain/entities/package_entity.dart';
 import 'package:GreenConnectMobile/features/package/presentation/views/package_detail_page.dart';
 import 'package:GreenConnectMobile/features/package/presentation/views/package_list_page.dart';
+import 'package:GreenConnectMobile/features/package/presentation/views/payment_failed_page.dart';
+import 'package:GreenConnectMobile/features/package/presentation/views/payment_success_page.dart';
 import 'package:GreenConnectMobile/features/package/presentation/views/payment_webview_page.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/collector_list_post.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/create_post.dart';
@@ -39,6 +41,7 @@ import 'package:GreenConnectMobile/features/transaction/presentation/views/trans
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transactions_list_page.dart';
 import 'package:GreenConnectMobile/shared/layouts/collector_layout.dart';
 import 'package:GreenConnectMobile/shared/layouts/household_layout.dart';
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -50,6 +53,22 @@ final _householdShellNavigatorKey = GlobalKey<NavigatorState>(
 final _collectorShellNavigatorKey = GlobalKey<NavigatorState>(
   debugLabel: 'collectorShell',
 );
+
+void initDeepLinkListener() {
+  final appLinks = AppLinks();
+  appLinks.uriLinkStream.listen((Uri? uri) {
+    if (uri != null &&
+        uri.scheme == 'greenconnect' &&
+        uri.host == 'payment-result') {
+      final status = uri.queryParameters['status'];
+      if (status == 'success') {
+        greenRouter.go('/payment-success');
+      } else {
+        greenRouter.go('/payment-failed');
+      }
+    }
+  });
+}
 
 final GoRouter greenRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -387,6 +406,36 @@ final GoRouter greenRouter = GoRouter(
         return QRCodePaymentPage(
           transactionId: data['transactionId'] as String,
           onActionCompleted: data['onActionCompleted'] as VoidCallback,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/payment-success',
+      name: 'payment-success',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return PaymentSuccessPage(paymentInfo: extra);
+      },
+    ),
+    GoRoute(
+      path: '/payment-failed',
+      name: 'payment-failed',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return PaymentFailedPage(paymentInfo: extra);
+      },
+    ),
+    GoRoute(
+      path: '/reward-collector',
+      name: 'reward-collector',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>?;
+
+        return RewardsPage(
+          isCollectorView: initialData?['isCollectorView'] as bool? ?? false,
         );
       },
     ),
