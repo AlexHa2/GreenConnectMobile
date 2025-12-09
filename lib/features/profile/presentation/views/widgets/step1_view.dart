@@ -84,6 +84,7 @@ class _ProfileSetupStep1ViewState extends State<ProfileSetupStep1View> {
 
       // Get current position
       Position position = await Geolocator.getCurrentPosition(
+        // ignore: deprecated_member_use
         desiredAccuracy: LocationAccuracy.high,
       );
 

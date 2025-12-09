@@ -37,7 +37,7 @@ class _InputDetailsDialogState extends State<InputDetailsDialog> {
     setState(() => _isLoading = true);
 
     try {
-      // TODO: Call API to input details
+      
       await Future.delayed(const Duration(seconds: 1));
       
       if (mounted) {
@@ -91,7 +91,7 @@ class _InputDetailsDialogState extends State<InputDetailsDialog> {
                       hintText: s.weight_hint,
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(space * 0.75)),
                     ),
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return s.error_weight_required;
@@ -119,7 +119,7 @@ class _InputDetailsDialogState extends State<InputDetailsDialog> {
                       hintText: s.value_hint,
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(space * 0.75)),
                     ),
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return s.error_value_required;

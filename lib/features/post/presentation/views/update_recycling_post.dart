@@ -215,7 +215,7 @@ class _UpdateRecyclingPostPageState
           suggestedDesc = aiResponse.estimatedAmount;
           // Truncate to 255 characters if needed
           if (suggestedDesc.length > 255) {
-            suggestedDesc = suggestedDesc.substring(0, 252) + '...';
+            suggestedDesc = '${suggestedDesc.substring(0, 252)}...';
           }
         }
 

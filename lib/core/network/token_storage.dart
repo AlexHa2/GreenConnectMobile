@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class TokenStorageService {
@@ -49,7 +50,9 @@ class TokenStorageService {
         return UserModel.fromJson(userMap);
       } catch (e) {
         // If data is corrupted, clear it
-        print("Error decoding UserModel (secure_storage): $e");
+        if (kDebugMode) {
+          print("Error decoding UserModel (secure_storage): $e");
+        }
         await clearAuthData();
         return null;
       }
@@ -64,6 +67,8 @@ class TokenStorageService {
     await _storage.delete(key: _keyAccessToken);
     await _storage.delete(key: _keyUserData);
     // await _storage.deleteAll();
-    print("Delete all (secure)!");
+    if (kDebugMode) {
+      print("Delete all (secure)!");
+    }
   }
 }

@@ -71,7 +71,7 @@ class ComplaintEvidenceSection extends StatelessWidget {
                 ),
               ),
               if (isRequired)
-                Text(
+                const Text(
                   ' *',
                   style: TextStyle(
                     color: AppColors.danger,

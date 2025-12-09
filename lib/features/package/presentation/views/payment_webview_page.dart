@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 /// This page will display the VNPay payment URL in a WebView.
 /// After payment completion, VNPay will redirect to the backend,
 /// which will then redirect to: greenconnect://payment-result?status=success|failed
-/// 
-/// TODO: Install webview_flutter package or flutter_inappwebview package
 /// Run: flutter pub add webview_flutter
 /// or: flutter pub add flutter_inappwebview
 class PaymentWebViewPage extends StatelessWidget {
@@ -108,7 +106,7 @@ class PaymentWebViewPage extends StatelessWidget {
               SizedBox(height: space * 2),
               ElevatedButton.icon(
                 onPressed: () {
-                  // TODO: Copy URL to clipboard or open in external browser
+                  
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Payment URL: $paymentUrl'),

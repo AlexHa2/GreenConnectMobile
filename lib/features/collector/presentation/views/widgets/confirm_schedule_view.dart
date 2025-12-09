@@ -67,7 +67,7 @@ class ConfirmScheduleView extends StatelessWidget {
                     color: AppColors.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.event_available,
                     color: AppColors.primary,
                     size: 40,

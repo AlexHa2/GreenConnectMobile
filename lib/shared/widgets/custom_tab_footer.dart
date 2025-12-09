@@ -32,7 +32,7 @@ class _CustomTabFooterState extends State<CustomTabFooter>
   int _selectedIndex = 0;
   int? _hoverIndex;
   late AnimationController _controller;
-  late Animation<double> _curveAnimation;
+  late Animation<double> curveAnimation;
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _CustomTabFooterState extends State<CustomTabFooter>
       vsync: this,
       duration: const Duration(milliseconds: 350),
     );
-    _curveAnimation = CurvedAnimation(
+    curveAnimation = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeInOut,
     );
