@@ -1,17 +1,14 @@
 import 'package:GreenConnectMobile/generated/l10n.dart';
-import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 /// Payment WebView Page
-/// 
-/// This page will display the VNPay payment URL in a WebView.
+///
+/// This page displays the VNPay payment URL in a WebView.
 /// After payment completion, VNPay will redirect to the backend,
 /// which will then redirect to: greenconnect://payment-result?status=success|failed
-/// 
-/// TODO: Install webview_flutter package or flutter_inappwebview package
-/// Run: flutter pub add webview_flutter
-/// or: flutter pub add flutter_inappwebview
-class PaymentWebViewPage extends StatelessWidget {
+class PaymentWebViewPage extends StatefulWidget {
   final String paymentUrl;
   final String? transactionRef;
   final String? packageName;
@@ -24,15 +21,80 @@ class PaymentWebViewPage extends StatelessWidget {
   });
 
   @override
+  State<PaymentWebViewPage> createState() => _PaymentWebViewPageState();
+}
+
+class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
+  late final WebViewController _controller;
+  var _loadingPercentage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (url) {
+            setState(() {
+              _loadingPercentage = 0;
+            });
+          },
+          onProgress: (progress) {
+            setState(() {
+              _loadingPercentage = progress;
+            });
+          },
+          onPageFinished: (url) {
+            setState(() {
+              _loadingPercentage = 100;
+            });
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            if (request.url.startsWith('greenconnect://')) {
+              debugPrint('[PAYMENT CALLBACK] URL: ${request.url}');
+              final uri = Uri.parse(request.url);
+              final responseCode = uri.queryParameters['vnp_ResponseCode'];
+              final transactionStatus = uri.queryParameters['vnp_TransactionStatus'];
+              final isSuccess = responseCode == '00' && transactionStatus == '00';
+              final extraData = {
+                'amount': uri.queryParameters['vnp_Amount'],
+                'bank': uri.queryParameters['vnp_BankCode'],
+                'orderInfo': uri.queryParameters['vnp_OrderInfo'],
+                'payDate': uri.queryParameters['vnp_PayDate'],
+                'transactionNo': uri.queryParameters['vnp_TransactionNo'],
+                'txnRef': uri.queryParameters['vnp_TxnRef'],
+                'cardType': uri.queryParameters['vnp_CardType'],
+                'responseCode': responseCode,
+                'transactionStatus': transactionStatus,
+                'bankTranNo': uri.queryParameters['vnp_BankTranNo'],
+                'tmnCode': uri.queryParameters['vnp_TmnCode'],
+                'secureHash': uri.queryParameters['vnp_SecureHash'],
+              };
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (isSuccess) {
+                  context.go('/payment-success', extra: extraData);
+                } else {
+                  context.go('/payment-failed', extra: extraData);
+                }
+              });
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.paymentUrl));
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final spacing = theme.extension<AppSpacing>()!;
-    final space = spacing.screenPadding;
     final s = S.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(packageName ?? s.payment_method_title),
+        title: Text(widget.packageName ?? s.payment_method_title),
         centerTitle: true,
         actions: [
           IconButton(
@@ -42,90 +104,14 @@ class PaymentWebViewPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(space * 2),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.payment,
-                size: 80,
-                color: theme.colorScheme.primary,
-              ),
-              SizedBox(height: space * 2),
-              Text(
-                s.confirm_payment,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: space),
-              Text(
-                'Transaction: ${transactionRef ?? 'N/A'}',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: space * 3),
-              Container(
-                padding: EdgeInsets.all(space * 1.5),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(space),
-                ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: theme.colorScheme.onPrimaryContainer,
-                    ),
-                    SizedBox(height: space),
-                    Text(
-                      'WebView Integration Required',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: theme.colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: space * 0.5),
-                    Text(
-                      'To complete payment integration:\n'
-                      '1. Add webview_flutter package\n'
-                      '2. Implement WebView widget\n'
-                      '3. Handle deep link redirects',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onPrimaryContainer,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: space * 2),
-              ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Copy URL to clipboard or open in external browser
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Payment URL: $paymentUrl'),
-                      duration: const Duration(seconds: 5),
-                      action: SnackBarAction(
-                        label: s.close,
-                        onPressed: () {},
-                      ),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.link),
-                label: const Text('Show Payment URL'),
-              ),
-            ],
-          ),
-        ),
+      body: Stack(
+        children: [
+          WebViewWidget(controller: _controller),
+          if (_loadingPercentage < 100)
+            LinearProgressIndicator(
+              value: _loadingPercentage / 100.0,
+            ),
+        ],
       ),
     );
   }

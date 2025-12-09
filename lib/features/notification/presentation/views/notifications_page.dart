@@ -319,99 +319,83 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
   void _handleNotificationTap(dynamic notification) {
     final entityType = notification.entityType?.toLowerCase();
     final entityId = notification.entityId;
-
     if (entityType == null) return;
 
-    // Determine user role
-    final isHousehold =
-        _currentUser != null &&
-        Role.hasRole(_currentUser!.roles, Role.household);
-    final isCollector =
-        _currentUser != null &&
-        (Role.hasRole(_currentUser!.roles, Role.individualCollector) ||
-            Role.hasRole(_currentUser!.roles, Role.businessCollector));
+    final isHousehold = _currentUser != null && Role.hasRole(_currentUser!.roles, Role.household);
+    final isCollector = _currentUser != null && (Role.hasRole(_currentUser!.roles, Role.individualCollector) || Role.hasRole(_currentUser!.roles, Role.businessCollector));
 
     switch (entityType) {
       case 'message':
       case 'chat':
-        // Pop notification page first, then navigate to message list based on role
         context.pop();
         if (isHousehold) {
           context.go('/household-list-message');
         } else if (isCollector) {
           context.go('/list-message');
-
         }
         break;
 
       case 'post':
         if (entityId == null) return;
-
-        context.push('/detail-post', extra: {
-          'postId': entityId,
-          'isCollectorView': isCollector,
-        });
-
-        // Both roles use same post detail route
-        context.push('/detail-post', extra: {'postId': entityId});
-
+        if (isCollector) {
+          context.push('/detail-post', extra: {
+            'postId': entityId,
+            'isCollectorView': true,
+          });
+        } else if (isHousehold) {
+          context.push('/detail-post', extra: {
+            'postId': entityId,
+            'isCollectorView': false,
+          });
+        } else {
+          context.push('/detail-post', extra: {
+            'postId': entityId,
+          });
+        }
         break;
 
       case 'transaction':
         if (entityId == null) return;
-
         context.push('/transaction-detail', extra: {
           'transactionId': entityId,
         });
-
-        // Both roles use same transaction detail route
-        context.push('/transaction-detail', extra: {'transactionId': entityId});
-
         break;
 
       case 'offer':
         if (entityId == null) return;
-
-        context.push('/offer-detail', extra: {
-          'offerId': entityId,
-          'isCollectorView': isCollector,
-        });
-
-        // Pass role-specific flag to offer detail
-        context.push(
-          '/offer-detail',
-          extra: {'offerId': entityId, 'isCollectorView': isCollector},
-        );
-
+        if (isCollector) {
+          context.push('/offer-detail', extra: {
+            'offerId': entityId,
+            'isCollectorView': true,
+          });
+        } else if (isHousehold) {
+          context.push('/offer-detail', extra: {
+            'offerId': entityId,
+            'isCollectorView': false,
+          });
+        } else {
+          context.push('/offer-detail', extra: {
+            'offerId': entityId,
+          });
+        }
         break;
 
       case 'feedback':
         if (entityId == null) return;
-
         context.push('/feedback-detail', extra: {
           'feedbackId': entityId,
         });
-
-        // Both roles use same feedback detail route
-        context.push('/feedback-detail', extra: {'feedbackId': entityId});
-
         break;
 
       case 'complaint':
         if (entityId == null) return;
-
         context.push('/complaint-detail', extra: {
           'complaintId': entityId,
         });
-
-        // Both roles use same complaint detail route
-        context.push('/complaint-detail', extra: {'complaintId': entityId});
-
         break;
 
       case 'schedule':
         if (entityId == null) return;
-        // Schedule is collector-specific - pop first then go
         if (isCollector) {
           context.pop();
           context.go('/collector-schedule-list');
@@ -420,12 +404,10 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
 
       case 'package':
         if (entityId == null) return;
-        // Package feature - navigate to package list or detail
         context.push('/package-list');
         break;
 
       case 'reward':
-        // Reward is household-specific - pop first then go
         if (isHousehold) {
           context.pop();
           context.go('/rewards');
@@ -433,7 +415,6 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
         break;
 
       default:
-        // Unknown entity type, do nothing
         break;
     }
   }

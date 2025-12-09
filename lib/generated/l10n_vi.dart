@@ -2855,4 +2855,34 @@ class SVi extends S {
   @override
   String get generic_error_message =>
       'Không thể tải mã QR vào lúc này. Vui lòng thử lại sau.';
+
+  @override
+  String get payment_success_title => 'Thanh toán thành công';
+
+  @override
+  String get payment_success_message => 'Bạn đã thanh toán thành công!';
+
+  @override
+  String get payment_order_info => 'Thông tin đơn hàng';
+
+  @override
+  String get payment_amount => 'Số tiền';
+
+  @override
+  String get payment_bank => 'Ngân hàng';
+
+  @override
+  String get payment_transaction_no => 'Mã giao dịch';
+
+  @override
+  String get payment_ref => 'Mã tham chiếu';
+
+  @override
+  String get payment_time => 'Thời gian';
+
+  @override
+  String get payment_error_code => 'Mã lỗi thanh toán';
+
+  @override
+  String get payment_retry => 'Hãy thử lại sau';
 }
