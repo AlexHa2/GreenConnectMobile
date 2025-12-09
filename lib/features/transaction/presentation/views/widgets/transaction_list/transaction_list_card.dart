@@ -70,11 +70,12 @@ class TransactionListCard extends StatelessWidget {
               _TransactionPriceChip(price: transaction.totalPrice),
             ],
 
-            // Action buttons for completed transactions (only for household)
-            if (transaction.statusEnum == TransactionStatus.completed && 
-                userRole == Role.household) ...[
+            // Action buttons for completed transactions
+            // Review: household only, Complaint: all roles
+            if (transaction.statusEnum == TransactionStatus.completed) ...[
               SizedBox(height: space * 1.2),
               _TransactionActionButtons(
+                userRole: userRole,
                 onReviewTap: onReviewTap,
                 onComplainTap: onComplainTap,
                 s: s,
@@ -303,11 +304,13 @@ class _TransactionPriceChip extends StatelessWidget {
 
 /// Action buttons for completed transactions
 class _TransactionActionButtons extends StatelessWidget {
+  final Role userRole;
   final VoidCallback? onReviewTap;
   final VoidCallback? onComplainTap;
   final S s;
 
   const _TransactionActionButtons({
+    required this.userRole,
     required this.onReviewTap,
     required this.onComplainTap,
     required this.s,
@@ -317,7 +320,66 @@ class _TransactionActionButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final space = theme.extension<AppSpacing>()!.screenPadding;
+    final isHousehold = userRole == Role.household;
 
+    // If not household, only show complaint button
+    if (!isHousehold) {
+      return Container(
+        padding: EdgeInsets.all(space * 0.8),
+        decoration: BoxDecoration(
+          color: theme.scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(space),
+          border: Border.all(
+            color: theme.dividerColor.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onComplainTap,
+            borderRadius: BorderRadius.circular(space * 0.8),
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: space * 0.9),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.danger.withValues(alpha: 0.12),
+                    AppColors.danger.withValues(alpha: 0.06),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(space * 0.8),
+                border: Border.all(
+                  color: AppColors.danger.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.warning_rounded,
+                    size: space * 1.6,
+                    color: AppColors.danger,
+                  ),
+                  SizedBox(width: space * 0.5),
+                  Text(
+                    s.complain,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.danger,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Household: show both review and complaint buttons
     return Container(
       padding: EdgeInsets.all(space * 0.8),
       decoration: BoxDecoration(

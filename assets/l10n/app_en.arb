@@ -924,6 +924,86 @@
   "past_year":"Past Year",
   "all":"All",
   "credits":"Credits",
-  "filter_by_period":"Filter by Period"
-   
+  "filter_by_period":"Filter by Period",
+  "from_posts":"From Posts",
+  "total_posts":"Total Posts",
+  "location_fetch_error": "Could not get location. Please try again.",
+  "distance_too_far_error": "Distance too far. Please get closer to the collection point (within 100m).",
+  "location_permission_error": "Could not get location. Please enable GPS and grant location permission.",
+  "location_fetched_successfully_toast": "Location fetched successfully",
+  "location_coordinates": "Lat: {latitude}, Long: {longitude}",
+  "@location_coordinates": {
+    "placeholders": {
+      "latitude": {
+        "type": "String"
+      },
+      "longitude": {
+        "type": "String"
+      }
+    }
+  },
+  "quantity_updated_successfully": "Quantity updated successfully",
+  "check_in_first_error": "Please check-in before entering quantity",
+  "invalid_scrap_category_error": "Invalid scrap category. Please check again.",
+  "enter_quantity": "Enter Quantity",
+  "no_data_found": "No Data",
+  "no_scrap_items_to_input": "No scrap items found to enter quantity.",
+  "weighing_instruction": "After weighing, enter the actual quantity for each scrap type. The system will automatically recalculate the total amount.",
+  "scrap_category_placeholder": "Scrap Type {id}",
+  "@scrap_category_placeholder": {
+    "placeholders": {
+      "id": {
+        "type": "int"
+      }
+    }
+  },
+  "price_display": "Price: {price} {currency}/{unit}",
+  "@price_display": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "quantity_with_unit": "Quantity ({unit})",
+  "@quantity_with_unit": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "enter_actual_quantity_hint": "Enter actual quantity",
+  "please_enter_quantity": "Please enter quantity",
+  "invalid_quantity": "Invalid quantity",
+  "enter_at_least_one_item_toast": "Please enter at least one scrap type",
+  "scan_qr_for_transfer": "Scan QR code to transfer",
+  "bank_transfer_payment": "Bank Transfer Payment",
+  "cannot_load_qr_image": "Cannot load QR image",
+  "no_qr_code": "No QR code",
+  "instructions_title": "Instructions",
+  "instruction_step_1": "1. Open banking app",
+  "instruction_step_2": "2. Select scan QR code",
+  "instruction_step_3": "3. Scan the code above",
+  "instruction_step_4": "4. Confirm payment",
+  "instruction_step_5": "5. Press 'Completed'",
+  "transfer_complete_prompt": "Have you completed the transfer?",
+  "bank_info_needed": "Bank Information Needed",
+  "bank_info_needed_description": "To receive payment via QR code, you need to update your bank account information in your profile settings.",
+  "info_to_update": "Information to update:",
+  "bank_account_number_list": "• Bank account number",
+  "account_holder_name_list": "• Account holder name",
+  "bank_name": "• Bank name",
+  "update_now": "Update Now",
+  "cannot_load_qr_code": "Không thể tải mã QR.",
+  "cannot_load_qr_code_en": "Unable to load QR code.",
+  "generic_error_message": "Something went wrong. Please try again later."
+
+ 
 }

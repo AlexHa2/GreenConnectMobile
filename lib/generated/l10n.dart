@@ -430,7 +430,7 @@ abstract class S {
   /// No description provided for @no_rewards_message.
   ///
   /// In en, this message translates to:
-  /// **'No rewards available at the moment.\nPlease check back later!'**
+  /// **'No rewards message'**
   String get no_rewards_message;
 
   /// No description provided for @reward_details.
@@ -4933,8 +4933,6 @@ abstract class S {
   /// **'Buyed'**
   String get buyed;
 
-
-
   /// No description provided for @no_transaction_history.
   ///
   /// In en, this message translates to:
@@ -5277,6 +5275,257 @@ abstract class S {
   /// **'Filter by Period'**
   String get filter_by_period;
 
+  /// No description provided for @from_posts.
+  ///
+  /// In en, this message translates to:
+  /// **'From Posts'**
+  String get from_posts;
+
+  /// No description provided for @total_posts.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Posts'**
+  String get total_posts;
+
+  /// No description provided for @location_fetch_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get location. Please try again.'**
+  String get location_fetch_error;
+
+  /// No description provided for @distance_too_far_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance too far. Please get closer to the collection point (within 100m).'**
+  String get distance_too_far_error;
+
+  /// No description provided for @location_permission_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get location. Please enable GPS and grant location permission.'**
+  String get location_permission_error;
+
+  /// No description provided for @location_fetched_successfully_toast.
+  ///
+  /// In en, this message translates to:
+  /// **'Location fetched successfully'**
+  String get location_fetched_successfully_toast;
+
+  /// No description provided for @location_coordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'Lat: {latitude}, Long: {longitude}'**
+  String location_coordinates(String latitude, String longitude);
+
+  /// No description provided for @quantity_updated_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity updated successfully'**
+  String get quantity_updated_successfully;
+
+  /// No description provided for @check_in_first_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check-in before entering quantity'**
+  String get check_in_first_error;
+
+  /// No description provided for @invalid_scrap_category_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid scrap category. Please check again.'**
+  String get invalid_scrap_category_error;
+
+  /// No description provided for @enter_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Quantity'**
+  String get enter_quantity;
+
+  /// No description provided for @no_data_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No Data'**
+  String get no_data_found;
+
+  /// No description provided for @no_scrap_items_to_input.
+  ///
+  /// In en, this message translates to:
+  /// **'No scrap items found to enter quantity.'**
+  String get no_scrap_items_to_input;
+
+  /// No description provided for @weighing_instruction.
+  ///
+  /// In en, this message translates to:
+  /// **'After weighing, enter the actual quantity for each scrap type. The system will automatically recalculate the total amount.'**
+  String get weighing_instruction;
+
+  /// No description provided for @scrap_category_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Scrap Type {id}'**
+  String scrap_category_placeholder(int id);
+
+  /// No description provided for @price_display.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: {price} {currency}/{unit}'**
+  String price_display(String price, String currency, String unit);
+
+  /// No description provided for @quantity_with_unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity ({unit})'**
+  String quantity_with_unit(String unit);
+
+  /// No description provided for @enter_actual_quantity_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter actual quantity'**
+  String get enter_actual_quantity_hint;
+
+  /// No description provided for @please_enter_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter quantity'**
+  String get please_enter_quantity;
+
+  /// No description provided for @invalid_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid quantity'**
+  String get invalid_quantity;
+
+  /// No description provided for @enter_at_least_one_item_toast.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter at least one scrap type'**
+  String get enter_at_least_one_item_toast;
+
+  /// No description provided for @scan_qr_for_transfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code to transfer'**
+  String get scan_qr_for_transfer;
+
+  /// No description provided for @bank_transfer_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer Payment'**
+  String get bank_transfer_payment;
+
+  /// No description provided for @cannot_load_qr_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot load QR image'**
+  String get cannot_load_qr_image;
+
+  /// No description provided for @no_qr_code.
+  ///
+  /// In en, this message translates to:
+  /// **'No QR code'**
+  String get no_qr_code;
+
+  /// No description provided for @instructions_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Instructions'**
+  String get instructions_title;
+
+  /// No description provided for @instruction_step_1.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Open banking app'**
+  String get instruction_step_1;
+
+  /// No description provided for @instruction_step_2.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Select scan QR code'**
+  String get instruction_step_2;
+
+  /// No description provided for @instruction_step_3.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Scan the code above'**
+  String get instruction_step_3;
+
+  /// No description provided for @instruction_step_4.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Confirm payment'**
+  String get instruction_step_4;
+
+  /// No description provided for @instruction_step_5.
+  ///
+  /// In en, this message translates to:
+  /// **'5. Press \'Completed\''**
+  String get instruction_step_5;
+
+  /// No description provided for @transfer_complete_prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Have you completed the transfer?'**
+  String get transfer_complete_prompt;
+
+  /// No description provided for @bank_info_needed.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Information Needed'**
+  String get bank_info_needed;
+
+  /// No description provided for @bank_info_needed_description.
+  ///
+  /// In en, this message translates to:
+  /// **'To receive payment via QR code, you need to update your bank account information in your profile settings.'**
+  String get bank_info_needed_description;
+
+  /// No description provided for @info_to_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Information to update:'**
+  String get info_to_update;
+
+  /// No description provided for @bank_account_number_list.
+  ///
+  /// In en, this message translates to:
+  /// **'• Bank account number'**
+  String get bank_account_number_list;
+
+  /// No description provided for @account_holder_name_list.
+  ///
+  /// In en, this message translates to:
+  /// **'• Account holder name'**
+  String get account_holder_name_list;
+
+  /// No description provided for @bank_name.
+  ///
+  /// In en, this message translates to:
+  /// **'• Bank name'**
+  String get bank_name;
+
+  /// No description provided for @update_now.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Now'**
+  String get update_now;
+
+  /// No description provided for @cannot_load_qr_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Không thể tải mã QR.'**
+  String get cannot_load_qr_code;
+
+  /// No description provided for @cannot_load_qr_code_en.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load QR code.'**
+  String get cannot_load_qr_code_en;
+
+  /// No description provided for @generic_error_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again later.'**
+  String get generic_error_message;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

@@ -923,5 +923,83 @@
   "past_year":"Năm Trước",
   "all":"Tất Cả",
   "credits":"Tín Dụng",
-  "filter_by_period":"Lọc Theo Thời Gian"
+  "filter_by_period":"Lọc Theo Thời Gian",
+  "from_posts":"Từ Bài Đăng",
+  "total_posts":"Tổng Bài Đăng",
+  "location_fetch_error": "Không thể lấy vị trí. Vui lòng thử lại.",
+  "distance_too_far_error": "Khoảng cách quá xa. Vui lòng đến gần điểm thu gom hơn (trong vòng 100m).",
+  "location_permission_error": "Không thể lấy vị trí. Vui lòng bật GPS và cấp quyền vị trí.",
+  "location_fetched_successfully_toast": "Đã lấy vị trí thành công",
+  "location_coordinates": "Lat: {latitude}, Long: {longitude}",
+  "@location_coordinates": {
+    "placeholders": {
+      "latitude": {
+        "type": "String"
+      },
+      "longitude": {
+        "type": "String"
+      }
+    }
+  },
+  "quantity_updated_successfully": "Đã cập nhật số lượng thành công",
+  "check_in_first_error": "Vui lòng check-in trước khi nhập số lượng",
+  "invalid_scrap_category_error": "Loại ve chai không hợp lệ. Vui lòng kiểm tra lại.",
+  "enter_quantity": "Nhập số lượng",
+  "no_data_found": "Không có dữ liệu",
+  "no_scrap_items_to_input": "Không tìm thấy danh sách ve chai để nhập số lượng.",
+  "weighing_instruction": "Sau khi cân đo, nhập số lượng thực tế cho từng loại ve chai. Hệ thống sẽ tự động tính lại tổng tiền.",
+  "scrap_category_placeholder": "Loại ve chai {id}",
+  "@scrap_category_placeholder": {
+    "placeholders": {
+      "id": {
+        "type": "int"
+      }
+    }
+  },
+  "price_display": "Giá: {price} {currency}/{unit}",
+  "@price_display": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "quantity_with_unit": "Số lượng ({unit})",
+  "@quantity_with_unit": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "enter_actual_quantity_hint": "Nhập số lượng thực tế",
+  "please_enter_quantity": "Vui lòng nhập số lượng",
+  "invalid_quantity": "Số lượng không hợp lệ",
+  "enter_at_least_one_item_toast": "Vui lòng nhập ít nhất một loại ve chai",
+  "scan_qr_for_transfer": "Quét mã QR để chuyển khoản",
+  "bank_transfer_payment": "Thanh toán chuyển khoản",
+  "cannot_load_qr_image": "Không thể tải ảnh QR",
+  "no_qr_code": "Không có mã QR",
+  "instructions_title": "Hướng dẫn",
+  "instruction_step_1": "1. Mở ứng dụng ngân hàng",
+  "instruction_step_2": "2. Chọn quét mã QR",
+  "instruction_step_3": "3. Quét mã trên",
+  "instruction_step_4": "4. Xác nhận thanh toán",
+  "instruction_step_5": "5. Nhấn 'Hoàn tất'",
+  "transfer_complete_prompt": "Bạn đã hoàn tất chuyển khoản?",
+  "bank_info_needed": "Cần thông tin tài khoản ngân hàng",
+  "bank_info_needed_description": "Để nhận thanh toán qua QR code, bạn cần cập nhật thông tin tài khoản ngân hàng trong phần cài đặt hồ sơ.",
+  "info_to_update": "Thông tin cần cập nhật:",
+  "bank_account_number_list": "• Số tài khoản ngân hàng",
+  "account_holder_name_list": "• Tên chủ tài khoản",
+  "bank_name": "• Tên ngân hàng",
+  "update_now": "Cập nhật ngay",
+  "generic_error_message":"Không thể tải mã QR vào lúc này. Vui lòng thử lại sau."
+   
 }

@@ -24,7 +24,7 @@ class NotificationIconButton extends StatelessWidget {
           Icon(
             Icons.notifications_none,
             color: theme.iconTheme.color,
-            size: spacing.screenPadding * 3.5,
+            size: spacing.screenPadding * 2,
           ),
           if (count > 0)
             Positioned(

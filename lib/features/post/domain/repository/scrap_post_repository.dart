@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/features/post/domain/entities/household_report_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/paginated_scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_detail_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
@@ -42,5 +43,10 @@ abstract class ScrapPostRepository {
     bool? sortByCreateAt,
     required int pageNumber,
     required int pageSize,
+  });
+
+  Future<HouseholdReportEntity> getHouseholdReport({
+    required String start,
+    required String end,
   });
 }

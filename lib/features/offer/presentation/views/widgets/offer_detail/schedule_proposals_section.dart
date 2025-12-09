@@ -650,19 +650,12 @@ class ScheduleProposalsSection extends StatelessWidget {
     BuildContext context,
     ScheduleProposalEntity? schedule,
   ) {
-
     DateTime selectedDate = schedule != null
         ? schedule.proposedTime.toLocal()
         : DateTime.now().add(const Duration(days: 1));
     TimeOfDay selectedTime = schedule != null 
         ? TimeOfDay.fromDateTime(schedule.proposedTime.toLocal())
-
-    DateTime selectedDate =
-        schedule?.proposedTime ?? DateTime.now().add(const Duration(days: 1));
-    TimeOfDay selectedTime = schedule != null
-        ? TimeOfDay.fromDateTime(schedule.proposedTime)
-
-        : TimeOfDay.now();
+        : const TimeOfDay(hour: 9, minute: 0);
     final messageController = TextEditingController(
       text: schedule?.responseMessage ?? '',
     );

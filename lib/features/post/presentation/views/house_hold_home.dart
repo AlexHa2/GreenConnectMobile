@@ -46,11 +46,21 @@ class _HouseHoldHomeState extends ConsumerState<HouseHoldHome>
   }
 
   Future<void> _refreshData() async {
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
     await Future.wait([
       ref
           .read(scrapPostViewModelProvider.notifier)
           .fetchMyPosts(page: 1, size: 2),
       ref.read(notificationViewModelProvider.notifier).fetchNotifications(),
+      ref
+          .read(scrapPostViewModelProvider.notifier)
+          .fetchHouseholdReport(
+            start: startOfDay.toIso8601String(),
+            end: endOfDay.toIso8601String(),
+          ),
     ]);
     loadUser();
   }
@@ -77,6 +87,7 @@ class _HouseHoldHomeState extends ConsumerState<HouseHoldHome>
     final posts = postState.listData?.data ?? [];
     final latestThree = posts.take(3).toList();
     final unreadCount = notificationState.unreadCount;
+    final reportData = postState.reportData;
 
     final String nameAffterSetupProfile =
         widget.initialData["fullName"] ?? "Unknown";
@@ -106,15 +117,19 @@ class _HouseHoldHomeState extends ConsumerState<HouseHoldHome>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Impact Card
-                  const ImpactCard(),
+                  ImpactCard(
+                    isLoading: postState.isLoadingReport,
+                    pointBalance: reportData?.pointBalance ?? 0,
+                    earnPointFromPosts: reportData?.earnPointFromPosts ?? 0,
+                    totalMyPosts: reportData?.totalMyPosts ?? 0,
+                  ),
 
                   SizedBox(height: spacing.screenPadding),
 
                   // Stats Row
-                  const StatsRow(
-                    acceptedCount: "112",
-                    completedCount: "110",
-                    availableCount: "144",
+                  StatsRow(
+                    isLoading: postState.isLoadingReport,
+                    postModels: reportData?.postModels ?? [],
                   ),
 
                   SizedBox(height: spacing.screenPadding * 2),

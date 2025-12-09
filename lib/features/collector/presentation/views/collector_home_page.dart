@@ -28,24 +28,39 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
 
   // Sample data for bar chart - matching the image
   final List<double> weeklyEarnings = [12, 15, 18, 15, 21, 15, 24]; // Mon-Sun
-  final List<String> weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  final List<String> weekDays = [
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    'Sat',
+    'Sun',
+  ];
 
   // Get start and end of current week - cached to prevent unnecessary rebuilds
   Map<String, DateTime> _getWeekRange() {
     final now = DateTime.now();
     final currentWeekNumber = _getWeekNumber(now);
-    
+
     // Only recalculate if week has changed
     if (_cachedWeekRange == null || _cachedWeekNumber != currentWeekNumber) {
       final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
       final endOfWeek = startOfWeek.add(const Duration(days: 6));
       _cachedWeekRange = {
         'start': DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day),
-        'end': DateTime(endOfWeek.year, endOfWeek.month, endOfWeek.day, 23, 59, 59),
+        'end': DateTime(
+          endOfWeek.year,
+          endOfWeek.month,
+          endOfWeek.day,
+          23,
+          59,
+          59,
+        ),
       };
       _cachedWeekNumber = currentWeekNumber;
     }
-    
+
     return _cachedWeekRange!;
   }
 
@@ -132,11 +147,10 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
 
     // Fetch collector report data - use stable key to prevent refetch
     final weekRange = _getWeekRange();
-    final weekKey = '${weekRange['start']!.toIso8601String()}_${weekRange['end']!.toIso8601String()}';
-    final reportAsync = ref.watch(
-      collectorReportProvider(weekKey),
-    );
-    
+    final weekKey =
+        '${weekRange['start']!.toIso8601String()}_${weekRange['end']!.toIso8601String()}';
+    final reportAsync = ref.watch(collectorReportProvider(weekKey));
+
     // Watch notification state
     final notificationState = ref.watch(notificationViewModelProvider);
     final unreadCount = notificationState.unreadCount;
@@ -148,266 +162,264 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-          // Header Section
-          SliverToBoxAdapter(
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.fromLTRB(
-                space * 2,
-                MediaQuery.of(context).padding.top + space * 1.5,
-                space * 2,
-                space * 5,
-              ),
-              decoration: BoxDecoration(
-                color: theme.primaryColor,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
+            // Header Section
+            SliverToBoxAdapter(
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.fromLTRB(
+                  space * 2,
+                  MediaQuery.of(context).padding.top + space * 1.5,
+                  space * 2,
+                  space * 5,
+                ),
+                decoration: BoxDecoration(
+                  color: theme.primaryColor,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                s.your_earnings,
+                                style: theme.textTheme.headlineLarge?.copyWith(
+                                  color: theme.colorScheme.onPrimary,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: space * 3.2,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              SizedBox(height: space * 0.8),
+                              Text(
+                                s.track_performance_impact,
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  color: theme.colorScheme.onPrimary.withValues(
+                                    alpha: 0.95,
+                                  ),
+                                  fontSize: space * 1.2,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        NotificationIconButton(
+                          count: unreadCount,
+                          onPressed: () => context.push('/notifications'),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ),
+
+            // Earnings Overview Card
+            SliverToBoxAdapter(
+              child: Transform.translate(
+                offset: Offset(0, -space * 2.5),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: space * 2),
+                  child: reportAsync.when(
+                    data: (report) => _buildEarningsOverviewCard(
+                      context,
+                      space,
+                      theme,
+                      s,
+                      totalEarning: report.totalEarning,
+                    ),
+                    loading: () => _buildEarningsOverviewCard(
+                      context,
+                      space,
+                      theme,
+                      s,
+                      totalEarning: 0,
+                    ),
+                    error: (_, __) => _buildEarningsOverviewCard(
+                      context,
+                      space,
+                      theme,
+                      s,
+                      totalEarning: 0,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Statistics Cards
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  space * 2,
+                  space * 0.5,
+                  space * 2,
+                  space * 2,
+                ),
+                child: reportAsync.when(
+                  data: (report) => Row(
                     children: [
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              s.your_earnings,
-                              style: theme.textTheme.headlineLarge?.copyWith(
-                                color: theme.colorScheme.onPrimary,
-                                fontWeight: FontWeight.w800,
-                                fontSize: space * 3.2,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                            SizedBox(height: space * 0.8),
-                            Text(
-                              s.track_performance_impact,
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                color: theme.colorScheme.onPrimary.withValues(alpha: 0.95),
-                                fontSize: space * 1.2,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
+                        child: _buildStatCard(
+                          context,
+                          icon: Icons.check_circle_rounded,
+                          label: s.completion_rate,
+                          value: report.totalFeedbacks > 0
+                              ? '${((report.totalRating / report.totalFeedbacks / 5) * 100).toStringAsFixed(0)}%'
+                              : '0%',
+                          color: Colors.green,
+                          space: space,
+                          theme: theme,
                         ),
                       ),
-                      NotificationIconButton(
-                        count: unreadCount,
-                        onPressed: () => context.push('/notifications'),
+                      SizedBox(width: space * 1.5),
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          icon: Icons.eco_rounded,
+                          label: s.eco_impact,
+                          value: report.totalRating >= 4.5
+                              ? s.excellent
+                              : report.totalRating >= 3.5
+                              ? 'Tốt'
+                              : report.totalRating > 0
+                              ? 'Trung bình'
+                              : 'Chưa có',
+                          color: theme.primaryColor,
+                          space: space,
+                          theme: theme,
+                        ),
                       ),
                     ],
                   ),
-                ],
+                  loading: () => Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          icon: Icons.check_circle_rounded,
+                          label: s.completion_rate,
+                          value: '0%',
+                          color: Colors.green,
+                          space: space,
+                          theme: theme,
+                        ),
+                      ),
+                      SizedBox(width: space * 1.5),
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          icon: Icons.eco_rounded,
+                          label: s.eco_impact,
+                          value: s.excellent,
+                          color: theme.primaryColor,
+                          space: space,
+                          theme: theme,
+                        ),
+                      ),
+                    ],
+                  ),
+                  error: (_, __) => Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          icon: Icons.check_circle_rounded,
+                          label: s.completion_rate,
+                          value: '0%',
+                          color: Colors.green,
+                          space: space,
+                          theme: theme,
+                        ),
+                      ),
+                      SizedBox(width: space * 1.5),
+                      Expanded(
+                        child: _buildStatCard(
+                          context,
+                          icon: Icons.eco_rounded,
+                          label: s.eco_impact,
+                          value: s.excellent,
+                          color: theme.primaryColor,
+                          space: space,
+                          theme: theme,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
 
-          // Earnings Overview Card
-          SliverToBoxAdapter(
-            child: Transform.translate(
-              offset: Offset(0, -space * 2.5),
+            // Eco Impact Card
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  space * 2,
+                  0,
+                  space * 2,
+                  space * 2,
+                ),
+                child: reportAsync.when(
+                  data: (report) => _buildEcoImpactCard(
+                    context,
+                    space,
+                    theme,
+                    s,
+                    totalFeedbacks: report.totalFeedbacks,
+                    totalRating: report.totalRating,
+                  ),
+                  loading: () => _buildEcoImpactCard(
+                    context,
+                    space,
+                    theme,
+                    s,
+                    totalFeedbacks: 0,
+                    totalRating: 0,
+                  ),
+                  error: (_, __) => _buildEcoImpactCard(
+                    context,
+                    space,
+                    theme,
+                    s,
+                    totalFeedbacks: 0,
+                    totalRating: 0,
+                  ),
+                ),
+              ),
+            ),
+
+            // Level Progress Card
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  space * 2,
+                  0,
+                  space * 2,
+                  space * 2,
+                ),
+                child: _buildLevelProgressCard(context, space, theme, s),
+              ),
+            ),
+
+            // Quick Actions Section
+            SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: space * 2),
-                child: reportAsync.when(
-                  data: (report) => _buildEarningsOverviewCard(
-                    context,
-                    space,
-                    theme,
-                    s,
-                    totalEarning: report.totalEarning,
-                  ),
-                  loading: () => _buildEarningsOverviewCard(
-                    context,
-                    space,
-                    theme,
-                    s,
-                    totalEarning: 0,
-                  ),
-                  error: (_, __) => _buildEarningsOverviewCard(
-                    context,
-                    space,
-                    theme,
-                    s,
-                    totalEarning: 0,
-                  ),
-                ),
+                child: _buildQuickActionsSection(context, space, theme, s),
               ),
             ),
-          ),
 
-          // Statistics Cards
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                space * 2,
-                space * 0.5,
-                space * 2,
-                space * 2,
-              ),
-              child: reportAsync.when(
-                data: (report) => Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        icon: Icons.check_circle_rounded,
-                        label: s.completion_rate,
-                        value: report.totalFeedbacks > 0
-                            ? '${((report.totalRating / report.totalFeedbacks / 5) * 100).toStringAsFixed(0)}%'
-                            : '0%',
-                        color: Colors.green,
-                        space: space,
-                        theme: theme,
-                      ),
-                    ),
-                    SizedBox(width: space * 1.5),
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        icon: Icons.eco_rounded,
-                        label: s.eco_impact,
-                        value: report.totalRating >= 4.5
-                            ? s.excellent
-                            : report.totalRating >= 3.5
-                                ? 'Tốt'
-                                : report.totalRating > 0
-                                    ? 'Trung bình'
-                                    : 'Chưa có',
-                        color: theme.primaryColor,
-                        space: space,
-                        theme: theme,
-                      ),
-                    ),
-                  ],
-                ),
-                loading: () => Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        icon: Icons.check_circle_rounded,
-                        label: s.completion_rate,
-                        value: '0%',
-                        color: Colors.green,
-                        space: space,
-                        theme: theme,
-                      ),
-                    ),
-                    SizedBox(width: space * 1.5),
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        icon: Icons.eco_rounded,
-                        label: s.eco_impact,
-                        value: s.excellent,
-                        color: theme.primaryColor,
-                        space: space,
-                        theme: theme,
-                      ),
-                    ),
-                  ],
-                ),
-                error: (_, __) => Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        icon: Icons.check_circle_rounded,
-                        label: s.completion_rate,
-                        value: '0%',
-                        color: Colors.green,
-                        space: space,
-                        theme: theme,
-                      ),
-                    ),
-                    SizedBox(width: space * 1.5),
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        icon: Icons.eco_rounded,
-                        label: s.eco_impact,
-                        value: s.excellent,
-                        color: theme.primaryColor,
-                        space: space,
-                        theme: theme,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Eco Impact Card
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                space * 2,
-                0,
-                space * 2,
-                space * 2,
-              ),
-              child: reportAsync.when(
-                data: (report) => _buildEcoImpactCard(
-                  context,
-                  space,
-                  theme,
-                  s,
-                  totalFeedbacks: report.totalFeedbacks,
-                  totalRating: report.totalRating,
-                ),
-                loading: () => _buildEcoImpactCard(
-                  context,
-                  space,
-                  theme,
-                  s,
-                  totalFeedbacks: 0,
-                  totalRating: 0,
-                ),
-                error: (_, __) => _buildEcoImpactCard(
-                  context,
-                  space,
-                  theme,
-                  s,
-                  totalFeedbacks: 0,
-                  totalRating: 0,
-                ),
-              ),
-            ),
-          ),
-
-          
-
-          // Level Progress Card
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                space * 2,
-                0,
-                space * 2,
-                space * 2,
-              ),
-              child: _buildLevelProgressCard(context, space, theme, s),
-            ),
-          ),
-
-          // Quick Actions Section
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: space * 2),
-              child: _buildQuickActionsSection(context, space, theme, s),
-            ),
-          ),
-
-          SliverToBoxAdapter(
-            child: SizedBox(height: space * 3),
-          ),
-        ],
+            SliverToBoxAdapter(child: SizedBox(height: space * 3)),
+          ],
         ),
       ),
     );
@@ -426,10 +438,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            theme.cardColor,
-            theme.primaryColor.withValues(alpha: 0.05),
-          ],
+          colors: [theme.cardColor, theme.primaryColor.withValues(alpha: 0.05)],
         ),
         borderRadius: BorderRadius.circular(space * 2.5),
         boxShadow: [
@@ -615,11 +624,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               ),
               borderRadius: BorderRadius.circular(space * 1.2),
             ),
-            child: Icon(
-              icon,
-              color: color,
-              size: space * 3.2,
-            ),
+            child: Icon(icon, color: color, size: space * 3.2),
           ),
           SizedBox(height: space * 1.5),
           Text(
@@ -660,10 +665,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            theme.cardColor,
-            theme.primaryColor.withValues(alpha: 0.02),
-          ],
+          colors: [theme.cardColor, theme.primaryColor.withValues(alpha: 0.02)],
         ),
         borderRadius: BorderRadius.circular(space * 2.5),
         border: Border.all(
@@ -819,11 +821,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               ),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: theme.primaryColor,
-              size: space * 3.5,
-            ),
+            child: Icon(icon, color: theme.primaryColor, size: space * 3.5),
           ),
           SizedBox(height: space * 1.2),
           Text(
@@ -1027,7 +1025,6 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               space: space,
               theme: theme,
             ),
-            
           ],
         ),
       ],
@@ -1077,6 +1074,15 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                 '/collector-offer-list',
                 extra: {'isCollectorView': true},
               ),
+            ),
+            _buildQuickActionCard(
+              context,
+              icon: Icons.shop_rounded,
+              label: s.offers,
+              color: theme.primaryColor,
+              space: space,
+              theme: theme,
+              onTap: () => context.push('/package-list'),
             ),
             _buildQuickActionCard(
               context,
@@ -1175,11 +1181,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                     ),
                     borderRadius: BorderRadius.circular(space * 1.2),
                   ),
-                  child: Icon(
-                    icon,
-                    color: color,
-                    size: space * 3,
-                  ),
+                  child: Icon(icon, color: color, size: space * 3),
                 ),
                 SizedBox(height: space * 1.2),
                 Text(
