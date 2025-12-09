@@ -1,5 +1,6 @@
 import 'package:GreenConnectMobile/features/message/domain/entities/message_entity.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -20,7 +21,9 @@ class MessageBubble extends StatelessWidget {
     final spacing = theme.extension<AppSpacing>()!;
 
     // Debug: Print to check if alignment is correct
-    print('💬 Message from ${message.senderName}: isSentByMe=$isSentByMe, senderId=${message.senderId}, currentUserId=$currentUserId');
+    if (kDebugMode) {
+      print('💬 Message from ${message.senderName}: isSentByMe=$isSentByMe, senderId=${message.senderId}, currentUserId=$currentUserId');
+    }
 
     return Padding(
       padding: EdgeInsets.symmetric(

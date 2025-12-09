@@ -78,6 +78,7 @@ class _CheckInLocationDialogState extends State<CheckInLocationDialog> {
 
       // Get current position
       final position = await Geolocator.getCurrentPosition(
+        // ignore: deprecated_member_use
         desiredAccuracy: LocationAccuracy.high,
       );
 

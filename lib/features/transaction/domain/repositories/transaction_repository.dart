@@ -1,4 +1,4 @@
-import '../entities/transaction.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction.dart';
 
 abstract class TransactionRepository {
   /// Get all transactions for current user

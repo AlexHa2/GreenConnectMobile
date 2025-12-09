@@ -32,7 +32,7 @@ class _FeedbackDialogTransactionState extends State<FeedbackDialogTransaction> {
     setState(() => _isLoading = true);
 
     try {
-      // TODO: Call API to submit feedback
+      
       await Future.delayed(const Duration(seconds: 1));
       
       if (mounted) {

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 
 String? validateAndFormatToE164(String raw, {IsoCode isoCode = IsoCode.VN}) {
@@ -11,7 +12,9 @@ String? validateAndFormatToE164(String raw, {IsoCode isoCode = IsoCode.VN}) {
 
     return e164;
   } catch (e) {
-    print('Error parsing phone: $e');
+    if (kDebugMode) {
+      print('Error parsing phone: $e');
+    }
     return null;
   }
 }

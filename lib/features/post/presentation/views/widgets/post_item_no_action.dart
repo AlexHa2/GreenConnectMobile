@@ -137,8 +137,9 @@ class PostItemNoAction extends StatelessWidget {
                                       imageUrl!,
                                       fit: BoxFit.cover,
                                       loadingBuilder: (context, child, loadingProgress) {
-                                        if (loadingProgress == null)
+                                        if (loadingProgress == null) {
                                           return child;
+                                        }
                                         return Container(
                                           color: theme.primaryColor.withValues(
                                             alpha: 0.05,

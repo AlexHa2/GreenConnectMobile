@@ -173,7 +173,7 @@ class _RescheduleDateTimeDialogState extends State<RescheduleDateTimeDialog> {
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.access_time,
                       color: AppColors.primary,
                       size: 20,

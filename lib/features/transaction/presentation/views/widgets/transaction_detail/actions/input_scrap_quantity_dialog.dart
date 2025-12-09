@@ -16,7 +16,7 @@ class InputScrapQuantityDialog extends StatefulWidget {
 
 class _InputScrapQuantityDialogState extends State<InputScrapQuantityDialog> {
   final Map<int, TextEditingController> _quantityControllers = {};
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   void initState() {
@@ -224,7 +224,7 @@ class _InputScrapQuantityDialogState extends State<InputScrapQuantityDialog> {
                     ),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),

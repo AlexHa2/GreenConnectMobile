@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
-import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
+// import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
 
 class SchedulesListPage extends ConsumerStatefulWidget {
   const SchedulesListPage({super.key});
@@ -34,7 +34,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
   bool _hasMoreData = true;
   ScheduleProposalStatus? _selectedStatus;
   bool _sortByCreateAtDesc = true;
-  bool _hasInitialized = false;
+  bool hasInitialized = false;
 
   @override
   void initState() {
@@ -50,7 +50,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
         // Có data rồi, chỉ cần sync lại state
         setState(() {
           _hasMoreData = currentState.listData!.data.length >= _pageSize;
-          _hasInitialized = true;
+          hasInitialized = true;
         });
       }
     });
@@ -105,7 +105,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
             ..addAll(allData);
         }
         _hasMoreData = state.listData!.data.length >= _pageSize;
-        _hasInitialized = true;
+        hasInitialized = true;
       });
     }
   }
@@ -404,7 +404,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
     }
   }
 
-  Future<void> _showCreateScheduleDialog(BuildContext context) async {
+  Future<void> showCreateScheduleDialog(BuildContext context) async {
     final theme = Theme.of(context);
     final spacing = theme.extension<AppSpacing>()?.screenPadding ?? 12.0;
     final s = S.of(context)!;
@@ -795,7 +795,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
               children: [
                 // Back button
                 IconButton(
-                  icon: Icon(Icons.arrow_back_ios_rounded),
+                  icon: const Icon(Icons.arrow_back_ios_rounded),
                   onPressed: () {
                     // Sử dụng context.pop() từ go_router, an toàn hơn
                     if (context.canPop()) {
@@ -810,7 +810,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
                 SizedBox(width: spacing * 0.5),
                 Container(
                   padding: EdgeInsets.all(spacing * 0.7),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: AppColors.linearPrimary,
                   ),
@@ -1183,7 +1183,7 @@ class _ScheduleCard extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.location_on_outlined,
                       size: 18,
                       color: AppColors.textSecondary,

@@ -12,12 +12,12 @@ class UnauthorizedException extends AppException {
   UnauthorizedException() : super("Unauthorized");
 }
 class ServerException extends AppException {
-  ServerException(String? msg, {int? code}) : super(msg, statusCode: code);
+  ServerException(super.msg, {int? code}) : super(statusCode: code);
 }
 class BusinessException extends AppException {
-  BusinessException(String? msg, {int? code}) : super(msg, statusCode: code);
+  BusinessException(super.msg, {int? code}) : super(statusCode: code);
 }
 
 class UnknownException extends AppException {
-  UnknownException(String? msg) : super(msg);
+  UnknownException(super.msg);
 }

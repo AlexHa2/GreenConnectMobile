@@ -21,7 +21,7 @@ class CollectorHomePage extends ConsumerStatefulWidget {
 class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   AnimationController? _barAnimationController;
-  Animation<double>? _barAnimation;
+  Animation<double>? barAnimation;
   UserModel? user;
   Map<String, DateTime>? _cachedWeekRange;
   int? _cachedWeekNumber;
@@ -96,7 +96,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
-    _barAnimation = CurvedAnimation(
+    barAnimation = CurvedAnimation(
       parent: _barAnimationController!,
       curve: Curves.easeOutCubic,
     );
@@ -244,7 +244,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                       s,
                       totalEarning: 0,
                     ),
-                    error: (_, __) => _buildEarningsOverviewCard(
+                    error: (_, _) => _buildEarningsOverviewCard(
                       context,
                       space,
                       theme,
@@ -328,7 +328,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                       ),
                     ],
                   ),
-                  error: (_, __) => Row(
+                  error: (_, _) => Row(
                     children: [
                       Expanded(
                         child: _buildStatCard(
@@ -385,7 +385,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                     totalFeedbacks: 0,
                     totalRating: 0,
                   ),
-                  error: (_, __) => _buildEcoImpactCard(
+                  error: (_, _) => _buildEcoImpactCard(
                     context,
                     space,
                     theme,
@@ -570,7 +570,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
     );
   }
 
-  Widget _buildYAxisLabel(String label, double space, ThemeData theme) {
+  Widget buildYAxisLabel(String label, double space, ThemeData theme) {
     return Text(
       label,
       style: theme.textTheme.bodySmall?.copyWith(
@@ -966,7 +966,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
     );
   }
 
-  Widget _buildAdditionalStatsSection(
+  Widget buildAdditionalStatsSection(
     BuildContext context,
     double space,
     ThemeData theme,

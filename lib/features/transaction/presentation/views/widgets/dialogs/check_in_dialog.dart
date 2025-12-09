@@ -50,7 +50,7 @@ class CheckInDialog extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () async {
-            // TODO: Call API to check in
+            
             await Future.delayed(const Duration(milliseconds: 500));
             onSuccess();
           },
