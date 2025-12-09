@@ -1,11 +1,11 @@
 import 'package:GreenConnectMobile/core/di/injector.dart';
+import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/collector/domain/entities/collector_report_entity.dart';
 import 'package:GreenConnectMobile/features/collector/presentation/providers/collector_report_provider.dart';
 import 'package:GreenConnectMobile/features/notification/presentation/providers/notification_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/notification_bell.dart';
 import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
-import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1078,11 +1078,20 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
             _buildQuickActionCard(
               context,
               icon: Icons.shop_rounded,
-              label: s.offers,
+              label: s.package_list,
               color: theme.primaryColor,
               space: space,
               theme: theme,
               onTap: () => context.push('/package-list'),
+            ),
+            _buildQuickActionCard(
+              context,
+              icon: Icons.gif_box_rounded,
+              label: s.reward_store,
+              color: theme.primaryColor,
+              space: space,
+              theme: theme,
+              onTap: () => context.push('/reward-collector'),
             ),
             _buildQuickActionCard(
               context,

@@ -2859,4 +2859,34 @@ class SEn extends S {
   @override
   String get generic_error_message =>
       'Something went wrong. Please try again later.';
+
+  @override
+  String get payment_success_title => 'Payment Successful';
+
+  @override
+  String get payment_success_message => 'Your payment was successful!';
+
+  @override
+  String get payment_order_info => 'Order Information';
+
+  @override
+  String get payment_amount => 'Amount';
+
+  @override
+  String get payment_bank => 'Bank';
+
+  @override
+  String get payment_transaction_no => 'Transaction No.';
+
+  @override
+  String get payment_ref => 'Reference';
+
+  @override
+  String get payment_time => 'Time';
+
+  @override
+  String get payment_error_code => 'Payment error code';
+
+  @override
+  String get payment_retry => 'Payment retry';
 }

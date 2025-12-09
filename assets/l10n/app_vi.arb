@@ -1000,6 +1000,16 @@
   "account_holder_name_list": "• Tên chủ tài khoản",
   "bank_name": "• Tên ngân hàng",
   "update_now": "Cập nhật ngay",
-  "generic_error_message":"Không thể tải mã QR vào lúc này. Vui lòng thử lại sau."
+  "generic_error_message":"Không thể tải mã QR vào lúc này. Vui lòng thử lại sau.",
+  "payment_success_title": "Thanh toán thành công",
+  "payment_success_message": "Bạn đã thanh toán thành công!",
+  "payment_order_info": "Thông tin đơn hàng",
+  "payment_amount": "Số tiền",
+  "payment_bank": "Ngân hàng",
+  "payment_transaction_no": "Mã giao dịch",
+  "payment_ref": "Mã tham chiếu",
+  "payment_time": "Thời gian",
+  "payment_error_code":"Mã lỗi thanh toán",
+  "payment_retry":"Hãy thử lại sau"
    
 }

@@ -12,7 +12,8 @@ import 'package:go_router/go_router.dart';
 /// Main Rewards Page
 /// Displays user's reward points, quick actions, and recent activities
 class RewardsPage extends ConsumerStatefulWidget {
-  const RewardsPage({super.key});
+  final bool? isCollectorView;
+  const RewardsPage({super.key, this.isCollectorView = false});
 
   @override
   ConsumerState<RewardsPage> createState() => _RewardsPageState();
@@ -57,7 +58,7 @@ class _RewardsPageState extends ConsumerState<RewardsPage> {
 
     final pointBalance = user?.pointBalance ?? 0;
     final recentHistory = rewardState.rewardHistory?.take(5).toList() ?? [];
-
+    final isCollectorView = widget.isCollectorView != null;
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: RefreshIndicator(
@@ -79,6 +80,55 @@ class _RewardsPageState extends ConsumerState<RewardsPage> {
                   child: SafeArea(
                     child: Stack(
                       children: [
+                        // Modern back button for collector view
+                        if (isCollectorView)
+                          Positioned(
+                            top: 16,
+                            left: 16,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(32),
+                                onTap: () => context.pop(),
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.surface.withValues(
+                                      alpha: 0.85,
+                                    ),
+                                    borderRadius: BorderRadius.circular(32),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: theme.colorScheme.onSurface
+                                            .withValues(alpha: 0.08),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.arrow_back_rounded,
+                                        color: theme.colorScheme.primary,
+                                        size: 22,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        S.of(context)!.back,
+                                        style: theme.textTheme.labelLarge
+                                            ?.copyWith(
+                                              color: theme.colorScheme.primary,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         // Decorative circles
                         Positioned(
                           top: -50,
