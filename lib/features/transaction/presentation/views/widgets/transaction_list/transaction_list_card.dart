@@ -1,5 +1,6 @@
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
+import 'package:GreenConnectMobile/core/helper/currency_helper.dart';
 import 'package:GreenConnectMobile/core/helper/date_time_extension.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
@@ -290,7 +291,7 @@ class _TransactionPriceChip extends StatelessWidget {
           Icon(Icons.attach_money, size: space * 1.5, color: AppColors.primary),
           SizedBox(width: space * 0.5),
           Text(
-            '\$${price.toStringAsFixed(2)}',
+            formatVND(price),
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.primary,

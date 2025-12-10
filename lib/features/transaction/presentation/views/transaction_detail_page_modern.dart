@@ -422,7 +422,7 @@ class _TransactionBackgroundGradient extends StatelessWidget {
       case TransactionStatus.inProgress:
         return AppColors.warningUpdate;
       case TransactionStatus.completed:
-        return AppColors.primary;
+        return theme.primaryColor;
       case TransactionStatus.canceledBySystem:
       case TransactionStatus.canceledByUser:
         return AppColors.danger;

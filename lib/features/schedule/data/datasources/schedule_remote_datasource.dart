@@ -34,5 +34,6 @@ abstract class ScheduleRemoteDataSource {
   Future<bool> processSchedule({
     required String scheduleId,
     required bool isAccepted,
+    String? responseMessage,
   });
 }

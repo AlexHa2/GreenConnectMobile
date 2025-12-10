@@ -23,6 +23,7 @@ class OfferActionHandler {
   });
 
   Future<void> handleAcceptOffer() async {
+    debugPrint('[OfferActionHandler] handleAcceptOffer called');
     final s = S.of(context)!;
 
     // Get current offer data to check for pending schedules
@@ -34,7 +35,7 @@ class OfferActionHandler {
         ) ??
         false;
 
-    // Show enhanced confirmation dialog
+    // Show only one confirmation dialog (no input)
     final confirmed = await ConfirmDialogHelper.show(
       context: context,
       title: s.confirm_accept,
@@ -46,21 +47,10 @@ class OfferActionHandler {
     );
 
     if (confirmed == true && context.mounted) {
-      // First accept all pending schedules
-      if (hasPendingSchedules && offer != null) {
-        for (final schedule in offer.scheduleProposals) {
-          if (schedule.status == ScheduleProposalStatus.pending) {
-            await ref
-                .read(scheduleViewModelProvider.notifier)
-                .processSchedule(
-                  scheduleId: schedule.scheduleProposalId,
-                  isAccepted: true,
-                );
-          }
-        }
-      }
-
-      // Then accept the offer
+      // Chỉ gọi processOffer, không gọi processSchedule cho các schedule
+      debugPrint(
+        '[OfferActionHandler] Calling processOffer for offerId: $offerId',
+      );
       final success = await ref
           .read(offerViewModelProvider.notifier)
           .processOffer(offerId: offerId, isAccepted: true);
@@ -93,7 +83,6 @@ class OfferActionHandler {
         ) ??
         false;
 
-    // Show enhanced confirmation dialog
     final confirmed = await ConfirmDialogHelper.show(
       context: context,
       title: s.confirm_reject,
@@ -105,21 +94,6 @@ class OfferActionHandler {
     );
 
     if (confirmed == true && context.mounted) {
-      // First reject all pending schedules
-      if (hasPendingSchedules && offer != null) {
-        for (final schedule in offer.scheduleProposals) {
-          if (schedule.status == ScheduleProposalStatus.pending) {
-            await ref
-                .read(scheduleViewModelProvider.notifier)
-                .processSchedule(
-                  scheduleId: schedule.scheduleProposalId,
-                  isAccepted: false,
-                );
-          }
-        }
-      }
-
-      // Then reject the offer
       final success = await ref
           .read(offerViewModelProvider.notifier)
           .processOffer(offerId: offerId, isAccepted: false);
@@ -207,34 +181,150 @@ class OfferActionHandler {
     required bool isAccepted,
   }) async {
     final s = S.of(context)!;
-    final confirmed = await ConfirmDialogHelper.show(
-      context: context,
-      title: isAccepted ? s.scheduleConfirmAccept : s.scheduleConfirmReject,
-      message: isAccepted ? s.scheduleAcceptMessage : s.scheduleRejectMessage,
-      confirmText: isAccepted ? s.scheduleAcceptButton : s.scheduleRejectButton,
-      isDestructive: !isAccepted,
+    debugPrint(
+      '[OfferActionHandler] handleProcessSchedule called with isAccepted: true for scheduleId: $scheduleId',
     );
-
-    if (confirmed == true && context.mounted) {
-      final success = await ref
-          .read(scheduleViewModelProvider.notifier)
-          .processSchedule(scheduleId: scheduleId, isAccepted: isAccepted);
-
-      if (context.mounted) {
-        if (success) {
-          CustomToast.show(
-            context,
-            isAccepted ? s.scheduleAcceptSuccess : s.scheduleRejectSuccess,
-            type: ToastType.success,
-          );
-          await _refreshOfferDetail();
-          onActionCompleted?.call();
-        } else {
-          CustomToast.show(
-            context,
-            ref.read(scheduleViewModelProvider).errorMessage ?? s.action_failed,
-            type: ToastType.error,
-          );
+    if (isAccepted) {
+      // final confirmed = await ConfirmDialogHelper.show(
+      //   context: context,
+      //   title: s.scheduleConfirmAccept,
+      //   message: s.scheduleAcceptMessage,
+      //   confirmText: s.scheduleAcceptButton,
+      //   isDestructive: false,
+      // );
+      // if (confirmed == true && context.mounted) {
+      //   final success = await ref
+      //       .read(scheduleViewModelProvider.notifier)
+      //       .processSchedule(
+      //         scheduleId: scheduleId,
+      //         isAccepted: true,
+      //         responseMessage: null,
+      //       );
+      //   if (context.mounted) {
+      //     if (success) {
+      //       CustomToast.show(
+      //         context,
+      //         s.scheduleAcceptSuccess,
+      //         type: ToastType.success,
+      //       );
+      //       await _refreshOfferDetail();
+      //       onActionCompleted?.call();
+      //     } else {
+      //       CustomToast.show(
+      //         context,
+      //         ref.read(scheduleViewModelProvider).errorMessage ??
+      //             s.action_failed,
+      //         type: ToastType.error,
+      //       );
+      //     }
+      //   }
+      // }
+    } else {
+      debugPrint(
+        '[OfferActionHandler] handleProcessSchedule called with isAccepted: true for scheduleId: $scheduleId',
+      );
+      // Reject: hiện popup có input lý do, bắt buộc nhập
+      final TextEditingController messageController = TextEditingController();
+      bool confirmed = false;
+      await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            backgroundColor: Theme.of(context).cardColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(
+              s.scheduleConfirmReject,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  s.scheduleRejectMessage,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  s.response_message,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: messageController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: s.response_message_hint,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    filled: true,
+                    fillColor: Theme.of(context).scaffoldBackgroundColor,
+                  ),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  onChanged: (_) => setState(() {}),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  confirmed = false;
+                  Navigator.pop(dialogContext);
+                },
+                child: Text(s.cancel),
+              ),
+              ElevatedButton(
+                onPressed: messageController.text.trim().isEmpty
+                    ? null
+                    : () {
+                        confirmed = true;
+                        Navigator.pop(dialogContext);
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(s.scheduleRejectButton),
+              ),
+            ],
+          ),
+        ),
+      );
+      if (confirmed && context.mounted) {
+        final success = await ref
+            .read(scheduleViewModelProvider.notifier)
+            .processSchedule(
+              scheduleId: scheduleId,
+              isAccepted: false,
+              responseMessage: messageController.text.trim(),
+            );
+        if (context.mounted) {
+          if (success) {
+            CustomToast.show(
+              context,
+              s.scheduleRejectSuccess,
+              type: ToastType.success,
+            );
+            await _refreshOfferDetail();
+            onActionCompleted?.call();
+          } else {
+            CustomToast.show(
+              context,
+              ref.read(scheduleViewModelProvider).errorMessage ??
+                  s.action_failed,
+              type: ToastType.error,
+            );
+          }
         }
       }
     }

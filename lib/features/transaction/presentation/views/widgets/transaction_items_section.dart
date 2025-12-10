@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/helper/currency_helper.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
@@ -88,7 +89,7 @@ class TransactionItemsSection extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${_calculateTotal().toStringAsFixed(2)} ${s.per_unit}',
+                  '${formatVND(_calculateTotal())} ${s.per_unit}',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.primaryColor,
@@ -163,8 +164,8 @@ class TransactionItemsSection extends StatelessWidget {
               SizedBox(height: space / 4),
               Text(
                 item.quantity > 0
-                    ? '${item.quantity} × ${item.pricePerUnit.toStringAsFixed(2)}/${item.unit}'
-                    : '${item.pricePerUnit.toStringAsFixed(2)}/${item.unit} (Chưa nhập số lượng)',
+                    ? '${item.quantity} × ${formatVND(item.pricePerUnit)}/${item.unit}'
+                    : '${formatVND(item.pricePerUnit)}/${item.unit} (Chưa nhập số lượng)',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.textTheme.bodySmall?.color?.withValues(
                     alpha: 0.7,
@@ -178,8 +179,8 @@ class TransactionItemsSection extends StatelessWidget {
         // Price
         Text(
           item.quantity > 0
-              ? '${item.finalPrice.toStringAsFixed(2)} ${s.per_unit}'
-              : '${item.pricePerUnit.toStringAsFixed(2)}/${item.unit}',
+              ? '${formatVND(item.finalPrice)} ${s.per_unit}'
+              : '${formatVND(item.pricePerUnit)}/${item.unit}',
           style: theme.textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.primaryColor,

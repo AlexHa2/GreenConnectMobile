@@ -355,10 +355,7 @@ class ScheduleProposalsSection extends StatelessWidget {
                                   // Reject action - tap to reject
                                   if (onRejectSchedule != null)
                                     InkWell(
-                                      onTap: () => _showRejectConfirmDialog(
-                                        context,
-                                        schedule.scheduleProposalId,
-                                      ),
+                                      onTap: () => onRejectSchedule!(schedule.scheduleProposalId),
                                       borderRadius: BorderRadius.circular(
                                         spacing,
                                       ),
@@ -597,51 +594,6 @@ class ScheduleProposalsSection extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showRejectConfirmDialog(BuildContext context, String scheduleId) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: theme.cardColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(spacing),
-        ),
-        title: Text(
-          s.scheduleConfirmReject,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Text(
-          s.scheduleRejectMessage,
-          style: theme.textTheme.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              s.cancel,
-              style: TextStyle(color: theme.textTheme.bodySmall?.color),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              onRejectSchedule?.call(scheduleId);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColorsDark.danger,
-              foregroundColor: theme.scaffoldBackgroundColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(spacing / 2),
-              ),
-            ),
-            child: Text(s.scheduleRejectButton),
-          ),
-        ],
       ),
     );
   }

@@ -78,11 +78,13 @@ class OfferRepositoryImpl implements OfferRepository {
   Future<bool> processOffer({
     required String offerId,
     required bool isAccepted,
+    String? responseMessage,
   }) {
     return guard(() async {
       return await remote.processOffer(
         offerId: offerId,
         isAccepted: isAccepted,
+        responseMessage: responseMessage,
       );
     });
   }

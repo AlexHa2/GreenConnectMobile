@@ -65,10 +65,12 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   Future<bool> processSchedule({
     required String scheduleId,
     required bool isAccepted,
+    String? responseMessage,
   }) async {
     return await _remoteDataSource.processSchedule(
       scheduleId: scheduleId,
       isAccepted: isAccepted,
+      responseMessage: responseMessage,
     );
   }
 }

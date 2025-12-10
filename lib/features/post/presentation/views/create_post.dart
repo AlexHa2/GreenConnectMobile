@@ -37,8 +37,8 @@ class CreateRecyclingPostPage extends ConsumerStatefulWidget {
       _CreateRecyclingPostPageState();
 }
 
-class _CreateRecyclingPostPageState
-    extends ConsumerState<CreateRecyclingPostPage> {
+class _CreateRecyclingPostPageState extends ConsumerState<CreateRecyclingPostPage> {
+  UniqueKey _addItemSectionKey = UniqueKey();
   final _formKey = GlobalKey<FormState>();
   final _itemFormKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
@@ -305,18 +305,15 @@ class _CreateRecyclingPostPageState
         ScrapItemData(
           categoryId: _selectedCategoryId!,
           categoryName: categoryName,
-          // Truncate to fit VARCHAR(255) safely for UTF-8
           amountDescription: StringHelper.truncateForVarchar255(
             _amountDescriptionController.text.trim(),
           ),
-          // If URL from AI exists, use URL; otherwise use File (will upload later)
           imageUrl: _recognizedImageUrl,
           imageFile: _recognizedImageUrl == null ? _selectedImage : null,
           aiData: _aiRecognitionData,
         ),
       );
-
-      // Reset form
+      // Reset form and force AddScrapItemSection to rebuild
       _selectedCategoryId = null;
       _amountDescriptionController.clear();
       _selectedImage = null;
@@ -325,6 +322,7 @@ class _CreateRecyclingPostPageState
       _aiSuggestedDescription = null;
       _isAnalyzingImage = false;
       _itemFormKey.currentState!.reset();
+      _addItemSectionKey = UniqueKey();
     });
 
     CustomToast.show(
@@ -457,7 +455,7 @@ class _CreateRecyclingPostPageState
                 PostSectionTitle(title: S.of(context)!.add_scrap_items),
                 SizedBox(height: spacing.screenPadding),
                 AddScrapItemSection(
-                  key: ValueKey(_selectedCategoryId),
+                  key: _addItemSectionKey,
                   itemFormKey: _itemFormKey,
                   selectedCategoryId: _selectedCategoryId,
                   categories: categories,

@@ -1469,6 +1469,9 @@ class SEn extends S {
   String get response_message => 'Response';
 
   @override
+  String get response_message_hint => 'ex: you can schedule in 12:00 PM';
+
+  @override
   String get no_response => 'No response yet';
 
   @override
