@@ -27,18 +27,26 @@ class AmountDescriptionField extends StatefulWidget {
 
 class _AmountDescriptionFieldState extends State<AmountDescriptionField> {
   bool _showAISuggestion = false;
-  bool _aiAccepted = false;
+  String? _lastAISuggestion;
 
   @override
   void didUpdateWidget(AmountDescriptionField oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    // Show AI suggestion when available
+    // Nếu controller bị clear (reset), ẩn box gợi ý
+    if (widget.controller.text.isEmpty && _showAISuggestion) {
+      setState(() {
+        _showAISuggestion = false;
+        _lastAISuggestion = null;
+      });
+      return;
+    }
+    // Nếu có aiSuggestion mới, tự động hiện box gợi ý
     if (widget.aiSuggestion != null &&
-        widget.aiSuggestion != oldWidget.aiSuggestion &&
-        !_aiAccepted) {
+        widget.aiSuggestion != _lastAISuggestion &&
+        widget.aiSuggestion!.isNotEmpty) {
       setState(() {
         _showAISuggestion = true;
+        _lastAISuggestion = widget.aiSuggestion;
       });
     }
   }
@@ -48,7 +56,6 @@ class _AmountDescriptionFieldState extends State<AmountDescriptionField> {
       widget.controller.text = widget.aiSuggestion!;
       setState(() {
         _showAISuggestion = false;
-        _aiAccepted = true;
       });
       widget.onAcceptAI?.call();
     }

@@ -485,6 +485,7 @@
   "member_since": "Thành viên từ {date}",
   "proposed_time": "Thời gian đề xuất",
   "response_message": "Phản hồi",
+  "response_message_hint": "vd: bạn có thể đề xuất vào 12h chiều nhé",
   "no_response": "Chưa có phản hồi",
   "total_amount": "Tổng giá trị",
   "estimated_total": "Ước tính: {amount} VND",

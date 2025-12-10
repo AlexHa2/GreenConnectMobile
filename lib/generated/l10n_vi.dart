@@ -1467,6 +1467,10 @@ class SVi extends S {
   String get response_message => 'Phản hồi';
 
   @override
+  String get response_message_hint =>
+      'vd: bạn có thể đề xuất vào 12h chiều nhé';
+
+  @override
   String get no_response => 'Chưa có phản hồi';
 
   @override

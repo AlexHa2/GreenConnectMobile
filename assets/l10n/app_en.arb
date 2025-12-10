@@ -486,6 +486,7 @@
   "member_since": "Member since {date}",
   "proposed_time": "Proposed Time",
   "response_message": "Response",
+  "response_message_hint": "ex: you can schedule in 12:00 PM",
   "no_response": "No response yet",
   "total_amount": "Total Amount",
   "estimated_total": "Estimated: {amount} VND",

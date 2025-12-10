@@ -1,6 +1,4 @@
-import 'package:GreenConnectMobile/core/di/injector.dart';
-import 'package:GreenConnectMobile/core/network/token_storage.dart';
-import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
+import 'package:GreenConnectMobile/features/profile/presentation/providers/profile_providers.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/providers/reward_providers.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
@@ -20,32 +18,28 @@ class RewardsPage extends ConsumerStatefulWidget {
 }
 
 class _RewardsPageState extends ConsumerState<RewardsPage> {
-  UserModel? user;
+  int pointBalance = 0;
 
   @override
   void initState() {
     super.initState();
-    loadUser();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(profileViewModelProvider.notifier).getMe();
+      final profileState = ref.read(profileViewModelProvider);
+      setState(() {
+        pointBalance = profileState.user?.pointBalance ?? 0;
+      });
       ref.read(rewardViewModelProvider.notifier).fetchRewardHistory();
     });
   }
 
-  void loadUser() async {
-    final tokenStorage = sl<TokenStorageService>();
-    UserModel? fetchedUser = await tokenStorage.getUserData();
-    if (mounted) {
-      setState(() {
-        user = fetchedUser;
-      });
-    }
-  }
-
   Future<void> _onRefresh() async {
-    await Future.wait([
-      ref.read(rewardViewModelProvider.notifier).fetchRewardHistory(),
-      Future(() => loadUser()),
-    ]);
+    await ref.read(profileViewModelProvider.notifier).getMe();
+    final profileState = ref.read(profileViewModelProvider);
+    setState(() {
+      pointBalance = profileState.user?.pointBalance ?? 0;
+    });
+    await ref.read(rewardViewModelProvider.notifier).fetchRewardHistory();
   }
 
   @override
@@ -56,7 +50,6 @@ class _RewardsPageState extends ConsumerState<RewardsPage> {
     final s = S.of(context)!;
     final rewardState = ref.watch(rewardViewModelProvider);
 
-    final pointBalance = user?.pointBalance ?? 0;
     final recentHistory = rewardState.rewardHistory?.take(5).toList() ?? [];
     final isCollectorView = widget.isCollectorView != null;
     return Scaffold(
@@ -81,7 +74,7 @@ class _RewardsPageState extends ConsumerState<RewardsPage> {
                     child: Stack(
                       children: [
                         // Modern back button for collector view
-                        if (isCollectorView)
+                        if (!isCollectorView)
                           Positioned(
                             top: 16,
                             left: 16,

@@ -29,6 +29,7 @@ abstract class OfferRemoteDataSource {
   Future<bool> processOffer({
     required String offerId,
     required bool isAccepted,
+    String? responseMessage,
   });
 
   Future<CollectionOfferModel> addOfferDetail({

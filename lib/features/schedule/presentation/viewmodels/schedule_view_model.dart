@@ -146,6 +146,7 @@ class ScheduleViewModel extends Notifier<ScheduleState> {
   Future<bool> processSchedule({
     required String scheduleId,
     required bool isAccepted,
+    String? responseMessage,
   }) async {
     state = state.copyWith(isProcessing: true, errorMessage: null);
 
@@ -153,6 +154,7 @@ class ScheduleViewModel extends Notifier<ScheduleState> {
       final success = await _processSchedule(
         scheduleId: scheduleId,
         isAccepted: isAccepted,
+        responseMessage: responseMessage,
       );
       state = state.copyWith(isProcessing: false);
       return success;

@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/core/helper/currency_helper.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -51,12 +52,22 @@ class TransactionInfoSection extends StatelessWidget {
           _buildInfoRow(
             icon: Icons.attach_money,
             label: s.total_price,
-            value: transaction.totalPrice.toStringAsFixed(2),
+            value: formatVND(transaction.totalPrice),
             valueColor: theme.primaryColor,
             valueWeight: FontWeight.bold,
           ),
 
           SizedBox(height: space),
+
+          // Pickup Address
+          if (transaction.offer?.scrapPost?.address != null && transaction.offer!.scrapPost!.address.isNotEmpty) ...[
+            _buildInfoRow(
+              icon: Icons.location_on_outlined,
+              label: s.pickup_address,
+              value: transaction.offer!.scrapPost!.address,
+            ),
+            SizedBox(height: space),
+          ],
 
           // Check-in Time
           if (transaction.checkInTime != null) ...[

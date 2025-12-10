@@ -28,5 +28,6 @@ abstract class ScheduleRepository {
   Future<bool> processSchedule({
     required String scheduleId,
     required bool isAccepted,
+    String? responseMessage,
   });
 }

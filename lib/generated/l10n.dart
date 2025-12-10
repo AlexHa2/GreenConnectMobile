@@ -2881,6 +2881,12 @@ abstract class S {
   /// **'Response'**
   String get response_message;
 
+  /// No description provided for @response_message_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'ex: you can schedule in 12:00 PM'**
+  String get response_message_hint;
+
   /// No description provided for @no_response.
   ///
   /// In en, this message translates to:
