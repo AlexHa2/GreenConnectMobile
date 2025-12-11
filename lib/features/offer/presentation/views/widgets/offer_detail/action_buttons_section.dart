@@ -103,12 +103,13 @@ class ActionButtonsSection extends StatelessWidget {
     if (status == OfferStatus.canceled) {
       return const SizedBox.shrink();
     }
-
     return Row(
       children: [
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: onReject,
+            onPressed: () {
+              if (onReject != null) onReject!();
+            },
             icon: const Icon(Icons.close, size: 20),
             label: Text(
               s.reject_offer,
@@ -127,7 +128,9 @@ class ActionButtonsSection extends StatelessWidget {
         SizedBox(width: spacing),
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: onAccept,
+            onPressed: () {
+              if (onAccept != null) onAccept!();
+            },
             icon: const Icon(Icons.check, size: 20),
             label: Text(
               s.accept_offer,
