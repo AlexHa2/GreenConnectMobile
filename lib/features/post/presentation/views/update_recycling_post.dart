@@ -63,8 +63,7 @@ class _UpdateRecyclingPostPageState
 
   // State for AddScrapItemSection
   final _itemFormKey = GlobalKey<FormState>();
-  final TextEditingController _amountDescriptionController =
-      TextEditingController();
+  TextEditingController _amountDescriptionController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
   int? _selectedCategoryId;
@@ -221,7 +220,6 @@ class _UpdateRecyclingPostPageState
 
         setState(() {
           _isAnalyzingImage = false;
-          // Keep full URL from AI for UI display
           _recognizedImageUrl = aiResponse.savedImageUrl;
           _aiRecognitionData = {
             'categoryId': matchedCategory?.scrapCategoryId,
@@ -230,8 +228,12 @@ class _UpdateRecyclingPostPageState
           };
           _aiSuggestedDescription = suggestedDesc;
 
+          // Auto-fill fields
           if (matchedCategory != null) {
             _selectedCategoryId = matchedCategory.scrapCategoryId;
+          }
+          if (suggestedDesc != null) {
+            _amountDescriptionController.text = suggestedDesc;
           }
         });
       } else {
@@ -355,7 +357,6 @@ class _UpdateRecyclingPostPageState
         ScrapItemData(
           categoryId: _selectedCategoryId!,
           categoryName: categoryName,
-          // Truncate to fit VARCHAR(255) safely for UTF-8
           amountDescription: StringHelper.truncateForVarchar255(
             _amountDescriptionController.text.trim(),
           ),
@@ -364,12 +365,10 @@ class _UpdateRecyclingPostPageState
           aiData: _aiRecognitionData,
         ),
       );
-      // New item is not marked as existing
-      // _existingItemsMap[_selectedCategoryId!] = false; // Not needed, defaults to false
-
       // Reset form
       _selectedCategoryId = null;
-      _amountDescriptionController.clear();
+      _amountDescriptionController.dispose();
+      _amountDescriptionController = TextEditingController();
       _selectedImage = null;
       _recognizedImageUrl = null;
       _aiRecognitionData = null;

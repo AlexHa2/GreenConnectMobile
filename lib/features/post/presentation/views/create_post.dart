@@ -11,7 +11,6 @@ import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_enti
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_category_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/add_scrap_item_section.dart';
-import 'package:GreenConnectMobile/features/post/presentation/views/widgets/ai_result_dialog.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/loading_overlay.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_info_form.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_section_title.dart';
@@ -46,8 +45,7 @@ class _CreateRecyclingPostPageState extends ConsumerState<CreateRecyclingPostPag
   final TextEditingController _pickupAddressController =
       TextEditingController();
   final TextEditingController _pickupTimeController = TextEditingController();
-  final TextEditingController _amountDescriptionController =
-      TextEditingController();
+  TextEditingController _amountDescriptionController = TextEditingController();
 
   LocationEntity? _location;
   bool _addressFound = false;
@@ -156,7 +154,6 @@ class _CreateRecyclingPostPageState extends ConsumerState<CreateRecyclingPostPag
 
         setState(() {
           _isAnalyzingImage = false;
-          // Keep full URL from AI for UI display
           _recognizedImageUrl = aiResponse.savedImageUrl;
           _aiRecognitionData = {
             'categoryId': matchedCategory?.scrapCategoryId,
@@ -173,12 +170,11 @@ class _CreateRecyclingPostPageState extends ConsumerState<CreateRecyclingPostPag
           if (matchedCategory != null) {
             _selectedCategoryId = matchedCategory.scrapCategoryId;
           }
+          // Nếu có gợi ý số lượng từ AI thì tự động điền vào field
+          if (suggestedDesc != null) {
+            _amountDescriptionController.text = suggestedDesc;
+          }
         });
-
-        // Show AI results dialog
-        if (mounted) {
-          _showAIResultDialog(aiResponse);
-        }
       } else {
         // AI error: Keep imageFile, allow user to enter manually
         setState(() {
@@ -205,13 +201,6 @@ class _CreateRecyclingPostPageState extends ConsumerState<CreateRecyclingPostPag
         );
       }
     }
-  }
-
-  void _showAIResultDialog(dynamic aiResponse) {
-    showDialog(
-      context: context,
-      builder: (context) => AIResultDialog(aiResponse: aiResponse),
-    );
   }
 
   /// Open address picker bottom sheet
@@ -315,7 +304,8 @@ class _CreateRecyclingPostPageState extends ConsumerState<CreateRecyclingPostPag
       );
       // Reset form and force AddScrapItemSection to rebuild
       _selectedCategoryId = null;
-      _amountDescriptionController.clear();
+      _amountDescriptionController.dispose();
+      _amountDescriptionController = TextEditingController();
       _selectedImage = null;
       _recognizedImageUrl = null;
       _aiRecognitionData = null;

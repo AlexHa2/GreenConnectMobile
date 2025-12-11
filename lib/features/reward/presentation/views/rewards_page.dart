@@ -74,7 +74,7 @@ class _RewardsPageState extends ConsumerState<RewardsPage> {
                     child: Stack(
                       children: [
                         // Modern back button for collector view
-                        if (!isCollectorView)
+                        if (isCollectorView)
                           Positioned(
                             top: 16,
                             left: 16,
