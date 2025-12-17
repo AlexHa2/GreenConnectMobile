@@ -19,17 +19,6 @@ class ProfileRemoteDatasource {
   /// Verify user with multipart/form-data
   /// Sends FrontImage file and BuyerType directly to the API
   Future<String> verifyUser({required VerificationEntity verify}) async {
-    debugPrint('========== VERIFY USER DEBUG ==========');
-    debugPrint('📋 verifyUrl: $verifyUrl');
-    debugPrint('🔹 hasFiles: ${verify.hasFiles}');
-    debugPrint('🔹 buyerType: ${verify.buyerType}');
-    debugPrint('🔹 frontImageBytes length: ${verify.frontImageBytes?.length}');
-    debugPrint('🔹 frontImageName: ${verify.frontImageName}');
-    debugPrint('🔹 backImageBytes length: ${verify.backImageBytes?.length}');
-    debugPrint('🔹 backImageName: ${verify.backImageName}');
-    debugPrint('=====================================');
-    
-    // Check if we have file bytes (new flow)
     if (verify.hasFiles) {
       final formData = FormData.fromMap({
         'BuyerType': verify.buyerType,
@@ -37,17 +26,7 @@ class ProfileRemoteDatasource {
           verify.frontImageBytes!,
           filename: verify.frontImageName ?? 'front.jpg',
         ),
-        // Note: API might also need BackImage, add if required
-        // 'BackImage': MultipartFile.fromBytes(
-        //   verify.backImageBytes!,
-        //   filename: verify.backImageName ?? 'back.jpg',
-        // ),
       });
-
-      debugPrint('📤 FormData fields:');
-      debugPrint('   - BuyerType: ${verify.buyerType}');
-      debugPrint('   - FrontImage filename: ${verify.frontImageName ?? "front.jpg"}');
-      debugPrint('   - FrontImage size: ${verify.frontImageBytes!.length} bytes');
 
       final response = await _apiClient.postMultipart(verifyUrl, formData);
 
@@ -80,17 +59,19 @@ class ProfileRemoteDatasource {
   }
 
   Future<ProfileEntity> updateMe({required UserUpdateEntity update}) async {
+    final body = {
+      'fullName': update.fullName,
+      'address': update.address,
+      'gender': update.gender,
+      'dateOfBirth': update.dateOfBirth,
+      'location': update.location,
+      'bankCode': update.bankCode,
+      'bankAccountNumber': update.bankAccountNumber,
+      'bankAccountName': update.bankAccountName,
+    };
     final resUpdateProfile = await _apiClient.put(
       updateMeUrl,
-      data: {
-        'fullName': update.fullName,
-        'address': update.address,
-        'gender': update.gender,
-        'dateOfBirth': update.dateOfBirth,
-        'bankCode': update.bankCode,
-        'bankAccountNumber': update.bankAccountNumber,
-        'bankAccountName': update.bankAccountName,
-      },
+      data: body,
     );
     final updatedProfile = ProfileModel.fromJson(resUpdateProfile.data);
     return updatedProfile.toEntity();

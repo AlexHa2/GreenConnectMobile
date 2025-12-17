@@ -2892,4 +2892,31 @@ class SEn extends S {
 
   @override
   String get payment_retry => 'Payment retry';
+
+  @override
+  String get credit_transactions => 'Credit Transactions';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get deposit => 'Deposit';
+
+  @override
+  String get withdraw => 'Withdraw';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get balance => 'Balance';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get credit_transaction_history => 'credit Trs history';
+
+  @override
+  String get payment_transactions => 'payment transaction history';
 }

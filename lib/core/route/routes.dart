@@ -36,6 +36,8 @@ import 'package:GreenConnectMobile/features/reward/presentation/views/reward_his
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/rewards_page.dart';
 import 'package:GreenConnectMobile/features/schedule/presentation/views/schedules_list_page.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/views/credit_transactions_list_page.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/views/payment_transactions_list_page.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/qr_code_payment_page.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transaction_detail_page_modern.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transactions_list_page.dart';
@@ -158,6 +160,14 @@ final GoRouter greenRouter = GoRouter(
     ),
 
     GoRoute(
+      path: '/collector-list-credit-transactions',
+      name: 'collector-list-credit-transactions',
+      builder: (context, state) => const CreditTransactionsListPage(
+        key: ValueKey('collector-credit-transactions'),
+      ),
+    ),
+
+    GoRoute(
       path: '/collector-feedback-list',
       name: 'collector-feedback-list',
       builder: (context, state) =>
@@ -252,7 +262,16 @@ final GoRouter greenRouter = GoRouter(
       name: 'post-history',
       builder: (context, state) => const HouseholdRewardHistory(),
     ),
-
+    GoRoute(
+      path: '/credit-transaction-history',
+      name: 'credit-transaction-history',
+      builder: (context, state) => const CreditTransactionsListPage(),
+    ),
+    GoRoute(
+      path: '/payment-transaction-history',
+      name: 'payment-transaction-history',
+      builder: (context, state) => const PaymentTransactionsListPage(),
+    ),
     GoRoute(
       name: 'chat-detail',
       path: '/chat-detail',
@@ -435,7 +454,7 @@ final GoRouter greenRouter = GoRouter(
         final initialData = state.extra as Map<String, dynamic>?;
 
         return RewardsPage(
-          isCollectorView: initialData?['isCollectorView'] as bool? ?? false,
+          isCollectorView: initialData?['isCollectorView'] as bool? ?? true,
         );
       },
     ),

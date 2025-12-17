@@ -1011,6 +1011,14 @@
   "payment_ref": "Mã tham chiếu",
   "payment_time": "Thời gian",
   "payment_error_code":"Mã lỗi thanh toán",
-  "payment_retry":"Hãy thử lại sau"
-   
+  "payment_retry":"Hãy thử lại sau",
+  "credit_transactions": "Giao dịch tín dụng",
+  "filter": "Lọc",
+  "deposit": "Nạp tiền",
+  "withdraw": "Rút tiền",
+  "amount": "Số tiền",
+  "balance": "Số dư",
+  "date": "Ngày",
+  "credit_transaction_history":"Lịch sử tín dụng",
+  "payment_transactions":"Lịch sử thanh toán"
 }

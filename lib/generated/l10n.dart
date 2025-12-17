@@ -5592,6 +5592,60 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Payment retry'**
   String get payment_retry;
+
+  /// No description provided for @credit_transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit Transactions'**
+  String get credit_transactions;
+
+  /// No description provided for @filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filter;
+
+  /// No description provided for @deposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit'**
+  String get deposit;
+
+  /// No description provided for @withdraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get withdraw;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get balance;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @credit_transaction_history.
+  ///
+  /// In en, this message translates to:
+  /// **'credit Trs history'**
+  String get credit_transaction_history;
+
+  /// No description provided for @payment_transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'payment transaction history'**
+  String get payment_transactions;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

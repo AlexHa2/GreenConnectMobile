@@ -37,6 +37,7 @@ abstract class ScrapPostRemoteDataSource {
   });
 
   Future<PaginatedScrapPostModel> searchPostsForCollector({
+    int? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,

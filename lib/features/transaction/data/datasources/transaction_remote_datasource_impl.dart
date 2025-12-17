@@ -1,6 +1,7 @@
 import 'package:GreenConnectMobile/core/di/injector.dart';
 import 'package:GreenConnectMobile/core/network/api_client.dart';
 import 'package:GreenConnectMobile/features/transaction/data/datasources/transaction_remote_datasource.dart';
+import 'package:GreenConnectMobile/features/transaction/data/models/credit_payment_transaction_list_response_model.dart';
 import 'package:GreenConnectMobile/features/transaction/data/models/feedback_list_response_model.dart';
 import 'package:GreenConnectMobile/features/transaction/data/models/transaction_detail_model.dart';
 import 'package:GreenConnectMobile/features/transaction/data/models/transaction_list_response_model.dart';
@@ -10,7 +11,60 @@ import 'package:GreenConnectMobile/features/transaction/domain/entities/transact
 
 class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   final ApiClient _apiClient = sl<ApiClient>();
+  static const String _creditTransactionBaseUrl = '/v1/credit-transaction';
+  static const String _paymentTransactionBaseUrl =
+      '/v1/payment-transaction/my-transactions';
   static const String _transactionsBaseUrl = '/v1/transactions';
+
+  @override
+  Future<CreditTransactionListResponseModel> getCreditTransactions({
+    required int pageIndex,
+    required int pageSize,
+    bool? sortByCreatedAt,
+    String? type,
+  }) async {
+    final queryParams = <String, dynamic>{
+      'pageIndex': pageIndex,
+      'pageSize': pageSize,
+    };
+    if (sortByCreatedAt != null) {
+      queryParams['sortByCreatedAt'] = sortByCreatedAt;
+    }
+    if (type != null) {
+      queryParams['type'] = type;
+    }
+    final queryString = queryParams.entries
+        .map((e) => '${e.key}=${Uri.encodeComponent(e.value.toString())}')
+        .join('&');
+    final res = await _apiClient.get('$_creditTransactionBaseUrl?$queryString');
+    return CreditTransactionListResponseModel.fromJson(res.data);
+  }
+
+  @override
+  Future<PaymentTransactionListResponseModel> getMyPaymentTransactions({
+    required int pageIndex,
+    required int pageSize,
+    bool? sortByCreatedAt,
+    String? status,
+  }) async {
+    final queryParams = <String, dynamic>{
+      'pageIndex': pageIndex,
+      'pageSize': pageSize,
+    };
+    if (sortByCreatedAt != null) {
+      queryParams['sortByCreatedAt'] = sortByCreatedAt;
+    }
+    if (status != null) {
+      queryParams['status'] = status;
+    }
+    final queryString = queryParams.entries
+        .map((e) => '${e.key}=${Uri.encodeComponent(e.value.toString())}')
+        .join('&');
+    final res = await _apiClient.get(
+      '$_paymentTransactionBaseUrl?$queryString',
+    );
+    return PaymentTransactionListResponseModel.fromJson(res.data);
+  }
 
   @override
   Future<TransactionListResponseModel> getAllTransactions({

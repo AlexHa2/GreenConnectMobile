@@ -115,6 +115,7 @@ class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
 
   @override
   Future<PaginatedScrapPostModel> searchPostsForCollector({
+    int? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,
@@ -125,6 +126,7 @@ class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
     final res = await _apiClient.get(
       _baseUrl,
       queryParameters: {
+        if (categoryId != null) "categoryId": categoryId,
         if (categoryName != null && categoryName.isNotEmpty)
           "categoryName": categoryName,
         if (status != null && status.isNotEmpty) "status": status,

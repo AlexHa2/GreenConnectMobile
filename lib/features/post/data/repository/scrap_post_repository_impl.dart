@@ -145,6 +145,7 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
 
   @override
   Future<PaginatedScrapPostEntity> searchPostsForCollector({
+    int? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,
@@ -154,6 +155,7 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
   }) {
     return guard(() async {
       final result = await remote.searchPostsForCollector(
+        categoryId: categoryId,
         categoryName: categoryName,
         status: status,
         sortByLocation: sortByLocation,
@@ -161,7 +163,6 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
         pageNumber: pageNumber,
         pageSize: pageSize,
       );
-
       return result.toEntity((model) => model.toEntity());
     });
   }
