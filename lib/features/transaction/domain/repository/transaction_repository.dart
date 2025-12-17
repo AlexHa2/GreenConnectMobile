@@ -1,5 +1,7 @@
 import 'package:GreenConnectMobile/features/transaction/domain/entities/check_in_request.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/credit_transaction_list_response.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/feedback_list_response.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/payment_transaction_list_response.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_request.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
@@ -49,4 +51,18 @@ abstract class TransactionRepository {
   });
 
   Future<String> getTransactionQRCode(String transactionId);
+
+  Future<CreditTransactionListResponse> getCreditTransactions({
+    required int pageIndex,
+    required int pageSize,
+    bool? sortByCreatedAt,
+    String? type,
+  });
+
+  Future<PaymentTransactionListResponse> getMyPaymentTransactions({
+    required int pageIndex,
+    required int pageSize,
+    bool? sortByCreatedAt,
+    String? status,
+  });
 }

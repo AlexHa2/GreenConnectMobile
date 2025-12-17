@@ -1,7 +1,9 @@
 import 'package:GreenConnectMobile/core/error/exception_mapper.dart';
 import 'package:GreenConnectMobile/features/transaction/data/datasources/transaction_remote_datasource.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/check_in_request.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/credit_transaction_list_response.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/feedback_list_response.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/payment_transaction_list_response.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_request.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
@@ -130,6 +132,42 @@ class TransactionRepositoryImpl implements TransactionRepository {
   Future<String> getTransactionQRCode(String transactionId) async {
     return guard(() async {
       return await _remoteDataSource.getTransactionQRCode(transactionId);
+    });
+  }
+
+  @override
+  Future<CreditTransactionListResponse> getCreditTransactions({
+    required int pageIndex,
+    required int pageSize,
+    bool? sortByCreatedAt,
+    String? type,
+  }) async {
+    return guard(() async {
+      final result = await _remoteDataSource.getCreditTransactions(
+        pageIndex: pageIndex,
+        pageSize: pageSize,
+        sortByCreatedAt: sortByCreatedAt,
+        type: type,
+      );
+      return result.toEntity();
+    });
+  }
+
+  @override
+  Future<PaymentTransactionListResponse> getMyPaymentTransactions({
+    required int pageIndex,
+    required int pageSize,
+    bool? sortByCreatedAt,
+    String? status,
+  }) async {
+    return guard(() async {
+      final result = await _remoteDataSource.getMyPaymentTransactions(
+        pageIndex: pageIndex,
+        pageSize: pageSize,
+        sortByCreatedAt: sortByCreatedAt,
+        status: status,
+      );
+      return result.toEntity();
     });
   }
 }

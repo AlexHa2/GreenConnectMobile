@@ -3,6 +3,8 @@ import 'package:GreenConnectMobile/features/transaction/data/repository/transact
 import 'package:GreenConnectMobile/features/transaction/domain/repository/transaction_repository.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/check_in_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_all_transactions_usecase.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_credit_transactions_usecase.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_my_payment_transactions_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_transaction_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_transaction_feedbacks_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_transaction_qr_code_usecase.dart';
@@ -10,6 +12,10 @@ import 'package:GreenConnectMobile/features/transaction/domain/usecases/get_tran
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/process_transaction_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/toggle_cancel_transaction_usecase.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/usecases/update_transaction_details_usecase.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/viewmodels/credit_transaction_view_model.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/viewmodels/payment_transaction_view_model.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/viewmodels/states/credit_transaction_state.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/viewmodels/states/payment_transaction_state.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/viewmodels/states/transaction_state.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/viewmodels/transaction_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,8 +23,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// ==================
 ///  Remote DataSource
 /// ==================
-final transactionRemoteDsProvider =
-    Provider<TransactionRemoteDataSourceImpl>((ref) {
+final transactionRemoteDsProvider = Provider<TransactionRemoteDataSourceImpl>((
+  ref,
+) {
   return TransactionRemoteDataSourceImpl();
 });
 
@@ -35,16 +42,19 @@ final transactionRepositoryProvider = Provider<TransactionRepository>((ref) {
 /// =============
 
 // Get all transactions
-final getAllTransactionsUsecaseProvider =
-    Provider<GetAllTransactionsUsecase>((ref) {
+final getAllTransactionsUsecaseProvider = Provider<GetAllTransactionsUsecase>((
+  ref,
+) {
   return GetAllTransactionsUsecase(ref.read(transactionRepositoryProvider));
 });
 
 // Get transaction detail
 final getTransactionDetailUsecaseProvider =
     Provider<GetTransactionDetailUsecase>((ref) {
-  return GetTransactionDetailUsecase(ref.read(transactionRepositoryProvider));
-});
+      return GetTransactionDetailUsecase(
+        ref.read(transactionRepositoryProvider),
+      );
+    });
 
 // Check in
 final checkInUsecaseProvider = Provider<CheckInUsecase>((ref) {
@@ -54,47 +64,79 @@ final checkInUsecaseProvider = Provider<CheckInUsecase>((ref) {
 // Update transaction details
 final updateTransactionDetailsUsecaseProvider =
     Provider<UpdateTransactionDetailsUsecase>((ref) {
-  return UpdateTransactionDetailsUsecase(
-      ref.read(transactionRepositoryProvider));
-});
+      return UpdateTransactionDetailsUsecase(
+        ref.read(transactionRepositoryProvider),
+      );
+    });
 
 // Process transaction
-final processTransactionUsecaseProvider =
-    Provider<ProcessTransactionUsecase>((ref) {
+final processTransactionUsecaseProvider = Provider<ProcessTransactionUsecase>((
+  ref,
+) {
   return ProcessTransactionUsecase(ref.read(transactionRepositoryProvider));
 });
 
 // Toggle cancel transaction
 final toggleCancelTransactionUsecaseProvider =
     Provider<ToggleCancelTransactionUsecase>((ref) {
-  return ToggleCancelTransactionUsecase(
-      ref.read(transactionRepositoryProvider));
-});
+      return ToggleCancelTransactionUsecase(
+        ref.read(transactionRepositoryProvider),
+      );
+    });
 
 // Get transaction feedbacks
 final getTransactionFeedbacksUsecaseProvider =
     Provider<GetTransactionFeedbacksUsecase>((ref) {
-  return GetTransactionFeedbacksUsecase(
-      ref.read(transactionRepositoryProvider));
-});
+      return GetTransactionFeedbacksUsecase(
+        ref.read(transactionRepositoryProvider),
+      );
+    });
 
 // Get transactions by offer ID
 final getTransactionsByOfferIdUsecaseProvider =
     Provider<GetTransactionsByOfferIdUsecase>((ref) {
-  return GetTransactionsByOfferIdUsecase(
-      ref.read(transactionRepositoryProvider));
-});
+      return GetTransactionsByOfferIdUsecase(
+        ref.read(transactionRepositoryProvider),
+      );
+    });
 
 // Get transaction QR code
 final getTransactionQRCodeUsecaseProvider =
     Provider<GetTransactionQRCodeUsecase>((ref) {
-  return GetTransactionQRCodeUsecase(ref.read(transactionRepositoryProvider));
-});
+      return GetTransactionQRCodeUsecase(
+        ref.read(transactionRepositoryProvider),
+      );
+    });
+
+// Get credit transactions
+final getCreditTransactionsUsecaseProvider =
+    Provider<GetCreditTransactionsUseCase>((ref) {
+      return GetCreditTransactionsUseCase(
+        ref.read(transactionRepositoryProvider),
+      );
+    });
+
+// Get my payment transactions
+final getMyPaymentTransactionsUsecaseProvider =
+    Provider<GetMyPaymentTransactionsUseCase>((ref) {
+      return GetMyPaymentTransactionsUseCase(
+        ref.read(transactionRepositoryProvider),
+      );
+    });
 
 /// =============
 ///  ViewModel
 /// =============
 final transactionViewModelProvider =
     NotifierProvider<TransactionViewModel, TransactionState>(
-  () => TransactionViewModel(),
-);
+      () => TransactionViewModel(),
+    );
+
+final creditTransactionViewModelProvider =
+    NotifierProvider<CreditTransactionViewModel, CreditTransactionState>(
+      () => CreditTransactionViewModel(),
+    );
+final paymentTransactionViewModelProvider =
+    NotifierProvider<PaymentTransactionViewModel, PaymentTransactionState>(
+      () => PaymentTransactionViewModel(),
+    );

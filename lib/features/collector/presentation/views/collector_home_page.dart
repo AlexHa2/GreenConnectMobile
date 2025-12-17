@@ -1091,7 +1091,10 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               color: theme.primaryColor,
               space: space,
               theme: theme,
-              onTap: () => context.push('/reward-collector'),
+              onTap: () => context.push(
+                '/reward-collector',
+                extra: {'isCollectorView': true},
+              ),
             ),
             _buildQuickActionCard(
               context,
@@ -1100,7 +1103,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               color: Colors.purple,
               space: space,
               theme: theme,
-              onTap: () => context.go('/collector-schedule-list'),
+              onTap: () => context.push('/collector-schedule-list'),
             ),
             _buildQuickActionCard(
               context,
@@ -1109,7 +1112,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               color: Colors.blue,
               space: space,
               theme: theme,
-              onTap: () => context.go('/collector-list-transactions'),
+              onTap: () => context.push('/collector-list-transactions'),
             ),
             _buildQuickActionCard(
               context,
@@ -1118,7 +1121,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               color: Colors.amber,
               space: space,
               theme: theme,
-              onTap: () => context.go('/collector-feedback-list'),
+              onTap: () => context.push('/collector-feedback-list'),
             ),
             _buildQuickActionCard(
               context,
@@ -1127,8 +1130,28 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               color: Colors.red,
               space: space,
               theme: theme,
-              onTap: () => context.go('/collector-complaint-list'),
+              onTap: () => context.push('/collector-complaint-list'),
             ),
+
+            _buildQuickActionCard(
+              context,
+              icon: Icons.credit_card_rounded,
+              label: s.credit_transaction_history,
+              color: theme.disabledColor,
+              space: space,
+              theme: theme,
+              onTap: () => context.push('/credit-transaction-history'),
+            ),
+            _buildQuickActionCard(
+              context,
+              icon: Icons.credit_card_rounded,
+              label: s.transaction_history,
+              color: theme.disabledColor,
+              space: space,
+              theme: theme,
+              onTap: () => context.push('/payment-transaction-history'),
+            ),
+            //payment-transaction-history
           ],
         ),
         SizedBox(height: space * 2),

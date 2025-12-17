@@ -2889,4 +2889,31 @@ class SVi extends S {
 
   @override
   String get payment_retry => 'Hãy thử lại sau';
+
+  @override
+  String get credit_transactions => 'Giao dịch tín dụng';
+
+  @override
+  String get filter => 'Lọc';
+
+  @override
+  String get deposit => 'Nạp tiền';
+
+  @override
+  String get withdraw => 'Rút tiền';
+
+  @override
+  String get amount => 'Số tiền';
+
+  @override
+  String get balance => 'Số dư';
+
+  @override
+  String get date => 'Ngày';
+
+  @override
+  String get credit_transaction_history => 'Lịch sử tín dụng';
+
+  @override
+  String get payment_transactions => 'Lịch sử thanh toán';
 }

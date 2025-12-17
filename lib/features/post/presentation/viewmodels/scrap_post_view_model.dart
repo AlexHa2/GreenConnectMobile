@@ -73,6 +73,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
   Future<void> searchPostsForCollector({
     required int page,
     required int size,
+    int? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,
@@ -82,6 +83,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
 
     try {
       final result = await _searchPostsForCollector(
+        categoryId: categoryId,
         categoryName: categoryName,
         status: status,
         sortByLocation: sortByLocation,

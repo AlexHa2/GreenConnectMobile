@@ -1014,8 +1014,15 @@
   "payment_ref": "Reference",
   "payment_time": "Time",
   "payment_error_code":"Payment error code",
-  "payment_retry":"Payment retry"
-   
-
- 
+  "payment_retry":"Payment retry",
+  "credit_transactions": "Credit Transactions",
+  "filter": "Filter",
+  "deposit": "Deposit",
+  "withdraw": "Withdraw",
+  "amount": "Amount",
+  "balance": "Balance",
+  "date": "Date",
+  "credit_transaction_history":"credit Trs history",
+  "payment_transactions":"payment transaction history"
+                
 }

@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:GreenConnectMobile/core/di/injector.dart';
 import 'package:GreenConnectMobile/core/enum/buyer_type_status.dart';
 import 'package:GreenConnectMobile/core/enum/role.dart';

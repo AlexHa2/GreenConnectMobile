@@ -2,6 +2,7 @@ import 'package:GreenConnectMobile/core/helper/format_date.dart';
 import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
 import 'package:GreenConnectMobile/features/profile/data/models/user_update_model.dart';
 import 'package:GreenConnectMobile/features/profile/domain/entities/address_entity.dart';
+import 'package:GreenConnectMobile/features/profile/domain/entities/location_entity.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/providers/profile_providers.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/widgets/step1_view.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/widgets/step2_view.dart';
@@ -202,6 +203,12 @@ class _ProfileSetupPageState extends ConsumerState<ProfileSetupPage> {
                                 dateOfBirth: formatDateOnly(dob!),
                                 address:
                                     "${addressData!.street}, ${addressData!.wardCommune}, ${addressData!.stateProvince}, ${addressData!.country}, ${addressData!.zipCode}",
+                                location: addressData != null
+                                    ? LocationEntity(
+                                        latitude: addressData!.latitude,
+                                        longitude: addressData!.longitude,
+                                      )
+                                    : null,
                               ),
                             );
                           },

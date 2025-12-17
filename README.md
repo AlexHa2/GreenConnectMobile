@@ -194,7 +194,7 @@ BASE_URL=http://10.0.2.2:8000/api  # For Android Emulator
    > 3. Go to Project Settings > General
    > 4. Download configuration files for each platform
    > 5. Or use FlutterFire CLI: `flutterfire configure`
-   > 
+   > 6. Place the `firebase_options.dart` file in the `config` folder.
    > ⚠️ **Without real Firebase credentials, authentication won't work!**
 
 5. Run the app
