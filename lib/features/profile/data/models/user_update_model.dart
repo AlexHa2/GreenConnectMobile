@@ -1,3 +1,5 @@
+
+import 'package:GreenConnectMobile/features/profile/domain/entities/location_entity.dart';
 import 'package:GreenConnectMobile/features/profile/domain/entities/user_update_entity.dart';
 
 class UserUpdateModel extends UserUpdateEntity {
@@ -6,6 +8,7 @@ class UserUpdateModel extends UserUpdateEntity {
     required super.address,
     required super.gender,
     required super.dateOfBirth,
+    super.location,
     super.bankCode,
     super.bankAccountNumber,
     super.bankAccountName,
@@ -18,6 +21,12 @@ class UserUpdateModel extends UserUpdateEntity {
       address: json['address'] ?? '',
       gender: json['gender'] ?? '',
       dateOfBirth: json['dateOfBirth'] ?? '',
+      location: json['location'] != null
+          ? LocationEntity(
+              longitude: (json['location']['longitude'] as num).toDouble(),
+              latitude: (json['location']['latitude'] as num).toDouble(),
+            )
+          : null,
       bankCode: json['bankCode'],
       bankAccountNumber: json['bankAccountNumber'],
       bankAccountName: json['bankAccountName'],
@@ -31,12 +40,13 @@ class UserUpdateModel extends UserUpdateEntity {
       'gender': gender,
       'dateOfBirth': dateOfBirth,
     };
-    
+    if (location != null) {
+      data['location'] = location!.toJson();
+    }
     // Only include bank fields if they are not null
     if (bankCode != null) data['bankCode'] = bankCode;
     if (bankAccountNumber != null) data['bankAccountNumber'] = bankAccountNumber;
     if (bankAccountName != null) data['bankAccountName'] = bankAccountName;
-    
     return data;
   }
 

@@ -20,6 +20,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await initDependencies();
+  initDeepLinkListener();
  
   // Log access token
   final tokenStorage = sl<TokenStorageService>();

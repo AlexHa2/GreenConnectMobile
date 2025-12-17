@@ -7,10 +7,12 @@ class ProcessOfferUsecase {
   Future<bool> call({
     required String offerId,
     required bool isAccepted,
+    String? responseMessage,
   }) {
     return repository.processOffer(
       offerId: offerId,
       isAccepted: isAccepted,
+      responseMessage: responseMessage,
     );
   }
 }

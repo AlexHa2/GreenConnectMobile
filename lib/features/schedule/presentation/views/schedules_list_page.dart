@@ -15,6 +15,8 @@ import 'package:GreenConnectMobile/shared/widgets/select_meeting_time.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
+// import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
 
 class SchedulesListPage extends ConsumerStatefulWidget {
   const SchedulesListPage({super.key});
@@ -32,7 +34,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
   bool _hasMoreData = true;
   ScheduleProposalStatus? _selectedStatus;
   bool _sortByCreateAtDesc = true;
-  bool _hasInitialized = false;
+  bool hasInitialized = false;
 
   @override
   void initState() {
@@ -48,7 +50,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
         // Có data rồi, chỉ cần sync lại state
         setState(() {
           _hasMoreData = currentState.listData!.data.length >= _pageSize;
-          _hasInitialized = true;
+          hasInitialized = true;
         });
       }
     });
@@ -103,7 +105,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
             ..addAll(allData);
         }
         _hasMoreData = state.listData!.data.length >= _pageSize;
-        _hasInitialized = true;
+        hasInitialized = true;
       });
     }
   }
@@ -156,7 +158,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
     final spacing = theme.extension<AppSpacing>()?.screenPadding ?? 12.0;
     final s = S.of(context)!;
 
-    DateTime selectedTime = schedule.proposedTime;
+    DateTime selectedTime = schedule.proposedTime.toLocal();
     final TextEditingController messageController = TextEditingController(
       text: schedule.responseMessage,
     );
@@ -402,7 +404,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
     }
   }
 
-  Future<void> _showCreateScheduleDialog(BuildContext context) async {
+  Future<void> showCreateScheduleDialog(BuildContext context) async {
     final theme = Theme.of(context);
     final spacing = theme.extension<AppSpacing>()?.screenPadding ?? 12.0;
     final s = S.of(context)!;
@@ -637,7 +639,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
     final s = S.of(context)!;
 
     final request = CreateScheduleRequest(
-      proposedTime: proposedTime.toIso8601String(),
+      proposedTime: proposedTime.toUtc().toIso8601String(),
       responseMessage: responseMessage,
     );
 
@@ -791,9 +793,24 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
             padding: EdgeInsets.all(spacing),
             child: Row(
               children: [
+                // Back button
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_rounded),
+                  onPressed: () {
+                    // Sử dụng context.pop() từ go_router, an toàn hơn
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      // Nếu không có màn hình nào để pop, điều hướng về home
+                      context.go('/collector-home');
+                    }
+                  },
+                  tooltip: s.back,
+                ),
+                SizedBox(width: spacing * 0.5),
                 Container(
                   padding: EdgeInsets.all(spacing * 0.7),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: AppColors.linearPrimary,
                   ),
@@ -865,13 +882,7 @@ class _SchedulesListPageState extends ConsumerState<SchedulesListPage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreateScheduleDialog(context),
-        icon: const Icon(Icons.add),
-        label: Text('Tạo lịch hẹn mới'),
-        backgroundColor: theme.primaryColor,
-        foregroundColor: Colors.white,
-      ),
+      
     );
   }
 
@@ -1045,7 +1056,7 @@ class _ScheduleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final proposedTime = schedule.proposedTime;
+    final proposedTime = schedule.proposedTime.toLocal();
     final createdAt = schedule.createdAt;
     final status = schedule.status;
     final post = schedule.collectionOffer?.scrapPost;
@@ -1172,7 +1183,7 @@ class _ScheduleCard extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.location_on_outlined,
                       size: 18,
                       color: AppColors.textSecondary,

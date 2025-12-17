@@ -766,6 +766,7 @@ class _ComplaintDetailPageState extends ConsumerState<ComplaintDetailPage> {
               if (success && mounted) {
                 _hasChanges = true;
                 CustomToast.show(
+                  // ignore: use_build_context_synchronously
                   context,
                   s.reopen_success,
                   type: ToastType.success,

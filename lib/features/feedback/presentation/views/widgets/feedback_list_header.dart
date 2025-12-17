@@ -1,6 +1,7 @@
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// Header for feedback list with sort functionality
 class FeedbackListHeader extends StatelessWidget {
@@ -42,7 +43,14 @@ class FeedbackListHeader extends StatelessWidget {
                     color: theme.colorScheme.primary,
                     size: 20,
                   ),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      
+                      context.go('/collector-home'); 
+                    }
+                  },
                   tooltip: s.back,
                 ),
               ),

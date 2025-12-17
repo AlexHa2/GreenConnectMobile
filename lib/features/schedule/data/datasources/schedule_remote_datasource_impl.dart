@@ -75,9 +75,17 @@ class ScheduleRemoteDataSourceImpl implements ScheduleRemoteDataSource {
   Future<bool> processSchedule({
     required String scheduleId,
     required bool isAccepted,
+    String? responseMessage,
   }) async {
+    final queryParams = <String, String>{
+      'isAccepted': isAccepted.toString(),
+      if (responseMessage != null) 'responseMessage': Uri.encodeComponent(responseMessage),
+    };
+    final queryString = queryParams.entries
+        .map((e) => '${e.key}=${e.value}')
+        .join('&');
     final res = await _apiClient.patch(
-      '$_schedulesBaseUrl/$scheduleId/process?isAccepted=$isAccepted',
+      '$_schedulesBaseUrl/$scheduleId/process?$queryString',
     );
     return res.statusCode == 200;
   }

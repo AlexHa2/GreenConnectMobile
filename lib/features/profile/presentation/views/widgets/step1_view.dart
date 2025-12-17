@@ -33,6 +33,9 @@ class _ProfileSetupStep1ViewState extends State<ProfileSetupStep1View> {
   bool isValidatingAddress = false;
   bool isAddressValidated = false;
 
+    double? _latitude;
+    double? _longitude;
+
   Future<void> _getCurrentLocation() async {
     setState(() {
       isLoadingLocation = true;
@@ -84,6 +87,7 @@ class _ProfileSetupStep1ViewState extends State<ProfileSetupStep1View> {
 
       // Get current position
       Position position = await Geolocator.getCurrentPosition(
+        // ignore: deprecated_member_use
         desiredAccuracy: LocationAccuracy.high,
       );
 
@@ -92,6 +96,10 @@ class _ProfileSetupStep1ViewState extends State<ProfileSetupStep1View> {
         position.latitude,
         position.longitude,
       );
+
+      // Save lat/lng
+      _latitude = position.latitude;
+      _longitude = position.longitude;
 
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
@@ -165,6 +173,8 @@ class _ProfileSetupStep1ViewState extends State<ProfileSetupStep1View> {
           setState(() {
             isAddressValidated = true;
             isValidatingAddress = false;
+            _latitude = locations[0].latitude;
+            _longitude = locations[0].longitude;
           });
           CustomToast.show(
             context,
@@ -474,6 +484,8 @@ class _ProfileSetupStep1ViewState extends State<ProfileSetupStep1View> {
                         zipCode: zip.text,
                         country: country.text,
                         stateProvince: stateProvince.text,
+                        latitude: _latitude ?? 0.0,
+                        longitude: _longitude ?? 0.0,
                       ),
                     );
                   } else {

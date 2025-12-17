@@ -10,6 +10,7 @@ class TransactionState {
   final TransactionEntity? detailData;
   final FeedbackListResponse? feedbackData;
   final String? errorMessage;
+  final int? errorCode;
 
   TransactionState({
     this.isLoadingList = false,
@@ -19,6 +20,7 @@ class TransactionState {
     this.detailData,
     this.feedbackData,
     this.errorMessage,
+    this.errorCode,
   });
 
   TransactionState copyWith({
@@ -29,6 +31,7 @@ class TransactionState {
     TransactionEntity? detailData,
     FeedbackListResponse? feedbackData,
     String? errorMessage,
+    int? errorCode,
   }) {
     return TransactionState(
       isLoadingList: isLoadingList ?? this.isLoadingList,
@@ -38,6 +41,7 @@ class TransactionState {
       detailData: detailData ?? this.detailData,
       feedbackData: feedbackData ?? this.feedbackData,
       errorMessage: errorMessage ?? this.errorMessage,
+      errorCode: errorCode ?? this.errorCode,
     );
   }
 }

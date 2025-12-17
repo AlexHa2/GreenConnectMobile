@@ -103,7 +103,7 @@ class ComplaintImagePreview extends StatelessWidget {
                     ),
                     child: Icon(
                       Icons.close,
-                      color: Colors.white,
+                      color: theme.scaffoldBackgroundColor,
                       size: 20,
                     ),
                   ),
@@ -128,7 +128,7 @@ class ComplaintImagePreview extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.check_circle,
-                      color: Colors.greenAccent,
+                      color: theme.primaryColorLight,
                       size: 16,
                     ),
                     SizedBox(width: space * 0.25),

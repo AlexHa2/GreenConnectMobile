@@ -1,7 +1,9 @@
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
+import 'package:GreenConnectMobile/core/helper/currency_helper.dart';
 import 'package:GreenConnectMobile/core/helper/date_time_extension.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/transaction_address_info.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_items_section.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_party_info.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
@@ -9,7 +11,6 @@ import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 
 /// Main content body for transaction detail
 class TransactionDetailContentBody extends StatelessWidget {
@@ -34,6 +35,13 @@ class TransactionDetailContentBody extends StatelessWidget {
         SizedBox(height: spacing * 1.5),
         TransactionSummaryCard(transaction: transaction),
         SizedBox(height: spacing * 1.5),
+        // Pickup address using TransactionAddressInfo widget
+        TransactionAddressInfo(
+          address: transaction.offer?.scrapPost?.address,
+          theme: theme,
+          space: spacing,
+        ),
+        SizedBox(height: spacing),
         TransactionPartyInfo(
           transaction: transaction,
           userRole: userRole,
@@ -59,10 +67,7 @@ class TransactionDetailContentBody extends StatelessWidget {
 class TransactionHeaderInfo extends StatelessWidget {
   final TransactionEntity transaction;
 
-  const TransactionHeaderInfo({
-    super.key,
-    required this.transaction,
-  });
+  const TransactionHeaderInfo({super.key, required this.transaction});
 
   IconData _getStatusIcon(TransactionStatus status) {
     switch (status) {
@@ -136,9 +141,7 @@ class TransactionHeaderInfo extends StatelessWidget {
         SizedBox(height: spacing * 0.5),
         GestureDetector(
           onTap: () {
-            Clipboard.setData(
-              ClipboardData(text: transaction.transactionId),
-            );
+            Clipboard.setData(ClipboardData(text: transaction.transactionId));
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Copied ID: ${transaction.transactionId}'),
@@ -162,17 +165,14 @@ class TransactionHeaderInfo extends StatelessWidget {
 class TransactionSummaryCard extends StatelessWidget {
   final TransactionEntity transaction;
 
-  const TransactionSummaryCard({
-    super.key,
-    required this.transaction,
-  });
+  const TransactionSummaryCard({super.key, required this.transaction});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final spacing = theme.extension<AppSpacing>()!.screenPadding;
     final s = S.of(context)!;
-    final locale = s.localeName;
+    // final locale = s.localeName;
 
     return Container(
       padding: EdgeInsets.all(spacing),
@@ -193,12 +193,8 @@ class TransactionSummaryCard extends StatelessWidget {
             Expanded(
               child: _SummaryItem(
                 label: s.total_amount,
-                value: NumberFormat.compactCurrency(
-                  locale: locale,
-                  symbol: s.per_unit,
-                  decimalDigits: 0,
-                ).format(transaction.totalPrice),
-                color: AppColors.primary,
+                value: formatVND(transaction.totalPrice),
+                color: theme.primaryColor,
                 icon: Icons.payments_outlined,
               ),
             ),
@@ -214,7 +210,7 @@ class TransactionSummaryCard extends StatelessWidget {
                     ? transaction.scheduledTime!.toCustomFormat(
                         locale: s.localeName,
                       )
-                    : 'Chưa có lịch hẹn',
+                    : s.dont_have_scheduled_time,
                 color: AppColors.warningUpdate,
                 icon: Icons.calendar_today_outlined,
               ),

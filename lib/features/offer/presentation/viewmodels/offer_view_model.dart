@@ -173,6 +173,7 @@ class OfferViewModel extends Notifier<OfferState> {
   Future<bool> processOffer({
     required String offerId,
     required bool isAccepted,
+    String? responseMessage,
   }) async {
     state = state.copyWith(isProcessing: true, errorMessage: null);
 
@@ -180,6 +181,7 @@ class OfferViewModel extends Notifier<OfferState> {
       final success = await _processOffer(
         offerId: offerId,
         isAccepted: isAccepted,
+        responseMessage: responseMessage,
       );
       state = state.copyWith(isProcessing: false);
       return success;

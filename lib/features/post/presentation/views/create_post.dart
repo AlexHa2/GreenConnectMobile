@@ -11,7 +11,6 @@ import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_enti
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_category_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/add_scrap_item_section.dart';
-import 'package:GreenConnectMobile/features/post/presentation/views/widgets/ai_result_dialog.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/loading_overlay.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_info_form.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_section_title.dart';
@@ -37,8 +36,8 @@ class CreateRecyclingPostPage extends ConsumerStatefulWidget {
       _CreateRecyclingPostPageState();
 }
 
-class _CreateRecyclingPostPageState
-    extends ConsumerState<CreateRecyclingPostPage> {
+class _CreateRecyclingPostPageState extends ConsumerState<CreateRecyclingPostPage> {
+  UniqueKey _addItemSectionKey = UniqueKey();
   final _formKey = GlobalKey<FormState>();
   final _itemFormKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
@@ -46,8 +45,7 @@ class _CreateRecyclingPostPageState
   final TextEditingController _pickupAddressController =
       TextEditingController();
   final TextEditingController _pickupTimeController = TextEditingController();
-  final TextEditingController _amountDescriptionController =
-      TextEditingController();
+  TextEditingController _amountDescriptionController = TextEditingController();
 
   LocationEntity? _location;
   bool _addressFound = false;
@@ -156,7 +154,6 @@ class _CreateRecyclingPostPageState
 
         setState(() {
           _isAnalyzingImage = false;
-          // Keep full URL from AI for UI display
           _recognizedImageUrl = aiResponse.savedImageUrl;
           _aiRecognitionData = {
             'categoryId': matchedCategory?.scrapCategoryId,
@@ -173,12 +170,11 @@ class _CreateRecyclingPostPageState
           if (matchedCategory != null) {
             _selectedCategoryId = matchedCategory.scrapCategoryId;
           }
+          // Nếu có gợi ý số lượng từ AI thì tự động điền vào field
+          if (suggestedDesc != null) {
+            _amountDescriptionController.text = suggestedDesc;
+          }
         });
-
-        // Show AI results dialog
-        if (mounted) {
-          _showAIResultDialog(aiResponse);
-        }
       } else {
         // AI error: Keep imageFile, allow user to enter manually
         setState(() {
@@ -205,13 +201,6 @@ class _CreateRecyclingPostPageState
         );
       }
     }
-  }
-
-  void _showAIResultDialog(dynamic aiResponse) {
-    showDialog(
-      context: context,
-      builder: (context) => AIResultDialog(aiResponse: aiResponse),
-    );
   }
 
   /// Open address picker bottom sheet
@@ -305,26 +294,25 @@ class _CreateRecyclingPostPageState
         ScrapItemData(
           categoryId: _selectedCategoryId!,
           categoryName: categoryName,
-          // Truncate to fit VARCHAR(255) safely for UTF-8
           amountDescription: StringHelper.truncateForVarchar255(
             _amountDescriptionController.text.trim(),
           ),
-          // If URL from AI exists, use URL; otherwise use File (will upload later)
           imageUrl: _recognizedImageUrl,
           imageFile: _recognizedImageUrl == null ? _selectedImage : null,
           aiData: _aiRecognitionData,
         ),
       );
-
-      // Reset form
+      // Reset form and force AddScrapItemSection to rebuild
       _selectedCategoryId = null;
-      _amountDescriptionController.clear();
+      _amountDescriptionController.dispose();
+      _amountDescriptionController = TextEditingController();
       _selectedImage = null;
       _recognizedImageUrl = null;
       _aiRecognitionData = null;
       _aiSuggestedDescription = null;
       _isAnalyzingImage = false;
       _itemFormKey.currentState!.reset();
+      _addItemSectionKey = UniqueKey();
     });
 
     CustomToast.show(
@@ -457,7 +445,7 @@ class _CreateRecyclingPostPageState
                 PostSectionTitle(title: S.of(context)!.add_scrap_items),
                 SizedBox(height: spacing.screenPadding),
                 AddScrapItemSection(
-                  key: ValueKey(_selectedCategoryId),
+                  key: _addItemSectionKey,
                   itemFormKey: _itemFormKey,
                   selectedCategoryId: _selectedCategoryId,
                   categories: categories,

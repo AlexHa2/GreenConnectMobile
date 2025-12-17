@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/core/di/profile_injector.dart';
+import 'package:GreenConnectMobile/core/enum/offer_status.dart';
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/providers/offer_providers.dart';
@@ -84,40 +85,57 @@ class _OfferDetailPageState extends ConsumerState<OfferDetailPage> {
     required String unit,
   }) async {
     final s = S.of(context)!;
-    final success = await ref.read(offerViewModelProvider.notifier).updateOfferDetail(
-      offerId: widget.offerId,
-      detailId: detailId,
-      pricePerUnit: price,
-      unit: unit,
-    );
+    final success = await ref
+        .read(offerViewModelProvider.notifier)
+        .updateOfferDetail(
+          offerId: widget.offerId,
+          detailId: detailId,
+          pricePerUnit: price,
+          unit: unit,
+        );
 
     if (success && mounted) {
       setState(() {
         _hasChanges = true;
       });
-      CustomToast.show(context, s.pricing_updated_successfully, type: ToastType.success);
+      CustomToast.show(
+        context,
+        s.pricing_updated_successfully,
+        type: ToastType.success,
+      );
       _onRefresh();
     } else if (mounted) {
-      CustomToast.show(context, s.failed_to_update_pricing, type: ToastType.error);
+      CustomToast.show(
+        context,
+        s.failed_to_update_pricing,
+        type: ToastType.error,
+      );
     }
   }
 
   Future<void> _handleDeleteOfferDetail(String detailId) async {
     final s = S.of(context)!;
-    final success = await ref.read(offerViewModelProvider.notifier).deleteOfferDetail(
-      offerId: widget.offerId,
-      detailId: detailId,
-    );
+    final success = await ref
+        .read(offerViewModelProvider.notifier)
+        .deleteOfferDetail(offerId: widget.offerId, detailId: detailId);
 
     if (success && mounted) {
       setState(() {
         _hasChanges = true;
       });
-      CustomToast.show(context, s.pricing_deleted_successfully, type: ToastType.success);
+      CustomToast.show(
+        context,
+        s.pricing_deleted_successfully,
+        type: ToastType.success,
+      );
       _onRefresh();
     } else {
       if (mounted) {
-        CustomToast.show(context, s.failed_to_delete_pricing, type: ToastType.error);
+        CustomToast.show(
+          context,
+          s.failed_to_delete_pricing,
+          type: ToastType.error,
+        );
       }
     }
   }
@@ -223,12 +241,11 @@ class _OfferDetailPageState extends ConsumerState<OfferDetailPage> {
                     mustTakeAll: offer.scrapPost?.mustTakeAll,
                     userRole: _userRole,
                     onUpdate: widget.isCollectorView
-                        ? (detailId, price, unit) =>
-                            _handleUpdateOfferDetail(
-                              detailId: detailId,
-                              price: price,
-                              unit: unit,
-                            )
+                        ? (detailId, price, unit) => _handleUpdateOfferDetail(
+                            detailId: detailId,
+                            price: price,
+                            unit: unit,
+                          )
                         : null,
                     onDelete: widget.isCollectorView
                         ? _handleDeleteOfferDetail
@@ -243,12 +260,31 @@ class _OfferDetailPageState extends ConsumerState<OfferDetailPage> {
                     spacing: spacing,
                     s: s,
                     isHouseholdView: !widget.isCollectorView,
+                    offerStatus: offer.status.label,
                     onRejectSchedule: !widget.isCollectorView
-                        ? (scheduleId) => _actionHandler
-                            .handleProcessSchedule(
-                              scheduleId: scheduleId,
-                              isAccepted: false,
-                            )
+                        ? (scheduleId) => _actionHandler.handleProcessSchedule(
+                            scheduleId: scheduleId,
+                            isAccepted: false,
+                          )
+                        : null,
+                    onReschedule:
+                        widget.isCollectorView &&
+                            offer.status == OfferStatus.pending
+                        ? (proposedTime, responseMessage) =>
+                              _actionHandler.handleReschedule(
+                                proposedTime: proposedTime,
+                                responseMessage: responseMessage,
+                              )
+                        : null,
+                    onUpdateSchedule:
+                        widget.isCollectorView &&
+                            offer.status == OfferStatus.pending
+                        ? (scheduleId, proposedTime, responseMessage) =>
+                              _actionHandler.handleUpdateSchedule(
+                                scheduleId: scheduleId,
+                                proposedTime: proposedTime,
+                                responseMessage: responseMessage,
+                              )
                         : null,
                   ),
                   SizedBox(height: spacing),
@@ -284,5 +320,4 @@ class _OfferDetailPageState extends ConsumerState<OfferDetailPage> {
       ],
     );
   }
-
 }

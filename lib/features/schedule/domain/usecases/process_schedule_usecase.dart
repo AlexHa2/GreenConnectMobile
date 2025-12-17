@@ -8,10 +8,12 @@ class ProcessScheduleUsecase {
   Future<bool> call({
     required String scheduleId,
     required bool isAccepted,
+    String? responseMessage,
   }) async {
     return await _repository.processSchedule(
       scheduleId: scheduleId,
       isAccepted: isAccepted,
+      responseMessage: responseMessage,
     );
   }
 }

@@ -41,6 +41,7 @@ abstract class OfferRepository {
   Future<bool> processOffer({
     required String offerId,
     required bool isAccepted,
+    String? responseMessage,
   });
 
   /// Thêm chi tiết offer mới

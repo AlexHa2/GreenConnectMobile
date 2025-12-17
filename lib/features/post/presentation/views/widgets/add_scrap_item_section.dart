@@ -20,6 +20,8 @@ class AddScrapItemSection extends StatelessWidget {
   final VoidCallback onAddItem;
   final GlobalKey<FormState> itemFormKey;
   final bool isAnalyzing;
+  final VoidCallback? onAcceptAISuggestion;
+  final VoidCallback? onRejectAISuggestion;
 
   const AddScrapItemSection({
     super.key,
@@ -34,12 +36,15 @@ class AddScrapItemSection extends StatelessWidget {
     required this.onAddItem,
     required this.itemFormKey,
     this.isAnalyzing = false,
+    this.onAcceptAISuggestion,
+    this.onRejectAISuggestion,
   });
 
   @override
   Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<AppSpacing>()!;
     final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!;
+    // final s = S.of(context)!;
 
     return Card(
       child: Padding(
@@ -82,6 +87,7 @@ class AddScrapItemSection extends StatelessWidget {
               ),
 
               SizedBox(height: spacing.screenPadding * 1.5),
+
               AmountDescriptionField(
                 controller: amountDescriptionController,
                 aiSuggestion: aiSuggestedDescription,
@@ -160,27 +166,37 @@ class AddScrapItemSection extends StatelessWidget {
                               height: 200,
                               width: double.infinity,
                               fit: BoxFit.cover,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Container(
-                                  height: 200,
-                                  width: double.infinity,
-                                  color: theme.dividerColor.withValues(alpha: 0.2),
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress.cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes!
-                                          : null,
-                                    ),
-                                  ),
-                                );
-                              },
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Container(
+                                      height: 200,
+                                      width: double.infinity,
+                                      color: theme.dividerColor.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          value:
+                                              loadingProgress
+                                                      .expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    loadingProgress
+                                                        .expectedTotalBytes!
+                                              : null,
+                                        ),
+                                      ),
+                                    );
+                                  },
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
                                   height: 200,
                                   width: double.infinity,
-                                  color: theme.dividerColor.withValues(alpha: 0.2),
+                                  color: theme.dividerColor.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [

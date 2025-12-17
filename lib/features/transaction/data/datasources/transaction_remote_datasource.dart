@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/features/transaction/data/models/credit_payment_transaction_list_response_model.dart';
 import 'package:GreenConnectMobile/features/transaction/data/models/feedback_list_response_model.dart';
 import 'package:GreenConnectMobile/features/transaction/data/models/transaction_detail_model.dart';
 import 'package:GreenConnectMobile/features/transaction/data/models/transaction_list_response_model.dart';
@@ -54,5 +55,24 @@ abstract class TransactionRemoteDataSource {
     bool? sortByUpdateAtDesc,
     required int pageNumber,
     required int pageSize,
+  });
+
+  /// GET /v1/transactions/{id}/qr-code
+  Future<String> getTransactionQRCode(String transactionId);
+
+  /// GET /api/v1/credit-transaction
+  Future<CreditTransactionListResponseModel> getCreditTransactions({
+    required int pageIndex,
+    required int pageSize,
+    bool? sortByCreatedAt,
+    String? type, // Purchase, Usage, Refund, Bonus
+  });
+
+  /// GET /api/v1/payment-transaction/my-transactions
+  Future<PaymentTransactionListResponseModel> getMyPaymentTransactions({
+    required int pageIndex,
+    required int pageSize,
+    bool? sortByCreatedAt,
+    String? status, // Pending, Success, Failed
   });
 }

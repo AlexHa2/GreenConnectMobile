@@ -27,38 +27,28 @@ class AmountDescriptionField extends StatefulWidget {
 
 class _AmountDescriptionFieldState extends State<AmountDescriptionField> {
   bool _showAISuggestion = false;
-  bool _aiAccepted = false;
+  String? _lastAISuggestion;
 
   @override
   void didUpdateWidget(AmountDescriptionField oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    // Show AI suggestion when available
-    if (widget.aiSuggestion != null &&
-        widget.aiSuggestion != oldWidget.aiSuggestion &&
-        !_aiAccepted) {
-      setState(() {
-        _showAISuggestion = true;
-      });
-    }
-  }
-
-  void _acceptAISuggestion() {
-    if (widget.aiSuggestion != null) {
-      widget.controller.text = widget.aiSuggestion!;
+    // Nếu controller bị clear (reset), ẩn box gợi ý
+    if (widget.controller.text.isEmpty && _showAISuggestion) {
       setState(() {
         _showAISuggestion = false;
-        _aiAccepted = true;
+        _lastAISuggestion = null;
       });
-      widget.onAcceptAI?.call();
+      return;
     }
-  }
-
-  void _rejectAISuggestion() {
-    setState(() {
-      _showAISuggestion = false;
-    });
-    widget.onRejectAI?.call();
+    // Nếu có aiSuggestion mới, tự động hiện box gợi ý
+    if (widget.aiSuggestion != null &&
+        widget.aiSuggestion != _lastAISuggestion &&
+        widget.aiSuggestion!.isNotEmpty) {
+      setState(() {
+        _showAISuggestion = true;
+        _lastAISuggestion = widget.aiSuggestion;
+      });
+    }
   }
 
   @override
@@ -114,104 +104,6 @@ class _AmountDescriptionFieldState extends State<AmountDescriptionField> {
               ],
             ),
           ),
-
-        // AI Suggestion card
-        if (_showAISuggestion && widget.aiSuggestion != null)
-          Container(
-            padding: EdgeInsets.all(space),
-            margin: EdgeInsets.only(bottom: space * 0.75),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  theme.primaryColor.withValues(alpha: 0.1),
-                  theme.primaryColor.withValues(alpha: 0.05),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(space),
-              border: Border.all(
-                color: theme.primaryColor.withValues(alpha: 0.3),
-                width: 1.5,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(space * 0.4),
-                      decoration: BoxDecoration(
-                        color: theme.primaryColor,
-                        borderRadius: BorderRadius.circular(space * 0.4),
-                      ),
-                      child: Icon(
-                        Icons.auto_awesome,
-                        size: 16,
-                        color: theme.scaffoldBackgroundColor,
-                      ),
-                    ),
-                    SizedBox(width: space * 0.5),
-                    Text(
-                      s.ai_suggestion,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.primaryColor,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: space * 0.75),
-                Text(
-                  widget.aiSuggestion!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: space),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _rejectAISuggestion,
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: theme.dividerColor),
-                          padding: EdgeInsets.symmetric(vertical: space * 0.5),
-                        ),
-                        icon: Icon(
-                          Icons.close,
-                          size: 16,
-                          color: theme.hintColor,
-                        ),
-                        label: Text(
-                          s.reject,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: theme.hintColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: space),
-                    Expanded(
-                      child: FilledButton.icon(
-                        onPressed: _acceptAISuggestion,
-                        style: FilledButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: space * 0.5),
-                        ),
-                        icon: const Icon(Icons.check, size: 16),
-                        label: Text(
-                          s.accept,
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
         // Main text field
         TextFormField(
           controller: widget.controller,

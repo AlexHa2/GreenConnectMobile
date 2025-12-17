@@ -456,7 +456,7 @@ class PricingInfoSection extends StatelessWidget {
                                         ),
                                       );
                                     },
-                                errorBuilder: (_, __, ___) => Image.asset(
+                                errorBuilder: (_, _, _) => Image.asset(
                                   'assets/images/green_connect_logo.png',
                                   width: 20,
                                   height: 20,
@@ -623,7 +623,7 @@ class PricingInfoSection extends StatelessWidget {
                                       ),
                                     );
                                   },
-                              errorBuilder: (_, __, ___) => Image.asset(
+                              errorBuilder: (_, _, _) => Image.asset(
                                 'assets/images/green_connect_logo.png',
                                 width: 20,
                                 height: 20,
@@ -719,25 +719,25 @@ class PricingInfoSection extends StatelessWidget {
                             loadingProgress.expectedTotalBytes != null
                                 ? '${(loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! * 100).toStringAsFixed(0)}%'
                                 : 'Loading...',
-                            style: TextStyle(color: Colors.white),
+                            style:  TextStyle(color: theme.scaffoldBackgroundColor),
                           ),
                         ],
                       ),
                     );
                   },
-                  errorBuilder: (_, __, ___) => Center(
+                  errorBuilder: (_, _, _) => Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           Icons.error_outline,
-                          color: Colors.white,
+                          color: theme.scaffoldBackgroundColor,
                           size: 48,
                         ),
                         SizedBox(height: spacing),
                         Text(
                           'Cannot load image',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: theme.scaffoldBackgroundColor),
                         ),
                       ],
                     ),

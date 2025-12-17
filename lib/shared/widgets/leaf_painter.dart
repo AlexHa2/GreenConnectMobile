@@ -39,7 +39,7 @@ class _FallingLeavesState extends State<FallingLeaves>
     final leafImage = 'assets/images/leaf_2.png';
     return AnimatedBuilder(
       animation: _controller,
-      builder: (_, __) {
+      builder: (_, _) {
         return Stack(
           children: _leaves.map((leaf) {
             final progress =

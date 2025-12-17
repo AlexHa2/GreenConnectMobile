@@ -7,6 +7,7 @@ class SearchPostsForCollectorUsecase {
   SearchPostsForCollectorUsecase(this.repository);
 
   Future<PaginatedScrapPostEntity> call({
+    int? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,
@@ -15,6 +16,7 @@ class SearchPostsForCollectorUsecase {
     required int pageSize,
   }) {
     return repository.searchPostsForCollector(
+      categoryId: categoryId,
       categoryName: categoryName,
       status: status,
       sortByLocation: sortByLocation,

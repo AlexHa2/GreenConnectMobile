@@ -68,7 +68,8 @@ class TransactionStatusHeader extends StatelessWidget {
               Text(
                 transaction.scheduledTime != null
                     ? transaction.scheduledTime!.toCustomFormat(locale: s.localeName)
-                    : 'Chưa có lịch hẹn',
+                    : s.dont_have_scheduled_time,
+                   
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: _getStatusColor(),

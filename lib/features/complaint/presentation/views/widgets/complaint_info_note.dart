@@ -28,7 +28,7 @@ class ComplaintInfoNote extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
+          const Icon(
             Icons.info_outline,
             color: AppColors.warning,
             size: 20,

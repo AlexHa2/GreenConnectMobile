@@ -3,6 +3,7 @@ import 'package:GreenConnectMobile/features/post/data/repository/scrap_post_repo
 import 'package:GreenConnectMobile/features/post/domain/repository/scrap_post_repository.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/create_scrap_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/delete_scrap_detail_usecase.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/get_household_report_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_my_scrap_post_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_scrap_post_detail_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/scrap_post_usecases.dart';
@@ -87,6 +88,12 @@ final deleteScrapDetailUsecaseProvider = Provider<DeleteScrapDetailUsecase>((
 final searchPostsForCollectorUsecaseProvider =
     Provider<SearchPostsForCollectorUsecase>((ref) {
   return SearchPostsForCollectorUsecase(ref.read(scrapPostRepositoryProvider));
+});
+
+// Get household report
+final getHouseholdReportUsecaseProvider =
+    Provider<GetHouseholdReportUsecase>((ref) {
+  return GetHouseholdReportUsecase(ref.read(scrapPostRepositoryProvider));
 });
 
 final scrapPostViewModelProvider =

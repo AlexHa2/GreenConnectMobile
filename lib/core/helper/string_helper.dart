@@ -54,7 +54,7 @@ class StringHelper {
       bytes = utf8.encode(truncated);
       if (bytes.length > 255) {
         // Edge case: remove more
-        truncated = truncated.substring(0, truncated.length - 10) + '...';
+        truncated = '${truncated.substring(0, truncated.length - 10)}...';
       }
     }
     

@@ -4,6 +4,7 @@ import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_enti
 import 'package:GreenConnectMobile/features/post/domain/entities/update_scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/create_scrap_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/delete_scrap_detail_usecase.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/get_household_report_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_my_scrap_post_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_scrap_post_detail_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/scrap_post_usecases.dart';
@@ -26,6 +27,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
   late DeleteScrapDetailUsecase _deleteDetail;
   late CreateScrapDetailUsecase _createDetail;
   late SearchPostsForCollectorUsecase _searchPostsForCollector;
+  late GetHouseholdReportUsecase _getHouseholdReport;
   @override
   ScrapPostState build() {
     _getMyPosts = ref.read(getMyScrapPostsUsecaseProvider);
@@ -37,6 +39,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
     _deleteDetail = ref.read(deleteScrapDetailUsecaseProvider);
     _createDetail = ref.read(createScrapDetailUsecaseProvider);
     _searchPostsForCollector = ref.read(searchPostsForCollectorUsecaseProvider);
+    _getHouseholdReport = ref.read(getHouseholdReportUsecaseProvider);
     return ScrapPostState();
   }
 
@@ -70,6 +73,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
   Future<void> searchPostsForCollector({
     required int page,
     required int size,
+    int? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,
@@ -79,6 +83,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
 
     try {
       final result = await _searchPostsForCollector(
+        categoryId: categoryId,
         categoryName: categoryName,
         status: status,
         sortByLocation: sortByLocation,
@@ -248,6 +253,31 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
         errorMessage: e.toString(),
       );
       return false;
+    }
+  }
+
+  /// Fetch Household Report
+  Future<void> fetchHouseholdReport({
+    required String start,
+    required String end,
+  }) async {
+    state = state.copyWith(isLoadingReport: true, errorMessage: null);
+
+    try {
+      final result = await _getHouseholdReport(
+        start: start,
+        end: end,
+      );
+      state = state.copyWith(isLoadingReport: false, reportData: result);
+    } catch (e, stack) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR FETCH HOUSEHOLD REPORT: ${e.message}');
+      }
+      debugPrint('📌 STACK TRACE: $stack');
+      state = state.copyWith(
+        isLoadingReport: false,
+        errorMessage: e.toString(),
+      );
     }
   }
 

@@ -2,6 +2,7 @@ import 'package:GreenConnectMobile/core/di/auth_injector.dart';
 import 'package:GreenConnectMobile/core/network/api_client.dart';
 import 'package:GreenConnectMobile/features/post/data/datasources/abstract_datasources/scrap_post_remote_datasource.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/create_scrap_post_model.dart';
+import 'package:GreenConnectMobile/features/post/data/models/scrap_post/household_report_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/paginated_scrap_post_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_detail_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_model.dart';
@@ -10,7 +11,7 @@ import 'package:GreenConnectMobile/features/post/data/models/scrap_post/update_s
 class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
   final ApiClient _apiClient = sl<ApiClient>();
   final String _baseUrl = '/v1/posts';
-
+  final String _reportUrl = '/v1/reports';
   @override
   Future<bool> createScrapPost(CreateScrapPostModel model) async {
     final res = await _apiClient.post(_baseUrl, data: model.toJson());
@@ -114,6 +115,7 @@ class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
 
   @override
   Future<PaginatedScrapPostModel> searchPostsForCollector({
+    int? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,
@@ -124,6 +126,7 @@ class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
     final res = await _apiClient.get(
       _baseUrl,
       queryParameters: {
+        if (categoryId != null) "categoryId": categoryId,
         if (categoryName != null && categoryName.isNotEmpty)
           "categoryName": categoryName,
         if (status != null && status.isNotEmpty) "status": status,
@@ -134,5 +137,20 @@ class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
       },
     );
     return PaginatedScrapPostModel.fromJson(res.data);
+  }
+
+  @override
+  Future<HouseholdReportModel> getHouseholdReport({
+    required String start,
+    required String end,
+  }) async {
+    final res = await _apiClient.get(
+      '$_reportUrl/household',
+      queryParameters: {
+        'start': start,
+        'end': end,
+      },
+    );
+    return HouseholdReportModel.fromJson(res.data);
   }
 }

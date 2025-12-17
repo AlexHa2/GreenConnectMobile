@@ -597,6 +597,61 @@ class SEn extends S {
   String get type_message_hint => 'Type a message...';
 
   @override
+  String get packages => 'Packages';
+
+  @override
+  String get package_list => 'Package List';
+
+  @override
+  String get package_details => 'Package Details';
+
+  @override
+  String get search_packages => 'Search packages...';
+
+  @override
+  String get filter_packages => 'Filter Packages';
+
+  @override
+  String get all_packages => 'All Packages';
+
+  @override
+  String get freemium_packages => 'Freemium';
+
+  @override
+  String get paid_packages => 'Paid';
+
+  @override
+  String get sort_by_price => 'Sort by Price';
+
+  @override
+  String get price_low_to_high => 'Price: Low to High';
+
+  @override
+  String get price_high_to_low => 'Price: High to Low';
+
+  @override
+  String get no_packages_found => 'No packages found';
+
+  @override
+  String get no_packages_message =>
+      'No packages available at the moment.\nPlease check back later!';
+
+  @override
+  String get connection_amount => 'Connection Amount';
+
+  @override
+  String get package_type => 'Package Type';
+
+  @override
+  String get select_package => 'Select Package';
+
+  @override
+  String get free => 'Free';
+
+  @override
+  String get package_price => 'Package Price';
+
+  @override
   String get online => 'Online';
 
   @override
@@ -1093,14 +1148,30 @@ class SEn extends S {
   String get submit_verification => 'Submit Verification';
 
   @override
-  String get cccd_upload_warning => 'Please upload both sides of your ID!';
+  String get cccd_upload_warning => 'Please upload  front side of your ID!';
 
   @override
   String get cccd_submit_success => 'Submitting verification request...';
 
   @override
   String get cccd_warning_rules =>
-      'Do not cover your face, avoid blur, and do not take angled shots.\nVerification time: 24 - 48 hours.';
+      'Do not cover your face, avoid blur, and do not take angled shots.\nVerification time: Instant verification with AI.';
+
+  @override
+  String get invalid_id_card_image =>
+      'Please upload a valid ID card front image. Make sure the image is clear and shows the front side of your ID card.';
+
+  @override
+  String get ai_verification_error =>
+      'Failed to verify ID card. Please ensure you upload a clear front image of your ID card.';
+
+  @override
+  String get verification_already_pending =>
+      'You already have a pending verification request. Please wait for approval.';
+
+  @override
+  String get verification_conflict_error =>
+      'A verification request already exists. Please contact support if you need to update it.';
 
   @override
   String get buyer_type => 'Buyer type';
@@ -1398,6 +1469,9 @@ class SEn extends S {
   String get response_message => 'Response';
 
   @override
+  String get response_message_hint => 'ex: you can schedule in 12:00 PM';
+
+  @override
   String get no_response => 'No response yet';
 
   @override
@@ -1469,6 +1543,20 @@ class SEn extends S {
   String get scheduleRescheduleButton => 'Reschedule';
 
   @override
+  String get scheduleEditButton => 'Edit';
+
+  @override
+  String get scheduleAddNew => 'Add New Schedule';
+
+  @override
+  String get scheduleConflictError =>
+      'There is already a pending schedule proposal. Please wait for household response.';
+
+  @override
+  String get scheduleCannotEditError =>
+      'Cannot edit because the proposal has been Accepted or Rejected.';
+
+  @override
   String get scheduleConfirmAccept => 'Confirm Accept Schedule';
 
   @override
@@ -1494,6 +1582,10 @@ class SEn extends S {
 
   @override
   String get scheduleRejectSuccess => 'Schedule rejected successfully';
+
+  @override
+  String get scheduleRescheduleSuccess =>
+      'New schedule proposal created successfully';
 
   @override
   String get scheduleAcceptNote =>
@@ -2118,7 +2210,7 @@ class SEn extends S {
   String get complainant => 'Complainant';
 
   @override
-  String get accused => 'Accused';
+  String get accused => 'accused';
 
   @override
   String get created_at => 'Created At';
@@ -2272,6 +2364,21 @@ class SEn extends S {
   String get notifications_mark_read_error => 'notifications mark read error';
 
   @override
+  String get dismiss => 'Dismiss';
+
+  @override
+  String get refresh_notifications => 'Refresh notifications';
+
+  @override
+  String get oops_something_went_wrong => 'Oops! Something went wrong';
+
+  @override
+  String get no_notifications_yet => 'No notifications yet';
+
+  @override
+  String get receive_notifications_here => 'You\'ll receive notifications here';
+
+  @override
   String get notification_type_post => 'Post';
 
   @override
@@ -2332,5 +2439,484 @@ class SEn extends S {
   String get other_gender => 'Other';
 
   @override
+  String get functions => 'Functions';
+
+  @override
+  String get recent_posts => 'Recent Posts';
+
+  @override
+  String get orders_completed => 'Orders Completed';
+
+  @override
+  String get rating_with_completion_rate => 'Rating with order completion rate';
+
+  @override
+  String get completion_rate => 'Completion Rate';
+
+  @override
+  String get no_recent_posts => 'No recent posts';
+
+  @override
+  String get collector_dashboard => 'Collector';
+
+  @override
+  String get monthly_earnings => 'Monthly Earnings';
+
+  @override
+  String get this_month => 'This Month';
+
+  @override
+  String get completed_orders => 'Completed Orders';
+
+  @override
+  String get work_statistics => 'Work Statistics';
+
+  @override
+  String get received_orders => 'Received Orders';
+
+  @override
+  String get level => 'Level';
+
+  @override
+  String get quick_actions => 'Quick Actions';
+
+  @override
+  String get new_posts_to_collect => 'New posts to collect';
+
+  @override
+  String get your_earnings => 'Your Earnings';
+
+  @override
+  String get track_performance_impact => 'Track your performance and impact';
+
+  @override
+  String get earnings_overview => 'Earnings Overview';
+
+  @override
+  String get average_weekly_earnings => 'Average Weekly Earnings';
+
+  @override
+  String get tap_to_see_detailed_breakdown => 'Tap to see detailed breakdown';
+
+  @override
+  String get eco_impact => 'Eco Impact';
+
+  @override
+  String get recycled => 'Recycled';
+
+  @override
+  String get co2_saved => 'CO₂ Saved';
+
+  @override
+  String get trees => 'Trees';
+
+  @override
+  String recycled_this_month(Object amount) {
+    return 'Recycled $amount this month';
+  }
+
+  @override
+  String recycled_this_month_placeholder(Object amount) {
+    return '$amount';
+  }
+
+  @override
+  String get keep_up_amazing_work => 'Keep up the amazing work!';
+
+  @override
+  String get level_progress => 'Level Progress';
+
+  @override
+  String percent_to_level(Object level, Object percent) {
+    return '$percent% to Level $level';
+  }
+
+  @override
+  String percent_to_level_placeholder(Object level, Object percent) {
+    return '$percent% to Level $level';
+  }
+
+  @override
+  String get preview_level_up => 'Preview Level Up';
+
+  @override
   String get buyed => 'Buyed';
+
+  @override
+  String get no_transaction_history => 'No transaction history available';
+
+  @override
+  String get dont_have_scheduled_time => 'No scheduled time';
+
+  @override
+  String get payment_method_title => 'Select Payment Method';
+
+  @override
+  String get payment_cash => 'Cash';
+
+  @override
+  String get payment_cash_description => 'Pay directly with cash';
+
+  @override
+  String get payment_bank_transfer => 'Bank Transfer';
+
+  @override
+  String get payment_bank_transfer_description => 'Scan QR code to transfer';
+
+  @override
+  String get confirm_cash_payment => 'Confirm cash payment?';
+
+  @override
+  String get qr_payment_title => 'Bank Transfer Payment';
+
+  @override
+  String get scan_qr_to_pay => 'Scan QR code to pay';
+
+  @override
+  String get use_banking_app => 'Use your banking app to scan the QR code';
+
+  @override
+  String get loading_qr_code => 'Loading QR code...';
+
+  @override
+  String get cannot_load_qr => 'Cannot load QR code';
+
+  @override
+  String get instruction_open_banking_app => '1. Open your banking app';
+
+  @override
+  String get instruction_scan_qr => '2. Select QR code scanning feature';
+
+  @override
+  String get instruction_complete_payment =>
+      '3. Complete payment as instructed';
+
+  @override
+  String get instruction_confirm => '4. Press Complete button after transfer';
+
+  @override
+  String get confirm_payment => 'Confirm Payment';
+
+  @override
+  String get confirm_payment_message => 'Have you completed the transfer?';
+
+  @override
+  String get bank_info_required => 'Bank Account Information Required';
+
+  @override
+  String get bank_info_required_message =>
+      'To receive payments via QR code, you need to update your bank account information in profile settings.';
+
+  @override
+  String get required_bank_info_title => 'Required Information:';
+
+  @override
+  String get required_bank_account_number => '• Bank account number';
+
+  @override
+  String get required_bank_account_holder => '• Account holder name';
+
+  @override
+  String get required_bank_name => '• Bank name';
+
+  @override
+  String get go_to_settings => 'Go to Settings';
+
+  @override
+  String get update_bank_info => 'Update Bank Information';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get enter_actual_quantity => 'Enter Actual Scrap Quantity';
+
+  @override
+  String get after_weighing_instruction =>
+      'After weighing, enter the actual quantity for each scrap type. The system will automatically recalculate the total.';
+
+  @override
+  String get no_data => 'No data';
+
+  @override
+  String get no_scrap_list => 'No scrap list found to enter quantity.';
+
+  @override
+  String get enter_at_least_one => 'Please enter at least one scrap type';
+
+  @override
+  String get actual_quantity_updated => 'Actual quantity updated successfully';
+
+  @override
+  String get check_in_before_quantity =>
+      'Please check-in before entering quantity';
+
+  @override
+  String get invalid_scrap_category =>
+      'Invalid scrap category. Please check again.';
+
+  @override
+  String get instructions => 'Instructions';
+
+  @override
+  String get available_points => 'Available Points';
+
+  @override
+  String get my_rewards => 'My Rewards';
+
+  @override
+  String get leaderboard => 'Leaderboard';
+
+  @override
+  String get coming_soon => 'Coming Soon';
+
+  @override
+  String get recent_activities => 'Recent Activities';
+
+  @override
+  String get no_recent_activities => 'No recent activities yet';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get used => 'Used';
+
+  @override
+  String get no_active_rewards => 'No active rewards yet';
+
+  @override
+  String get no_used_rewards => 'No used rewards yet';
+
+  @override
+  String get redeem_rewards_from_store =>
+      'Redeem rewards from the store to see them here';
+
+  @override
+  String get used_rewards_appear_here => 'Your used rewards will appear here';
+
+  @override
+  String get total_redeemed => 'Total Redeemed';
+
+  @override
+  String get points_spent => 'Points Spent';
+
+  @override
+  String get all_time => 'All Time';
+
+  @override
+  String get past_week => 'Past Week';
+
+  @override
+  String get past_month => 'Past Month';
+
+  @override
+  String get past_year => 'Past Year';
+
+  @override
+  String get credits => 'Credits';
+
+  @override
+  String get filter_by_period => 'Filter by Period';
+
+  @override
+  String get from_posts => 'From Posts';
+
+  @override
+  String get total_posts => 'Total Posts';
+
+  @override
+  String get location_fetch_error =>
+      'Could not get location. Please try again.';
+
+  @override
+  String get distance_too_far_error =>
+      'Distance too far. Please get closer to the collection point (within 100m).';
+
+  @override
+  String get location_permission_error =>
+      'Could not get location. Please enable GPS and grant location permission.';
+
+  @override
+  String get location_fetched_successfully_toast =>
+      'Location fetched successfully';
+
+  @override
+  String location_coordinates(String latitude, String longitude) {
+    return 'Lat: $latitude, Long: $longitude';
+  }
+
+  @override
+  String get quantity_updated_successfully => 'Quantity updated successfully';
+
+  @override
+  String get check_in_first_error => 'Please check-in before entering quantity';
+
+  @override
+  String get invalid_scrap_category_error =>
+      'Invalid scrap category. Please check again.';
+
+  @override
+  String get enter_quantity => 'Enter Quantity';
+
+  @override
+  String get no_data_found => 'No Data';
+
+  @override
+  String get no_scrap_items_to_input =>
+      'No scrap items found to enter quantity.';
+
+  @override
+  String get weighing_instruction =>
+      'After weighing, enter the actual quantity for each scrap type. The system will automatically recalculate the total amount.';
+
+  @override
+  String scrap_category_placeholder(int id) {
+    return 'Scrap Type $id';
+  }
+
+  @override
+  String price_display(String price, String currency, String unit) {
+    return 'Price: $price $currency/$unit';
+  }
+
+  @override
+  String quantity_with_unit(String unit) {
+    return 'Quantity ($unit)';
+  }
+
+  @override
+  String get enter_actual_quantity_hint => 'Enter actual quantity';
+
+  @override
+  String get please_enter_quantity => 'Please enter quantity';
+
+  @override
+  String get invalid_quantity => 'Invalid quantity';
+
+  @override
+  String get enter_at_least_one_item_toast =>
+      'Please enter at least one scrap type';
+
+  @override
+  String get scan_qr_for_transfer => 'Scan QR code to transfer';
+
+  @override
+  String get bank_transfer_payment => 'Bank Transfer Payment';
+
+  @override
+  String get cannot_load_qr_image => 'Cannot load QR image';
+
+  @override
+  String get no_qr_code => 'No QR code';
+
+  @override
+  String get instructions_title => 'Instructions';
+
+  @override
+  String get instruction_step_1 => '1. Open banking app';
+
+  @override
+  String get instruction_step_2 => '2. Select scan QR code';
+
+  @override
+  String get instruction_step_3 => '3. Scan the code above';
+
+  @override
+  String get instruction_step_4 => '4. Confirm payment';
+
+  @override
+  String get instruction_step_5 => '5. Press \'Completed\'';
+
+  @override
+  String get transfer_complete_prompt => 'Have you completed the transfer?';
+
+  @override
+  String get bank_info_needed => 'Bank Information Needed';
+
+  @override
+  String get bank_info_needed_description =>
+      'To receive payment via QR code, you need to update your bank account information in your profile settings.';
+
+  @override
+  String get info_to_update => 'Information to update:';
+
+  @override
+  String get bank_account_number_list => '• Bank account number';
+
+  @override
+  String get account_holder_name_list => '• Account holder name';
+
+  @override
+  String get bank_name => '• Bank name';
+
+  @override
+  String get update_now => 'Update Now';
+
+  @override
+  String get cannot_load_qr_code => 'Không thể tải mã QR.';
+
+  @override
+  String get cannot_load_qr_code_en => 'Unable to load QR code.';
+
+  @override
+  String get generic_error_message =>
+      'Something went wrong. Please try again later.';
+
+  @override
+  String get payment_success_title => 'Payment Successful';
+
+  @override
+  String get payment_success_message => 'Your payment was successful!';
+
+  @override
+  String get payment_order_info => 'Order Information';
+
+  @override
+  String get payment_amount => 'Amount';
+
+  @override
+  String get payment_bank => 'Bank';
+
+  @override
+  String get payment_transaction_no => 'Transaction No.';
+
+  @override
+  String get payment_ref => 'Reference';
+
+  @override
+  String get payment_time => 'Time';
+
+  @override
+  String get payment_error_code => 'Payment error code';
+
+  @override
+  String get payment_retry => 'Payment retry';
+
+  @override
+  String get credit_transactions => 'Credit Transactions';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get deposit => 'Deposit';
+
+  @override
+  String get withdraw => 'Withdraw';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get balance => 'Balance';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get credit_transaction_history => 'credit Trs history';
+
+  @override
+  String get payment_transactions => 'payment transaction history';
 }

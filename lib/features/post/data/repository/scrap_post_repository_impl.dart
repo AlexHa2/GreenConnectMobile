@@ -4,6 +4,7 @@ import 'package:GreenConnectMobile/features/post/data/models/scrap_post/create_s
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/location_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_detail_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/update_scrap_post_model.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/household_report_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/paginated_scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_detail_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
@@ -144,6 +145,7 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
 
   @override
   Future<PaginatedScrapPostEntity> searchPostsForCollector({
+    int? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,
@@ -153,6 +155,7 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
   }) {
     return guard(() async {
       final result = await remote.searchPostsForCollector(
+        categoryId: categoryId,
         categoryName: categoryName,
         status: status,
         sortByLocation: sortByLocation,
@@ -160,8 +163,21 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
         pageNumber: pageNumber,
         pageSize: pageSize,
       );
-
       return result.toEntity((model) => model.toEntity());
+    });
+  }
+
+  @override
+  Future<HouseholdReportEntity> getHouseholdReport({
+    required String start,
+    required String end,
+  }) {
+    return guard(() async {
+      final result = await remote.getHouseholdReport(
+        start: start,
+        end: end,
+      );
+      return result.toEntity();
     });
   }
 }

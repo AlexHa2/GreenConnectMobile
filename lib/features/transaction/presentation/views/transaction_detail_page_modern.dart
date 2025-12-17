@@ -262,7 +262,7 @@ class _ChatFloatingButton extends ConsumerWidget {
       if (existingRoom != null) {
         // Chat room exists - Navigate directly
         if (context.mounted) {
-          context.go(
+          context.push(
             '/chat-detail',
             extra: {
               'transactionId': transaction.transactionId,
@@ -362,18 +362,18 @@ class _ChatFloatingButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final s = S.of(context)!;
-
+    final space = theme.extension<AppSpacing>()!.screenPadding;
     return Material(
       elevation: 6,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(space),
       color: theme.primaryColor,
       child: InkWell(
         onTap: () => _openChat(context, ref),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(space),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(space),
             gradient: LinearGradient(
               colors: [
                 theme.primaryColor,
@@ -422,7 +422,7 @@ class _TransactionBackgroundGradient extends StatelessWidget {
       case TransactionStatus.inProgress:
         return AppColors.warningUpdate;
       case TransactionStatus.completed:
-        return AppColors.primary;
+        return theme.primaryColor;
       case TransactionStatus.canceledBySystem:
       case TransactionStatus.canceledByUser:
         return AppColors.danger;

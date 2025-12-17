@@ -121,7 +121,7 @@ class JobItemCard extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.star,
                       size: 18,
                       color: AppColors.primary,

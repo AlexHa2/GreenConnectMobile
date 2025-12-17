@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:GreenConnectMobile/features/post/domain/entities/saved_location_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

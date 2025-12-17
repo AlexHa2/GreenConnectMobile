@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:GreenConnectMobile/core/error/failure.dart';
 import 'package:dio/dio.dart';
 
@@ -13,11 +14,9 @@ Future<T> guard<T>(Future<T> Function() body) async {
 
 AppException _mapToAppException(dynamic error) {
   if (error is DioException) {
-    if (error.response?.data is Map<String, dynamic>) {
-      final data = error.response?.data;
-      final serverMessage =
-          data?['message'] ?? data?['error'] ?? data.toString();
-      return BusinessException(serverMessage);
+    // Always use _mapBadResponse for badResponse to get proper status code
+    if (error.type == DioExceptionType.badResponse) {
+      return _mapBadResponse(error.response);
     }
 
     switch (error.type) {

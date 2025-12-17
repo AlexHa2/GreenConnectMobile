@@ -81,9 +81,17 @@ class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
   Future<bool> processOffer({
     required String offerId,
     required bool isAccepted,
+    String? responseMessage,
   }) async {
+    final queryParams = <String, String>{
+      'isAccepted': isAccepted.toString(),
+      if (responseMessage != null) 'responseMessage': Uri.encodeComponent(responseMessage),
+    };
+    final queryString = queryParams.entries
+        .map((e) => '${e.key}=${e.value}')
+        .join('&');
     final res = await _apiClient.patch(
-      '$_offersBaseUrl/$offerId/process?isAccepted=$isAccepted',
+      '$_offersBaseUrl/$offerId/process?$queryString',
     );
     return res.statusCode == 200;
   }

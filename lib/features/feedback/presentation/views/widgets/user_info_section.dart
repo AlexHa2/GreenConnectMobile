@@ -72,7 +72,7 @@ class UserInfoSection extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     _buildInfoChip(
                       context,
                       icon: Icons.phone,
@@ -80,7 +80,7 @@ class UserInfoSection extends StatelessWidget {
                       theme: theme,
                       spacing: spacing,
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     _buildInfoChip(
                       context,
                       icon: Icons.military_tech,
@@ -148,7 +148,7 @@ class UserInfoSection extends StatelessWidget {
           size: 14,
           color: chipColor,
         ),
-        SizedBox(width: 4),
+        const SizedBox(width: 4),
         Flexible(
           child: Text(
             label,

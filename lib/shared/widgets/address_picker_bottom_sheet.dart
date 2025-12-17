@@ -119,6 +119,7 @@ class _AddressPickerBottomSheetState extends State<AddressPickerBottomSheet> {
 
       // Get position
       final position = await Geolocator.getCurrentPosition(
+        // ignore: deprecated_member_use
         desiredAccuracy: LocationAccuracy.high,
       );
 
