@@ -57,6 +57,13 @@
   "failed_to_redeem_reward": "Không thể đổi phần thưởng",
   "no_rewards_message": "Hiện tại chưa có phần thưởng nào.\nVui lòng quay lại sau!",
   "reward_details": "Chi tiết phần thưởng",
+  "package_dashboard": "Bảng điều khiển gói",
+  "current_points": "Điểm hiện tại",
+  "current_package": "Gói đang dùng",
+  "buy_package": "Mua gói",
+  "point_history": "Lịch sử dùng điểm",
+  "purchase_history": "Lịch sử mua gói",
+  "featured_packages": "Gói nổi bật",
   "value": "Giá trị",
   "points": "điểm",
   "description": "Mô tả",
@@ -1020,5 +1027,7 @@
   "balance": "Số dư",
   "date": "Ngày",
   "credit_transaction_history":"Lịch sử tín dụng",
-  "payment_transactions":"Lịch sử thanh toán"
+  "payment_transactions":"Lịch sử thanh toán",
+  "success":"thành công",
+  "failed":"thất bại"
 }

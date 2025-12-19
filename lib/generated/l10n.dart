@@ -439,6 +439,48 @@ abstract class S {
   /// **'Reward Details'**
   String get reward_details;
 
+  /// No description provided for @package_dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Dashboard'**
+  String get package_dashboard;
+
+  /// No description provided for @current_points.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Points'**
+  String get current_points;
+
+  /// No description provided for @current_package.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Package'**
+  String get current_package;
+
+  /// No description provided for @buy_package.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Package'**
+  String get buy_package;
+
+  /// No description provided for @point_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Point Usage History'**
+  String get point_history;
+
+  /// No description provided for @purchase_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Purchase History'**
+  String get purchase_history;
+
+  /// No description provided for @featured_packages.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Packages'**
+  String get featured_packages;
+
   /// No description provided for @value.
   ///
   /// In en, this message translates to:
@@ -5646,6 +5688,18 @@ abstract class S {
   /// In en, this message translates to:
   /// **'payment transaction history'**
   String get payment_transactions;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'success'**
+  String get success;
+
+  /// No description provided for @failed.
+  ///
+  /// In en, this message translates to:
+  /// **'failed'**
+  String get failed;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

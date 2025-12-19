@@ -7,7 +7,7 @@ class PaymentTransactionEntity {
   final UserEntity user;
   final String packageId;
   final PaymentPackageEntity packageModel;
-  final int amount;
+  final double amount;
   final String paymentGateway;
   final String status;
   final String transactionRef;
