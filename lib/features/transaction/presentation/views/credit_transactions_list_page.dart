@@ -111,14 +111,14 @@ class _CreditTransactionsListPageState
     // final space = theme.extension<AppSpacing>()!.screenPadding;
     return AppBar(
       elevation: 0,
-      backgroundColor: theme.primaryColor,
-      leading: BackButton(color: theme.scaffoldBackgroundColor),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      leading: BackButton(color: theme.colorScheme.onSurface),
       centerTitle: true,
       title: Text(
         s.credit_transactions,
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          color: theme.scaffoldBackgroundColor,
+          color: theme.colorScheme.onSurface,
         ),
       ),
       actions: [
@@ -128,7 +128,7 @@ class _CreditTransactionsListPageState
             _isSortDesc
                 ? Icons.arrow_downward_rounded
                 : Icons.arrow_upward_rounded,
-            color: theme.scaffoldBackgroundColor,
+            color: theme.primaryColor,
           ),
           onPressed: () {
             setState(() => _isSortDesc = !_isSortDesc);

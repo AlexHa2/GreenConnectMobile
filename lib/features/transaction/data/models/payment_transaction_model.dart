@@ -8,7 +8,7 @@ class PaymentTransactionModel {
   final UserModel user;
   final String packageId;
   final PaymentPackageModel packageModel;
-  final int amount;
+  final double amount;
   final String paymentGateway;
   final String status;
   final String transactionRef;

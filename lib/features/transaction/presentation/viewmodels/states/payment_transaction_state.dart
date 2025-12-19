@@ -5,6 +5,7 @@ class PaymentTransactionState {
   final PaymentTransactionListResponse? listData;
   final String? errorMessage;
 
+
   PaymentTransactionState({
     this.isLoadingList = false,
     this.listData,
@@ -15,6 +16,8 @@ class PaymentTransactionState {
     bool? isLoadingList,
     PaymentTransactionListResponse? listData,
     String? errorMessage,
+    String? currentFilter,
+    bool? isSortDesc,
   }) {
     return PaymentTransactionState(
       isLoadingList: isLoadingList ?? this.isLoadingList,

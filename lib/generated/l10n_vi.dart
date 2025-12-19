@@ -184,6 +184,27 @@ class SVi extends S {
   String get reward_details => 'Chi tiết phần thưởng';
 
   @override
+  String get package_dashboard => 'Bảng điều khiển gói';
+
+  @override
+  String get current_points => 'Điểm hiện tại';
+
+  @override
+  String get current_package => 'Gói đang dùng';
+
+  @override
+  String get buy_package => 'Mua gói';
+
+  @override
+  String get point_history => 'Lịch sử dùng điểm';
+
+  @override
+  String get purchase_history => 'Lịch sử mua gói';
+
+  @override
+  String get featured_packages => 'Gói nổi bật';
+
+  @override
   String get value => 'Giá trị';
 
   @override
@@ -2916,4 +2937,10 @@ class SVi extends S {
 
   @override
   String get payment_transactions => 'Lịch sử thanh toán';
+
+  @override
+  String get success => 'thành công';
+
+  @override
+  String get failed => 'thất bại';
 }
