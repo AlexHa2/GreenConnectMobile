@@ -183,6 +183,27 @@ class SEn extends S {
   String get reward_details => 'Reward Details';
 
   @override
+  String get package_dashboard => 'Package Dashboard';
+
+  @override
+  String get current_points => 'Current Points';
+
+  @override
+  String get current_package => 'Current Package';
+
+  @override
+  String get buy_package => 'Buy Package';
+
+  @override
+  String get point_history => 'Point Usage History';
+
+  @override
+  String get purchase_history => 'Package Purchase History';
+
+  @override
+  String get featured_packages => 'Featured Packages';
+
+  @override
   String get value => 'value';
 
   @override
@@ -2919,4 +2940,10 @@ class SEn extends S {
 
   @override
   String get payment_transactions => 'payment transaction history';
+
+  @override
+  String get success => 'success';
+
+  @override
+  String get failed => 'failed';
 }

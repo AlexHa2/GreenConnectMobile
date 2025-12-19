@@ -2,7 +2,7 @@ class PaymentPackageEntity {
   final String packageId;
   final String name;
   final String description;
-  final int price;
+  final double price;
   final int connectionAmount;
   final bool isActive;
   final String packageType;

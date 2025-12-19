@@ -1,18 +1,14 @@
+import 'package:GreenConnectMobile/core/helper/currency_helper.dart';
 import 'package:GreenConnectMobile/features/package/domain/entities/package_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class PackageCard extends StatelessWidget {
   final PackageEntity package;
   final VoidCallback? onTap;
 
-  const PackageCard({
-    super.key,
-    required this.package,
-    this.onTap,
-  });
+  const PackageCard({super.key, required this.package, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -22,19 +18,10 @@ class PackageCard extends StatelessWidget {
     final s = S.of(context)!;
     final textTheme = theme.textTheme;
 
-    final currencyFormat = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
-      decimalDigits: 0,
-    );
-
     return Card(
       elevation: 2,
       shadowColor: theme.colorScheme.primary.withValues(alpha: 0.1),
-      margin: EdgeInsets.symmetric(
-        horizontal: space,
-        vertical: space * 0.5,
-      ),
+      margin: EdgeInsets.symmetric(horizontal: space, vertical: space * 0.5),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(space),
         side: BorderSide(
@@ -106,8 +93,9 @@ class PackageCard extends StatelessWidget {
                         Text(
                           s.package_price,
                           style: textTheme.bodySmall?.copyWith(
-                            color:
-                                theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -122,7 +110,7 @@ class PackageCard extends StatelessWidget {
                                 ),
                               )
                             : Text(
-                                currencyFormat.format(package.price),
+                                formatVND(package.price),
                                 style: textTheme.titleMedium?.copyWith(
                                   color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.bold,
@@ -174,13 +162,9 @@ class PackageCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTypeBadge(
-    String type,
-    ThemeData theme,
-    double space,
-    S s,
-  ) {
-    final isFreemium = type == s.freemium_packages || type.toLowerCase() == 'freemium';
+  Widget _buildTypeBadge(String type, ThemeData theme, double space, S s) {
+    final isFreemium =
+        type == s.freemium_packages || type.toLowerCase() == 'freemium';
     final badgeColor = isFreemium ? Colors.green : theme.colorScheme.primary;
     final badgeText = isFreemium ? s.freemium_packages : s.paid_packages;
 
@@ -192,10 +176,7 @@ class PackageCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: badgeColor.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(space * 0.5),
-        border: Border.all(
-          color: badgeColor.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        border: Border.all(color: badgeColor.withValues(alpha: 0.3), width: 1),
       ),
       child: Text(
         badgeText,

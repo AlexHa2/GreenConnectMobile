@@ -16,6 +16,7 @@ import 'package:GreenConnectMobile/features/notification/presentation/views/noti
 import 'package:GreenConnectMobile/features/offer/presentation/views/offer_detail_page.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/offers_list_page.dart';
 import 'package:GreenConnectMobile/features/package/domain/entities/package_entity.dart';
+import 'package:GreenConnectMobile/features/package/presentation/views/package_dashboard_page.dart';
 import 'package:GreenConnectMobile/features/package/presentation/views/package_detail_page.dart';
 import 'package:GreenConnectMobile/features/package/presentation/views/package_list_page.dart';
 import 'package:GreenConnectMobile/features/package/presentation/views/payment_failed_page.dart';
@@ -271,6 +272,11 @@ final GoRouter greenRouter = GoRouter(
       path: '/payment-transaction-history',
       name: 'payment-transaction-history',
       builder: (context, state) => const PaymentTransactionsListPage(),
+    ),
+    GoRoute(
+      path: '/package-dashboard',
+      name: 'package-dashboard',
+      builder: (context, state) => const PackageDashboardPage(),
     ),
     GoRoute(
       name: 'chat-detail',

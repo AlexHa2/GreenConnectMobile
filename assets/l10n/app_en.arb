@@ -57,6 +57,13 @@
   "failed_to_redeem_reward": "Failed to redeem reward",
   "no_rewards_message": "No rewards available at the moment.\nPlease check back later!",
   "reward_details": "Reward Details",
+  "package_dashboard": "Package Dashboard",
+  "current_points": "Current Points",
+  "current_package": "Current Package",
+  "buy_package": "Buy Package",
+  "point_history": "Point Usage History",
+  "purchase_history": "Package Purchase History",
+  "featured_packages": "Featured Packages",
   "value": "Value",
   "points": "points",
   "description": "Description",
@@ -1023,6 +1030,9 @@
   "balance": "Balance",
   "date": "Date",
   "credit_transaction_history":"credit Trs history",
-  "payment_transactions":"payment transaction history"
+  "payment_transactions":"payment transaction history",
+  "success":"success",
+  "failed":"failed"
+                   
                 
 }

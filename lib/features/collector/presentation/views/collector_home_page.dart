@@ -1082,7 +1082,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               color: theme.primaryColor,
               space: space,
               theme: theme,
-              onTap: () => context.push('/package-list'),
+              onTap: () => context.push('/package-dashboard'),
             ),
             _buildQuickActionCard(
               context,
@@ -1133,24 +1133,6 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               onTap: () => context.push('/collector-complaint-list'),
             ),
 
-            _buildQuickActionCard(
-              context,
-              icon: Icons.credit_card_rounded,
-              label: s.credit_transaction_history,
-              color: theme.disabledColor,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/credit-transaction-history'),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.credit_card_rounded,
-              label: s.transaction_history,
-              color: theme.disabledColor,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/payment-transaction-history'),
-            ),
             //payment-transaction-history
           ],
         ),
