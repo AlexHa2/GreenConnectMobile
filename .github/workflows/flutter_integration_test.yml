@@ -5,6 +5,7 @@ on:
     branches: [main, develop, feature/**]
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
 
 jobs:
   integration_test:
@@ -17,7 +18,6 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.19.0"
           channel: 'stable'
           cache: true
       
@@ -58,24 +58,25 @@ jobs:
       - name: Run unit tests
         run: flutter test --coverage
         continue-on-error: true
-      
+
       - name: Setup Chrome Driver for Web Testing
         uses: nanasess/setup-chromedriver@v2
-      
+
       - name: Start ChromeDriver
         run: chromedriver --port=4444 &
-      
+
       - name: Run integration tests on Chrome (Web)
         run: |
           flutter drive \
             --driver=test_driver/integration_test.dart \
             --target=integration_test/simple_test.dart \
             -d web-server \
+            --browser-name=chrome \
             --web-renderer html
         continue-on-error: true
         env:
           FLUTTER_TEST: true
-      
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
