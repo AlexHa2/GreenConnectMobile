@@ -22,6 +22,7 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
+
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController phoneController = TextEditingController();
@@ -54,33 +55,66 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   void dispose() {
     timer?.cancel();
-    ref.invalidate(authViewModelProvider);
+    // ref.invalidate(authViewModelProvider);
     super.dispose();
   }
 
+  // void _handleBackNavigation() {
+  //   phoneController.clear();
+  //   otpController.clear();
+  //   setState(() {
+  //     _phoneApiError = null;
+  //     _otpApiError = null;
+  //   });
+  //   ref.invalidate(authViewModelProvider);
+  //   context.go('/');
+  // }
   void _handleBackNavigation() {
-    phoneController.clear();
-    otpController.clear();
-    setState(() {
-      _phoneApiError = null;
-      _otpApiError = null;
-    });
-    ref.invalidate(authViewModelProvider);
-    context.go('/');
-  }
+  phoneController.clear();
+  otpController.clear();
+  timer?.cancel();
 
+  setState(() {
+    _phoneApiError = null;
+    _otpApiError = null;
+    seconds = 30;
+    isCounting = false;
+  });
+
+  ref.invalidate(authViewModelProvider);
+  context.go('/');
+}
+
+
+
+  // void _clearLoginState() {
+  //   phoneController.clear();
+  //   otpController.clear();
+  //   timer?.cancel();
+  //   setState(() {
+  //     _phoneApiError = null;
+  //     _otpApiError = null;
+  //     seconds = 30;
+  //     isCounting = false;
+  //   });
+  //   ref.invalidate(authViewModelProvider);
+  // }
   void _clearLoginState() {
-    phoneController.clear();
-    otpController.clear();
-    timer?.cancel();
-    setState(() {
-      _phoneApiError = null;
-      _otpApiError = null;
-      seconds = 30;
-      isCounting = false;
-    });
-    ref.invalidate(authViewModelProvider);
-  }
+  phoneController.clear();
+  otpController.clear();
+  timer?.cancel();
+
+  setState(() {
+    _phoneApiError = null;
+    _otpApiError = null;
+    seconds = 30;
+    isCounting = false;
+  });
+
+  ref.invalidate(authViewModelProvider);
+}
+
+
 
   Future<void> _sendOtp() async {
     setState(() {
