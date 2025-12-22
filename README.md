@@ -8,11 +8,33 @@
 </h1>
 
 <p align="center">
+  <p align="center">
+  <!-- CI -->
   <a href="https://github.com/AlexHa2/GreenConnectMobile/actions/workflows/flutter_integration_test.yml">
-    <img src="https://github.com/AlexHa2/GreenConnectMobile/actions/workflows/flutter_integration_test.yml/badge.svg" alt="Green Connect Integration Test" />
+    <img src="https://github.com/AlexHa2/GreenConnectMobile/actions/workflows/flutter_integration_test.yml/badge.svg"
+         alt="Flutter Integration Tests" />
   </a>
+
+  <!-- Platform & Architecture -->
   <img src="https://img.shields.io/badge/platform-flutter-blue" />
+  <img src="https://img.shields.io/badge/state--management-riverpod-5B2EFF" />
   <img src="https://img.shields.io/badge/architecture-clean--architecture-success" />
+  <img src="https://img.shields.io/badge/pattern-MVVM-orange" />
+  <img src="https://img.shields.io/badge/router-go__router-00C853" />
+
+  <!-- License -->
+  <a href="https://github.com/AlexHa2/GreenConnectMobile/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/AlexHa2/GreenConnectMobile"
+         alt="License" />
+  </a>
+
+  <!-- Security -->
+  <a href="https://github.com/AlexHa2/GreenConnectMobile/security/policy">
+    <img src="https://img.shields.io/badge/security-policy-green"
+         alt="Security Policy" />
+  </a>
+</p>
+
 </p>
 
 <p align="left">
