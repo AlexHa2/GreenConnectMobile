@@ -33,6 +33,11 @@
     <img src="https://img.shields.io/badge/security-policy-green"
          alt="Security Policy" />
   </a>
+    <!-- Last Commit -->
+  <a href="https://github.com/AlexHa2/GreenConnectMobile/commits/main">
+    <img src="https://img.shields.io/github/last-commit/AlexHa2/GreenConnectMobile"
+         alt="Last Commit" />
+  </a>
 </p>
 
 </p>
