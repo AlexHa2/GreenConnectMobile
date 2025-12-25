@@ -63,7 +63,7 @@ import 'l10n_vi.dart';
 /// property.
 abstract class S {
   S(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -85,16 +85,16 @@ abstract class S {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('vi'),
+    Locale('vi')
   ];
 
   /// No description provided for @hello_first.
@@ -676,7 +676,7 @@ abstract class S {
   /// No description provided for @pickup_time.
   ///
   /// In en, this message translates to:
-  /// **'Pickup Time'**
+  /// **'Time available'**
   String get pickup_time;
 
   /// No description provided for @add_scrap_items.
@@ -5700,6 +5700,162 @@ abstract class S {
   /// In en, this message translates to:
   /// **'failed'**
   String get failed;
+
+  /// No description provided for @scrap_type_sale.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale'**
+  String get scrap_type_sale;
+
+  /// No description provided for @scrap_type_donation.
+  ///
+  /// In en, this message translates to:
+  /// **'Donation'**
+  String get scrap_type_donation;
+
+  /// No description provided for @scrap_type_service.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get scrap_type_service;
+
+  /// No description provided for @scrap_type_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select type'**
+  String get scrap_type_hint;
+
+  /// No description provided for @scrap_type_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Type is required'**
+  String get scrap_type_required;
+
+  /// No description provided for @time_slot_section_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Time slots'**
+  String get time_slot_section_title;
+
+  /// No description provided for @time_slot_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get time_slot_date;
+
+  /// No description provided for @time_slot_start_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Start time'**
+  String get time_slot_start_time;
+
+  /// No description provided for @time_slot_end_time.
+  ///
+  /// In en, this message translates to:
+  /// **'End time'**
+  String get time_slot_end_time;
+
+  /// No description provided for @time_slot_add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add time slot'**
+  String get time_slot_add;
+
+  /// No description provided for @time_slot_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all time slot fields'**
+  String get time_slot_required;
+
+  /// No description provided for @time_slot_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Time slot number'**
+  String get time_slot_number;
+
+  /// No description provided for @number_of_items.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of items'**
+  String get number_of_items;
+
+  /// No description provided for @create_post_choose_method.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you want to create your post'**
+  String get create_post_choose_method;
+
+  /// No description provided for @create_post_manually_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create post manually'**
+  String get create_post_manually_subtitle;
+
+  /// No description provided for @create_post_manually_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in all information step by step'**
+  String get create_post_manually_description;
+
+  /// No description provided for @create_post_with_ai_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Post with AI'**
+  String get create_post_with_ai_title;
+
+  /// No description provided for @create_post_with_ai_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI-powered creation'**
+  String get create_post_with_ai_subtitle;
+
+  /// No description provided for @create_post_with_ai_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload an image and let AI analyze and fill information automatically'**
+  String get create_post_with_ai_description;
+
+  /// No description provided for @ai_analyzing_success.
+  ///
+  /// In en, this message translates to:
+  /// **'AI analyzing success'**
+  String get ai_analyzing_success;
+
+  /// No description provided for @ai_analysis.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Analysis'**
+  String get ai_analysis;
+
+  /// No description provided for @ai_filled.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Filled'**
+  String get ai_filled;
+
+  /// No description provided for @upload_image_for_ai_analysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Image for AI Analysis'**
+  String get upload_image_for_ai_analysis;
+
+  /// No description provided for @ai_will_analyze_and_auto_fill.
+  ///
+  /// In en, this message translates to:
+  /// **'AI will analyze and auto-fill post information'**
+  String get ai_will_analyze_and_auto_fill;
+
+  /// No description provided for @analyze_with_ai.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze with AI'**
+  String get analyze_with_ai;
+
+  /// No description provided for @change_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Image'**
+  String get change_image;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -5728,9 +5884,8 @@ S lookupS(Locale locale) {
   }
 
   throw FlutterError(
-    'S.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
-  );
+      'S.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }

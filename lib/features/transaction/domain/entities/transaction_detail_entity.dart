@@ -2,7 +2,7 @@ import 'package:GreenConnectMobile/features/post/domain/entities/scrap_category_
 
 class TransactionDetailEntity {
   final String transactionId;
-  final int scrapCategoryId;
+  final String scrapCategoryId;
   final ScrapCategoryEntity scrapCategory;
   final double pricePerUnit;
   final String unit;

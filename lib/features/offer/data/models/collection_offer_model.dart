@@ -28,13 +28,14 @@ class CollectionOfferModel {
 
   factory CollectionOfferModel.fromJson(Map<String, dynamic> json) {
     // Build a map of scrapCategoryId -> imageUrl from scrapPostDetails
-    final Map<int, String?> imageUrlMap = {};
+    final Map<String, String?> imageUrlMap = {};
     if (json['scrapPost'] != null &&
         json['scrapPost']['scrapPostDetails'] != null) {
       for (var detail in json['scrapPost']['scrapPostDetails'] as List) {
-        final categoryId = detail['scrapCategoryId'] as int?;
+        final dynamic idRaw = detail['scrapCategoryId'];
+        final categoryId = idRaw?.toString();
         final imageUrl = detail['imageUrl'] as String?;
-        if (categoryId != null) {
+        if (categoryId != null && categoryId.isNotEmpty) {
           imageUrlMap[categoryId] = imageUrl;
         }
       }
@@ -44,7 +45,8 @@ class CollectionOfferModel {
     final List<OfferDetailModel> offerDetailsList = [];
     if (json['offerDetails'] != null) {
       for (var offerDetailJson in json['offerDetails'] as List) {
-        final categoryId = offerDetailJson['scrapCategoryId'] as int?;
+        final dynamic idRaw = offerDetailJson['scrapCategoryId'];
+        final categoryId = idRaw?.toString();
         // Inject imageUrl from the map
         if (categoryId != null && imageUrlMap.containsKey(categoryId)) {
           offerDetailJson['imageUrl'] = imageUrlMap[categoryId];

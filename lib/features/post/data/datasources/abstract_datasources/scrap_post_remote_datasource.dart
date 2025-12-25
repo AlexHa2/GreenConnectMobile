@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/create_scrap_post_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/household_report_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/paginated_scrap_post_model.dart';
+import 'package:GreenConnectMobile/features/post/data/models/scrap_post/analyze_scrap_result_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_detail_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_model.dart';
+import 'package:GreenConnectMobile/features/post/data/models/scrap_post/time_slot_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/update_scrap_post_model.dart';
 
 abstract class ScrapPostRemoteDataSource {
@@ -33,11 +37,11 @@ abstract class ScrapPostRemoteDataSource {
 
   Future<bool> deleteScrapDetail({
     required String postId,
-    required int scrapCategoryId,
+    required String scrapCategoryId,
   });
 
   Future<PaginatedScrapPostModel> searchPostsForCollector({
-    int? categoryId,
+    String? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,
@@ -49,5 +53,30 @@ abstract class ScrapPostRemoteDataSource {
   Future<HouseholdReportModel> getHouseholdReport({
     required String start,
     required String end,
+  });
+
+  Future<AnalyzeScrapResultModel> analyzeScrap({
+    required Uint8List imageBytes,
+    required String fileName,
+  });
+
+  Future<TimeSlotModel> createTimeSlot({
+    required String postId,
+    required String specificDate,
+    required String startTime,
+    required String endTime,
+  });
+
+  Future<TimeSlotModel> updateTimeSlot({
+    required String postId,
+    required String timeSlotId,
+    required String specificDate,
+    required String startTime,
+    required String endTime,
+  });
+
+  Future<bool> deleteTimeSlot({
+    required String postId,
+    required String timeSlotId,
   });
 }

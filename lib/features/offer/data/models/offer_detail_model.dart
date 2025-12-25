@@ -4,7 +4,7 @@ import 'package:GreenConnectMobile/features/post/data/models/scrap_category/scra
 class OfferDetailModel {
   final String offerDetailId;
   final String collectionOfferId;
-  final int scrapCategoryId;
+  final String scrapCategoryId;
   final ScrapCategoryModel? scrapCategory;
   final double pricePerUnit;
   final String unit;
@@ -21,10 +21,11 @@ class OfferDetailModel {
   });
 
   factory OfferDetailModel.fromJson(Map<String, dynamic> json) {
+    final dynamic idRaw = json['scrapCategoryId'];
     return OfferDetailModel(
       offerDetailId: json['offerDetailId'],
       collectionOfferId: json['collectionOfferId'],
-      scrapCategoryId: json['scrapCategoryId'],
+      scrapCategoryId: idRaw?.toString() ?? '',
       scrapCategory: json['scrapCategory'] != null
           ? ScrapCategoryModel.fromJson(json['scrapCategory'])
           : null,

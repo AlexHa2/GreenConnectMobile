@@ -1,4 +1,5 @@
 
+import 'package:GreenConnectMobile/core/enum/offer_status.dart';
 import 'package:GreenConnectMobile/features/offer/data/models/schedule_proposal_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -74,7 +75,7 @@ void main() {
         scheduleProposalId: 'schedule-456',
         collectionOfferId: 'offer-456',
         proposedTime: DateTime.parse('2025-12-11T15:00:00Z'),
-        status: ScheduleProposalStatus.Pending,
+        status: ScheduleProposalStatus.pending,
         createdAt: DateTime.now(),
         responseMessage: 'Đề xuất lịch hẹn mới: 15:00 ngày 11/12',
       );

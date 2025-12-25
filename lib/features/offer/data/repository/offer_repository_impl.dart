@@ -12,14 +12,18 @@ class OfferRepositoryImpl implements OfferRepository {
   OfferRepositoryImpl(this.remote);
 
   @override
-  Future<CollectionOfferEntity> createOffer({
+  Future<bool> createOffer({
     required String postId,
     required CreateOfferRequestEntity request,
+    String? slotTimeId,
   }) {
     return guard(() async {
       final model = CreateOfferRequestModel.fromEntity(request);
-      final result = await remote.createOffer(postId: postId, request: model);
-      return result.toEntity();
+      return await remote.createOffer(
+        postId: postId,
+        request: model,
+        slotTimeId: slotTimeId,
+      );
     });
   }
 
@@ -92,7 +96,7 @@ class OfferRepositoryImpl implements OfferRepository {
   @override
   Future<CollectionOfferEntity> addOfferDetail({
     required String offerId,
-    required int scrapCategoryId,
+    required String scrapCategoryId,
     required double pricePerUnit,
     required String unit,
   }) {

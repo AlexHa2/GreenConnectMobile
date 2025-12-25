@@ -7,6 +7,7 @@ class HouseholdModel {
   final String fullName;
   final String phoneNumber;
   final int pointBalance;
+  final int creditBalance;
   final String rank;
   final List<String> roles;
   final String? avatarUrl;
@@ -16,6 +17,7 @@ class HouseholdModel {
     required this.fullName,
     required this.phoneNumber,
     required this.pointBalance,
+    required this.creditBalance,
     required this.rank,
     required this.roles,
     this.avatarUrl,
@@ -26,9 +28,10 @@ class HouseholdModel {
       id: json['id'],
       fullName: json['fullName'],
       phoneNumber: json['phoneNumber'],
-      pointBalance: json['pointBalance'],
+      pointBalance: json['pointBalance'] ?? 0,
+      creditBalance: json['creditBalance'] ?? 0,
       rank: json['rank'],
-      roles: List<String>.from(json['roles']),
+      roles: List<String>.from(json['roles'] ?? []),
       avatarUrl: json['avatarUrl'],
     );
   }
@@ -39,6 +42,7 @@ class HouseholdModel {
       'fullName': fullName,
       'phoneNumber': phoneNumber,
       'pointBalance': pointBalance,
+      'creditBalance': creditBalance,
       'rank': rank,
       'roles': roles,
       'avatarUrl': avatarUrl,
@@ -51,6 +55,7 @@ class HouseholdModel {
       fullName: fullName,
       phoneNumber: phoneNumber,
       pointBalance: pointBalance,
+      creditBalance: creditBalance,
       rank: rank,
       roles: roles,
       avatarUrl: avatarUrl,

@@ -60,7 +60,7 @@ class HeaderProfileSetting extends StatelessWidget {
                         ? Image.network(
                             imageUrl,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) =>
+                            errorBuilder: (_, __, ___) =>
                                 Image.asset(fallbackAsset, fit: BoxFit.cover),
                           )
                         : Image.asset(

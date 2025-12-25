@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:GreenConnectMobile/core/enum/scrap_post_detail_type.dart';
+import 'package:GreenConnectMobile/core/helper/scrap_post_detail_type_helper.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -13,6 +15,7 @@ class UpdateScrapItemDialog extends StatefulWidget {
   final String? initialImageUrl;
   final File? initialImageFile;
   final List<String> categories;
+  final ScrapPostDetailType initialType;
 
   const UpdateScrapItemDialog({
     super.key,
@@ -21,6 +24,7 @@ class UpdateScrapItemDialog extends StatefulWidget {
     required this.categories,
     this.initialImageUrl,
     this.initialImageFile,
+    this.initialType = ScrapPostDetailType.sale,
   });
 
   @override
@@ -33,6 +37,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
 
   late String? _selectedCategory;
   late TextEditingController _amountDescriptionController;
+  late ScrapPostDetailType _selectedType;
 
   // Logic: Separate old image (URL) and new image (File)
   String? _currentImageUrl;
@@ -48,6 +53,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
     );
     _currentImageUrl = widget.initialImageUrl;
     _newPickedFile = widget.initialImageFile; // Set initial file if exists
+    _selectedType = widget.initialType;
   }
 
   Future<void> _pickImage() async {
@@ -142,6 +148,36 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
 
                 SizedBox(height: spacing.screenPadding * 1.5),
 
+                _buildLabel(context, 'Loại hình'),
+                SizedBox(height: spacing.screenPadding / 2),
+                DropdownButtonFormField<ScrapPostDetailType>(
+                  initialValue: _selectedType,
+                  items: ScrapPostDetailType.values
+                      .map(
+                        (type) => DropdownMenuItem(
+                          value: type,
+                          child: Text(ScrapPostDetailTypeHelper.getLocalizedType(
+                              context, type)),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (type) =>
+                      setState(() => _selectedType = type ?? _selectedType),
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  validator: (val) =>
+                      val == null ? S.of(context)!.scrap_type_required : null,
+                ),
+
+                SizedBox(height: spacing.screenPadding * 1.5),
+
                 // Amount Description
                 _buildLabel(context, S.of(context)!.amount_description),
                 SizedBox(height: spacing.screenPadding / 2),
@@ -228,6 +264,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                             "category": _selectedCategory,
                             "amountDescription":
                                 _amountDescriptionController.text.trim(),
+                            "type": _selectedType,
                             "image": imageResult,
                             "imageChanged": _imageChanged,
                           });
@@ -253,8 +290,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
     bool hasImage =
         _newPickedFile != null ||
         (_currentImageUrl != null && _currentImageUrl!.isNotEmpty);
-    final spacing = Theme.of(context).extension<AppSpacing>()!;
-    
+
     return GestureDetector(
       onTap: _pickImage,
       child: Container(

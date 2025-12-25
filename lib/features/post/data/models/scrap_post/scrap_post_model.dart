@@ -2,7 +2,7 @@
 
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/household_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_detail_model.dart';
-import 'package:GreenConnectMobile/features/post/domain/entities/location_entity.dart';
+import 'package:GreenConnectMobile/features/post/data/models/scrap_post/time_slot_model.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
 
 class ScrapPostModel {
@@ -18,6 +18,7 @@ class ScrapPostModel {
   final HouseholdModel? household;
   final bool mustTakeAll;
   final List<ScrapPostDetailModel> scrapPostDetails;
+  final List<TimeSlotModel> timeSlots;
 
   ScrapPostModel({
     required this.scrapPostId,
@@ -32,28 +33,32 @@ class ScrapPostModel {
     this.household,
     required this.mustTakeAll,
     required this.scrapPostDetails,
+    this.timeSlots = const [],
   });
 
   factory ScrapPostModel.fromJson(Map<String, dynamic> json) {
+    final dynamic idRaw = json['scrapPostId'] ?? json['id'];
+    final details = (json['scrapPostDetails'] as List?) ?? const [];
+    final timeSlotsList = (json['timeSlots'] as List?) ?? const [];
+
     return ScrapPostModel(
-      scrapPostId: json['scrapPostId'],
-      title: json['title'],
-      description: json['description'],
+      scrapPostId: idRaw?.toString() ?? '',
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
       address: json['address'] ?? '',
       availableTimeRange: json['availableTimeRange'],
-      status: json['status'],
+      status: json['status'] ?? '',
       createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : null,
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
       householdId: json['householdId'],
       household: json['household'] != null
           ? HouseholdModel.fromJson(json['household'])
           : null,
       mustTakeAll: json['mustTakeAll'] ?? false,
-      scrapPostDetails: (json['scrapPostDetails'] as List? ?? [])
-          .map((e) => ScrapPostDetailModel.fromJson(e))
-          .toList(),
+      scrapPostDetails:
+          details.map((e) => ScrapPostDetailModel.fromJson(e)).toList(),
+      timeSlots: timeSlotsList.map((e) => TimeSlotModel.fromJson(e)).toList(),
     );
   }
 
@@ -63,14 +68,15 @@ class ScrapPostModel {
       title: title,
       description: description,
       address: address,
-      availableTimeRange: availableTimeRange ?? '',
+      availableTimeRange: availableTimeRange,
       createdAt: createdAt,
       updatedAt: updatedAt,
       status: status,
       mustTakeAll: mustTakeAll,
       household: household?.toEntity(),
-      location: LocationEntity(longitude: 0, latitude: 0),
+      location: null,
       scrapPostDetails: scrapPostDetails.map((e) => e.toEntity()).toList(),
+      scrapPostTimeSlots: timeSlots.map((e) => e.toEntity()).toList(),
     );
   }
 }

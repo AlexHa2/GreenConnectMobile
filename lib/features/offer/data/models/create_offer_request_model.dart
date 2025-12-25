@@ -25,10 +25,17 @@ class CreateOfferRequestModel {
       'scheduleProposal': scheduleProposal.toJson(),
     };
   }
+
+  /// JSON for create offer API (only offerDetails)
+  Map<String, dynamic> toJsonForCreate() {
+    return {
+      'offerDetails': offerDetails.map((e) => e.toJson()).toList(),
+    };
+  }
 }
 
 class OfferDetailRequestModel {
-  final int scrapCategoryId;
+  final String scrapCategoryId;
   final double pricePerUnit;
   final String unit;
 

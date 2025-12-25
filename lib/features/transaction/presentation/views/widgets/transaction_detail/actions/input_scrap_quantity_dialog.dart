@@ -15,7 +15,7 @@ class InputScrapQuantityDialog extends StatefulWidget {
 }
 
 class _InputScrapQuantityDialogState extends State<InputScrapQuantityDialog> {
-  final Map<int, TextEditingController> _quantityControllers = {};
+  final Map<String, TextEditingController> _quantityControllers = {};
   final bool _isLoading = false;
 
   @override
@@ -172,9 +172,7 @@ class _InputScrapQuantityDialogState extends State<InputScrapQuantityDialog> {
                             Expanded(
                               child: Text(
                                 detail.scrapCategory?.categoryName ??
-                                    s.scrap_category_placeholder(
-                                      detail.scrapCategoryId,
-                                    ),
+                                    '${s.unknown} (${detail.scrapCategoryId})',
                                 style: theme.textTheme.titleSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),

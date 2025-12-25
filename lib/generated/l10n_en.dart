@@ -302,7 +302,7 @@ class SEn extends S {
   String get pickup_address => 'Pickup Address';
 
   @override
-  String get pickup_time => 'Pickup Time';
+  String get pickup_time => 'Time available';
 
   @override
   String get add_scrap_items => 'Add Scrap Items';
@@ -2946,4 +2946,86 @@ class SEn extends S {
 
   @override
   String get failed => 'failed';
+
+  @override
+  String get scrap_type_sale => 'Sale';
+
+  @override
+  String get scrap_type_donation => 'Donation';
+
+  @override
+  String get scrap_type_service => 'Service';
+
+  @override
+  String get scrap_type_hint => 'Select type';
+
+  @override
+  String get scrap_type_required => 'Type is required';
+
+  @override
+  String get time_slot_section_title => 'Time slots';
+
+  @override
+  String get time_slot_date => 'Date';
+
+  @override
+  String get time_slot_start_time => 'Start time';
+
+  @override
+  String get time_slot_end_time => 'End time';
+
+  @override
+  String get time_slot_add => 'Add time slot';
+
+  @override
+  String get time_slot_required => 'Please fill all time slot fields';
+
+  @override
+  String get time_slot_number => 'Time slot number';
+
+  @override
+  String get number_of_items => 'Number of items';
+
+  @override
+  String get create_post_choose_method =>
+      'Choose how you want to create your post';
+
+  @override
+  String get create_post_manually_subtitle => 'Create post manually';
+
+  @override
+  String get create_post_manually_description =>
+      'Fill in all information step by step';
+
+  @override
+  String get create_post_with_ai_title => 'Create Post with AI';
+
+  @override
+  String get create_post_with_ai_subtitle => 'AI-powered creation';
+
+  @override
+  String get create_post_with_ai_description =>
+      'Upload an image and let AI analyze and fill information automatically';
+
+  @override
+  String get ai_analyzing_success => 'AI analyzing success';
+
+  @override
+  String get ai_analysis => 'AI Analysis';
+
+  @override
+  String get ai_filled => 'AI Filled';
+
+  @override
+  String get upload_image_for_ai_analysis => 'Upload Image for AI Analysis';
+
+  @override
+  String get ai_will_analyze_and_auto_fill =>
+      'AI will analyze and auto-fill post information';
+
+  @override
+  String get analyze_with_ai => 'Analyze with AI';
+
+  @override
+  String get change_image => 'Change Image';
 }

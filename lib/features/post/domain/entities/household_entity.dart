@@ -4,6 +4,7 @@ class HouseholdEntity {
   final String fullName;
   final String phoneNumber;
   final int pointBalance;
+  final int creditBalance;
   final String rank;
   final List<String> roles;
   final String? avatarUrl;
@@ -13,6 +14,7 @@ class HouseholdEntity {
     required this.fullName,
     required this.phoneNumber,
     required this.pointBalance,
+    required this.creditBalance,
     required this.rank,
     required this.roles,
     this.avatarUrl,

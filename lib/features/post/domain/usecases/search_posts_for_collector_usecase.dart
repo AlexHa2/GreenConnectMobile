@@ -7,7 +7,7 @@ class SearchPostsForCollectorUsecase {
   SearchPostsForCollectorUsecase(this.repository);
 
   Future<PaginatedScrapPostEntity> call({
-    int? categoryId,
+    String? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,

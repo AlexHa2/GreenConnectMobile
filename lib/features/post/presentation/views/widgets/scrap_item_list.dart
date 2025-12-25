@@ -21,17 +21,16 @@ class ScrapItemList extends StatelessWidget {
   String _buildImageUrl(String fileName) {
     debugPrint('_buildImageUrl1111111: $fileName');
     if (fileName.isEmpty) return '';
-    
+
     // If already a full URL, return as is
     if (fileName.startsWith('http://') || fileName.startsWith('https://')) {
       return fileName;
     }
-    
+
     // Construct full URL: baseUrl + /v1/files/ + fileName
     final baseUrl = Env.baseUrl;
     return '$baseUrl/v1/files/$fileName';
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -43,102 +42,96 @@ class ScrapItemList extends StatelessWidget {
         final index = entry.key;
         final item = entry.value;
 
-        return Container(
-          margin: EdgeInsets.only(bottom: spacing.screenPadding),
-          child: Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(spacing.screenPadding),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(spacing.screenPadding),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                      spacing.screenPadding / 1.5,
-                    ),
-                    child: _buildImage(item, spacing, theme),
+        return Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(spacing.screenPadding),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(spacing.screenPadding),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(
+                    spacing.screenPadding / 1.5,
                   ),
-
-                  SizedBox(width: spacing.screenPadding),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          item.categoryName,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (item.amountDescription.isNotEmpty) ...[
-                          SizedBox(height: spacing.screenPadding * 0.5),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.inventory_2_outlined,
-                                size: 14,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              SizedBox(width: spacing.screenPadding * 0.5),
-                              Expanded(
-                                child: Text(
-                                  item.amountDescription,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-
-                  Column(
+                  child: _buildImage(item, spacing, theme),
+                ),
+                SizedBox(width: spacing.screenPadding),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      InkWell(
-                        onTap: () => onUpdate(index, item),
-                        borderRadius: BorderRadius.circular(8),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.edit_outlined,
-                            size: 20,
-                            color: theme.colorScheme.onSurface.withValues(
-                              alpha: 0.7,
+                      Text(
+                        item.categoryName,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (item.amountDescription.isNotEmpty) ...[
+                        SizedBox(height: spacing.screenPadding * 0.5),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.inventory_2_outlined,
+                              size: 14,
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
-                          ),
+                            SizedBox(width: spacing.screenPadding * 0.5),
+                            Expanded(
+                              child: Text(
+                                item.amountDescription,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      InkWell(
-                        onTap: () => onDelete(item),
-                        borderRadius: BorderRadius.circular(
-                          spacing.screenPadding,
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(spacing.screenPadding),
-                          child: const Icon(
-                            Icons.delete_outline,
-                            size: 20,
-                            color: AppColors.danger,
-                          ),
-                        ),
-                      ),
+                      ],
                     ],
                   ),
-                ],
-              ),
+                ),
+                Column(
+                  children: [
+                    InkWell(
+                      onTap: () => onUpdate(index, item),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.edit_outlined,
+                          size: 20,
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.7,
+                          ),
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () => onDelete(item),
+                      borderRadius: BorderRadius.circular(
+                        spacing.screenPadding,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(spacing.screenPadding),
+                        child: const Icon(
+                          Icons.delete_outline,
+                          size: 20,
+                          color: AppColors.danger,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         );
@@ -148,7 +141,7 @@ class ScrapItemList extends StatelessWidget {
 
   Widget _buildImage(ScrapItemData item, AppSpacing spacing, ThemeData theme) {
     final hasImage = item.imageFile != null || item.imageUrl != null;
-    
+
     if (!hasImage) {
       return Container(
         width: spacing.screenPadding * 6,
@@ -160,7 +153,7 @@ class ScrapItemList extends StatelessWidget {
         ),
       );
     }
-    
+
     // If local File exists, display from File
     if (item.imageFile != null) {
       return Image.file(

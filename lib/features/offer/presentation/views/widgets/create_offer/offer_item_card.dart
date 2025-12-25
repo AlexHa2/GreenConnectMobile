@@ -104,7 +104,7 @@ class OfferItemCard extends StatelessWidget {
           width: 60,
           height: 60,
           fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => Container(
+          errorBuilder: (_, __, ___) => Container(
             width: 60,
             height: 60,
             color: theme.primaryColor.withValues(alpha: 0.1),

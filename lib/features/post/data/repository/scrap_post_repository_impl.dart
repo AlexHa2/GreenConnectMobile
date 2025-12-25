@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:GreenConnectMobile/core/error/exception_mapper.dart';
 import 'package:GreenConnectMobile/features/post/data/datasources/abstract_datasources/scrap_post_remote_datasource.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/create_scrap_post_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/location_model.dart';
+import 'package:GreenConnectMobile/features/post/data/models/scrap_post/analyze_scrap_result_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_detail_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/update_scrap_post_model.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/analyze_scrap_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/household_report_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/paginated_scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_detail_entity.dart';
@@ -23,14 +27,22 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
         title: post.title,
         description: post.description,
         address: post.address,
-        availableTimeRange: post.availableTimeRange,
-        location: LocationModel.fromEntity(post.location),
+        availableTimeRange: post.availableTimeRange ?? '',
+        location: LocationModel.fromEntity(post.location!),
         mustTakeAll: post.mustTakeAll,
         scrapPostDetails: post.scrapPostDetails.map((d) {
           return CreateScrapPostDetailModel(
             scrapCategoryId: d.scrapCategoryId,
             amountDescription: d.amountDescription,
             imageUrl: d.imageUrl,
+            type: d.type,
+          );
+        }).toList(),
+        scrapPostTimeSlots: post.scrapPostTimeSlots.map((t) {
+          return CreateScrapPostTimeSlotModel(
+            specificDate: t.specificDate,
+            startTime: t.startTime,
+            endTime: t.endTime,
           );
         }).toList(),
       );
@@ -80,6 +92,7 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
         scrapCategoryId: detail.scrapCategoryId,
         amountDescription: detail.amountDescription,
         imageUrl: detail.imageUrl,
+        type: detail.type,
       );
 
       return await remote.createScrapDetail(postId: postId, detail: model);
@@ -89,7 +102,7 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
   @override
   Future<bool> deleteScrapDetail({
     required String postId,
-    required int scrapCategoryId,
+    required String scrapCategoryId,
   }) {
     return guard(() async {
       return await remote.deleteScrapDetail(
@@ -117,6 +130,7 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
         amountDescription: detail.amountDescription,
         imageUrl: detail.imageUrl,
         status: detail.status,
+        type: detail.type,
       );
 
       return await remote.updateScrapDetail(postId: postId, detail: model);
@@ -145,7 +159,7 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
 
   @override
   Future<PaginatedScrapPostEntity> searchPostsForCollector({
-    int? categoryId,
+    String? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,
@@ -178,6 +192,69 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
         end: end,
       );
       return result.toEntity();
+    });
+  }
+
+  @override
+  Future<AnalyzeScrapResultEntity> analyzeScrap({
+    required Uint8List imageBytes,
+    required String fileName,
+  }) {
+    return guard(() async {
+      final AnalyzeScrapResultModel result =
+          await remote.analyzeScrap(imageBytes: imageBytes, fileName: fileName);
+      return result.toEntity();
+    });
+  }
+
+  @override
+  Future<ScrapPostTimeSlotEntity> createTimeSlot({
+    required String postId,
+    required String specificDate,
+    required String startTime,
+    required String endTime,
+  }) {
+    return guard(() async {
+      final result = await remote.createTimeSlot(
+        postId: postId,
+        specificDate: specificDate,
+        startTime: startTime,
+        endTime: endTime,
+      );
+      return result.toEntity();
+    });
+  }
+
+  @override
+  Future<ScrapPostTimeSlotEntity> updateTimeSlot({
+    required String postId,
+    required String timeSlotId,
+    required String specificDate,
+    required String startTime,
+    required String endTime,
+  }) {
+    return guard(() async {
+      final result = await remote.updateTimeSlot(
+        postId: postId,
+        timeSlotId: timeSlotId,
+        specificDate: specificDate,
+        startTime: startTime,
+        endTime: endTime,
+      );
+      return result.toEntity();
+    });
+  }
+
+  @override
+  Future<bool> deleteTimeSlot({
+    required String postId,
+    required String timeSlotId,
+  }) {
+    return guard(() async {
+      return await remote.deleteTimeSlot(
+        postId: postId,
+        timeSlotId: timeSlotId,
+      );
     });
   }
 }

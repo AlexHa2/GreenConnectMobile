@@ -27,7 +27,7 @@ class CreateOfferBottomSheet extends ConsumerStatefulWidget {
 class _CreateOfferBottomSheetState
     extends ConsumerState<CreateOfferBottomSheet> {
   final _formKey = GlobalKey<FormState>();
-  final Map<int, OfferItemData> _offerItems = {};
+  final Map<String, OfferItemData> _offerItems = {};
   DateTime? _proposedTime;
   final _messageController = TextEditingController();
   bool _isSubmitting = false;
@@ -63,7 +63,7 @@ class _CreateOfferBottomSheetState
     super.dispose();
   }
 
-  void _toggleItem(int categoryId, String categoryName) {
+  void _toggleItem(String categoryId, String categoryName) {
     if (widget.post.mustTakeAll == true) {
       return;
     } // Can't toggle if must take all

@@ -303,7 +303,7 @@ class SVi extends S {
   String get pickup_address => 'Địa chỉ lấy';
 
   @override
-  String get pickup_time => 'Thời gian lấy';
+  String get pickup_time => 'Thời gian có thể lấy';
 
   @override
   String get add_scrap_items => 'Thêm các phế liệu';
@@ -2943,4 +2943,87 @@ class SVi extends S {
 
   @override
   String get failed => 'thất bại';
+
+  @override
+  String get scrap_type_sale => 'Bán';
+
+  @override
+  String get scrap_type_donation => 'Tặng';
+
+  @override
+  String get scrap_type_service => 'Dịch vụ';
+
+  @override
+  String get scrap_type_hint => 'Chọn loại';
+
+  @override
+  String get scrap_type_required => 'Vui lòng chọn loại';
+
+  @override
+  String get time_slot_section_title => 'Khung thời gian';
+
+  @override
+  String get time_slot_date => 'Ngày';
+
+  @override
+  String get time_slot_start_time => 'Giờ bắt đầu';
+
+  @override
+  String get time_slot_end_time => 'Giờ kết thúc';
+
+  @override
+  String get time_slot_add => 'Thêm khung thời gian';
+
+  @override
+  String get time_slot_required =>
+      'Vui lòng nhập đầy đủ các trường khung thời gian';
+
+  @override
+  String get time_slot_number => 'Số lượng khung giờ';
+
+  @override
+  String get number_of_items => 'Số lượng vật phẩm';
+
+  @override
+  String get create_post_choose_method => 'Chọn cách bạn muốn tạo bài đăng';
+
+  @override
+  String get create_post_manually_subtitle => 'Tạo bài đăng thủ công';
+
+  @override
+  String get create_post_manually_description =>
+      'Điền tất cả thông tin từng bước';
+
+  @override
+  String get create_post_with_ai_title => 'Tạo bài đăng với AI';
+
+  @override
+  String get create_post_with_ai_subtitle => 'Tạo bài đăng bằng AI';
+
+  @override
+  String get create_post_with_ai_description =>
+      'Tải lên hình ảnh và để AI phân tích và tự động điền thông tin';
+
+  @override
+  String get ai_analyzing_success => 'Ai phân tích thành công';
+
+  @override
+  String get ai_analysis => 'Phân tích AI';
+
+  @override
+  String get ai_filled => 'Đã điền bằng AI';
+
+  @override
+  String get upload_image_for_ai_analysis =>
+      'Tải lên hình ảnh để phân tích bằng AI';
+
+  @override
+  String get ai_will_analyze_and_auto_fill =>
+      'AI sẽ phân tích và tự động điền thông tin bài đăng';
+
+  @override
+  String get analyze_with_ai => 'Phân tích bằng AI';
+
+  @override
+  String get change_image => 'Đổi hình ảnh';
 }

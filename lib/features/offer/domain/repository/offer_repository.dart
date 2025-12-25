@@ -4,10 +4,11 @@ import 'package:GreenConnectMobile/features/offer/domain/entities/paginated_offe
 
 abstract class OfferRepository {
   /// Tạo đề nghị thu gom cho một bài đăng
-  /// POST /api/v1/posts/{postId}/offers
-  Future<CollectionOfferEntity> createOffer({
+  /// POST /api/v1/posts/{postId}/offers?slotTimeId={slotTimeId}
+  Future<bool> createOffer({
     required String postId,
     required CreateOfferRequestEntity request,
+    String? slotTimeId,
   });
 
   /// Lấy danh sách các đề nghị cho một bài đăng cụ thể
@@ -48,7 +49,7 @@ abstract class OfferRepository {
   /// POST /api/v1/offers/{offerId}/details
   Future<CollectionOfferEntity> addOfferDetail({
     required String offerId,
-    required int scrapCategoryId,
+    required String scrapCategoryId,
     required double pricePerUnit,
     required String unit,
   });

@@ -24,6 +24,7 @@ import 'package:GreenConnectMobile/features/package/presentation/views/payment_s
 import 'package:GreenConnectMobile/features/package/presentation/views/payment_webview_page.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/collector_list_post.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/create_post.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/create_post_with_ai.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/house_hold_home.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/household_list_post.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/post_detail.dart';
@@ -227,6 +228,11 @@ final GoRouter greenRouter = GoRouter(
       path: '/create-post',
       name: 'create-post',
       builder: (context, state) => const CreateRecyclingPostPage(),
+    ),
+    GoRoute(
+      path: '/create-post-with-ai',
+      name: 'create-post-with-ai',
+      builder: (context, state) => const CreateRecyclingPostWithAIPage(),
     ),
     GoRoute(
       path: '/update-post',

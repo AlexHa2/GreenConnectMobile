@@ -1,25 +1,32 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:GreenConnectMobile/core/enum/scrap_post_detail_type.dart';
+import 'package:GreenConnectMobile/core/helper/format_date.dart';
 import 'package:GreenConnectMobile/core/helper/get_location_from_address.dart';
 import 'package:GreenConnectMobile/core/helper/navigate_with_loading.dart';
 import 'package:GreenConnectMobile/core/helper/string_helper.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/location_entity.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/scrap_category_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_item_data.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_detail_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/time_slot.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_category_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
-import 'package:GreenConnectMobile/features/post/presentation/views/widgets/add_scrap_item_section.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/add_item_bottom_sheet.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/add_time_slot_bottom_sheet.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/create_post_header.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/loading_overlay.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_info_form.dart';
-import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_section_title.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/review_page.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/scrap_item_list.dart';
-import 'package:GreenConnectMobile/features/post/presentation/views/widgets/take_all_switch.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/time_slot_list.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/update_scrap_item_dialog.dart';
 import 'package:GreenConnectMobile/features/upload/domain/entities/upload_request_entity.dart';
 import 'package:GreenConnectMobile/features/upload/presentation/providers/upload_provider.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/address_picker_bottom_sheet.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
@@ -27,47 +34,48 @@ import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 class CreateRecyclingPostPage extends ConsumerStatefulWidget {
   const CreateRecyclingPostPage({super.key});
+
   @override
   ConsumerState<CreateRecyclingPostPage> createState() =>
       _CreateRecyclingPostPageState();
 }
 
-class _CreateRecyclingPostPageState extends ConsumerState<CreateRecyclingPostPage> {
-  UniqueKey _addItemSectionKey = UniqueKey();
+class _CreateRecyclingPostPageState
+    extends ConsumerState<CreateRecyclingPostPage> {
+  // ===== Constants =====
+  static const int _stepCount = 4;
+  static const Duration _pageTransitionDuration = Duration(milliseconds: 260);
+  static const Duration _controllerDisposeDelay = Duration(milliseconds: 300);
+  static const int _maxDaysAheadForDatePicker = 30;
+
+  // ===== Form State =====
   final _formKey = GlobalKey<FormState>();
-  final _itemFormKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _pickupAddressController =
       TextEditingController();
-  final TextEditingController _pickupTimeController = TextEditingController();
-  TextEditingController _amountDescriptionController = TextEditingController();
 
   LocationEntity? _location;
   bool _addressFound = false;
-
-  File? _selectedImage;
-  final ImagePicker _picker = ImagePicker();
-
-  int? _selectedCategoryId;
-  final List<ScrapItemData> _scrapItems = [];
-
   bool _isTakeAll = false;
   bool _isSubmitting = false;
 
-  // AI Recognition state
-  bool _isAnalyzingImage = false;
-  String? _recognizedImageUrl;
-  Map<String, dynamic>? _aiRecognitionData;
-  String? _aiSuggestedDescription;
+  // ===== Step State =====
+  int _currentStep = 0;
+  late final PageController _pageController;
+
+  // ===== Data State =====
+  final List<TimeSlotEntity> _timeSlots = [];
+  final List<ScrapItemData> _scrapItems = [];
 
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: _currentStep);
+
     Future.microtask(() {
       ref
           .read(scrapCategoryViewModelProvider.notifier)
@@ -75,135 +83,82 @@ class _CreateRecyclingPostPageState extends ConsumerState<CreateRecyclingPostPag
     });
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _pickupAddressController.dispose();
+    super.dispose();
+  }
+
   /// Extract fileName from full URL
   /// Example: https://api.com/scraps/uuid/file.jpg -> scraps/uuid/file.jpg
   String _extractFileNameFromUrl(String url) {
     if (url.isEmpty) return '';
-    
-    // If it already looks like a fileName (contains "scraps/"), return as is
     if (url.startsWith('scraps/')) return url;
-    
-    // Extract fileName part from full URL
+
     final uri = Uri.tryParse(url);
     if (uri != null && uri.pathSegments.isNotEmpty) {
-      // Find the index where "scraps" starts
       final scrapsIndex = uri.pathSegments.indexOf('scraps');
       if (scrapsIndex != -1) {
-        // Join from "scraps" onwards
         return uri.pathSegments.sublist(scrapsIndex).join('/');
       }
-      // If no "scraps" found, return the last segments (fallback)
       return uri.pathSegments.join('/');
     }
-    
-    return url; // Return original if parsing fails
+    return url;
   }
 
-  Future<void> _pickImage() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
+  bool _isOverlapping(TimeSlotEntity a, TimeSlotEntity b) {
+    if (!_isSameDay(a.date, b.date)) return false;
+
+    final aStart = _timeToMinutes(a.startTime);
+    final aEnd = _timeToMinutes(a.endTime);
+    final bStart = _timeToMinutes(b.startTime);
+    final bEnd = _timeToMinutes(b.endTime);
+    return aStart < bEnd && bStart < aEnd;
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  int _timeToMinutes(TimeOfDay time) => time.hour * 60 + time.minute;
+
+  bool _isInvalidTimeRange(TimeOfDay start, TimeOfDay end) {
+    return end.hour < start.hour ||
+        (end.hour == start.hour && end.minute <= start.minute);
+  }
+
+  void _handleAddTimeSlot(
+    DateTime date,
+    TimeOfDay startTime,
+    TimeOfDay endTime,
+    S s,
+  ) {
+    if (_isInvalidTimeRange(startTime, endTime)) {
+      CustomToast.show(context, s.time_slot_required, type: ToastType.error);
+      return;
+    }
+
+    final newSlot = TimeSlotEntity(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      date: date,
+      startTime: startTime,
+      endTime: endTime,
     );
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-        _isAnalyzingImage = true;
-        _aiRecognitionData = null;
-        _recognizedImageUrl = null;
-      });
 
-      // Call AI API immediately after image selection
-      await _analyzeImageWithAI();
+    if (_timeSlots.any((slot) => _isOverlapping(slot, newSlot))) {
+      CustomToast.show(context, s.time_slot_required, type: ToastType.error);
+      return;
     }
+
+    setState(() => _timeSlots.add(newSlot));
+    context.pop();
   }
 
-  Future<void> _analyzeImageWithAI() async {
-    if (_selectedImage == null) return;
+  // ========= UX: Address Picker =========
 
-    try {
-      final uploadNotifier = ref.read(uploadViewModelProvider.notifier);
-      final Uint8List bytes = await _selectedImage!.readAsBytes();
-      final fileName = _selectedImage!.path.split('/').last;
-
-      await uploadNotifier.recognizeScrap(bytes, fileName);
-
-      final uploadState = ref.read(uploadViewModelProvider);
-
-      if (uploadState.recognizeScrapResponse != null) {
-        final aiResponse = uploadState.recognizeScrapResponse!;
-
-        // Try to match AI category with existing categories
-        final categories =
-            ref.read(scrapCategoryViewModelProvider).listData?.data ?? [];
-        final matchedCategory = categories.where((cat) {
-          final categoryLower = cat.categoryName.toLowerCase();
-          final aiCategoryLower = aiResponse.category.toLowerCase();
-          return categoryLower.contains(aiCategoryLower) ||
-              aiCategoryLower.contains(categoryLower);
-        }).firstOrNull;
-
-        // Generate AI suggested description - only use estimatedAmount
-        // Limit to 255 characters for VARCHAR(255) database constraint
-        String? suggestedDesc;
-        if (aiResponse.estimatedAmount.isNotEmpty) {
-          suggestedDesc = aiResponse.estimatedAmount;
-          // Truncate to 255 characters if needed
-          if (suggestedDesc.length > 255) {
-            suggestedDesc = "${suggestedDesc.substring(0, 252)}...";
-          }
-        }
-
-        setState(() {
-          _isAnalyzingImage = false;
-          _recognizedImageUrl = aiResponse.savedImageUrl;
-          _aiRecognitionData = {
-            'categoryId': matchedCategory?.scrapCategoryId,
-            'itemName': aiResponse.itemName,
-            'category': aiResponse.category,
-            'isRecyclable': aiResponse.isRecyclable,
-            'confidence': aiResponse.confidence,
-            'estimatedAmount': aiResponse.estimatedAmount,
-            'advice': aiResponse.advice,
-          };
-          _aiSuggestedDescription = suggestedDesc;
-
-          // Auto-fill fields
-          if (matchedCategory != null) {
-            _selectedCategoryId = matchedCategory.scrapCategoryId;
-          }
-          // Nếu có gợi ý số lượng từ AI thì tự động điền vào field
-          if (suggestedDesc != null) {
-            _amountDescriptionController.text = suggestedDesc;
-          }
-        });
-      } else {
-        // AI error: Keep imageFile, allow user to enter manually
-        setState(() {
-          _isAnalyzingImage = false;
-          _recognizedImageUrl = null; // No URL
-          _aiRecognitionData = null;
-        });
-        if (mounted) {
-          CustomToast.show(
-            context,
-            S.of(context)!.ai_cannot_analyze,
-            type: ToastType.warning,
-          );
-        }
-      }
-    } catch (e) {
-      debugPrint('❌ ERROR ANALYZE IMAGE: $e');
-      setState(() => _isAnalyzingImage = false);
-      if (mounted) {
-        CustomToast.show(
-          context,
-          S.of(context)!.error_analyze_image,
-          type: ToastType.error,
-        );
-      }
-    }
-  }
-
-  /// Open address picker bottom sheet
   Future<void> _openAddressPicker() async {
     showModalBottomSheet(
       context: context,
@@ -211,166 +166,292 @@ class _CreateRecyclingPostPageState extends ConsumerState<CreateRecyclingPostPag
       backgroundColor: Colors.transparent,
       builder: (context) => AddressPickerBottomSheet(
         initialAddress: _pickupAddressController.text.trim(),
-        onAddressSelected: (address, latitude, longitude) async {
-          setState(() {
-            _pickupAddressController.text = address;
-          });
-
-          // Validate address with geocoding
-          if (latitude != null && longitude != null) {
-            // We already have coordinates from GPS or saved location
-            setState(() {
-              _location = LocationEntity(
-                latitude: latitude,
-                longitude: longitude,
-              );
-              _addressFound = true;
-            });
-          } else {
-            // Manual address input - need to geocode
-            final loc = await getLocationFromAddress(address);
-            if (loc != null) {
-              setState(() {
-                _location = loc;
-                _addressFound = true;
-              });
-            } else {
-              setState(() {
-                _addressFound = false;
-              });
-            }
-          }
-        },
+        onAddressSelected: _handleAddressSelected,
       ),
     );
   }
 
-  void _handleAddItem() {
-    // Validate required fields
-    if (_selectedImage == null) {
-      CustomToast.show(
-        context,
-        S.of(context)!.please_select_image,
-        type: ToastType.error,
+  Future<void> _handleAddressSelected(
+      String address, double? latitude, double? longitude) async {
+    setState(() => _pickupAddressController.text = address);
+
+    if (latitude != null && longitude != null) {
+      _updateLocation(
+        LocationEntity(latitude: latitude, longitude: longitude),
+        found: true,
       );
-      return;
+    } else {
+      final loc = await getLocationFromAddress(address);
+      _updateLocation(loc, found: loc != null);
     }
+  }
 
-    if (_selectedCategoryId == null) {
-      CustomToast.show(
-        context,
-        S.of(context)!.please_select_category,
-        type: ToastType.error,
-      );
-      return;
-    }
-
-    if (!_itemFormKey.currentState!.validate()) {
-      return;
-    }
-
-    final exists = _scrapItems.any(
-      (item) => item.categoryId == _selectedCategoryId,
-    );
-    if (exists) {
-      CustomToast.show(
-        context,
-        S.of(context)!.error_category_exists,
-        type: ToastType.error,
-      );
-      return;
-    }
-
-    // Add item with ScrapItemData (can be File or URL)
-    final categoryName = ref
-        .read(scrapCategoryViewModelProvider)
-        .listData!
-        .data
-        .firstWhere((cat) => cat.scrapCategoryId == _selectedCategoryId)
-        .categoryName;
-
+  void _updateLocation(LocationEntity? location, {required bool found}) {
     setState(() {
-      _scrapItems.add(
-        ScrapItemData(
-          categoryId: _selectedCategoryId!,
-          categoryName: categoryName,
-          amountDescription: StringHelper.truncateForVarchar255(
-            _amountDescriptionController.text.trim(),
-          ),
-          imageUrl: _recognizedImageUrl,
-          imageFile: _recognizedImageUrl == null ? _selectedImage : null,
-          aiData: _aiRecognitionData,
-        ),
-      );
-      // Reset form and force AddScrapItemSection to rebuild
-      _selectedCategoryId = null;
-      _amountDescriptionController.dispose();
-      _amountDescriptionController = TextEditingController();
-      _selectedImage = null;
-      _recognizedImageUrl = null;
-      _aiRecognitionData = null;
-      _aiSuggestedDescription = null;
-      _isAnalyzingImage = false;
-      _itemFormKey.currentState!.reset();
-      _addItemSectionKey = UniqueKey();
+      _location = location;
+      _addressFound = found;
     });
+  }
 
-    CustomToast.show(
-      context,
-      S.of(context)!.item_added_success,
-      type: ToastType.success,
+  // ========= Custom Stepper Navigation =========
+
+  Future<void> _jumpToStep(int step) async {
+    if (step == _currentStep) return;
+
+    // Only allow jump forward if all prior steps valid
+    if (step > _currentStep && !_validateStepsRange(_currentStep, step)) {
+      return;
+    }
+
+    setState(() => _currentStep = step);
+    await _pageController.animateToPage(
+      step,
+      duration: _pageTransitionDuration,
+      curve: Curves.easeOut,
     );
   }
 
-  /// BATCH UPLOAD: Upload all images without URL in a single batch
+  bool _validateStepsRange(int from, int to) {
+    for (int s = from; s < to; s++) {
+      if (!_validateStep(s, showToast: true)) return false;
+    }
+    return true;
+  }
+
+  Future<void> _next() async {
+    if (!_validateStep(_currentStep, showToast: true)) return;
+    if (_currentStep >= _stepCount - 1) return;
+    await _jumpToStep(_currentStep + 1);
+  }
+
+  Future<void> _back() async {
+    if (_currentStep <= 0) return;
+    await _jumpToStep(_currentStep - 1);
+  }
+
+  bool _validateStep(int step, {required bool showToast}) {
+    switch (step) {
+      case 0:
+        return _validatePostInfoStep(showToast);
+      case 1:
+        return _validateTimeSlotsStep(showToast);
+      case 2:
+        return _validateScrapItemsStep(showToast);
+      case 3:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  bool _validatePostInfoStep(bool showToast) {
+    final s = S.of(context)!;
+    final title = _titleController.text.trim();
+    final description = _descriptionController.text.trim();
+    final address = _pickupAddressController.text.trim();
+
+    final titleError = _validateTitle(title, s);
+    final descError = _validateDescription(description, s);
+    final addressError = _validateAddress(address, s);
+
+    if (titleError != null || descError != null || addressError != null) {
+      if (showToast) {
+        final errorMsg =
+            titleError ?? descError ?? addressError ?? s.error_required;
+        CustomToast.show(context, errorMsg, type: ToastType.error);
+      }
+      return false;
+    }
+
+    if (_location == null || !_addressFound) {
+      if (showToast) {
+        CustomToast.show(context, s.error_invalid_address,
+            type: ToastType.error);
+      }
+      return false;
+    }
+    return true;
+  }
+
+  String? _validateTitle(String title, S s) {
+    if (title.isEmpty) return s.error_required;
+    if (title.length < 3) return s.error_post_title_min;
+    return null;
+  }
+
+  String? _validateDescription(String description, S s) {
+    if (description.isEmpty) return s.error_required;
+    if (description.length < 10) return s.error_description_min;
+    return null;
+  }
+
+  String? _validateAddress(String address, S s) {
+    if (address.isEmpty) return s.error_required;
+    return null;
+  }
+
+  bool _validateTimeSlotsStep(bool showToast) {
+    final s = S.of(context)!;
+
+    if (_timeSlots.isEmpty) {
+      if (showToast) {
+        CustomToast.show(context, s.time_slot_required, type: ToastType.error);
+      }
+      return false;
+    }
+
+    if (_hasInvalidTimeRanges()) {
+      if (showToast) {
+        CustomToast.show(context, s.time_slot_required, type: ToastType.error);
+      }
+      return false;
+    }
+
+    if (_hasOverlappingTimeSlots()) {
+      if (showToast) {
+        CustomToast.show(context, s.time_slot_required, type: ToastType.error);
+      }
+      return false;
+    }
+
+    return true;
+  }
+
+  bool _hasInvalidTimeRanges() {
+    return _timeSlots.any(
+      (slot) =>
+          slot.endTime.hour < slot.startTime.hour ||
+          (slot.endTime.hour == slot.startTime.hour &&
+              slot.endTime.minute <= slot.startTime.minute),
+    );
+  }
+
+  bool _hasOverlappingTimeSlots() {
+    for (int i = 0; i < _timeSlots.length; i++) {
+      for (int j = i + 1; j < _timeSlots.length; j++) {
+        if (_isOverlapping(_timeSlots[i], _timeSlots[j])) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  bool _validateScrapItemsStep(bool showToast) {
+    final s = S.of(context)!;
+    if (_scrapItems.isEmpty) {
+      if (showToast) {
+        CustomToast.show(context, s.error_scrap_item_empty,
+            type: ToastType.error);
+      }
+      return false;
+    }
+    return true;
+  }
+
+  // ========= UX: Add Time Slot Sheet =========
+
+  Future<void> _showAddTimeSlotSheet() async {
+    final s = S.of(context)!;
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) => AddTimeSlotBottomSheet(
+        onAdd: (date, startTime, endTime) {
+          _handleAddTimeSlot(date, startTime, endTime, s);
+        },
+        isInvalidTimeRange: _isInvalidTimeRange,
+        maxDaysAhead: _maxDaysAheadForDatePicker,
+      ),
+    );
+  }
+
+  // ========= UX: Add Item Sheet =========
+
+  Future<void> _showAddItemSheet(List<ScrapCategoryEntity> categories) async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) => AddItemBottomSheet(
+        categories: categories,
+        onAdd: ({
+          required String categoryId,
+          required ScrapPostDetailType type,
+          required File imageFile,
+          required String amountText,
+        }) {
+          final s = S.of(context)!;
+          _addScrapItem(
+            categories: categories,
+            categoryId: categoryId,
+            type: type,
+            imageFile: imageFile,
+            amountText: amountText,
+            s: s,
+          );
+        },
+        hasCategoryExists: _hasCategoryExists,
+        controllerDisposeDelay: _controllerDisposeDelay,
+      ),
+    );
+  }
+
+  // ========= Post Submission Helpers =========
+
+  int? _findFirstInvalidStep() {
+    for (int i = 0; i < _stepCount - 1; i++) {
+      if (!_validateStep(i, showToast: false)) return i;
+    }
+    return null;
+  }
+
+  ScrapPostEntity _buildScrapPostEntity(S s) {
+    const defaultImageUrl =
+        "https://media.vietnamplus.vn/images/fbc23bef0d088b23a8965bce49f85a61cd286afccaf9606b44256f5d7ef5d5fefff6aa780c9464f6499f791f5dd6f3de1d175058d9a59d4e21100ddb41c54c45/ngaymoitruong_12.jpg";
+
+    return ScrapPostEntity(
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim(),
+      address: _pickupAddressController.text.trim(),
+      availableTimeRange: 'từ thứ 2 đến thứ 6 các giờ trong tuần',
+      scrapPostDetails: _scrapItems.map((item) {
+        return ScrapPostDetailEntity(
+          scrapCategoryId: item.categoryId,
+          amountDescription: item.amountDescription,
+          imageUrl: item.imageUrl != null
+              ? _extractFileNameFromUrl(item.imageUrl!)
+              : defaultImageUrl,
+          type: item.type.toJson(),
+        );
+      }).toList(),
+      mustTakeAll: _isTakeAll,
+      location: _location!,
+      scrapPostTimeSlots: _timeSlots.map((slot) {
+        return ScrapPostTimeSlotEntity(
+          specificDate: formatDateOnly(slot.date),
+          startTime: formatTimeOfDay(slot.startTime),
+          endTime: formatTimeOfDay(slot.endTime),
+        );
+      }).toList(),
+    );
+  }
+
+  // ========= BATCH UPLOAD =========
+
   Future<bool> _uploadPendingImages() async {
     final uploadNotifier = ref.read(uploadViewModelProvider.notifier);
 
     try {
-      // Find all items that need upload
-      final itemsNeedUpload = _scrapItems
-          .where((item) => item.needsUpload)
-          .toList();
+      final itemsNeedUpload =
+          _scrapItems.where((item) => item.imageFile != null).toList();
 
-      if (itemsNeedUpload.isEmpty) {
-        return true; // Nothing to upload
-      }
+      if (itemsNeedUpload.isEmpty) return true;
 
-      // Upload each image
-      for (int i = 0; i < itemsNeedUpload.length; i++) {
-        final item = itemsNeedUpload[i];
-        final file = item.imageFile!;
-
-        // Step 1: Request upload URL
-        final fileName = file.path.split('/').last;
-        final contentType = "image/${fileName.split('.').last}";
-
-        await uploadNotifier.requestUploadUrlForScrapPost(
-          UploadFileRequest(fileName: fileName, contentType: contentType),
-        );
-
-        final uploadState = ref.read(uploadViewModelProvider);
-        if (uploadState.uploadUrl == null) {
-          if (!mounted) return false;
-          throw Exception(S.of(context)!.error_get_upload_url);
-        }
-
-        // Step 2: Upload binary
-        final Uint8List bytes = await file.readAsBytes();
-        await uploadNotifier.uploadBinary(
-          uploadUrl: uploadState.uploadUrl!.uploadUrl,
-          fileBytes: bytes,
-          contentType: contentType,
-        );
-
-        // Step 3: Update item with uploaded URL
-        final itemIndex = _scrapItems.indexOf(item);
-        setState(() {
-          _scrapItems[itemIndex] = item.copyWith(
-            imageUrl: uploadState.uploadUrl!.filePath,
-            imageFile: null, // Remove local file
-          );
-        });
+      for (final item in itemsNeedUpload) {
+        final success = await _uploadSingleImage(item, uploadNotifier);
+        if (!success) return false;
       }
 
       return true;
@@ -387,275 +468,509 @@ class _CreateRecyclingPostPageState extends ConsumerState<CreateRecyclingPostPag
     }
   }
 
+  Future<bool> _uploadSingleImage(
+    ScrapItemData item,
+    dynamic uploadNotifier,
+  ) async {
+    final file = item.imageFile!;
+    final fileName = file.path.split('/').last;
+    final contentType = "image/${fileName.split('.').last}";
+
+    await uploadNotifier.requestUploadUrlForScrapPost(
+      UploadFileRequest(fileName: fileName, contentType: contentType),
+    );
+
+    final uploadState = ref.read(uploadViewModelProvider);
+    if (uploadState.uploadUrl == null) {
+      if (!mounted) return false;
+      throw Exception(S.of(context)!.error_get_upload_url);
+    }
+
+    final Uint8List bytes = await file.readAsBytes();
+    await uploadNotifier.uploadBinary(
+      uploadUrl: uploadState.uploadUrl!.uploadUrl,
+      fileBytes: bytes,
+      contentType: contentType,
+    );
+
+    final itemIndex = _scrapItems.indexOf(item);
+    setState(() {
+      _scrapItems[itemIndex] = item.copyWith(
+        imageUrl: uploadState.uploadUrl!.filePath,
+        imageFile: null,
+      );
+    });
+
+    return true;
+  }
+
+  // ========= Item Validation & Creation =========
+
+  bool _hasCategoryExists(String categoryId) {
+    return _scrapItems.any((item) => item.categoryId == categoryId);
+  }
+
+  ({File? file, String? url}) _parseImageUpdate(dynamic image) {
+    if (image is! String || image.isEmpty) {
+      return (file: null, url: null);
+    }
+
+    if (image.startsWith('/') || image.contains('file://')) {
+      return (file: File(image), url: null);
+    } else if (image.startsWith('http')) {
+      return (file: null, url: image);
+    } else {
+      return (file: File(image), url: null);
+    }
+  }
+
+  void _addScrapItem({
+    required List<ScrapCategoryEntity> categories,
+    required String categoryId,
+    required ScrapPostDetailType type,
+    required File imageFile,
+    required String amountText,
+    required S s,
+  }) {
+    final categoryName = categories
+        .firstWhere((c) => c.scrapCategoryId == categoryId)
+        .categoryName;
+
+    setState(() {
+      _scrapItems.add(
+        ScrapItemData(
+          categoryId: categoryId,
+          categoryName: categoryName,
+          amountDescription: StringHelper.truncateForVarchar255(amountText),
+          type: type,
+          imageUrl: null,
+          imageFile: imageFile,
+        ),
+      );
+    });
+
+    CustomToast.show(context, s.item_added_success, type: ToastType.success);
+  }
+
+  // ========= RESET =========
+
   void _resetAllData() {
     _titleController.clear();
     _descriptionController.clear();
     _pickupAddressController.clear();
-    _pickupTimeController.clear();
 
     setState(() {
       _scrapItems.clear();
+      _timeSlots.clear();
       _location = null;
       _addressFound = false;
-      _selectedCategoryId = null;
-      _selectedImage = null;
       _isTakeAll = false;
+      _currentStep = 0;
     });
 
     _formKey.currentState?.reset();
-    _itemFormKey.currentState?.reset();
+
+    _pageController.jumpToPage(0);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<AppSpacing>()!;
+  // ========= SUBMIT =========
 
-    final categoryState = ref.watch(scrapCategoryViewModelProvider);
-    final categories = categoryState.listData?.data ?? [];
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "${S.of(context)!.create} ${S.of(context)!.recycling} ${S.of(context)!.post}",
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: _isSubmitting ? null : () => context.pop(),
-        ),
+  Future<void> _submitPost() async {
+    final s = S.of(context)!;
+    final firstFailedStep = _findFirstInvalidStep();
+
+    if (firstFailedStep != null) {
+      _validateStep(firstFailedStep, showToast: true);
+      await _jumpToStep(firstFailedStep);
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      if (!await _uploadPendingImages()) {
+        setState(() => _isSubmitting = false);
+        return;
+      }
+
+      final post = _buildScrapPostEntity(s);
+      final vm = ref.read(scrapPostViewModelProvider.notifier);
+      final success = await vm.createPost(post: post);
+
+      if (!mounted || !context.mounted) return;
+
+      if (success) {
+        _resetAllData();
+        CustomToast.show(context, s.success_post_created,
+            type: ToastType.success);
+        if (context.mounted) {
+          navigateWithLoading(context, route: '/household-list-post');
+        }
+      } else {
+        CustomToast.show(
+          context,
+          "${s.error_general} ${s.error_scrap_category}",
+          type: ToastType.error,
+        );
+      }
+    } catch (e, stackTrace) {
+      debugPrint('❌ [SUBMIT] Exception occurred: $e');
+      debugPrint('📌 [SUBMIT] Stack trace: $stackTrace');
+      rethrow;
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
+  // ========= UI Building Blocks =========
+
+  PreferredSizeWidget _buildAppBar() {
+    final s = S.of(context)!;
+
+    return AppBar(
+      title: Text('${s.create} ${s.recycling} ${s.post}'),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: _isSubmitting ? null : () => context.pop(),
       ),
-      body: LoadingOverlay(
-        isLoading: _isSubmitting,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(spacing.screenPadding),
-          child: Form(
-            key: _formKey,
-            child: Column(
+      actions: [
+        TextButton(
+          onPressed: _isSubmitting ? null : _resetAllData,
+          child: Text(s.cancel),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomBar() {
+    final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!;
+    final s = S.of(context)!;
+
+    final isLast = _currentStep == _stepCount - 1;
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          spacing.screenPadding,
+          spacing.screenPadding * 0.625,
+          spacing.screenPadding,
+          spacing.screenPadding * 0.75,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
               children: [
-                PostInfoForm(
-                  formKey: _formKey,
-                  titleController: _titleController,
-                  descController: _descriptionController,
-                  addressController: _pickupAddressController,
-                  timeController: _pickupTimeController,
-                  onSearchAddress: () {},  // Deprecated, kept for compatibility
-                  onGetCurrentLocation: _openAddressPicker,
-                  addressFound: _addressFound,
-                ),
-
-                SizedBox(height: spacing.screenPadding),
-                PostSectionTitle(title: S.of(context)!.add_scrap_items),
-                SizedBox(height: spacing.screenPadding),
-                AddScrapItemSection(
-                  key: _addItemSectionKey,
-                  itemFormKey: _itemFormKey,
-                  selectedCategoryId: _selectedCategoryId,
-                  categories: categories,
-                  amountDescriptionController: _amountDescriptionController,
-                  aiSuggestedDescription: _aiSuggestedDescription,
-                  image: _selectedImage,
-                  recognizedImageUrl: _recognizedImageUrl,
-                  onPickImage: _pickImage,
-                  onCategoryChange: (value) {
-                    setState(() => _selectedCategoryId = value);
-                  },
-                  onAddItem: _handleAddItem,
-                  isAnalyzing: _isAnalyzingImage,
-                ),
-
-                SizedBox(height: spacing.screenPadding),
-
-                ScrapItemList(
-                  items: _scrapItems,
-                  onUpdate: (index, itemData) async {
-                    final updated = await showDialog(
-                      context: context,
-                      builder: (_) => UpdateScrapItemDialog(
-                        categories: categories
-                            .map((e) => e.categoryName)
-                            .toList(),
-                        initialCategory: itemData.categoryName,
-                        initialAmountDescription: itemData.amountDescription,
-                        initialImageUrl: itemData.imageUrl,
-                        initialImageFile: itemData.imageFile,
-                      ),
-                    );
-
-                    if (updated != null) {
-                      final matchedCat = categories.firstWhere(
-                        (cat) => cat.categoryName == updated['category'],
-                      );
-
-                      // Handle image: File path or URL or no change
-                      String? newImageUrl;
-                      File? newImageFile;
-
-                      // Check if image was changed
-                      if (updated['imageChanged'] == true) {
-                        if (updated['image'] is String &&
-                            updated['image'] != null) {
-                          final imagePath = updated['image'] as String;
-                          // Check if file path (starts with /) or URL (http)
-                          if (imagePath.startsWith('/') ||
-                              imagePath.contains('file://')) {
-                            // This is a new File
-                            newImageFile = File(imagePath);
-                            newImageUrl = null;
-                          } else if (imagePath.startsWith('http')) {
-                            // This is a URL
-                            newImageUrl = imagePath;
-                            newImageFile = null;
-                          } else {
-                            // Local path without /
-                            newImageFile = File(imagePath);
-                            newImageUrl = null;
-                          }
-                        } else {
-                          // Image was removed
-                          newImageUrl = null;
-                          newImageFile = null;
-                        }
-                      } else {
-                        // Image not changed - keep existing
-                        newImageUrl = itemData.imageUrl;
-                        newImageFile = itemData.imageFile;
-                      }
-
-                      setState(() {
-                        _scrapItems[index] = ScrapItemData(
-                          categoryId: matchedCat.scrapCategoryId,
-                          categoryName: matchedCat.categoryName,
-                          // Truncate to fit VARCHAR(255) safely for UTF-8
-                          amountDescription: StringHelper.truncateForVarchar255(
-                            updated['amountDescription'] ?? '',
-                          ),
-                          imageUrl: newImageUrl,
-                          imageFile: newImageFile,
-                        );
-                      });
-                    }
-                  },
-                  onDelete: (item) => setState(() => _scrapItems.remove(item)),
-                ),
-
-                SizedBox(height: spacing.screenPadding * 2),
-                TakeAllSwitch(
-                  value: _isTakeAll,
-                  onChange: (val) => setState(() => _isTakeAll = val),
-                ),
-                SizedBox(height: spacing.screenPadding),
-                GradientButton(
-                  text: "${S.of(context)!.create} ${S.of(context)!.post}",
-                  onPressed: _isSubmitting
-                      ? null
-                      : () async {
-                          final requiredMsg = S.of(context)!.error_required;
-                          final emptyMsg = S
-                              .of(context)!
-                              .error_scrap_item_empty;
-                          final successMsg = S
-                              .of(context)!
-                              .success_post_created;
-                          final generalMsg = S.of(context)!.error_general;
-
-                          if (!_formKey.currentState!.validate()) {
-                            CustomToast.show(
-                              context,
-                              requiredMsg,
-                              type: ToastType.error,
-                            );
-                            return;
-                          }
-
-                          if (_scrapItems.isEmpty) {
-                            CustomToast.show(
-                              context,
-                              emptyMsg,
-                              type: ToastType.error,
-                            );
-                            return;
-                          }
-
-                          if (_location == null) {
-                            CustomToast.show(
-                              context,
-                              S.of(context)!.error_invalid_address,
-                              type: ToastType.error,
-                            );
-                            return;
-                          }
-
-                          // Start loading
-                          setState(() => _isSubmitting = true);
-
-                          try {
-                            final vm = ref.read(
-                              scrapPostViewModelProvider.notifier,
-                            );
-
-                            // BATCH UPLOAD: Upload all images without URL before creating post
-                            final uploadSuccess = await _uploadPendingImages();
-                            if (!uploadSuccess) {
-                              setState(() => _isSubmitting = false);
-                              return; // Upload error, stop
-                            }
-
-                            final post = ScrapPostEntity(
-                              title: _titleController.text.trim(),
-                              description: _descriptionController.text.trim(),
-                              address: _pickupAddressController.text.trim(),
-                              availableTimeRange: _pickupTimeController.text
-                                  .trim(),
-                              scrapPostDetails: _scrapItems
-                                  .map(
-                                    (item) => ScrapPostDetailEntity(
-                                      scrapCategoryId: item.categoryId,
-                                      amountDescription: item.amountDescription,
-                                      // Extract fileName from full URL before submitting
-                                      imageUrl: item.imageUrl != null
-                                          ? _extractFileNameFromUrl(item.imageUrl!)
-                                          : "https://media.vietnamplus.vn/images/fbc23bef0d088b23a8965bce49f85a61cd286afccaf9606b44256f5d7ef5d5fefff6aa780c9464f6499f791f5dd6f3de1d175058d9a59d4e21100ddb41c54c45/ngaymoitruong_12.jpg",
-                                    ),
-                                  )
-                                  .toList(),
-                              mustTakeAll: _isTakeAll,
-                              location: _location!,
-                            );
-
-                            final success = await vm.createPost(post: post);
-
-                            if (success) {
-                              if (!mounted || !context.mounted) return;
-                              _resetAllData();
-                              CustomToast.show(
-                                context,
-                                successMsg,
-                                type: ToastType.success,
-                              );
-
-                              if (context.mounted) {
-                                navigateWithLoading(
-                                  context,
-                                  route: '/household-list-post',
-                                );
-                              }
-                            } else {
-                              if (!mounted || !context.mounted) return;
-                              CustomToast.show(
-                                context,
-                                "$generalMsg ${S.of(context)!.error_scrap_category}",
-                                type: ToastType.error,
-                              );
-                            }
-                          } finally {
-                            // Stop loading
-                            if (mounted) {
-                              setState(() => _isSubmitting = false);
-                            }
-                          }
-                        },
+                if (_currentStep > 0)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _isSubmitting ? null : _back,
+                      child: Text(s.back),
+                    ),
+                  )
+                else
+                  const Expanded(child: SizedBox.shrink()),
+                SizedBox(width: spacing.screenPadding * 0.75),
+                Expanded(
+                  child: GradientButton(
+                    onPressed:
+                        _isSubmitting ? null : (isLast ? _submitPost : _next),
+                    child: Text(isLast ? s.create : s.next),
+                  ),
                 ),
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ========= Pages (Steps) =========
+
+  Widget _pageContainer({required Widget child}) {
+    final spacing = Theme.of(context).extension<AppSpacing>()!;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        spacing.screenPadding,
+        spacing.screenPadding,
+        spacing.screenPadding,
+        spacing.screenPadding,
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildStep0_PostInfo() {
+    final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!;
+    final s = S.of(context)!;
+
+    return _pageContainer(
+      child: ListView(
+        physics: const BouncingScrollPhysics(),
+        children: [
+          Form(
+            key: _formKey,
+            child: PostInfoForm(
+              formKey: _formKey,
+              titleController: _titleController,
+              descController: _descriptionController,
+              addressController: _pickupAddressController,
+              onSearchAddress: () {},
+              onGetCurrentLocation: _openAddressPicker,
+              addressFound: _addressFound,
+            ),
           ),
+          SizedBox(height: spacing.screenPadding),
+          if (_pickupAddressController.text.isNotEmpty)
+            Container(
+              padding: EdgeInsets.all(spacing.screenPadding),
+              decoration: BoxDecoration(
+                color: _addressFound && _location != null
+                    ? theme.primaryColor.withValues(alpha: 0.3)
+                    : AppColors.danger.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(spacing.screenPadding),
+                border: Border.all(
+                  color: theme.dividerColor,
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    _addressFound && _location != null
+                        ? Icons.check_circle
+                        : Icons.error_outline,
+                    size: 20,
+                    color: _addressFound && _location != null
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.error,
+                  ),
+                  SizedBox(width: spacing.screenPadding / 2),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          s.pickup_address,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: spacing.screenPadding / 4),
+                        Text(
+                          _pickupAddressController.text,
+                          style: theme.textTheme.bodyMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (!_addressFound || _location == null)
+                    TextButton(
+                      onPressed: _isSubmitting ? null : _openAddressPicker,
+                      child: Text(s.change_address),
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStep1_TimeSlots() {
+    return _pageContainer(
+      child: ListView(
+        physics: const BouncingScrollPhysics(),
+        children: [
+          TimeSlotList(
+            timeSlots: _timeSlots,
+            onAdd: _showAddTimeSlotSheet,
+            onDelete: (index) => setState(() => _timeSlots.removeAt(index)),
+            isSubmitting: _isSubmitting,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStep2_Items(List<ScrapCategoryEntity> categories) {
+    final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!;
+    final s = S.of(context)!;
+
+    return _pageContainer(
+      child: ListView(
+        physics: const BouncingScrollPhysics(),
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  s.scrap_item,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              FilledButton.icon(
+                onPressed: _isSubmitting
+                    ? null
+                    : (categories.isEmpty
+                        ? null
+                        : () => _showAddItemSheet(categories)),
+                icon: const Icon(Icons.add, size: 20),
+                label: Text(s.add),
+              ),
+            ],
+          ),
+          SizedBox(height: spacing.screenPadding),
+          if (_scrapItems.isEmpty)
+            Container(
+              padding: EdgeInsets.all(spacing.screenPadding * 1.5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(spacing.screenPadding),
+                border: Border.all(
+                  color: theme.dividerColor,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: theme.colorScheme.onSurfaceVariant,
+                    size: 20,
+                  ),
+                  SizedBox(width: spacing.screenPadding / 2),
+                  Expanded(
+                    child: Text(
+                      s.error_scrap_item_empty,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            ScrapItemList(
+              items: _scrapItems,
+              onUpdate: (index, itemData) async {
+                final updated = await showDialog(
+                  context: context,
+                  builder: (_) => UpdateScrapItemDialog(
+                    categories: categories.map((e) => e.categoryName).toList(),
+                    initialCategory: itemData.categoryName,
+                    initialAmountDescription: itemData.amountDescription,
+                    initialImageUrl: itemData.imageUrl,
+                    initialImageFile: itemData.imageFile,
+                    initialType: itemData.type,
+                  ),
+                );
+
+                if (updated != null) {
+                  final matchedCat = categories.firstWhere(
+                    (cat) => cat.categoryName == updated['category'],
+                  );
+
+                  String? newImageUrl;
+                  File? newImageFile;
+                  final ScrapPostDetailType newType =
+                      (updated['type'] is ScrapPostDetailType)
+                          ? updated['type'] as ScrapPostDetailType
+                          : itemData.type;
+
+                  if (updated['imageChanged'] == true) {
+                    final imageResult = _parseImageUpdate(updated['image']);
+                    newImageFile = imageResult.file;
+                    newImageUrl = imageResult.url;
+                  } else {
+                    newImageUrl = itemData.imageUrl;
+                    newImageFile = itemData.imageFile;
+                  }
+
+                  setState(() {
+                    _scrapItems[index] = ScrapItemData(
+                      categoryId: matchedCat.scrapCategoryId,
+                      categoryName: matchedCat.categoryName,
+                      amountDescription: StringHelper.truncateForVarchar255(
+                        updated['amountDescription'] ?? '',
+                      ),
+                      type: newType,
+                      imageUrl: newImageUrl,
+                      imageFile: newImageFile,
+                    );
+                  });
+                }
+              },
+              onDelete: (item) => setState(() => _scrapItems.remove(item)),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStep3_Review() {
+    return _pageContainer(
+      child: ReviewPage(
+        title: _titleController.text,
+        description: _descriptionController.text,
+        pickupAddress: _pickupAddressController.text,
+        timeSlots: _timeSlots,
+        scrapItems: _scrapItems,
+        isTakeAll: _isTakeAll,
+        onEditStep: _jumpToStep,
+        onTakeAllChanged: (val) {
+          if (_isSubmitting) return;
+          setState(() => _isTakeAll = val);
+        },
+        isSubmitting: _isSubmitting,
+      ),
+    );
+  }
+
+  // ========= Build =========
+
+  @override
+  Widget build(BuildContext context) {
+    final categoryState = ref.watch(scrapCategoryViewModelProvider);
+    final categories = categoryState.listData?.data ?? [];
+
+    return Scaffold(
+      appBar: _buildAppBar(),
+      bottomNavigationBar: _buildBottomBar(),
+      body: LoadingOverlay(
+        isLoading: _isSubmitting,
+        child: Column(
+          children: [
+            CreatePostHeader(
+              currentStep: _currentStep,
+              stepCount: _stepCount,
+              onStepTap: _jumpToStep,
+            ),
+            Divider(height: 1, color: Theme.of(context).dividerColor),
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  _buildStep0_PostInfo(),
+                  _buildStep1_TimeSlots(),
+                  _buildStep2_Items(categories),
+                  _buildStep3_Review(),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

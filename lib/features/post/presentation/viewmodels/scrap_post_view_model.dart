@@ -1,9 +1,15 @@
+import 'dart:typed_data';
+
 import 'package:GreenConnectMobile/core/error/failure.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/analyze_scrap_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_detail_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/update_scrap_post_entity.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/analyze_scrap_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/create_scrap_detail_usecase.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/create_time_slot_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/delete_scrap_detail_usecase.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/delete_time_slot_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_household_report_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_my_scrap_post_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_scrap_post_detail_usecases.dart';
@@ -12,6 +18,7 @@ import 'package:GreenConnectMobile/features/post/domain/usecases/search_posts_fo
 import 'package:GreenConnectMobile/features/post/domain/usecases/toggle_scrap_post_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/update_scrap_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/update_scrap_usecase.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/update_time_slot_usecase.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/viewmodels/states/scrap_post_state.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +35,10 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
   late CreateScrapDetailUsecase _createDetail;
   late SearchPostsForCollectorUsecase _searchPostsForCollector;
   late GetHouseholdReportUsecase _getHouseholdReport;
+  late AnalyzeScrapUsecase _analyzeScrap;
+  late CreateTimeSlotUsecase _createTimeSlot;
+  late UpdateTimeSlotUsecase _updateTimeSlot;
+  late DeleteTimeSlotUsecase _deleteTimeSlot;
   @override
   ScrapPostState build() {
     _getMyPosts = ref.read(getMyScrapPostsUsecaseProvider);
@@ -40,6 +51,10 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
     _createDetail = ref.read(createScrapDetailUsecaseProvider);
     _searchPostsForCollector = ref.read(searchPostsForCollectorUsecaseProvider);
     _getHouseholdReport = ref.read(getHouseholdReportUsecaseProvider);
+    _analyzeScrap = ref.read(analyzeScrapUsecaseProvider);
+    _createTimeSlot = ref.read(createTimeSlotUsecaseProvider);
+    _updateTimeSlot = ref.read(updateTimeSlotUsecaseProvider);
+    _deleteTimeSlot = ref.read(deleteTimeSlotUsecaseProvider);
     return ScrapPostState();
   }
 
@@ -73,7 +88,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
   Future<void> searchPostsForCollector({
     required int page,
     required int size,
-    int? categoryId,
+    String? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,
@@ -143,12 +158,20 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
   }
 
   /// Update Post
-  Future<bool> updatePost({required UpdateScrapPostEntity post}) async {
-    state = state.copyWith(isLoadingDetail: true, errorMessage: null);
+  Future<bool> updatePost({
+    required UpdateScrapPostEntity post,
+    bool refreshDetail = true,
+  }) async {
+    state = state.copyWith(isUpdatingPost: true, errorMessage: null);
     try {
       await _updatePost(post);
 
-      state = state.copyWith(isLoadingDetail: false);
+      // Auto refresh detail data after successful update
+      if (refreshDetail && state.detailData?.scrapPostId != null) {
+        await fetchDetail(state.detailData!.scrapPostId!);
+      }
+
+      state = state.copyWith(isUpdatingPost: false);
       return true;
     } catch (e, stacktrace) {
       if (e is AppException) {
@@ -156,7 +179,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
       }
       debugPrint('📌 STACK TRACE: $stacktrace');
       state = state.copyWith(
-        isLoadingDetail: false,
+        isUpdatingPost: false,
         errorMessage: e.toString(),
       );
       return false;
@@ -188,12 +211,18 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
   Future<bool> createDetail({
     required String postId,
     required ScrapPostDetailEntity detail,
+    bool refreshDetail = true,
   }) async {
-    state = state.copyWith(isLoadingDetail: true, errorMessage: null);
+    state = state.copyWith(isUpdatingDetail: true, errorMessage: null);
     try {
       await _createDetail(postId: postId, detail: detail);
 
-      state = state.copyWith(isLoadingDetail: false);
+      // Auto refresh detail data after successful create
+      if (refreshDetail) {
+        await fetchDetail(postId);
+      }
+
+      state = state.copyWith(isUpdatingDetail: false);
       return true;
     } catch (e, stacktrace) {
       if (e is AppException) {
@@ -201,7 +230,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
       }
       debugPrint('📌 STACK TRACE: $stacktrace');
       state = state.copyWith(
-        isLoadingDetail: false,
+        isUpdatingDetail: false,
         errorMessage: e.toString(),
       );
       return false;
@@ -212,12 +241,18 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
   Future<bool> updateDetail({
     required String postId,
     required ScrapPostDetailEntity detail,
+    bool refreshDetail = true,
   }) async {
-    state = state.copyWith(isLoadingDetail: true, errorMessage: null);
+    state = state.copyWith(isUpdatingDetail: true, errorMessage: null);
     try {
       await _updateDetail(postId: postId, detail: detail);
 
-      state = state.copyWith(isLoadingDetail: false);
+      // Auto refresh detail data after successful update
+      if (refreshDetail) {
+        await fetchDetail(postId);
+      }
+
+      state = state.copyWith(isUpdatingDetail: false);
       return true;
     } catch (e, stacktrace) {
       if (e is AppException) {
@@ -225,7 +260,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
       }
       debugPrint('📌 STACK TRACE: $stacktrace');
       state = state.copyWith(
-        isLoadingDetail: false,
+        isUpdatingDetail: false,
         errorMessage: e.toString(),
       );
       return false;
@@ -235,13 +270,19 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
   /// Delete Detail
   Future<bool> deleteDetail({
     required String postId,
-    required int categoryId,
+    required String categoryId,
+    bool refreshDetail = true,
   }) async {
-    state = state.copyWith(isLoadingDetail: true, errorMessage: null);
+    state = state.copyWith(isUpdatingDetail: true, errorMessage: null);
     try {
       await _deleteDetail(postId: postId, categoryId: categoryId);
 
-      state = state.copyWith(isLoadingDetail: false);
+      // Auto refresh detail data after successful delete
+      if (refreshDetail) {
+        await fetchDetail(postId);
+      }
+
+      state = state.copyWith(isUpdatingDetail: false);
       return true;
     } catch (e, stacktrace) {
       if (e is AppException) {
@@ -249,7 +290,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
       }
       debugPrint('📌 STACK TRACE: $stacktrace');
       state = state.copyWith(
-        isLoadingDetail: false,
+        isUpdatingDetail: false,
         errorMessage: e.toString(),
       );
       return false;
@@ -278,6 +319,145 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
         isLoadingReport: false,
         errorMessage: e.toString(),
       );
+    }
+  }
+
+  /// Analyze scrap image (AI)
+  Future<AnalyzeScrapResultEntity?> analyzeScrap({
+    required Uint8List imageBytes,
+    required String fileName,
+  }) async {
+    state = state.copyWith(isAnalyzing: true, errorMessage: null);
+
+    try {
+      final result = await _analyzeScrap(
+        imageBytes: imageBytes,
+        fileName: fileName,
+      );
+      state = state.copyWith(
+        isAnalyzing: false,
+        analyzeResult: result,
+      );
+      return result;
+    } catch (e, stack) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR ANALYZE SCRAP: ${e.message}');
+      }
+      debugPrint('📌 STACK TRACE: $stack');
+      state = state.copyWith(
+        isAnalyzing: false,
+        errorMessage: e.toString(),
+      );
+      return null;
+    }
+  }
+
+  /// Create Time Slot
+  Future<ScrapPostTimeSlotEntity?> createTimeSlot({
+    required String postId,
+    required String specificDate,
+    required String startTime,
+    required String endTime,
+    bool refreshDetail = true,
+  }) async {
+    state = state.copyWith(isUpdatingTimeSlot: true, errorMessage: null);
+    try {
+      final result = await _createTimeSlot(
+        postId: postId,
+        specificDate: specificDate,
+        startTime: startTime,
+        endTime: endTime,
+      );
+
+      // Auto refresh detail data after successful create
+      if (refreshDetail) {
+        await fetchDetail(postId);
+      }
+
+      state = state.copyWith(isUpdatingTimeSlot: false);
+      return result;
+    } catch (e, stacktrace) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR CREATE TIME SLOT: ${e.message}');
+      }
+      debugPrint('📌 STACK TRACE: $stacktrace');
+      state = state.copyWith(
+        isUpdatingTimeSlot: false,
+        errorMessage: e.toString(),
+      );
+      return null;
+    }
+  }
+
+  /// Update Time Slot
+  Future<ScrapPostTimeSlotEntity?> updateTimeSlot({
+    required String postId,
+    required String timeSlotId,
+    required String specificDate,
+    required String startTime,
+    required String endTime,
+    bool refreshDetail = true,
+  }) async {
+    state = state.copyWith(isUpdatingTimeSlot: true, errorMessage: null);
+    try {
+      final result = await _updateTimeSlot(
+        postId: postId,
+        timeSlotId: timeSlotId,
+        specificDate: specificDate,
+        startTime: startTime,
+        endTime: endTime,
+      );
+
+      // Auto refresh detail data after successful update
+      if (refreshDetail) {
+        await fetchDetail(postId);
+      }
+
+      state = state.copyWith(isUpdatingTimeSlot: false);
+      return result;
+    } catch (e, stacktrace) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR UPDATE TIME SLOT: ${e.message}');
+      }
+      debugPrint('📌 STACK TRACE: $stacktrace');
+      state = state.copyWith(
+        isUpdatingTimeSlot: false,
+        errorMessage: e.toString(),
+      );
+      return null;
+    }
+  }
+
+  /// Delete Time Slot
+  Future<bool> deleteTimeSlot({
+    required String postId,
+    required String timeSlotId,
+    bool refreshDetail = true,
+  }) async {
+    state = state.copyWith(isUpdatingTimeSlot: true, errorMessage: null);
+    try {
+      final result = await _deleteTimeSlot(
+        postId: postId,
+        timeSlotId: timeSlotId,
+      );
+
+      // Auto refresh detail data after successful delete
+      if (refreshDetail && result) {
+        await fetchDetail(postId);
+      }
+
+      state = state.copyWith(isUpdatingTimeSlot: false);
+      return result;
+    } catch (e, stacktrace) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR DELETE TIME SLOT: ${e.message}');
+      }
+      debugPrint('📌 STACK TRACE: $stacktrace');
+      state = state.copyWith(
+        isUpdatingTimeSlot: false,
+        errorMessage: e.toString(),
+      );
+      return false;
     }
   }
 
