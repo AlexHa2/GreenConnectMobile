@@ -244,7 +244,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                       s,
                       totalEarning: 0,
                     ),
-                    error: (_, _) => _buildEarningsOverviewCard(
+                    error: (_, __) => _buildEarningsOverviewCard(
                       context,
                       space,
                       theme,
@@ -328,7 +328,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                       ),
                     ],
                   ),
-                  error: (_, _) => Row(
+                  error: (_, __) => Row(
                     children: [
                       Expanded(
                         child: _buildStatCard(
@@ -385,7 +385,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                     totalFeedbacks: 0,
                     totalRating: 0,
                   ),
-                  error: (_, _) => _buildEcoImpactCard(
+                  error: (_, __) => _buildEcoImpactCard(
                     context,
                     space,
                     theme,

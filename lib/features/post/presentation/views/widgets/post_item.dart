@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 class PostItem extends StatelessWidget {
   final String title;
   final String desc;
-  final String time;
   final String rawStatus;
   final String timeCreated;
   final String localizedStatus;
@@ -21,7 +20,6 @@ class PostItem extends StatelessWidget {
     super.key,
     required this.title,
     required this.desc,
-    required this.time,
     required this.rawStatus,
     required this.localizedStatus,
     required this.onTapDetails,
@@ -31,198 +29,260 @@ class PostItem extends StatelessWidget {
     this.isCollectorView = false,
   });
 
+  IconData _statusIcon(PostStatus status) {
+    switch (status) {
+      case PostStatus.open:
+        return Icons.hourglass_top_rounded;
+      case PostStatus.partiallyBooked:
+        return Icons.check_circle_rounded;
+      case PostStatus.fullyBooked:
+        return Icons.event_busy_rounded;
+      case PostStatus.completed:
+        return Icons.check_circle_rounded;
+      case PostStatus.canceled:
+        return Icons.cancel_rounded;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isAccepted = PostStatusHelper.showTransactionAction(rawStatus);
-    final showOffersButton = PostStatusHelper.showOffersButton(
-      PostStatus.parseStatus(rawStatus),
-    );
-    final statusColor = PostStatusHelper.getStatusColor(
-      context,
-      PostStatus.parseStatus(rawStatus),
-    );
-    final createdAgo = TimeAgoHelper.format(
-      context,
-      DateTime.parse(timeCreated),
-    );
     final spacing = theme.extension<AppSpacing>();
     final space = spacing?.screenPadding ?? 12;
 
+    final status = PostStatus.parseStatus(rawStatus);
+    final statusColor = PostStatusHelper.getStatusColor(context, status);
+
+    final isAccepted = PostStatusHelper.showTransactionAction(rawStatus);
+    final showOffersButton = PostStatusHelper.showOffersButton(status);
+
+    DateTime? createdAt;
+    try {
+      createdAt = DateTime.parse(timeCreated);
+    } catch (_) {
+      createdAt = null;
+    }
+    final createdAgo =
+        createdAt == null ? '' : TimeAgoHelper.format(context, createdAt);
+
+    final hasActions = !isCollectorView && (true);
+
     return Card(
-      elevation: space / 6, // ~2
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(space)),
-      margin: EdgeInsets.only(bottom: space * 4 / 3), // 16
-      child: InkWell(
+      elevation: 0,
+      color: theme.colorScheme.surface,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(space),
+        side: BorderSide(
+          color: theme.dividerColor,
+        ),
+      ),
+      margin: EdgeInsets.only(bottom: space * 4 / 3),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
         onTap: onTapDetails,
         child: Padding(
-          padding: EdgeInsets.all(space * 4 / 3), // 16
+          padding: EdgeInsets.all(space * 4 / 3),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // ===== Header: Status + time =====
               Row(
                 children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: space * 2 / 3, // 8
-                      vertical: space / 3, // 4
-                    ),
+                  DecoratedBox(
                     decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(space * 2 / 3), // 8
+                      color: statusColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(999),
                       border: Border.all(
-                        color: statusColor.withValues(alpha: 0.5),
+                        color: statusColor.withValues(alpha: 0.45),
                       ),
                     ),
-                    child: Text(
-                      localizedStatus,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: statusColor,
-                        fontWeight: FontWeight.bold,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: space * 2 / 3,
+                        vertical: space / 3,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _statusIcon(status),
+                            size: 14,
+                            color: statusColor,
+                          ),
+                          SizedBox(width: space / 3),
+                          Text(
+                            localizedStatus,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: statusColor,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                   const Spacer(),
-                  Icon(Icons.access_time, size: 14, color: theme.hintColor),
-                  SizedBox(width: space / 3), // 4
-                  Flexible(
+                  if (createdAgo.isNotEmpty)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.schedule_rounded,
+                          size: 16,
+                          color: theme.hintColor.withValues(alpha: 0.75),
+                        ),
+                        SizedBox(width: space / 3),
+                        Text(
+                          '${S.of(context)!.posted}: ',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.hintColor.withValues(alpha: 0.65),
+                            fontSize: 11.5,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                        SizedBox(width: space / 3),
+                        Text(
+                          createdAgo,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.hintColor.withValues(alpha: 0.85),
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+
+              SizedBox(height: space),
+
+              // ===== Title + chevron hint =====
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
                     child: Text(
-                      time,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.hintColor,
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        height: 1.15,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  SizedBox(width: space / 2),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: theme.hintColor.withValues(alpha: 0.7),
+                    size: 22,
+                  ),
                 ],
               ),
 
-              SizedBox(height: space), // 12
+              SizedBox(height: space * 2 / 3),
 
-              Text(
-                title,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-
-              SizedBox(height: space * 2 / 3), // 8
-
+              // ===== Description =====
               Text(
                 desc,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.textTheme.bodyMedium?.color?.withValues(
-                    alpha: 0.8,
+                    alpha: 0.82,
                   ),
+                  height: 1.25,
                 ),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(height: space),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Icon(
-                    Icons.history,
-                    size: 14,
-                    color: theme.hintColor.withValues(alpha: 0.6),
-                  ),
-                  SizedBox(width: space / 3), // 4
-                  Text(
-                    '${S.of(context)!.posted}: $createdAgo',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.hintColor.withValues(alpha: 0.6),
-                      fontSize: 12,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ),
 
-              if (!isCollectorView) ...[
-                SizedBox(height: space * 4 / 3),
-                Divider(height: space / 12),
+              // ===== Footer actions =====
+              if (hasActions) ...[
                 SizedBox(height: space),
-
-                Row(
+                Divider(height: space, thickness: 0.8),
+                Wrap(
+                  spacing: space * 2 / 3,
+                  runSpacing: space * 2 / 3,
+                  alignment: WrapAlignment.end,
                   children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: onTapDetails,
-                        style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 0,
-                            horizontal: space * 2 / 3,
-                          ),
-                          side: BorderSide(
-                            color: theme.primaryColor.withValues(alpha: 0.5),
-                          ),
+                    OutlinedButton.icon(
+                      onPressed: onTapDetails,
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: space * 2 / 3,
+                          vertical: space / 2,
                         ),
-                        child: Text(
-                          S.of(context)!.view_details,
-                          style: const TextStyle(fontSize: 13),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        side: BorderSide(
+                          color:
+                              theme.colorScheme.primary.withValues(alpha: 0.35),
                         ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(space),
+                        ),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      icon: const Icon(Icons.info_outline_rounded, size: 16),
+                      label: Text(
+                        S.of(context)!.view_details,
+                        style: const TextStyle(fontSize: 13),
                       ),
                     ),
-
-                    if (showOffersButton && onGoToOffers != null) ...[
-                      SizedBox(width: space),
-                      Expanded(
-                        child: FilledButton.icon(
-                          onPressed: onGoToOffers,
-                          style: FilledButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 0,
-                              horizontal: space * 2 / 3,
-                            ),
-                            backgroundColor: theme.primaryColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(space),
-                            ),
+                    if (showOffersButton && onGoToOffers != null)
+                      FilledButton.tonalIcon(
+                        onPressed: onGoToOffers,
+                        style: FilledButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: space * 2 / 3,
+                            vertical: space / 2,
                           ),
-
-                          icon: const Icon(Icons.receipt_long_rounded, size: 16),
-                          label: Text(
-                            S.of(context)!.view_offers,
-                            style: const TextStyle(fontSize: 13),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(space),
                           ),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        icon: const Icon(Icons.receipt_long_rounded, size: 16),
+                        label: Text(
+                          S.of(context)!.view_offers,
+                          style: const TextStyle(fontSize: 13),
                         ),
                       ),
-                    ],
-
-                    if (isAccepted) ...[
-                      SizedBox(width: space),
-                      Expanded(
-                        child: FilledButton.icon(
-                          onPressed: onGoToTransaction,
-                          style: FilledButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 0,
-                              horizontal: space * 2 / 3, // 8
-                            ),
-                            backgroundColor: theme.primaryColor,
+                    if (isAccepted)
+                      FilledButton.icon(
+                        onPressed: onGoToTransaction,
+                        style: FilledButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: space * 2 / 3,
+                            vertical: space / 2,
                           ),
-                          icon: const Icon(Icons.handshake_outlined, size: 16),
-                          label: Text(
-                            S.of(context)!.go_to_transaction,
-                            style: const TextStyle(fontSize: 13),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(space),
                           ),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        icon: const Icon(Icons.handshake_outlined, size: 16),
+                        label: Text(
+                          S.of(context)!.go_to_transaction,
+                          style: const TextStyle(fontSize: 13),
                         ),
                       ),
-                    ],
                   ],
                 ),
               ],
+
+              // Extra: “posted:”
+              // if (createdAgo.isNotEmpty) ...[
+              //   SizedBox(height: space * 2 / 3),
+              //   Align(
+              //     alignment: Alignment.centerRight,
+              //     child: Text(
+              //       '${S.of(context)!.posted}: $createdAgo',
+              //       style: theme.textTheme.bodySmall?.copyWith(
+              //         color: theme.hintColor.withValues(alpha: 0.65),
+              //         fontSize: 11.5,
+              //         fontStyle: FontStyle.italic,
+              //       ),
+              //     ),
+              //   ),
+              // ],
             ],
           ),
         ),

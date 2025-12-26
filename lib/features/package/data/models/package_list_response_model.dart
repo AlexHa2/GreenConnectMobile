@@ -15,7 +15,7 @@ class PackageListResponseModel extends PackageListResponseEntity {
               .toList() ??
           [],
       pagination: PaginationModel.fromJson(
-          json['pagination'] as Map<String, dynamic>? ?? {}),
+          json['pagination'] as Map<String, dynamic>? ?? {},),
     );
   }
 

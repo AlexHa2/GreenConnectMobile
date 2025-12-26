@@ -95,6 +95,6 @@ class CustomToast {
           ),
         ),
       );
-    }, duration: duration);
+    }, duration: duration,);
   }
 }

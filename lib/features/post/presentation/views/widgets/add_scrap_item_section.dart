@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:GreenConnectMobile/core/enum/scrap_post_detail_type.dart';
+import 'package:GreenConnectMobile/core/helper/scrap_post_detail_type_helper.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_category_entity.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/amount_description_field.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
@@ -9,14 +11,16 @@ import 'package:GreenConnectMobile/shared/widgets/dashed_border_container.dart';
 import 'package:flutter/material.dart';
 
 class AddScrapItemSection extends StatelessWidget {
-  final int? selectedCategoryId;
+  final String? selectedCategoryId;
   final List<ScrapCategoryEntity> categories;
   final TextEditingController amountDescriptionController;
   final String? aiSuggestedDescription;
+  final ScrapPostDetailType? selectedType;
+  final Function(ScrapPostDetailType?) onTypeChange;
   final File? image;
   final String? recognizedImageUrl;
   final VoidCallback onPickImage;
-  final Function(int?) onCategoryChange;
+  final Function(String?) onCategoryChange;
   final VoidCallback onAddItem;
   final GlobalKey<FormState> itemFormKey;
   final bool isAnalyzing;
@@ -29,6 +33,8 @@ class AddScrapItemSection extends StatelessWidget {
     required this.categories,
     required this.amountDescriptionController,
     this.aiSuggestedDescription,
+    this.selectedType,
+    required this.onTypeChange,
     this.image,
     this.recognizedImageUrl,
     required this.onPickImage,
@@ -61,7 +67,7 @@ class AddScrapItemSection extends StatelessWidget {
                 ),
               ),
               SizedBox(height: spacing.screenPadding / 2),
-              DropdownButtonFormField<int>(
+              DropdownButtonFormField<String>(
                 initialValue: selectedCategoryId,
                 decoration: InputDecoration(
                   hintText: S.of(context)!.category,
@@ -74,7 +80,7 @@ class AddScrapItemSection extends StatelessWidget {
                 ),
                 items: categories
                     .map(
-                      (item) => DropdownMenuItem(
+                      (item) => DropdownMenuItem<String>(
                         value: item.scrapCategoryId,
                         child: Text(item.categoryName),
                       ),
@@ -87,6 +93,33 @@ class AddScrapItemSection extends StatelessWidget {
               ),
 
               SizedBox(height: spacing.screenPadding * 1.5),
+
+              // Type Dropdown
+              SizedBox(height: spacing.screenPadding * 1.5),
+              Text(
+                'Loại hình',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: spacing.screenPadding / 2),
+              DropdownButtonFormField<ScrapPostDetailType>(
+                initialValue: selectedType,
+                decoration: InputDecoration(
+                  hintText: S.of(context)!.scrap_type_hint,
+                ),
+                items: ScrapPostDetailType.values
+                    .map((type) => DropdownMenuItem<ScrapPostDetailType>(
+                          value: type,
+                          child: Text(
+                              ScrapPostDetailTypeHelper.getLocalizedType(
+                                  context, type,),),
+                        ),)
+                    .toList(),
+                onChanged: onTypeChange,
+                validator: (value) =>
+                    value == null ? S.of(context)!.scrap_type_required : null,
+              ),
 
               AmountDescriptionField(
                 controller: amountDescriptionController,
@@ -168,28 +201,27 @@ class AddScrapItemSection extends StatelessWidget {
                               fit: BoxFit.cover,
                               loadingBuilder:
                                   (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return Container(
-                                      height: 200,
-                                      width: double.infinity,
-                                      color: theme.dividerColor.withValues(
-                                        alpha: 0.2,
-                                      ),
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                          value:
-                                              loadingProgress
-                                                      .expectedTotalBytes !=
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  height: 200,
+                                  width: double.infinity,
+                                  color: theme.dividerColor.withValues(
+                                    alpha: 0.2,
+                                  ),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
                                                   null
                                               ? loadingProgress
-                                                        .cumulativeBytesLoaded /
-                                                    loadingProgress
-                                                        .expectedTotalBytes!
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
                                               : null,
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                    ),
+                                  ),
+                                );
+                              },
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
                                   height: 200,

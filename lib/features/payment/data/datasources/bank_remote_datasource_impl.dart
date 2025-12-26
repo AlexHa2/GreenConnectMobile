@@ -21,12 +21,12 @@ class BankRemoteDataSourceImpl implements BankRemoteDataSource {
 
   @override
   Future<PaymentUrlResponseModel> createPaymentUrl(
-      CreatePaymentUrlModel request) async {
+      CreatePaymentUrlModel request,) async {
     final response = await apiClient.post(
       '$_baseURLPayment/create-url',
       data: request.toJson(),
     );
     return PaymentUrlResponseModel.fromJson(
-        response.data as Map<String, dynamic>);
+        response.data as Map<String, dynamic>,);
   }
 }

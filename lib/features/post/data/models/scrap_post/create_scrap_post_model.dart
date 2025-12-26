@@ -9,6 +9,7 @@ class CreateScrapPostModel {
   final LocationModel location;
   final bool mustTakeAll;
   final List<CreateScrapPostDetailModel> scrapPostDetails;
+  final List<CreateScrapPostTimeSlotModel> scrapPostTimeSlots;
 
   CreateScrapPostModel({
     required this.title,
@@ -18,6 +19,7 @@ class CreateScrapPostModel {
     required this.location,
     required this.mustTakeAll,
     required this.scrapPostDetails,
+    this.scrapPostTimeSlots = const [],
   });
 
   Map<String, dynamic> toJson() {
@@ -29,19 +31,42 @@ class CreateScrapPostModel {
       "location": location.toJson(),
       "mustTakeAll": mustTakeAll,
       "scrapPostDetails": scrapPostDetails.map((e) => e.toJson()).toList(),
+      "scrapPostTimeSlots": scrapPostTimeSlots.map((e) => e.toJson()).toList(),
+    };
+  }
+}
+
+class CreateScrapPostTimeSlotModel {
+  final String specificDate;
+  final String startTime;
+  final String endTime;
+
+  CreateScrapPostTimeSlotModel({
+    required this.specificDate,
+    required this.startTime,
+    required this.endTime,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "specificDate": specificDate,
+      "startTime": startTime,
+      "endTime": endTime,
     };
   }
 }
 
 class CreateScrapPostDetailModel {
-  final int scrapCategoryId;
+  final String scrapCategoryId;
   final String amountDescription;
   final String imageUrl;
+  final String? type;
 
   CreateScrapPostDetailModel({
     required this.scrapCategoryId,
     required this.amountDescription,
     required this.imageUrl,
+    this.type,
   });
 
   Map<String, dynamic> toJson() {
@@ -49,6 +74,7 @@ class CreateScrapPostDetailModel {
       "scrapCategoryId": scrapCategoryId,
       "amountDescription": amountDescription,
       "imageUrl": imageUrl,
+      "type": type,
     };
   }
 }

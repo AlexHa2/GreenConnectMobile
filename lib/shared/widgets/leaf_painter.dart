@@ -39,15 +39,14 @@ class _FallingLeavesState extends State<FallingLeaves>
     final leafImage = 'assets/images/leaf_2.png';
     return AnimatedBuilder(
       animation: _controller,
-      builder: (_, _) {
+      builder: (_, __) {
         return Stack(
           children: _leaves.map((leaf) {
             final progress =
                 (_controller.value + leaf.delay) % 1.0; // drop time progress
             final y =
                 progress * size.height * 1.2; // falling from top to bottom
-            final x =
-                leaf.startX +
+            final x = leaf.startX +
                 sin(progress * pi * 2) * leaf.swing; // swinging back and forth
             final rotation = progress * 2 * pi * leaf.rotationDir;
 
@@ -81,9 +80,9 @@ class _Leaf {
   final int rotationDir;
 
   _Leaf({required Random random})
-    : startX = random.nextDouble() * 400, // initial horizontal position
-      swing = 20 + random.nextDouble() * 60, // swinging amplitude
-      delay = random.nextDouble(), // delay time
-      size = 20 + random.nextDouble() * 25, // leaf size
-      rotationDir = random.nextBool() ? 1 : -1; // rotation direction
+      : startX = random.nextDouble() * 400, // initial horizontal position
+        swing = 20 + random.nextDouble() * 60, // swinging amplitude
+        delay = random.nextDouble(), // delay time
+        size = 20 + random.nextDouble() * 25, // leaf size
+        rotationDir = random.nextBool() ? 1 : -1; // rotation direction
 }

@@ -1,17 +1,24 @@
+import 'dart:typed_data';
+
 import 'package:GreenConnectMobile/core/di/auth_injector.dart';
 import 'package:GreenConnectMobile/core/network/api_client.dart';
 import 'package:GreenConnectMobile/features/post/data/datasources/abstract_datasources/scrap_post_remote_datasource.dart';
+import 'package:GreenConnectMobile/features/post/data/models/scrap_post/analyze_scrap_result_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/create_scrap_post_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/household_report_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/paginated_scrap_post_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_detail_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_model.dart';
+import 'package:GreenConnectMobile/features/post/data/models/scrap_post/time_slot_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/update_scrap_post_model.dart';
+import 'package:dio/dio.dart';
 
 class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
   final ApiClient _apiClient = sl<ApiClient>();
   final String _baseUrl = '/v1/posts';
   final String _reportUrl = '/v1/reports';
+  final String _aiUrl = '/v1/ai';
+
   @override
   Future<bool> createScrapPost(CreateScrapPostModel model) async {
     final res = await _apiClient.post(_baseUrl, data: model.toJson());
@@ -64,7 +71,7 @@ class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
   @override
   Future<bool> deleteScrapDetail({
     required String postId,
-    required int scrapCategoryId,
+    required String scrapCategoryId,
   }) async {
     final res = await _apiClient.delete(
       '$_baseUrl/$postId/details/$scrapCategoryId',
@@ -115,7 +122,7 @@ class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
 
   @override
   Future<PaginatedScrapPostModel> searchPostsForCollector({
-    int? categoryId,
+    String? categoryId,
     String? categoryName,
     String? status,
     bool? sortByLocation,
@@ -152,5 +159,76 @@ class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
       },
     );
     return HouseholdReportModel.fromJson(res.data);
+  }
+
+  @override
+  Future<AnalyzeScrapResultModel> analyzeScrap({
+    required Uint8List imageBytes,
+    required String fileName,
+  }) async {
+    final formData = FormData.fromMap({
+      'image': MultipartFile.fromBytes(
+        imageBytes,
+        filename: fileName,
+      ),
+    });
+
+    final res = await _apiClient.postMultipart(
+      '$_aiUrl/analyze-scrap',
+      formData,
+    );
+
+    return AnalyzeScrapResultModel.fromJson(res.data);
+  }
+
+  @override
+  Future<TimeSlotModel> createTimeSlot({
+    required String postId,
+    required String specificDate,
+    required String startTime,
+    required String endTime,
+  }) async {
+    final res = await _apiClient.post(
+      '$_baseUrl/$postId/time-slots',
+      data: {
+        'specificDate': specificDate,
+        'startTime': startTime,
+        'endTime': endTime,
+      },
+    );
+    return TimeSlotModel.fromJson(res.data);
+  }
+
+  @override
+  Future<TimeSlotModel> updateTimeSlot({
+    required String postId,
+    required String timeSlotId,
+    required String specificDate,
+    required String startTime,
+    required String endTime,
+  }) async {
+    final res = await _apiClient.patch(
+      '$_baseUrl/$postId/time-slots/$timeSlotId',
+      queryParameters: {
+        'specificDate': specificDate,
+        'startTime': startTime,
+        'endTime': endTime,
+      },
+    );
+    return TimeSlotModel.fromJson(res.data);
+  }
+
+  @override
+  Future<bool> deleteTimeSlot({
+    required String postId,
+    required String timeSlotId,
+  }) async {
+    final res = await _apiClient.delete(
+      '$_baseUrl/$postId/time-slots/$timeSlotId',
+    );
+    if (res.statusCode == 204) {
+      return true;
+    }
+    return false;
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -85,7 +84,7 @@ void main() {
           return lastValue;
         }
 
-        String _normalizeStatus(String? status) {
+        String normalizeStatus(String? status) {
           if (status == null) return '';
           return status.trim().toLowerCase().replaceAll('_', '');
         }
@@ -333,7 +332,7 @@ void main() {
           () => getTransactionDetail(transactionId),
           timeout: const Duration(seconds: 90),
           interval: const Duration(seconds: 3),
-          until: (value) => _normalizeStatus(value['status'] as String?) == 'inprogress',
+          until: (value) => normalizeStatus(value['status'] as String?) == 'inprogress',
         );
 
         await inputDetails(
@@ -353,7 +352,7 @@ void main() {
           () => getTransactionDetail(transactionId),
           timeout: const Duration(seconds: 90),
           interval: const Duration(seconds: 3),
-          until: (value) => _normalizeStatus(value['status'] as String?) == 'completed',
+          until: (value) => normalizeStatus(value['status'] as String?) == 'completed',
         );
 
         // ===================== VERIFY UI: TRANSACTION DETAIL -> CREATE FEEDBACK =====================

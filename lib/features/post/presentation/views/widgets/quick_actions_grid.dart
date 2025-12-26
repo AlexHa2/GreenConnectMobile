@@ -79,6 +79,12 @@ class QuickActionsGrid extends StatelessWidget {
                 color: theme.primaryColor,
                 onTap: () => context.push('/package-list'),
               ),
+              _QuickActionCard(
+                icon: Icons.inventory_2_outlined,
+                label: s.recurring_schedules,
+                color: theme.primaryColor,
+                onTap: () => context.push('/recurring-schedules'),
+              ),
             ],
           ),
         ),

@@ -2,15 +2,19 @@ import 'package:GreenConnectMobile/features/post/data/datasources/scrap_post_rem
 import 'package:GreenConnectMobile/features/post/data/repository/scrap_post_repository_impl.dart';
 import 'package:GreenConnectMobile/features/post/domain/repository/scrap_post_repository.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/create_scrap_detail_usecase.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/create_time_slot_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/delete_scrap_detail_usecase.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/delete_time_slot_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_household_report_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_my_scrap_post_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_scrap_post_detail_usecases.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/analyze_scrap_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/scrap_post_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/search_posts_for_collector_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/toggle_scrap_post_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/update_scrap_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/update_scrap_usecase.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/update_time_slot_usecase.dart';
 import 'package:GreenConnectMobile/features/post/presentation/viewmodels/scrap_post_view_model.dart';
 import 'package:GreenConnectMobile/features/post/presentation/viewmodels/states/scrap_post_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,6 +55,11 @@ final getScrapPostDetailUsecaseProvider = Provider<GetScrapPostDetailUsecase>((
   ref,
 ) {
   return GetScrapPostDetailUsecase(ref.read(scrapPostRepositoryProvider));
+});
+
+// Analyze scrap
+final analyzeScrapUsecaseProvider = Provider<AnalyzeScrapUsecase>((ref) {
+  return AnalyzeScrapUsecase(ref.read(scrapPostRepositoryProvider));
 });
 
 // Update post
@@ -94,6 +103,21 @@ final searchPostsForCollectorUsecaseProvider =
 final getHouseholdReportUsecaseProvider =
     Provider<GetHouseholdReportUsecase>((ref) {
   return GetHouseholdReportUsecase(ref.read(scrapPostRepositoryProvider));
+});
+
+// Create time slot
+final createTimeSlotUsecaseProvider = Provider<CreateTimeSlotUsecase>((ref) {
+  return CreateTimeSlotUsecase(ref.read(scrapPostRepositoryProvider));
+});
+
+// Update time slot
+final updateTimeSlotUsecaseProvider = Provider<UpdateTimeSlotUsecase>((ref) {
+  return UpdateTimeSlotUsecase(ref.read(scrapPostRepositoryProvider));
+});
+
+// Delete time slot
+final deleteTimeSlotUsecaseProvider = Provider<DeleteTimeSlotUsecase>((ref) {
+  return DeleteTimeSlotUsecase(ref.read(scrapPostRepositoryProvider));
 });
 
 final scrapPostViewModelProvider =

@@ -277,7 +277,7 @@ class _RewardHistoryPageState extends ConsumerState<RewardHistoryPage> {
                                 dateFormat: _dateFormat,
                               ),
                             );
-                          }, childCount: entry.value.length),
+                          }, childCount: entry.value.length,),
                         ),
                       ],
                     );

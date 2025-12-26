@@ -9,7 +9,7 @@ class CreateOfferRequestEntity {
 }
 
 class OfferDetailRequest {
-  final int scrapCategoryId;
+  final String scrapCategoryId;
   final double pricePerUnit;
   final String unit;
 

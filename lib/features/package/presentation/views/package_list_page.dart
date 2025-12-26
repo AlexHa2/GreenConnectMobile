@@ -133,7 +133,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
                 package.name.toLowerCase().contains(_searchQuery!.toLowerCase()) ||
                 package.description
                     .toLowerCase()
-                    .contains(_searchQuery!.toLowerCase()))
+                    .contains(_searchQuery!.toLowerCase()),)
             .toList();
 
     final isInitialLoading = packageState.isLoading && packages.isEmpty;

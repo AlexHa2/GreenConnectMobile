@@ -2,11 +2,12 @@
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_category_entity.dart';
 
 class ScrapPostDetailEntity {
-  final int scrapCategoryId;
+  final String scrapCategoryId;
   final ScrapCategoryEntity? scrapCategory;
   final String amountDescription;
   final String imageUrl;
   final String? status;
+  final String type;
 
   ScrapPostDetailEntity({
     required this.scrapCategoryId,
@@ -14,5 +15,6 @@ class ScrapPostDetailEntity {
     required this.amountDescription,
     required this.imageUrl,
     this.status,
+    required this.type,
   });
 }

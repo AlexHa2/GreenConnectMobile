@@ -17,10 +17,8 @@
 
   <!-- Platform & Architecture -->
   <img src="https://img.shields.io/badge/platform-flutter-blue" />
-  <img src="https://img.shields.io/badge/state--management-riverpod-5B2EFF" />
   <img src="https://img.shields.io/badge/architecture-clean--architecture-success" />
   <img src="https://img.shields.io/badge/pattern-MVVM-orange" />
-  <img src="https://img.shields.io/badge/router-go__router-00C853" />
 
   <!-- License -->
   <a href="https://github.com/AlexHa2/GreenConnectMobile/blob/main/LICENSE">

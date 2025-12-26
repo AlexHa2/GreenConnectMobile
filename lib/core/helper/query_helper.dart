@@ -5,7 +5,7 @@ String withQuery(String base, Map<String, dynamic>? params) {
   final query = params.entries
       .where((e) => e.value != null)
       .map((e) =>
-          '${Uri.encodeQueryComponent(e.key)}=${Uri.encodeQueryComponent("${e.value}")}')
+          '${Uri.encodeQueryComponent(e.key)}=${Uri.encodeQueryComponent("${e.value}")}',)
       .join('&');
 
   return '$base?$query';

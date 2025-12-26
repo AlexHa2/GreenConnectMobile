@@ -179,7 +179,7 @@ class _PaymentTransactionsListPageState
 
                     final tx = transactions[index];
                     return _TransactionCard(tx: tx);
-                  }, childCount: transactions.length + 1),
+                  }, childCount: transactions.length + 1,),
                 ),
               ),
           ],

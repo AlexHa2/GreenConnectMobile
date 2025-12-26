@@ -1,7 +1,7 @@
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/create_post_options_bottom_sheet.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class CreatePostButton extends StatelessWidget {
   const CreatePostButton({super.key});
@@ -20,7 +20,7 @@ class CreatePostButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(spacing.screenPadding),
         shadowColor: theme.colorScheme.primary.withValues(alpha: 0.4),
         child: InkWell(
-          onTap: () => context.push('/create-post'),
+          onTap: () => CreatePostOptionsBottomSheet.show(context),
           borderRadius: BorderRadius.circular(spacing.screenPadding),
           child: Container(
             padding: EdgeInsets.symmetric(

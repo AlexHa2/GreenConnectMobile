@@ -34,7 +34,7 @@ class ComplaintRepositoryImpl implements ComplaintRepository {
 
   @override
   Future<ComplaintEntity> createComplaint(
-      CreateComplaintRequest request) async {
+      CreateComplaintRequest request,) async {
     final model = await _remoteDatasource.createComplaint(request);
     return model.toEntity();
   }

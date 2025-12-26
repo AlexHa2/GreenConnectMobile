@@ -302,7 +302,7 @@ class SEn extends S {
   String get pickup_address => 'Pickup Address';
 
   @override
-  String get pickup_time => 'Pickup Time';
+  String get pickup_time => 'Time available';
 
   @override
   String get add_scrap_items => 'Add Scrap Items';
@@ -2946,4 +2946,232 @@ class SEn extends S {
 
   @override
   String get failed => 'failed';
+
+  @override
+  String get scrap_type_sale => 'Sale';
+
+  @override
+  String get scrap_type_donation => 'Donation';
+
+  @override
+  String get scrap_type_service => 'Service';
+
+  @override
+  String get scrap_type_hint => 'Select type';
+
+  @override
+  String get scrap_type_required => 'Type is required';
+
+  @override
+  String get time_slot_section_title => 'Time slots';
+
+  @override
+  String get time_slot_date => 'Date';
+
+  @override
+  String get time_slot_start_time => 'Start time';
+
+  @override
+  String get time_slot_end_time => 'End time';
+
+  @override
+  String get time_slot_add => 'Add time slot';
+
+  @override
+  String get time_slot_required => 'Please fill all time slot fields';
+
+  @override
+  String get time_slot_number => 'Time slot number';
+
+  @override
+  String get number_of_items => 'Number of items';
+
+  @override
+  String get create_post_choose_method =>
+      'Choose how you want to create your post';
+
+  @override
+  String get create_post_manually_subtitle => 'Create post manually';
+
+  @override
+  String get create_post_manually_description =>
+      'Fill in all information step by step';
+
+  @override
+  String get create_post_with_ai_title => 'Create Post with AI';
+
+  @override
+  String get create_post_with_ai_subtitle => 'AI-powered creation';
+
+  @override
+  String get create_post_with_ai_description =>
+      'Upload an image and let AI analyze and fill information automatically';
+
+  @override
+  String get ai_analyzing_success => 'AI analyzing success';
+
+  @override
+  String get ai_analysis => 'AI Analysis';
+
+  @override
+  String get ai_filled => 'AI Filled';
+
+  @override
+  String get upload_image_for_ai_analysis => 'Upload Image for AI Analysis';
+
+  @override
+  String get ai_will_analyze_and_auto_fill =>
+      'AI will analyze and auto-fill post information';
+
+  @override
+  String get analyze_with_ai => 'Analyze with AI';
+
+  @override
+  String get change_image => 'Change Image';
+
+  @override
+  String get recurring_schedules => 'Recurring Schedules';
+
+  @override
+  String get recurring_schedules_description =>
+      'Recurring schedules allow you to create a schedule for a post that will be automatically created at a specific time.';
+
+  @override
+  String get recurring_schedules_create => 'Create recurring schedule';
+
+  @override
+  String get recurring_schedules_empty_message => 'No recurring schedules yet';
+
+  @override
+  String get recurring_schedules_detail_title => 'Recurring Schedule Details';
+
+  @override
+  String get recurring_schedules_details_section => 'Schedule details';
+
+  @override
+  String get recurring_schedule_address => 'Address';
+
+  @override
+  String get recurring_schedule_created_at => 'Created at';
+
+  @override
+  String get recurring_schedule_last_run_date => 'Last run';
+
+  @override
+  String get recurring_schedule_must_take_all => 'Must take all';
+
+  @override
+  String get recurring_schedules_create_title => 'Create recurring schedule';
+
+  @override
+  String get recurring_schedules_create_submit => 'Create';
+
+  @override
+  String get recurring_schedules_create_success =>
+      'Recurring schedule created successfully';
+
+  @override
+  String get recurring_schedules_create_failed =>
+      'Failed to create recurring schedule';
+
+  @override
+  String get recurring_schedule_field_title => 'Title';
+
+  @override
+  String get recurring_schedule_field_description => 'Description';
+
+  @override
+  String get recurring_schedule_field_address => 'Address';
+
+  @override
+  String get recurring_schedule_field_latitude => 'Latitude';
+
+  @override
+  String get recurring_schedule_field_longitude => 'Longitude';
+
+  @override
+  String get recurring_schedule_field_day_of_week => 'Day of week';
+
+  @override
+  String get recurring_schedule_field_start_time => 'Start time';
+
+  @override
+  String get recurring_schedule_field_end_time => 'End time';
+
+  @override
+  String get recurring_schedule_field_scrap_category_id => 'Scrap category ID';
+
+  @override
+  String get recurring_schedule_field_quantity => 'Quantity';
+
+  @override
+  String get recurring_schedule_field_unit => 'Unit';
+
+  @override
+  String get recurring_schedule_field_amount_description =>
+      'Amount description';
+
+  @override
+  String get recurring_schedule_field_type => 'Type';
+
+  @override
+  String get recurring_schedules_update_title => 'Update recurring schedule';
+
+  @override
+  String get recurring_schedules_update_submit => 'Save changes';
+
+  @override
+  String get recurring_schedules_update_success =>
+      'Recurring schedule updated successfully';
+
+  @override
+  String get recurring_schedules_update_failed =>
+      'Failed to update recurring schedule';
+
+  @override
+  String get recurring_schedules_toggle_success => 'Recurring schedule updated';
+
+  @override
+  String get recurring_schedules_toggle_failed =>
+      'Failed to update recurring schedule status';
+
+  @override
+  String get recurring_schedule_detail_create_title => 'Add item';
+
+  @override
+  String get recurring_schedule_detail_create_submit => 'Add';
+
+  @override
+  String get recurring_schedule_detail_create_success =>
+      'Item added successfully';
+
+  @override
+  String get recurring_schedule_detail_create_failed => 'Failed to add item';
+
+  @override
+  String get recurring_schedule_detail_update_title => 'Update item';
+
+  @override
+  String get recurring_schedule_detail_update_submit => 'Save';
+
+  @override
+  String get recurring_schedule_detail_update_success =>
+      'Item updated successfully';
+
+  @override
+  String get recurring_schedule_detail_update_failed => 'Failed to update item';
+
+  @override
+  String get recurring_schedule_detail_delete_title => 'Delete item';
+
+  @override
+  String get recurring_schedule_detail_delete_message =>
+      'Are you sure you want to delete this item?';
+
+  @override
+  String get recurring_schedule_detail_delete_success =>
+      'Item deleted successfully';
+
+  @override
+  String get recurring_schedule_detail_delete_failed => 'Failed to delete item';
 }

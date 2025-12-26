@@ -57,9 +57,8 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
     final ScrapPostEntity? entity = postState.detailData;
     final bool hasEntity = entity != null;
 
-    final title = hasEntity
-        ? entity.title
-        : (widget.initialData['title'] ?? '');
+    final title =
+        hasEntity ? entity.title : (widget.initialData['title'] ?? '');
     final description = hasEntity
         ? entity.description
         : (widget.initialData['description'] ?? '');
@@ -68,17 +67,14 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
         ? (entity.status ?? 'available')
         : (widget.initialData['status'] ?? 'available');
 
-    final pickupTime = hasEntity
-        ? entity.availableTimeRange
-        : (widget.initialData['pickupTime'] ??
-              widget.initialData['availableTimeRange'] ??
-              '');
+    final timeSlots =
+        hasEntity ? (entity.scrapPostTimeSlots) : <ScrapPostTimeSlotEntity>[];
 
     final pickupAddress = hasEntity
         ? entity.address
         : (widget.initialData['pickupAddress'] ??
-              widget.initialData['address'] ??
-              '');
+            widget.initialData['address'] ??
+            '');
 
     // --- Date Parsing ---
     DateTime? dateObj;
@@ -92,332 +88,633 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
       }
     }
 
-    final createdAgo = dateObj != null
-        ? TimeAgoHelper.format(context, dateObj)
-        : '';
+    final createdAgo =
+        dateObj != null ? TimeAgoHelper.format(context, dateObj) : '';
 
     // --- Status Helper ---
+    final parsedStatus = PostStatus.parseStatus(status);
     final statusColor = PostStatusHelper.getStatusColor(
       context,
-      PostStatus.parseStatus(status),
+      parsedStatus,
     );
     final statusText = PostStatusHelper.getLocalizedStatus(
       context,
-      PostStatus.parseStatus(status),
+      parsedStatus,
     );
     final mustTakeAll = hasEntity
         ? entity.mustTakeAll
         : (widget.initialData['mustTakeAll'] ?? false);
     final isCollectorView = widget.initialData['isCollectorView'] == true;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(
-          onPressed: () =>
-              isCollectorView ? context.pop() : context.push('/household-list-post'),
-        ),
-        title: Text(s.detail),
-        centerTitle: true,
-        actions: [
-          if (!isCollectorView &&
-              PostStatus.parseStatus(status) == PostStatus.open)
-            IconButton(
-              icon: const Icon(Icons.edit_rounded),
-              onPressed: () {
-                context.push(
-                  '/update-post',
-                  extra: hasEntity
-                      ? {
-                          'id': entity.scrapPostId,
-                          'title': entity.title,
-                          'description': entity.description,
-                          'address': entity.address,
-                          'availableTimeRange': entity.availableTimeRange,
-                          'items': entity.scrapPostDetails,
-                          'mustTakeAll': entity.mustTakeAll,
-                        }
-                      : widget.initialData,
-                );
-              },
-            ),
+    final isBooked = status.toString().toLowerCase() == 'partiallybooked' ||
+        status.toString().toLowerCase() == 'fullybooked';
 
-          if (!isCollectorView &&
-              PostStatus.parseStatus(status) == PostStatus.open)
-            IconButton(
-              icon: const Icon(Icons.delete_outline, color: AppColors.danger),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (dialogContext) => DeletePostDialog(
-                    onDelete: () async {
-                      Navigator.pop(dialogContext);
-                      final success = await ref
-                          .read(scrapPostViewModelProvider.notifier)
-                          .deletePost(scrapPostId);
-                      if (success && context.mounted) {
-                        context.go('/list-post');
-                      } else {
-                        if (context.mounted) {
-                          CustomToast.show(
-                            context,
-                            s.error_delete_post,
-                            type: ToastType.error,
-                          );
-                        }
-                      }
-                    },
-                    onCancel: () => Navigator.pop(dialogContext),
-                  ),
-                );
-              },
-            ),
-        ],
-      ),
+    return Scaffold(
+      // backgroundColor: theme.colorScheme.surface,
       body: RefreshIndicator(
         onRefresh: () async {
           await ref
               .read(scrapPostViewModelProvider.notifier)
               .fetchDetail(scrapPostId);
         },
-        child: ListView(
-          padding: EdgeInsets.symmetric(
-            horizontal: spacing.screenPadding,
-            vertical: spacing.screenPadding,
-          ),
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                StatusBadge(text: statusText, color: statusColor),
-                const Spacer(),
-                Icon(
-                  Icons.access_time_rounded,
-                  size: 14,
-                  color: textTheme.bodyMedium?.color,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  createdAgo,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: textTheme.bodyMedium?.color,
-                    fontStyle: FontStyle.italic,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              backgroundColor: theme.colorScheme.surface,
+              elevation: 0.5,
+              leading: BackButton(
+                onPressed: () => isCollectorView
+                    ? context.pop()
+                    : context.push('/household-list-post'),
+              ),
+              title: Text(s.detail),
+              actions: [
+                if (!isCollectorView && parsedStatus == PostStatus.open)
+                  IconButton(
+                    icon: const Icon(Icons.edit_rounded),
+                    onPressed: () {
+                      context.push(
+                        '/update-post',
+                        extra: hasEntity
+                            ? {
+                                'id': entity.scrapPostId,
+                                'postId': entity.scrapPostId,
+                                'title': entity.title,
+                                'description': entity.description,
+                                'address': entity.address,
+                                'availableTimeRange':
+                                    entity.availableTimeRange ?? '',
+                                'items': entity.scrapPostDetails,
+                                'timeSlots': entity.scrapPostTimeSlots,
+                                'mustTakeAll': entity.mustTakeAll,
+                                'location': entity.location != null
+                                    ? {
+                                        'latitude': entity.location!.latitude,
+                                        'longitude': entity.location!.longitude,
+                                      }
+                                    : null,
+                              }
+                            : widget.initialData,
+                      );
+                    },
+                  ),
+                if (!isCollectorView && parsedStatus == PostStatus.open)
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline,
+                        color: AppColors.danger,),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (dialogContext) => DeletePostDialog(
+                          onDelete: () async {
+                            Navigator.pop(dialogContext);
+                            final success = await ref
+                                .read(scrapPostViewModelProvider.notifier)
+                                .deletePost(scrapPostId);
+                            if (success && context.mounted) {
+                              context.go('/list-post');
+                            } else {
+                              if (context.mounted) {
+                                CustomToast.show(
+                                  context,
+                                  s.error_delete_post,
+                                  type: ToastType.error,
+                                );
+                              }
+                            }
+                          },
+                          onCancel: () => Navigator.pop(dialogContext),
+                        ),
+                      );
+                    },
+                  ),
+              ],
+              bottom: PreferredSize(
+                preferredSize: Size.fromHeight(spacing.screenPadding * 2.8),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: spacing.screenPadding,
+                    right: spacing.screenPadding,
+                    bottom: spacing.screenPadding,
+                  ),
+                  child: _MetaHeader(
+                    statusText: statusText,
+                    statusColor: statusColor,
+                    createdAgo: createdAgo,
+                    mustTakeAll: mustTakeAll,
+                    spacing: spacing,
+                    textTheme: textTheme,
+                    primaryColor: theme.primaryColor,
                   ),
                 ),
-              ],
-            ),
-
-            SizedBox(height: spacing.screenPadding),
-
-            Text(
-              title,
-              style: textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-                height: 1.3,
               ),
             ),
-
-            SizedBox(height: spacing.screenPadding / 2),
-
-            Text(
-              description,
-              style: textTheme.bodyMedium?.copyWith(height: 1.5),
-            ),
-
-            SizedBox(height: spacing.screenPadding * 1.5),
-
-            Card(
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(spacing.screenPadding),
-                side: BorderSide(color: theme.dividerColor),
+            SliverPadding(
+              padding: EdgeInsets.symmetric(
+                horizontal: spacing.screenPadding,
+                vertical: spacing.screenPadding,
               ),
-              child: Padding(
-                padding: EdgeInsets.all(spacing.screenPadding),
-                child: Column(
-                  children: [
-                    InfoRowWidget(
-                      icon: Icons.calendar_today_rounded,
-                      iconColor: theme.primaryColor,
-                      label: s.pickup_time,
-                      value: pickupTime,
+              sliver: SliverList.list(
+                children: [
+                  _TitleSection(
+                    title: title,
+                    description: description,
+                    isLoading: postState.isLoadingDetail && !hasEntity,
+                    spacing: spacing,
+                    textTheme: textTheme,
+                  ),
+                  SizedBox(height: spacing.screenPadding),
+                  if (timeSlots.isNotEmpty)
+                    _SectionCard(
+                      spacing: spacing,
+                      child: _TimeSlotsSection(
+                        timeSlots: timeSlots,
+                        textTheme: textTheme,
+                        spacing: spacing,
+                        title: s.pickup_time,
+                        isCollectorView: isCollectorView,
+                        s: s,
+                      ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Divider(height: 1, color: theme.dividerColor),
-                    ),
-                    InfoRowWidget(
+                  if (timeSlots.isNotEmpty)
+                    SizedBox(height: spacing.screenPadding),
+                  _SectionCard(
+                    spacing: spacing,
+                    child: InfoRowWidget(
                       icon: Icons.location_on_rounded,
                       iconColor: AppColors.warning,
                       label: s.pickup_address,
                       value: pickupAddress,
                     ),
+                  ),
+                  if (!isCollectorView && isBooked) ...[
+                    SizedBox(height: spacing.screenPadding * 1.5),
+                    GradientButton(
+                      onPressed: () {
+                        context.push(
+                          '/offers-list',
+                          extra: {
+                            'postId': scrapPostId,
+                            'isCollectorView': false,
+                          },
+                        );
+                      },
+                      text: s.view_offers,
+                      icon: Icon(
+                        Icons.receipt_long_rounded,
+                        color: theme.scaffoldBackgroundColor,
+                      ),
+                    ),
                   ],
-                ),
+                  SizedBox(height: spacing.screenPadding * 1.5),
+                  PostSectionTitle(title: "${s.list} ${s.items}"),
+                  SizedBox(height: spacing.screenPadding / 2),
+                  _ItemsSection(
+                    isLoading: postState.isLoadingDetail && !hasEntity,
+                    hasEntity: hasEntity,
+                    entity: entity,
+                    initialData: widget.initialData,
+                    spacing: spacing,
+                    isCollectorView: isCollectorView,
+                    s: s,
+                  ),
+                  SizedBox(height: spacing.screenPadding * 3),
+                ],
               ),
             ),
+          ],
+        ),
+      ),
+      bottomNavigationBar:
+          isCollectorView && hasEntity && parsedStatus != PostStatus.fullyBooked
+              ? SafeArea(
+                  minimum: EdgeInsets.fromLTRB(
+                    spacing.screenPadding,
+                    spacing.screenPadding / 2,
+                    spacing.screenPadding,
+                    spacing.screenPadding,
+                  ),
+                  child: GradientButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => Padding(
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                          ),
+                          child: CreateOfferBottomSheet(post: entity),
+                        ),
+                      ).then((result) {
+                        if (result == true && context.mounted) {
+                          ref
+                              .read(scrapPostViewModelProvider.notifier)
+                              .fetchDetail(scrapPostId);
+                        }
+                      });
+                    },
+                    text: s.create_offer,
+                    icon: Icon(
+                      Icons.local_offer_rounded,
+                      color: theme.scaffoldBackgroundColor,
+                    ),
+                  ),
+                )
+              : null,
+    );
+  }
+}
 
-            SizedBox(height: spacing.screenPadding * 2),
-            if (mustTakeAll)
-              Container(
-                margin: EdgeInsets.only(bottom: spacing.screenPadding),
-                padding: EdgeInsets.symmetric(
-                  horizontal: spacing.screenPadding,
-                  vertical: spacing.screenPadding,
-                ),
-                decoration: BoxDecoration(
-                  color: theme.primaryColor.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(spacing.screenPadding),
-                  border: Border.all(
-                    color: theme.primaryColor.withValues(alpha: 0.2),
+class _MetaHeader extends StatelessWidget {
+  const _MetaHeader({
+    required this.statusText,
+    required this.statusColor,
+    required this.createdAgo,
+    required this.mustTakeAll,
+    required this.spacing,
+    required this.textTheme,
+    required this.primaryColor,
+  });
+
+  final String statusText;
+  final Color statusColor;
+  final String createdAgo;
+  final bool mustTakeAll;
+  final AppSpacing spacing;
+  final TextTheme textTheme;
+  final Color primaryColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            StatusBadge(text: statusText, color: statusColor),
+            if (mustTakeAll) ...[
+              SizedBox(width: spacing.screenPadding / 2),
+              Chip(
+                label: Text(
+                  S.of(context)!.must_take_all,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: primaryColor,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                child: Row(
+                padding: EdgeInsets.zero,
+                visualDensity: VisualDensity.compact,
+                backgroundColor: primaryColor.withValues(alpha: 0.08),
+                side: BorderSide(color: primaryColor.withValues(alpha: 0.25)),
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(spacing.screenPadding * 2),
+                ),
+              ),
+            ],
+            const Spacer(),
+            Icon(
+              Icons.access_time_rounded,
+              size: 16,
+              color: textTheme.bodySmall?.color,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              createdAgo,
+              style: textTheme.bodySmall?.copyWith(
+                color: textTheme.bodyMedium?.color,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  const _SectionCard({
+    required this.child,
+    required this.spacing,
+  });
+
+  final Widget child;
+  final AppSpacing spacing;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      elevation: 0.5,
+      shadowColor: theme.shadowColor.withValues(alpha: 0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(spacing.screenPadding),
+        side: BorderSide(color: theme.dividerColor),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(spacing.screenPadding),
+        child: child,
+      ),
+    );
+  }
+}
+
+class _TitleSection extends StatelessWidget {
+  const _TitleSection({
+    required this.title,
+    required this.description,
+    required this.isLoading,
+    required this.spacing,
+    required this.textTheme,
+  });
+
+  final String title;
+  final String description;
+  final bool isLoading;
+  final AppSpacing spacing;
+  final TextTheme textTheme;
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _SkeletonBox(width: 220, height: 26, radius: 8),
+          SizedBox(height: spacing.screenPadding / 2),
+          const _SkeletonBox(width: double.infinity, height: 16, radius: 6),
+          SizedBox(height: spacing.screenPadding / 4),
+          const _SkeletonBox(width: double.infinity, height: 16, radius: 6),
+        ],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w800,
+            height: 1.25,
+          ),
+        ),
+        SizedBox(height: spacing.screenPadding / 2),
+        Text(
+          description,
+          style: textTheme.bodyLarge?.copyWith(height: 1.5),
+        ),
+      ],
+    );
+  }
+}
+
+class _TimeSlotsSection extends StatelessWidget {
+  const _TimeSlotsSection({
+    required this.timeSlots,
+    required this.textTheme,
+    required this.spacing,
+    required this.title,
+    required this.isCollectorView,
+    required this.s,
+  });
+
+  final List<ScrapPostTimeSlotEntity> timeSlots;
+  final TextTheme textTheme;
+  final AppSpacing spacing;
+  final String title;
+  final bool isCollectorView;
+  final S s;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        SizedBox(height: spacing.screenPadding / 2),
+        ...timeSlots.map(
+          (slot) {
+            final date = slot.specificDate;
+            final start = slot.startTime;
+            final end = slot.endTime;
+            final isSlotBooked = slot.isBooked == true;
+            return Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.all_inclusive_rounded,
-                      color: theme.primaryColor,
-                      size: 24,
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: 0.08),
+                        borderRadius:
+                            BorderRadius.circular(spacing.screenPadding),
+                      ),
+                      child: const Icon(
+                        Icons.schedule_rounded,
+                        size: 16,
+                      ),
                     ),
-                    SizedBox(width: spacing.screenPadding),
+                    SizedBox(width: spacing.screenPadding / 2),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            s.must_take_all,
-                            style: textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.primaryColor,
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  date,
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              if (!isCollectorView && isSlotBooked)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: theme.primaryColor
+                                        .withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: theme.primaryColor
+                                          .withValues(alpha: 0.3),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle_rounded,
+                                        size: 14,
+                                        color: theme.primaryColor,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        s.booked,
+                                        style: textTheme.bodySmall?.copyWith(
+                                          color: theme.primaryColor,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
                           ),
+                          const SizedBox(height: 4),
                           Text(
-                            s.must_take_all_desc, // VD: "Collectors must take all items listed below."
-                            style: textTheme.bodySmall?.copyWith(
-                              color: theme.primaryColor.withValues(alpha: 0.8),
-                            ),
+                            '$start - $end',
+                            style: textTheme.bodySmall,
                           ),
                         ],
                       ),
                     ),
                   ],
                 ),
-              ),
-
-            // ---------------------------------------------------------
-            SizedBox(height: spacing.screenPadding),
-
-            if (!isCollectorView &&
-                (status.toString().toLowerCase() == 'partiallybooked' ||
-                    status.toString().toLowerCase() == 'fullybooked')) ...[
-              GradientButton(
-                onPressed: () {
-                  context.push(
-                    '/offers-list',
-                    extra: {'postId': scrapPostId, 'isCollectorView': false},
-                  );
-                },
-                text: s.view_offers,
-                icon: Icon(
-                  Icons.receipt_long_rounded,
-                  color: theme.scaffoldBackgroundColor,
-                ),
-              ),
-              SizedBox(height: spacing.screenPadding * 2),
-            ],
-
-            PostSectionTitle(title: "${s.list} ${s.items}"),
-            SizedBox(height: spacing.screenPadding),
-
-            if (postState.isLoadingDetail && !hasEntity)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            else if (hasEntity)
-              ...entity.scrapPostDetails.map((detail) {
-                final itemStatus = PostDetailStatus.parseStatus(
-                  detail.status ?? 'available',
-                );
-                return Padding(
-                  padding: EdgeInsets.only(bottom: spacing.screenPadding / 2),
-                  child: PostItemNoAction(
-                    context: context,
-                    category: detail.scrapCategory?.categoryName ?? s.unknown,
-                    packageInformation: detail.amountDescription,
-                    imageUrl: detail.imageUrl,
-                    status: itemStatus,
-                    isCollectorView: isCollectorView,
-                  ),
-                );
-              })
-            else
-              ...(widget.initialData['scrapItems'] as List<dynamic>? ?? []).map(
-                (item) {
-                  final map = item as Map<String, dynamic>;
-                  final itemStatus = PostDetailStatus.parseStatus(
-                    map['status'] ?? 'available',
-                  );
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: PostItemNoAction(
-                      context: context,
-                      category: map['category'] ?? '',
-                      packageInformation: map['amountDescription'] ?? '',
-                      imageUrl: map['imageUrl'] ?? '',
-                      status: itemStatus,
-                      isCollectorView: isCollectorView,
+                if (slot != timeSlots.last)
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: spacing.screenPadding / 2,
                     ),
-                  );
-                },
-              ),
-
-            SizedBox(height: spacing.screenPadding * 4),
-          ],
+                    child: Divider(height: 1, color: theme.dividerColor),
+                  ),
+              ],
+            );
+          },
         ),
-      ),
-      floatingActionButton:
-          isCollectorView &&
-              hasEntity &&
-              PostStatus.parseStatus(status) != PostStatus.fullyBooked
-          ? FloatingActionButton.extended(
-              backgroundColor: theme.primaryColor,
-              elevation: 4,
-              onPressed: () {
-                showModalBottomSheet(
+      ],
+    );
+  }
+}
+
+class _ItemsSection extends StatelessWidget {
+  const _ItemsSection({
+    required this.isLoading,
+    required this.hasEntity,
+    required this.entity,
+    required this.initialData,
+    required this.spacing,
+    required this.isCollectorView,
+    required this.s,
+  });
+
+  final bool isLoading;
+  final bool hasEntity;
+  final ScrapPostEntity? entity;
+  final Map<String, dynamic> initialData;
+  final AppSpacing spacing;
+  final bool isCollectorView;
+  final S s;
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return Column(
+        children: [
+          const _SkeletonBox(width: double.infinity, height: 64, radius: 12),
+          SizedBox(height: spacing.screenPadding / 2),
+          const _SkeletonBox(width: double.infinity, height: 64, radius: 12),
+        ],
+      );
+    }
+
+    if (hasEntity) {
+      return Column(
+        children: entity!.scrapPostDetails.asMap().entries.map((entry) {
+          // final index = entry.key;
+          final detail = entry.value;
+          final itemStatus = PostDetailStatus.parseStatus(
+            detail.status ?? 'available',
+          );
+          return Column(
+            children: [
+              _SectionCard(
+                spacing: spacing,
+                child: PostItemNoAction(
                   context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => Padding(
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom,
-                    ),
-                    child: CreateOfferBottomSheet(post: entity),
-                  ),
-                ).then((result) {
-                  if (result == true && context.mounted) {
-                    // Offer created successfully - refresh post detail
-                    // Toast already shown in bottom sheet, just refresh
-                    ref
-                        .read(scrapPostViewModelProvider.notifier)
-                        .fetchDetail(scrapPostId);
-                  }
-                });
-              },
-              icon: Icon(
-                Icons.local_offer_rounded,
-                color: theme.scaffoldBackgroundColor,
-              ),
-              label: Text(
-                s.create_offer,
-                style: TextStyle(
-                  color: theme.scaffoldBackgroundColor,
-                  fontWeight: FontWeight.bold,
+                  category: detail.scrapCategory?.categoryName ?? s.unknown,
+                  packageInformation: detail.amountDescription,
+                  imageUrl: detail.imageUrl,
+                  status: itemStatus,
+                  isCollectorView: isCollectorView,
                 ),
               ),
-            )
-          : null,
+            ],
+          );
+        }).toList(),
+      );
+    }
+
+    final initialItems = initialData['scrapItems'] as List<dynamic>? ?? [];
+    return Column(
+      children: initialItems.asMap().entries.map((entry) {
+        // final index = entry.key;
+        final item = entry.value;
+        final map = item as Map<String, dynamic>;
+        final itemStatus = PostDetailStatus.parseStatus(
+          map['status'] ?? 'available',
+        );
+        return Column(
+          children: [
+            _SectionCard(
+              spacing: spacing,
+              child: PostItemNoAction(
+                context: context,
+                category: map['category'] ?? '',
+                packageInformation: map['amountDescription'] ?? '',
+                imageUrl: map['imageUrl'] ?? '',
+                status: itemStatus,
+                isCollectorView: isCollectorView,
+              ),
+            ),
+          ],
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _SkeletonBox extends StatelessWidget {
+  const _SkeletonBox({
+    required this.width,
+    required this.height,
+    required this.radius,
+  });
+
+  final double width;
+  final double height;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(radius),
+      ),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:GreenConnectMobile/core/helper/post_status_helper.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/paginated_scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/create_post_options_bottom_sheet.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/empty_state_widget.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_filter_chips.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_item.dart';
@@ -163,7 +164,7 @@ class _HouseholdListPostPageState
         actions: [
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
-            onPressed: () => context.push("/create-post"),
+            onPressed: () => CreatePostOptionsBottomSheet.show(context),
             tooltip: s.add,
           ),
         ],
@@ -316,14 +317,11 @@ class _HouseholdListPostPageState
                               PostStatus.parseStatus(rawStatus),
                             );
 
-                        final time = post.availableTimeRange;
-
                         return Padding(
                           padding: EdgeInsets.only(bottom: space / 12),
                           child: PostItem(
                             title: title,
-                            desc: desc,
-                            time: time,
+                            desc: desc,  
                             rawStatus: rawStatus,
                             localizedStatus: localizedStatus,
                             onTapDetails: () {

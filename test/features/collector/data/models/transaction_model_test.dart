@@ -15,7 +15,7 @@ void main() {
           "pointBalance": 500,
           "rank": "Silver",
           "roles": ["household"],
-          "avatarUrl": null
+          "avatarUrl": null,
         },
         "scrapCollectorId": "collector-789",
         "scrapCollector": {
@@ -25,7 +25,7 @@ void main() {
           "pointBalance": 1000,
           "rank": "Gold",
           "roles": ["collector"],
-          "avatarUrl": null
+          "avatarUrl": null,
         },
         "offerId": "offer-123",
         "offer": null,
@@ -35,7 +35,7 @@ void main() {
         "createdAt": "2025-12-09T15:00:00Z",
         "updatedAt": null,
         "transactionDetails": [],
-        "totalPrice": 0
+        "totalPrice": 0,
       };
 
       // When
@@ -64,7 +64,7 @@ void main() {
         "checkInTime": "2025-12-10T14:05:00Z", // Đã check-in
         "createdAt": "2025-12-09T15:00:00Z",
         "transactionDetails": [],
-        "totalPrice": 0
+        "totalPrice": 0,
       };
 
       // When
@@ -96,15 +96,15 @@ void main() {
             "scrapCategory": {
               "scrapCategoryId": 1,
               "name": "Nhựa PET",
-              "unit": "kg"
+              "unit": "kg",
             },
             "pricePerUnit": 5.5,
             "unit": "kg",
             "quantity": 48.5,
-            "finalPrice": 266.75
+            "finalPrice": 266.75,
           }
         ],
-        "totalPrice": 266.75
+        "totalPrice": 266.75,
       };
 
       // When
@@ -140,10 +140,10 @@ void main() {
             "pricePerUnit": 5.5,
             "unit": "kg",
             "quantity": 48.5,
-            "finalPrice": 266.75
+            "finalPrice": 266.75,
           }
         ],
-        "totalPrice": 266.75
+        "totalPrice": 266.75,
       };
 
       // When

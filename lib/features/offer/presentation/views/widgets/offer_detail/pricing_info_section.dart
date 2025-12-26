@@ -178,7 +178,7 @@ class PricingInfoSection extends StatelessWidget {
                                                 ),
                                               );
                                             },
-                                            errorBuilder: (_, _, _) => Image.asset(
+                                            errorBuilder: (_, __, ___) => Image.asset(
                                               'assets/images/green_connect_logo.png',
                                               width: 40,
                                               height: 40,
@@ -456,7 +456,7 @@ class PricingInfoSection extends StatelessWidget {
                                         ),
                                       );
                                     },
-                                errorBuilder: (_, _, _) => Image.asset(
+                                errorBuilder: (_, __, ___) => Image.asset(
                                   'assets/images/green_connect_logo.png',
                                   width: 20,
                                   height: 20,
@@ -623,7 +623,7 @@ class PricingInfoSection extends StatelessWidget {
                                       ),
                                     );
                                   },
-                              errorBuilder: (_, _, _) => Image.asset(
+                              errorBuilder: (_, __, ___) => Image.asset(
                                 'assets/images/green_connect_logo.png',
                                 width: 20,
                                 height: 20,
@@ -725,7 +725,7 @@ class PricingInfoSection extends StatelessWidget {
                       ),
                     );
                   },
-                  errorBuilder: (_, _, _) => Center(
+                  errorBuilder: (_, __, ___) => Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [

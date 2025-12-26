@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CollectorCategorySearch extends StatelessWidget {
-  final int? selectedCategoryId;
-  final ValueChanged<int?> onChanged;
+  final String? selectedCategoryId;
+  final ValueChanged<String?> onChanged;
   const CollectorCategorySearch({super.key, required this.selectedCategoryId, required this.onChanged});
 
   @override
@@ -24,7 +24,7 @@ class CollectorCategorySearch extends StatelessWidget {
           return Material(
             elevation: 1,
             borderRadius: BorderRadius.circular(space),
-            child: DropdownButtonFormField<int>(
+            child: DropdownButtonFormField<String>(
               initialValue: selectedCategoryId,
               isExpanded: true,
               decoration: InputDecoration(
@@ -42,9 +42,9 @@ class CollectorCategorySearch extends StatelessWidget {
                 ),
               ),
               items: [
-                DropdownMenuItem<int>(value: null, child: Text(s.search)),
+                DropdownMenuItem<String>(value: null, child: Text(s.search)),
                 ...categories.map(
-                  (cat) => DropdownMenuItem<int>(
+                  (cat) => DropdownMenuItem<String>(
                     value: cat.scrapCategoryId,
                     child: Text(cat.categoryName),
                   ),

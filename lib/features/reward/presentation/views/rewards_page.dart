@@ -445,7 +445,7 @@ class _RewardsPageState extends ConsumerState<RewardsPage> {
                       type: 'Redeemed', // History only shows redeemed items
                     ),
                   );
-                }, childCount: recentHistory.length),
+                }, childCount: recentHistory.length,),
               ),
 
             const SliverToBoxAdapter(child: SizedBox(height: 24)),

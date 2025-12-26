@@ -43,13 +43,18 @@ class OfferViewModel extends Notifier<OfferState> {
   Future<bool> createOffer({
     required String postId,
     required CreateOfferRequestEntity request,
+    String? slotTimeId,
   }) async {
     state = state.copyWith(isProcessing: true, errorMessage: null);
 
     try {
-      final result = await _createOffer(postId: postId, request: request);
-      state = state.copyWith(isProcessing: false, detailData: result);
-      return true;
+      final success = await _createOffer(
+        postId: postId,
+        request: request,
+        slotTimeId: slotTimeId,
+      );
+      state = state.copyWith(isProcessing: false);
+      return success;
     } catch (e, stack) {
       String errorMsg = 'An error occurred';
       if (e is AppException) {
@@ -202,7 +207,7 @@ class OfferViewModel extends Notifier<OfferState> {
   /// Add offer detail
   Future<bool> addOfferDetail({
     required String offerId,
-    required int scrapCategoryId,
+    required String scrapCategoryId,
     required double pricePerUnit,
     required String unit,
   }) async {

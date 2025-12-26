@@ -1,5 +1,5 @@
 class TransactionDetailRequest {
-  final int scrapCategoryId;
+  final String scrapCategoryId;
   final double pricePerUnit;
   final String unit;
   final double quantity;
