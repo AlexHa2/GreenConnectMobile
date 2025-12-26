@@ -318,8 +318,10 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
 
   void _handleNotificationTap(dynamic notification) {
     final entityType = notification.entityType?.toLowerCase();
-    final entityId = notification.entityId;
+    final entityId = notification.entityId?.toString().trim();
     if (entityType == null) return;
+
+    debugPrint('🔔 Notification list tap: entityType=$entityType, entityId=$entityId');
 
     final isHousehold = _currentUser != null && Role.hasRole(_currentUser!.roles, Role.household);
     final isCollector = _currentUser != null && (Role.hasRole(_currentUser!.roles, Role.individualCollector) || Role.hasRole(_currentUser!.roles, Role.businessCollector));
@@ -356,7 +358,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
 
       case 'transaction':
         if (entityId == null) return;
-        context.push('/transaction-detail', extra: {
+        context.push('/transaction-detail-onlyone', extra: {
           'transactionId': entityId,
         },);
         break;
