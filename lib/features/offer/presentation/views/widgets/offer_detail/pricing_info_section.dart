@@ -237,21 +237,12 @@ class PricingInfoSection extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            detail.scrapCategory!.categoryName,
-                                            style: theme.textTheme.bodyMedium
-                                                ?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
-                                        // Type badge
-                                        if (detailType != null)
-                                          TypeBadge(type: detailType.name),
-                                      ],
+                                    Text(
+                                      detail.scrapCategory!.categoryName,
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                     SizedBox(height: spacing / 4),
                                     Text(
@@ -264,24 +255,37 @@ class PricingInfoSection extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              // Price and Unit
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                              // Type badge and Price (aligned to the right)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text(
-                                    '${numberFormat.format(detail.pricePerUnit)} ${s.per_unit} ',
-                                    style:
-                                        theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: theme.primaryColor,
-                                    ),
-                                  ),
-                                  // SizedBox(height: spacing / 4),
-                                  Text(
-                                    '/${detail.unit}',
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.textTheme.bodySmall?.color,
-                                    ),
+                                  // Type badge
+                                  if (detailType != null) ...[
+                                    TypeBadge(type: detailType.name),
+                                    SizedBox(width: spacing / 2),
+                                  ],
+                                  // Price and Unit
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        '${numberFormat.format(detail.pricePerUnit)} ${s.per_unit} ',
+                                        style: theme.textTheme.titleMedium
+                                            ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: theme.primaryColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        '/${detail.unit}',
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                          color: theme.textTheme.bodySmall
+                                              ?.color,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),

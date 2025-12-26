@@ -120,7 +120,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
       return Container(
         padding: EdgeInsets.fromLTRB(
           spacing,
-          spacing / 12,
+          spacing * 1.5, // Increased top padding for better spacing
           spacing,
           spacing / 12,
         ),
@@ -150,7 +150,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
       return Container(
         padding: EdgeInsets.fromLTRB(
           spacing,
-          spacing / 12,
+          spacing * 1.5, // Increased top padding for better spacing
           spacing,
           spacing / 12,
         ),
@@ -177,9 +177,25 @@ class TransactionDetailBottomActions extends ConsumerWidget {
     if (_canInputDetails || _canToggleCancel) {
       final buttons = <Widget>[];
 
-      // Priority 1: Input details button (for entering actual scrap quantity)
+      // Priority 3: Toggle cancel button (emergency cancel/resume) - danger color, left side
+      if (_canToggleCancel) {
+        buttons.add(
+          Expanded(
+            flex: 1,
+            child: ToggleCancelButton(
+              transaction: transaction,
+              onActionCompleted: onActionCompleted,
+            ),
+          ),
+        );
+      }
+
+      // Priority 1: Input details button (for entering actual scrap quantity) - primary color, right side
       // Always show when collector can input details, regardless of totalPrice
       if (_canInputDetails) {
+        if (buttons.isNotEmpty) {
+          buttons.add(SizedBox(width: spacing));
+        }
         buttons.add(
           Expanded(
             flex: 2,
@@ -192,25 +208,10 @@ class TransactionDetailBottomActions extends ConsumerWidget {
         );
       }
 
-      // Priority 3: Toggle cancel button (emergency cancel/resume)
-      if (_canToggleCancel) {
-        if (buttons.isNotEmpty) {
-          buttons.add(SizedBox(width: spacing * 0.75));
-        }
-        buttons.add(
-          Expanded(
-            child: ToggleCancelButton(
-              transaction: transaction,
-              onActionCompleted: onActionCompleted,
-            ),
-          ),
-        );
-      }
-
       return Container(
         padding: EdgeInsets.fromLTRB(
           spacing,
-          spacing / 12,
+          spacing * 1.5, // Increased top padding for better spacing
           spacing,
           spacing / 12,
         ),
@@ -237,7 +238,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
       return Container(
         padding: EdgeInsets.fromLTRB(
           spacing,
-          spacing / 12,
+          spacing * 1.5, // Increased top padding for better spacing
           spacing,
           spacing / 12,
         ),
@@ -255,6 +256,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
           child: Row(
             children: [
               Expanded(
+                flex: 1,
                 child: RejectButton(
                   transaction: transaction,
                   onActionCompleted: onActionCompleted,
@@ -262,6 +264,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
               ),
               SizedBox(width: spacing),
               Expanded(
+                flex: 2,
                 child: ApproveButton(
                   transaction: transaction,
                   onActionCompleted: onActionCompleted,
@@ -274,12 +277,12 @@ class TransactionDetailBottomActions extends ConsumerWidget {
       );
     }
 
-    // When totalPrice <= 0: Show only approve button (without payment method)
+    // When totalPrice <= 0: Show both reject and approve buttons (approve without payment method)
     if (_shouldApproveWithoutPayment) {
       return Container(
         padding: EdgeInsets.fromLTRB(
           spacing,
-          spacing / 12,
+          spacing * 1.5, // Increased top padding for better spacing
           spacing,
           spacing / 12,
         ),
@@ -294,10 +297,25 @@ class TransactionDetailBottomActions extends ConsumerWidget {
           ],
         ),
         child: SafeArea(
-          child: ApproveButton(
-            transaction: transaction,
-            onActionCompleted: onActionCompleted,
-            skipPaymentMethod: true,
+          child: Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: RejectButton(
+                  transaction: transaction,
+                  onActionCompleted: onActionCompleted,
+                ),
+              ),
+              SizedBox(width: spacing),
+              Expanded(
+                flex: 2,
+                child: ApproveButton(
+                  transaction: transaction,
+                  onActionCompleted: onActionCompleted,
+                  skipPaymentMethod: true,
+                ),
+              ),
+            ],
           ),
         ),
       );

@@ -1951,7 +1951,7 @@ class SVi extends S {
   String get earliest_at_top => 'Sớm nhất ở trên';
 
   @override
-  String get emergency_cancel => 'Hủy Khẩn Cấp';
+  String get emergency_cancel => 'Hủy';
 
   @override
   String get emergency_cancel_confirm => 'Hủy Giao Dịch Khẩn Cấp';

@@ -6,7 +6,6 @@ import 'package:GreenConnectMobile/features/transaction/presentation/providers/t
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/actions/input_all_transactions_quantity_dialog.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/actions/input_scrap_quantity_dialog.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
-import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -255,42 +254,57 @@ class InputDetailsButton extends ConsumerWidget {
     final s = S.of(context)!;
     final state = ref.watch(transactionViewModelProvider);
     final isProcessing = state.isProcessing;
-    final spacing = theme.extension<AppSpacing>()!.screenPadding;
 
-    return ElevatedButton.icon(
-      onPressed: isProcessing ? null : () => _handleInputDetails(context, ref),
-      icon: isProcessing
-          ? SizedBox(
-              width: spacing,
-              height: spacing,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  theme.scaffoldBackgroundColor,
-                ),
-              ),
-            )
-          : Icon(Icons.edit, size: spacing),
-      label: Text(
-        s.enter_quantity,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: theme.textTheme.bodyMedium?.fontSize,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          colors: [
+            theme.primaryColor,
+            theme.primaryColor.withValues(alpha: 0.9),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.primaryColor.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: theme.primaryColor,
-        foregroundColor: theme.scaffoldBackgroundColor,
-        padding: EdgeInsets.symmetric(
-          vertical: spacing,
-          horizontal: spacing,
+      child: ElevatedButton.icon(
+        onPressed: isProcessing ? null : () => _handleInputDetails(context, ref),
+        icon: isProcessing
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    theme.scaffoldBackgroundColor,
+                  ),
+                ),
+              )
+            : const Icon(Icons.edit, size: 20),
+        label: Text(
+          s.enter_quantity,
+          style: TextStyle(
+            color: theme.scaffoldBackgroundColor,
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+          ),
         ),
-        minimumSize: Size.zero,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(spacing),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
         ),
-        disabledBackgroundColor: theme.primaryColor.withValues(alpha: 0.6),
       ),
     );
   }

@@ -99,32 +99,57 @@ class ApproveButton extends ConsumerWidget {
     final state = ref.watch(transactionViewModelProvider);
     final isProcessing = state.isProcessing;
 
-    return ElevatedButton(
-      onPressed: isProcessing ? null : () => _handleComplete(context, ref),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: theme.primaryColor,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        disabledBackgroundColor: theme.primaryColor.withValues(alpha: 0.6),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          colors: [
+            theme.primaryColor,
+            theme.primaryColor.withValues(alpha: 0.9),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.primaryColor.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      child: isProcessing
-          ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  theme.scaffoldBackgroundColor,
+      child: ElevatedButton(
+        onPressed: isProcessing ? null : () => _handleComplete(context, ref),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
+        ),
+        child: isProcessing
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    theme.scaffoldBackgroundColor,
+                  ),
+                ),
+              )
+            : Text(
+                s.completed,
+                style: TextStyle(
+                  color: theme.scaffoldBackgroundColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
                 ),
               ),
-            )
-          : Text(
-              s.completed,
-              style: TextStyle(
-                color: theme.scaffoldBackgroundColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+      ),
     );
   }
 }

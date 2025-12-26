@@ -655,7 +655,7 @@
   "sort_by_creation_date": "Sắp xếp theo ngày tạo",
   "most_recent_at_top": "Gần đây nhất ở trên",
   "earliest_at_top": "Sớm nhất ở trên",
-  "emergency_cancel": "Hủy Khẩn Cấp",
+  "emergency_cancel": "Hủy",
   "emergency_cancel_confirm": "Hủy Giao Dịch Khẩn Cấp",
   "emergency_cancel_message": "Điều này sẽ hủy giao dịch do lý do khẩn cấp (xe hỏng, không liên lạc được, v.v.). Bạn có chắc chắn?",
   "emergency_cancel_note": "Chỉ dùng cho các trường hợp khẩn cấp: xe hỏng, không liên lạc được khách hàng, thời tiết xấu, v.v.",

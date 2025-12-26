@@ -88,32 +88,49 @@ class RejectButton extends ConsumerWidget {
     final state = ref.watch(transactionViewModelProvider);
     final isProcessing = state.isProcessing;
 
-    return ElevatedButton(
-      onPressed: isProcessing ? null : () => _handleCancel(context, ref),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.danger,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        disabledBackgroundColor: AppColors.danger.withValues(alpha: 0.6),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.danger.withValues(alpha: 0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: isProcessing
-          ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  theme.scaffoldBackgroundColor,
+      child: ElevatedButton(
+        onPressed: isProcessing ? null : () => _handleCancel(context, ref),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.danger,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          disabledBackgroundColor: AppColors.danger.withValues(alpha: 0.6),
+        ),
+        child: isProcessing
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    theme.scaffoldBackgroundColor,
+                  ),
+                ),
+              )
+            : Text(
+                s.cancel_transaction,
+                style: TextStyle(
+                  color: theme.scaffoldBackgroundColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
                 ),
               ),
-            )
-          : Text(
-              s.cancel_transaction,
-              style: TextStyle(
-                color: theme.scaffoldBackgroundColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+      ),
     );
   }
 }

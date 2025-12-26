@@ -26,24 +26,43 @@ class CompletedTransactionActions extends StatelessWidget {
 
     // If not household, only show complaint button
     if (!isHousehold) {
-      return OutlinedButton.icon(
-        onPressed: () async {
-          final result = await context.pushNamed<bool>(
-            'create-complaint',
-            extra: {'transactionId': transactionId},
-          );
-          if (result == true) {
-            onActionCompleted();
-          }
-        },
-        icon: Icon(Icons.report_problem, size: spacing * 1.5),
-        label: Text(s.complain),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.danger,
-          side: const BorderSide(color: AppColors.danger, width: 1.5),
-          padding: EdgeInsets.symmetric(vertical: spacing * 0.75),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(spacing),
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.danger.withValues(alpha: 0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: OutlinedButton.icon(
+          onPressed: () async {
+            final result = await context.pushNamed<bool>(
+              'create-complaint',
+              extra: {'transactionId': transactionId},
+            );
+            if (result == true) {
+              onActionCompleted();
+            }
+          },
+          icon: Icon(Icons.report_problem, size: 20),
+          label: Text(
+            s.complain,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+            ),
+          ),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.danger,
+            side: const BorderSide(color: AppColors.danger, width: 2),
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            backgroundColor: AppColors.danger.withValues(alpha: 0.05),
           ),
         ),
       );
@@ -52,53 +71,100 @@ class CompletedTransactionActions extends StatelessWidget {
     // Household: show both review and complaint buttons
     return Row(
       children: [
-        // Review button
+        // Complain button - danger color, left side
         Expanded(
-          flex: 2,
-          child: ElevatedButton.icon(
-            onPressed: () async {
-              final result = await context.pushNamed<bool>(
-                'create-feedback',
-                extra: {'transactionId': transactionId},
-              );
-              if (result == true) {
-                onActionCompleted();
-              }
-            },
-            icon: Icon(Icons.star, size: spacing * 1.5),
-            label: Text(s.write_review),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.warning,
-              foregroundColor: theme.scaffoldBackgroundColor,
-              padding: EdgeInsets.symmetric(vertical: spacing * 0.75),
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(spacing),
+          flex: 1,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.danger.withValues(alpha: 0.15),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: OutlinedButton.icon(
+              onPressed: () async {
+                final result = await context.pushNamed<bool>(
+                  'create-complaint',
+                  extra: {'transactionId': transactionId},
+                );
+                if (result == true) {
+                  onActionCompleted();
+                }
+              },
+              icon: Icon(Icons.report_problem, size: 20),
+              label: Text(
+                s.complain,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.danger,
+                side: const BorderSide(color: AppColors.danger, width: 2),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                backgroundColor: AppColors.danger.withValues(alpha: 0.05),
               ),
             ),
           ),
         ),
-        SizedBox(width: spacing * 0.75),
-        // Complain button
+        SizedBox(width: spacing),
+        // Review button - primary color, right side
         Expanded(
-          child: OutlinedButton.icon(
-            onPressed: () async {
-              final result = await context.pushNamed<bool>(
-                'create-complaint',
-                extra: {'transactionId': transactionId},
-              );
-              if (result == true) {
-                onActionCompleted();
-              }
-            },
-            icon: Icon(Icons.report_problem, size: spacing * 1.5),
-            label: Text(s.complain),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.danger,
-              side: const BorderSide(color: AppColors.danger, width: 1.5),
-              padding: EdgeInsets.symmetric(vertical: spacing * 0.75),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(spacing),
+          flex: 2,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.warning,
+                  AppColors.warning.withValues(alpha: 0.9),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.warning.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                final result = await context.pushNamed<bool>(
+                  'create-feedback',
+                  extra: {'transactionId': transactionId},
+                );
+                if (result == true) {
+                  onActionCompleted();
+                }
+              },
+              icon: const Icon(Icons.star_rounded, size: 20),
+              label: Text(
+                s.write_review,
+                style: TextStyle(
+                  color: theme.scaffoldBackgroundColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
               ),
             ),
           ),

@@ -163,24 +163,14 @@ class TransactionItemsSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Category name and type badge in a row
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      item.scrapCategory.categoryName,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (itemType != null && itemType.isNotEmpty) ...[
-                    SizedBox(width: space * 0.5),
-                    TypeBadge(type: itemType),
-                  ],
-                ],
+              // Category name
+              Text(
+                item.scrapCategory.categoryName,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: space / 4),
               Text(
@@ -199,15 +189,27 @@ class TransactionItemsSection extends StatelessWidget {
 
         SizedBox(width: space * 0.5),
 
-        // Price
-        Text(
-          item.quantity > 0
-              ? '${formatVND(item.finalPrice)} ${s.per_unit}'
-              : '${formatVND(item.pricePerUnit)}/${item.unit}',
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.primaryColor,
-          ),
+        // Type badge and Price (aligned to the right)
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Type badge
+            if (itemType != null && itemType.isNotEmpty) ...[
+              TypeBadge(type: itemType),
+              SizedBox(width: space / 2),
+            ],
+            // Price
+            Text(
+              item.quantity > 0
+                  ? '${formatVND(item.finalPrice)} ${s.per_unit}'
+                  : '${formatVND(item.pricePerUnit)}/${item.unit}',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.primaryColor,
+              ),
+            ),
+          ],
         ),
       ],
     );

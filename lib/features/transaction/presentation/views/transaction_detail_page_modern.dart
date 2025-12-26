@@ -358,31 +358,62 @@ class _TransactionDetailPageModernState
   void _onActionCompleted() {
     setState(() => _hasChanges = true);
     
-    // If household role, reload and navigate back to list after accept/reject
-    if (_userRole == Role.household) {
-      // Reload post transactions to get updated status
-      _loadPostTransactionsIfPossible().then((_) {
-        if (!mounted) return;
+    // Check current status before reload to detect status changes
+    final currentStatus = _currentTransaction?.statusEnum;
+    
+    // Reload post transactions to get updated status
+    _loadPostTransactionsIfPossible().then((_) {
+      if (!mounted) return;
+      
+      // Check transaction status after reload
+      if (_currentTransaction != null) {
+        final status = _currentTransaction!.statusEnum;
         
-        // Check if transaction status changed (accept -> completed, reject -> canceled)
-        if (_currentTransaction != null) {
-          final status = _currentTransaction!.statusEnum;
-          if (status == TransactionStatus.completed ||
-              status == TransactionStatus.canceledByUser ||
-              status == TransactionStatus.canceledBySystem) {
-            // Navigate back to transaction list page
-            if (context.canPop()) {
-              context.pop(true); // Return with changes flag
-            } else {
-              context.go('/household-list-transactions');
-            }
-            return;
-          }
+        // Only navigate back to list if status changed to a final state
+        // Don't navigate if status is still inProgress (e.g., after input details)
+        // Navigate for:
+        // - completed: after approve
+        // - canceledByUser: after reject or toggle cancel
+        // - canceledBySystem: system canceled
+        // - status changed from inProgress to something else
+        final statusChanged = currentStatus != null && currentStatus != status;
+        final isFinalState = status == TransactionStatus.completed ||
+            status == TransactionStatus.canceledByUser ||
+            status == TransactionStatus.canceledBySystem;
+        
+        if (isFinalState || (statusChanged && currentStatus == TransactionStatus.inProgress)) {
+          // Navigate back to transaction list page
+          _navigateToTransactionList();
         }
-      });
+        // If status is still inProgress, stay on detail page (e.g., after input details)
+      }
+    });
+  }
+
+  void _navigateToTransactionList() {
+    if (!mounted) return;
+    
+    // Try to pop first (if we came from list page)
+    if (context.canPop()) {
+      context.pop(true); // Return with changes flag
     } else {
-      // Reload post transactions after action (for collectors)
-      _loadPostTransactionsIfPossible();
+      // If can't pop, navigate to the correct list page based on user role
+      String targetRoute;
+      if (_userRole == Role.household) {
+        targetRoute = '/household-list-transactions';
+      } else if (_userRole == Role.individualCollector ||
+          _userRole == Role.businessCollector) {
+        targetRoute = '/collector-list-transactions';
+      } else {
+        // Fallback: if role is not set, don't navigate
+        debugPrint('⚠️ WARNING: User role not set, cannot navigate to transaction list');
+        return;
+      }
+      
+      // Use pushReplacement or go to ensure we navigate correctly
+      if (mounted) {
+        context.go(targetRoute);
+      }
     }
   }
 
@@ -515,7 +546,7 @@ class _TransactionDetailContent extends StatelessWidget {
                         spacing,
                         0,
                         spacing,
-                        spacing * 6,
+                        spacing * 12, // Increased to allow scrolling above floating chat button
                       ),
                       child: TransactionDetailContentBody(
                         transaction: transaction,

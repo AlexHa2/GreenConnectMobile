@@ -193,44 +193,44 @@ class _TransactionDetailPageModernState
   void _onActionCompleted() {
     setState(() => _hasChanges = true);
     
+    // Check current status before reload to detect status changes
+    final currentStatus = _currentTransaction?.statusEnum;
+    
     // Reload transaction detail after action
     _loadTransactionDetail().then((_) {
       if (!mounted) return;
       
-      // If household role and transaction was accepted/rejected, navigate back to list
-      if (_userRole == Role.household && _currentTransaction != null) {
+      // Check transaction status after reload
+      if (_currentTransaction != null) {
         final status = _currentTransaction!.statusEnum;
-        if (status == TransactionStatus.completed ||
+        
+        // Only navigate back to list if status changed to a final state
+        // Don't navigate if status is still inProgress (e.g., after input details)
+        // Navigate for:
+        // - completed: after approve
+        // - canceledByUser: after reject or toggle cancel
+        // - canceledBySystem: system canceled
+        // - status changed from inProgress to something else
+        final statusChanged = currentStatus != null && currentStatus != status;
+        final isFinalState = status == TransactionStatus.completed ||
             status == TransactionStatus.canceledByUser ||
-            status == TransactionStatus.canceledBySystem) {
+            status == TransactionStatus.canceledBySystem;
+        
+        if (isFinalState || (statusChanged && currentStatus == TransactionStatus.inProgress)) {
           // Navigate back to transaction list page
           if (context.canPop()) {
             context.pop(true); // Return with changes flag
           } else {
-            context.go('/household-list-transactions');
+            // Determine the correct list page based on user role
+            if (_userRole == Role.household) {
+              context.go('/household-list-transactions');
+            } else if (_userRole == Role.individualCollector ||
+                _userRole == Role.businessCollector) {
+              context.go('/collector-list-transactions');
+            }
           }
-          return;
         }
-      }
-      
-      // After check-in, status should become InProgress -> redirect to multi-detail
-      if (_currentTransaction != null &&
-          _currentTransaction!.statusEnum == TransactionStatus.inProgress) {
-        final transactionId = _currentTransaction!.transactionId;
-
-        // If we have original transactionData (from list), reuse it so that
-        // multi-detail can load related transactions (postId, slotId, ...)
-        final extra = widget.transactionData != null
-            ? widget.transactionData!
-            : {
-                'transactionId': transactionId,
-                'hasTransactionData': true,
-              };
-
-        context.pushNamed(
-          'transaction-detail',
-          extra: extra,
-        );
+        // If status is still inProgress, stay on detail page (e.g., after input details)
       }
     });
   }
@@ -339,7 +339,7 @@ class _TransactionDetailContent extends StatelessWidget {
                         spacing,
                         0,
                         spacing,
-                        spacing * 6,
+                        spacing * 12, // Increased to allow scrolling above floating chat button
                       ),
                       child: _SingleTransactionContentBody(
                         transaction: transaction,
