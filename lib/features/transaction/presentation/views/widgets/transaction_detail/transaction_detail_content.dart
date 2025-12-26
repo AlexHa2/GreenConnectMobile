@@ -1,7 +1,8 @@
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
 import 'package:GreenConnectMobile/core/helper/currency_helper.dart';
-import 'package:GreenConnectMobile/features/post/domain/entities/transaction_entity.dart' as post_entity;
+import 'package:GreenConnectMobile/features/post/domain/entities/transaction_entity.dart'
+    as post_entity;
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/related_transactions_section.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/transaction_address_info.dart';
@@ -42,17 +43,17 @@ class TransactionDetailContentBody extends StatelessWidget {
     return Column(
       children: [
         // Transaction selector if multiple transactions
-        if (transactionsData != null && 
+        if (transactionsData != null &&
             transactionsData!.transactions.length > 1)
           _TransactionSelector(
             transactions: transactionsData!.transactions,
             currentIndex: currentTransactionIndex,
             onChanged: onTransactionChanged,
           ),
-        if (transactionsData != null && 
+        if (transactionsData != null &&
             transactionsData!.transactions.length > 1)
           SizedBox(height: spacing * 1.5),
-        
+
         TransactionHeaderInfo(
           transaction: transaction,
           amountDifference: transactionsData?.amountDifference,
@@ -174,9 +175,8 @@ class _TransactionSelector extends StatelessWidget {
                         : theme.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: isSelected
-                          ? theme.primaryColor
-                          : theme.dividerColor,
+                      color:
+                          isSelected ? theme.primaryColor : theme.dividerColor,
                       width: isSelected ? 2 : 1,
                     ),
                   ),
@@ -189,9 +189,8 @@ class _TransactionSelector extends StatelessWidget {
                           color: isSelected
                               ? theme.scaffoldBackgroundColor
                               : theme.primaryColor,
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
                       if (isSelected) ...[
@@ -378,7 +377,9 @@ class TransactionSummaryCard extends StatelessWidget {
                       ),
                       SizedBox(width: spacing * 0.5),
                       Text(
-                        s.total_difference,
+                        amountDifference != null && amountDifference! > 0
+                            ? s.total_will_receive
+                            : s.total_will_pay,
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: theme.hintColor,
                           fontSize: 12,
@@ -400,7 +401,7 @@ class TransactionSummaryCard extends StatelessWidget {
                     )
                   else
                     Text(
-                      formatVND(amountDifference ?? 0.0),
+                      formatVND(amountDifference?.abs() ?? 0.0),
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.primaryColor,
@@ -418,14 +419,14 @@ class TransactionSummaryCard extends StatelessWidget {
                 ],
               ),
             ),
-          
+
           // Transaction amount and quantity
           Row(
             children: [
               Expanded(
                 child: _SummaryItem(
-                  label: s.transaction_value,
-                  value: formatVND(transaction.totalPrice),
+                  label: s.total_money,
+                  value: formatVND(transaction.totalPrice.abs()),
                   color: theme.colorScheme.onSurface,
                   icon: Icons.receipt_long,
                 ),
@@ -437,7 +438,7 @@ class TransactionSummaryCard extends StatelessWidget {
               ),
               Expanded(
                 child: _SummaryItem(
-                  label: s.quantity,
+                  label: s.item_quantity,
                   value: "${transaction.transactionDetails.length}",
                   color: theme.primaryColor,
                   icon: Icons.inventory_2_outlined,
@@ -510,8 +511,19 @@ class TransactionTimeSlotCard extends StatelessWidget {
       // Vietnamese format: "25 thg 12, 2025"
       final day = date.day;
       final monthNames = [
-        '', 'thg 1', 'thg 2', 'thg 3', 'thg 4', 'thg 5', 'thg 6',
-        'thg 7', 'thg 8', 'thg 9', 'thg 10', 'thg 11', 'thg 12'
+        '',
+        'thg 1',
+        'thg 2',
+        'thg 3',
+        'thg 4',
+        'thg 5',
+        'thg 6',
+        'thg 7',
+        'thg 8',
+        'thg 9',
+        'thg 10',
+        'thg 11',
+        'thg 12'
       ];
       final monthName = monthNames[date.month];
       final year = date.year;
@@ -548,14 +560,14 @@ class TransactionTimeSlotCard extends StatelessWidget {
     String? startTimeText;
     String? endTimeText;
     bool hasTimeRange = false;
-    
+
     if (transaction.timeSlot != null) {
       try {
         final date = DateTime.parse(transaction.timeSlot!.specificDate);
         dateText = _formatDate(date, locale);
         final startTime = _formatTime(transaction.timeSlot!.startTime);
         final endTime = _formatTime(transaction.timeSlot!.endTime);
-        
+
         startTimeText = startTime;
         endTimeText = endTime;
         hasTimeRange = startTime != endTime;
@@ -672,7 +684,8 @@ class TransactionTimeSlotCard extends StatelessWidget {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: spacing * 0.3),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: spacing * 0.3),
                               child: Icon(
                                 Icons.arrow_forward_rounded,
                                 size: 14,

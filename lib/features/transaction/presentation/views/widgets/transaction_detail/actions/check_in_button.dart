@@ -5,6 +5,7 @@ import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class CheckInButton extends ConsumerWidget {
   final TransactionEntity transaction;
@@ -58,10 +59,32 @@ class CheckInButton extends ConsumerWidget {
             s.check_in_success,
             type: ToastType.success,
           );
-          // Delay callback to ensure Navigator is not locked after pop
+          // Navigate to transaction detail (not onlyone) after successful check-in
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (context.mounted) {
-              onActionCompleted();
+              // Get required params for transaction detail navigation
+              final postId = transaction.offer?.scrapPostId;
+              final collectorId = transaction.scrapCollectorId;
+              final slotId = transaction.timeSlotId ?? transaction.offer?.timeSlotId;
+
+              // Check if we have enough info to navigate to full transaction detail
+              // If not, set hasTransactionData to ensure we get full page (not onlyone)
+              final hasEnoughInfo = (postId != null && postId.isNotEmpty) ||
+                  (collectorId.isNotEmpty) ||
+                  (slotId != null && slotId.isNotEmpty);
+
+              // Navigate to transaction-detail (full page, not onlyone)
+              context.pushNamed(
+                'transaction-detail',
+                extra: {
+                  'transactionId': transaction.transactionId,
+                  if (postId != null && postId.isNotEmpty) 'postId': postId,
+                  if (collectorId.isNotEmpty) 'collectorId': collectorId,
+                  if (slotId != null && slotId.isNotEmpty) 'slotId': slotId,
+                  // Set hasTransactionData to ensure full page if we don't have enough info
+                  if (!hasEnoughInfo) 'hasTransactionData': true,
+                },
+              );
             }
           });
         } else {

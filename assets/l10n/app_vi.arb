@@ -1098,6 +1098,7 @@
   "total_difference": "Tổng chênh lệch",
   "from_all_transactions": "(Từ tất cả giao dịch)",
   "transaction_value": "Giá trị giao dịch",
+  "total_money": "Tổng tiền",
   "related_transactions": "Giao dịch liên quan",
   "amount_difference": "Chênh lệch số tiền: {amount}",
   "@amount_difference": {
@@ -1152,5 +1153,11 @@
   "recurring_schedule_detail_delete_title": "Xóa vật phẩm",
   "recurring_schedule_detail_delete_message": "Bạn có chắc chắn muốn xóa vật phẩm này?",
   "recurring_schedule_detail_delete_success": "Xóa vật phẩm thành công",
-  "recurring_schedule_detail_delete_failed": "Xóa vật phẩm thất bại"
+  "recurring_schedule_detail_delete_failed": "Xóa vật phẩm thất bại",
+  "system_reference_price":"Giá hệ thống",
+  "total_will_receive":"Người đăng bài nhận",
+  "total_will_pay":"Thu gom nhận",
+  "service_type":"Loại hình dịch vụ",
+  "item_quantity":"Số lượng vật phẩm"
+                      
 }

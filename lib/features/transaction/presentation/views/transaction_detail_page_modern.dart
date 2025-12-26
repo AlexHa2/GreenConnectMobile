@@ -74,12 +74,13 @@ class _TransactionDetailPageModernState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadUserRole();
 
-      // Reconstruct transaction from passed data if available
+      // Reconstruct transaction from passed data if available (temporary, will be replaced by _loadPostTransactions)
       if (widget.transactionData != null) {
         _currentTransaction = _reconstructTransaction(widget.transactionData!);
       }
 
-      // Always load post transactions if we have the required params
+      // Always load post transactions to get fresh data from API
+      // This will replace _currentTransaction with data from _loadPostTransactions
       _loadPostTransactionsIfPossible();
     });
   }
@@ -241,13 +242,26 @@ class _TransactionDetailPageModernState
   }
 
   /// Extract params and load post transactions
+  /// Always try to load from _loadPostTransactions to ensure fresh data
   Future<void> _loadPostTransactionsIfPossible() async {
-    // Use provided params directly
-    final postId = widget.postId;
-    final collectorId = widget.collectorId;
-    final slotId = widget.slotId;
+    // Priority 1: Use provided params directly
+    String? postId = widget.postId;
+    String? collectorId = widget.collectorId;
+    String? slotId = widget.slotId;
+
+    // Priority 2: If params not provided, try to extract from current transaction
+    if ((postId == null || postId.isEmpty) && _currentTransaction != null) {
+      postId = _currentTransaction!.offer?.scrapPostId;
+    }
+    if ((collectorId == null || collectorId.isEmpty) && _currentTransaction != null) {
+      collectorId = _currentTransaction!.scrapCollectorId;
+    }
+    if ((slotId == null || slotId.isEmpty) && _currentTransaction != null) {
+      slotId = _currentTransaction!.timeSlotId ?? _currentTransaction!.offer?.timeSlotId;
+    }
 
     // Load post transactions if all required params are available
+    // Always load from API to ensure fresh data, not from passed transactionData
     if (postId != null &&
         postId.isNotEmpty &&
         collectorId != null &&
@@ -302,11 +316,14 @@ class _TransactionDetailPageModernState
           _amountDifference = state.transactionsData?.amountDifference ?? 0.0;
           _isLoadingTransactions = false;
 
-          // Update current transaction from list if available
+          // ALWAYS update current transaction from _loadPostTransactions data
+          // This ensures UI always shows data from API, not from passed transactionData
           if (state.transactionsData != null &&
               state.transactionsData!.transactions.isNotEmpty) {
             final currentTransactionId =
                 widget.transactionId ?? _currentTransaction?.transactionId;
+
+            int? selectedIndex;
 
             if (currentTransactionId != null) {
               // Find current transaction in the list
@@ -314,26 +331,43 @@ class _TransactionDetailPageModernState
                   .indexWhere((t) => t.transactionId == currentTransactionId);
 
               if (foundIndex >= 0) {
-                // Convert post_entity.TransactionEntity to transaction_entity.TransactionEntity
-                _currentTransaction = _convertPostTransactionToTransaction(
-                  state.transactionsData!.transactions[foundIndex],
-                );
-                _currentTransactionIndex = foundIndex;
-              } else if (_currentTransaction == null &&
-                  state.transactionsData!.transactions.isNotEmpty) {
-                // If current transaction not found, use first one
-                _currentTransaction = _convertPostTransactionToTransaction(
-                  state.transactionsData!.transactions[0],
-                );
-                _currentTransactionIndex = 0;
+                selectedIndex = foundIndex;
               }
-            } else if (_currentTransaction == null &&
-                state.transactionsData!.transactions.isNotEmpty) {
-              // No transactionId provided, use first one
+            }
+
+            // If no specific transaction found or no transactionId provided,
+            // try to find the best transaction to display:
+            // Priority 1: Transaction WITHOUT transactionDetails (needs data input) - for collector
+            // Priority 2: Transaction with transactionDetails (has data entered)
+            // Priority 3: First transaction
+            if (selectedIndex == null) {
+              // Find transaction WITHOUT transactionDetails first (needs input)
+              final transactionWithoutDetailsIndex = state.transactionsData!.transactions
+                  .indexWhere((t) => t.transactionDetails.isEmpty);
+
+              if (transactionWithoutDetailsIndex >= 0) {
+                selectedIndex = transactionWithoutDetailsIndex;
+              } else {
+                // If all transactions have details, find one with details
+                final transactionWithDetailsIndex = state.transactionsData!.transactions
+                    .indexWhere((t) => t.transactionDetails.isNotEmpty);
+
+                if (transactionWithDetailsIndex >= 0) {
+                  selectedIndex = transactionWithDetailsIndex;
+                } else {
+                  // Fallback: use first one
+                  selectedIndex = 0;
+                }
+              }
+            }
+
+            // ALWAYS use data from _loadPostTransactions (API)
+            if (selectedIndex >= 0 &&
+                selectedIndex < state.transactionsData!.transactions.length) {
               _currentTransaction = _convertPostTransactionToTransaction(
-                state.transactionsData!.transactions[0],
+                state.transactionsData!.transactions[selectedIndex],
               );
-              _currentTransactionIndex = 0;
+              _currentTransactionIndex = selectedIndex;
             }
           }
         });

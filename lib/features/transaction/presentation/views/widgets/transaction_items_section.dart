@@ -175,7 +175,7 @@ class TransactionItemsSection extends StatelessWidget {
               SizedBox(height: space / 4),
               Text(
                 item.quantity > 0
-                    ? '${item.quantity} × ${formatVND(item.pricePerUnit)}/${item.unit}'
+                    ? '${item.quantity}/${item.unit} × ${formatVND(item.pricePerUnit)}/${s.per_unit}'
                     : '${formatVND(item.pricePerUnit)}/${item.unit} ${s.quantity_not_entered}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.textTheme.bodySmall?.color?.withValues(

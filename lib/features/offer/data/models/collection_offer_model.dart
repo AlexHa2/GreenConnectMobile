@@ -50,6 +50,7 @@ class CollectionOfferModel {
     }
 
     // Parse offerDetails and inject imageUrl
+    // Note: Response mới có thể có pricePerKg, type trong offerDetails
     final List<OfferDetailModel> offerDetailsList = [];
     if (json['offerDetails'] != null && json['offerDetails'] is List) {
       for (var offerDetailJson in json['offerDetails'] as List) {
@@ -69,6 +70,8 @@ class CollectionOfferModel {
       scrapPost: json['scrapPost'] != null
           ? ScrapPostModel.fromJson(json['scrapPost'] as Map<String, dynamic>)
           : null,
+      // Note: Response mới không có scrapCollector/collector nữa, 
+      // thông tin collector nằm trong scrapPost.household
       scrapCollector: json['scrapCollector'] != null
           ? CollectorModel.fromJson(json['scrapCollector'] as Map<String, dynamic>)
           : json['collector'] != null

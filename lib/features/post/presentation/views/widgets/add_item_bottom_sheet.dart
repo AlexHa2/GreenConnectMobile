@@ -241,7 +241,8 @@ class _AddItemBottomSheetState extends State<AddItemBottomSheet> {
                         .toList(),
                     onChanged: (val) => setState(() => selectedType = val),
                     decoration: InputDecoration(
-                      labelText: s.scrap_item,
+                      labelText: s.service_type,
+                      
                       border: const OutlineInputBorder(),
                     ),
                     validator: (v) => v == null ? s.scrap_type_required : null,

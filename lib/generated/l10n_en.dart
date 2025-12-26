@@ -3096,6 +3096,9 @@ class SEn extends S {
   String get transaction_value => 'Transaction Value';
 
   @override
+  String get total_money => 'Total money';
+
+  @override
   String get related_transactions => 'Related Transactions';
 
   @override
@@ -3251,4 +3254,19 @@ class SEn extends S {
 
   @override
   String get recurring_schedule_detail_delete_failed => 'Failed to delete item';
+
+  @override
+  String get system_reference_price => 'System reference price';
+
+  @override
+  String get total_will_receive => 'The HouseHold will receive';
+
+  @override
+  String get total_will_pay => 'The Household will pay';
+
+  @override
+  String get service_type => 'Service type';
+
+  @override
+  String get item_quantity => 'Item quantity';
 }
