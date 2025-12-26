@@ -13,8 +13,8 @@ class TransactionDetailRequest {
 
   Map<String, dynamic> toJson() => {
         'scrapCategoryId': scrapCategoryId,
-        'pricePerUnit': pricePerUnit,
+        'pricePerUnit': pricePerUnit.toDouble(),
         'unit': unit,
-        'quantity': quantity,
+        'quantity': quantity.toDouble(),
       };
 }

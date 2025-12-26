@@ -35,7 +35,7 @@ class TransactionActionButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      padding: EdgeInsets.all(space * 1.5),
+      padding: EdgeInsets.all(space),
       decoration: BoxDecoration(
         color: theme.cardColor,
         boxShadow: [
@@ -164,7 +164,7 @@ class TransactionActionButtons extends ConsumerWidget {
       icon: const Icon(Icons.close),
       label: Text(s.reject),
       style: OutlinedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: space * 1.25),
+        padding: EdgeInsets.symmetric(vertical: space),
         side: const BorderSide(color: AppColors.danger, width: 2),
         foregroundColor: AppColors.danger,
       ),
@@ -177,7 +177,7 @@ class TransactionActionButtons extends ConsumerWidget {
       icon: const Icon(Icons.cancel_outlined),
       label: Text(s.cancel_transaction),
       style: OutlinedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: space * 1.25),
+        padding: EdgeInsets.symmetric(vertical: space),
         side: const BorderSide(color: AppColors.warningUpdate, width: 2),
         foregroundColor: AppColors.warningUpdate,
       ),
@@ -190,7 +190,7 @@ class TransactionActionButtons extends ConsumerWidget {
       icon: const Icon(Icons.rate_review_outlined),
       label: Text(s.provide_feedback),
       style: OutlinedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: space * 1.25),
+        padding: EdgeInsets.symmetric(vertical: space),
         side: BorderSide(color: theme.primaryColor, width: 2),
         foregroundColor: theme.primaryColor,
       ),
@@ -208,7 +208,7 @@ class TransactionActionButtons extends ConsumerWidget {
         style: const TextStyle(fontWeight: FontWeight.w600),
       ),
       style: OutlinedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: space * 1.25),
+        padding: EdgeInsets.symmetric(vertical: space),
         side: BorderSide(
           color: isCanceled ? AppColors.warningUpdate : AppColors.danger,
           width: 2,

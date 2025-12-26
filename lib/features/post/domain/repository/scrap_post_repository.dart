@@ -5,6 +5,7 @@ import 'package:GreenConnectMobile/features/post/domain/entities/paginated_scrap
 import 'package:GreenConnectMobile/features/post/domain/entities/analyze_scrap_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_detail_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/update_scrap_post_entity.dart';
 
 abstract class ScrapPostRepository {
@@ -56,6 +57,8 @@ abstract class ScrapPostRepository {
   Future<AnalyzeScrapResultEntity> analyzeScrap({
     required Uint8List imageBytes,
     required String fileName,
+    void Function(int sent, int total, double progress)? onProgress,
+    int maxRetries = 3,
   });
 
   Future<ScrapPostTimeSlotEntity> createTimeSlot({
@@ -76,5 +79,12 @@ abstract class ScrapPostRepository {
   Future<bool> deleteTimeSlot({
     required String postId,
     required String timeSlotId,
+  });
+
+  /// GET /api/v1/posts/{postId}/transactions?collectorId={collectorId}&slotId={slotId}
+  Future<PostTransactionsResponseEntity> getPostTransactions({
+    required String postId,
+    required String collectorId,
+    required String slotId,
   });
 }

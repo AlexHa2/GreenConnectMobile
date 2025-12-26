@@ -34,7 +34,19 @@ AppException _mapToAppException(dynamic error) {
 
       case DioExceptionType.unknown:
       default:
+        // Check for network-related errors
         if (error.error is SocketException) {
+          return NetworkException();
+        }
+        // Check for SSL/TLS handshake errors by error message
+        final errorMessage = error.message?.toLowerCase() ?? '';
+        final errorString = error.toString().toLowerCase();
+        if (errorMessage.contains('handshake') ||
+            errorMessage.contains('connection terminated') ||
+            errorMessage.contains('ssl') ||
+            errorMessage.contains('tls') ||
+            errorString.contains('handshake') ||
+            errorString.contains('connection terminated')) {
           return NetworkException();
         }
         return UnknownException(error.message ?? "Unknown Error");
@@ -52,9 +64,52 @@ AppException _mapBadResponse(Response? response) {
   final statusCode = response?.statusCode ?? 0;
   final data = response?.data;
 
-  final serverMessage = (data is Map && data.containsKey('message'))
-      ? data['message'].toString()
-      : response?.statusMessage ?? "Unknown Error";
+  // Try to extract message from various possible fields in response
+  String? serverMessage;
+  if (data is Map) {
+    // Try common message fields
+    if (data.containsKey('message')) {
+      serverMessage = data['message']?.toString();
+    } else if (data.containsKey('error')) {
+      serverMessage = data['error']?.toString();
+    } else if (data.containsKey('errorMessage')) {
+      serverMessage = data['errorMessage']?.toString();
+    } else if (data.containsKey('errors')) {
+      final errors = data['errors'];
+      
+      // Handle errors as Map (validation errors like {FieldName: [error1, error2]})
+      if (errors is Map) {
+        final errorMessages = <String>[];
+        errors.forEach((key, value) {
+          if (value is List && value.isNotEmpty) {
+            // Take first error message from the list
+            errorMessages.add(value[0].toString());
+          } else if (value != null) {
+            errorMessages.add(value.toString());
+          }
+        });
+        
+        if (errorMessages.isNotEmpty) {
+          serverMessage = errorMessages.join(', ');
+        }
+      }
+      // Handle errors as List
+      else if (errors is List && errors.isNotEmpty) {
+        final firstError = errors[0];
+        if (firstError is Map && firstError.containsKey('message')) {
+          serverMessage = firstError['message']?.toString();
+        } else {
+          serverMessage = firstError.toString();
+        }
+      }
+    }
+  }
+  
+  // Fallback to statusMessage if no message found
+  serverMessage = serverMessage?.trim();
+  if (serverMessage == null || serverMessage.isEmpty) {
+    serverMessage = response?.statusMessage ?? "Unknown Error";
+  }
 
   switch (statusCode) {
     case 400:
@@ -75,3 +130,5 @@ AppException _mapBadResponse(Response? response) {
       return UnknownException("[$statusCode] $serverMessage");
   }
 }
+
+

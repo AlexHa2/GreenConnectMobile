@@ -1,7 +1,9 @@
 import 'package:GreenConnectMobile/core/enum/post_status.dart';
 import 'package:GreenConnectMobile/core/helper/post_status_helper.dart';
 import 'package:GreenConnectMobile/core/helper/time_ago_helper.dart';
+import 'package:GreenConnectMobile/features/offer/presentation/providers/offer_providers.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/create_offer_bottom_sheet.dart';
+import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/create_supplementary_offer_bottom_sheet.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/delete_post_dialog.dart';
@@ -29,6 +31,7 @@ class PostDetailsPage extends ConsumerStatefulWidget {
 
 class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
   late String scrapPostId;
+  bool _isCheckingAcceptedOffer = false;
 
   @override
   void initState() {
@@ -40,7 +43,42 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
     if (scrapPostId.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(scrapPostViewModelProvider.notifier).fetchDetail(scrapPostId);
+        _checkAcceptedOffer();
       });
+    }
+  }
+
+  Future<void> _checkAcceptedOffer() async {
+    final isCollectorView = widget.initialData['isCollectorView'] == true;
+    if (!isCollectorView) return;
+
+    setState(() {
+      _isCheckingAcceptedOffer = true;
+    });
+
+    try {
+      // Check if collector has ANY offer (not just accepted) for this post
+      // This allows showing "Buy More" button even if offer is pending
+      await ref
+          .read(offerViewModelProvider.notifier)
+          .fetchOffersByPost(
+            postId: scrapPostId,
+            status: null, // Check all offers, not just accepted
+            page: 1,
+            size: 1,
+          );
+      
+      if (mounted) {
+        setState(() {
+          _isCheckingAcceptedOffer = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isCheckingAcceptedOffer = false;
+        });
+      }
     }
   }
 
@@ -295,31 +333,98 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
                     spacing.screenPadding,
                     spacing.screenPadding,
                   ),
-                  child: GradientButton(
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => Padding(
-                          padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                  child: Row(
+                    children: [
+                      // Mua thêm button (40%)
+                      Expanded(
+                        flex: 2,
+                        child: OutlinedButton.icon(
+                          onPressed: _isCheckingAcceptedOffer
+                              ? null
+                              : () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.transparent,
+                                    builder: (context) => Padding(
+                                      padding: EdgeInsets.only(
+                                        bottom: MediaQuery.of(context)
+                                            .viewInsets.bottom,
+                                      ),
+                                      child:
+                                          CreateSupplementaryOfferBottomSheet(
+                                        post: entity,
+                                      ),
+                                    ),
+                                  ).then((result) {
+                                    if (result == true && context.mounted) {
+                                      ref
+                                          .read(
+                                              scrapPostViewModelProvider
+                                                  .notifier)
+                                          .fetchDetail(scrapPostId);
+                                      _checkAcceptedOffer();
+                                    }
+                                  });
+                                },
+                          icon: Icon(
+                            Icons.add_shopping_cart_rounded,
+                            color: theme.primaryColor,
                           ),
-                          child: CreateOfferBottomSheet(post: entity),
+                          label: Text(
+                            s.buy_more,
+                            style: TextStyle(
+                              color: theme.primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: theme.primaryColor,
+                              width: 1.5,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                spacing.screenPadding,
+                              ),
+                            ),
+                          ),
                         ),
-                      ).then((result) {
-                        if (result == true && context.mounted) {
-                          ref
-                              .read(scrapPostViewModelProvider.notifier)
-                              .fetchDetail(scrapPostId);
-                        }
-                      });
-                    },
-                    text: s.create_offer,
-                    icon: Icon(
-                      Icons.local_offer_rounded,
-                      color: theme.scaffoldBackgroundColor,
-                    ),
+                      ),
+                      SizedBox(width: spacing.screenPadding * 0.75),
+                      // Tạo Offer button (60% - Primary)
+                      Expanded(
+                        flex: 3,
+                        child: GradientButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: MediaQuery.of(context)
+                                      .viewInsets.bottom,
+                                ),
+                                child: CreateOfferBottomSheet(post: entity),
+                              ),
+                            ).then((result) {
+                              if (result == true && context.mounted) {
+                                ref
+                                    .read(scrapPostViewModelProvider.notifier)
+                                    .fetchDetail(scrapPostId);
+                                _checkAcceptedOffer();
+                              }
+                            });
+                          },
+                          text: s.create_offer,
+                          icon: Icon(
+                            Icons.local_offer_rounded,
+                            color: theme.scaffoldBackgroundColor,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 )
               : null,
@@ -658,6 +763,7 @@ class _ItemsSection extends StatelessWidget {
                   imageUrl: detail.imageUrl,
                   status: itemStatus,
                   isCollectorView: isCollectorView,
+                  type: detail.type,
                 ),
               ),
             ],
@@ -686,6 +792,7 @@ class _ItemsSection extends StatelessWidget {
                 imageUrl: map['imageUrl'] ?? '',
                 status: itemStatus,
                 isCollectorView: isCollectorView,
+                type: map['type'] as String?,
               ),
             ),
           ],

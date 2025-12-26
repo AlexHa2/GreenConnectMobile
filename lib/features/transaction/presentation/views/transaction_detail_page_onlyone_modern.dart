@@ -3,20 +3,15 @@ import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/message/presentation/providers/message_providers.dart';
-import 'package:GreenConnectMobile/features/offer/domain/entities/collection_offer_entity.dart';
-import 'package:GreenConnectMobile/features/post/domain/entities/household_entity.dart'
-    as post_entity;
-import 'package:GreenConnectMobile/features/post/domain/entities/scrap_category_entity.dart';
-import 'package:GreenConnectMobile/features/post/domain/entities/transaction_entity.dart'
-    as post_entity;
-import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
 import 'package:GreenConnectMobile/features/profile/domain/entities/user_entity.dart';
-import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/transaction_address_info.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/transaction_detail_app_bar.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/transaction_detail_bottom_actions.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/transaction_detail_content.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_items_section.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_party_info.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -27,22 +22,14 @@ import 'package:go_router/go_router.dart';
 
 class TransactionDetailPageModern extends ConsumerStatefulWidget {
   // Transaction ID (required)
-  final String? transactionId;
-
-  // Required params for post transactions
-  final String? postId;
-  final String? collectorId;
-  final String? slotId;
+  final String transactionId;
 
   // Additional transaction data from list (for reconstruction)
   final Map<String, dynamic>? transactionData;
 
   const TransactionDetailPageModern({
     super.key,
-    this.transactionId,
-    this.postId,
-    this.collectorId,
-    this.slotId,
+    required this.transactionId,
     this.transactionData,
   });
 
@@ -57,16 +44,10 @@ class _TransactionDetailPageModernState
   bool _hasChanges = false;
   Role _userRole = Role.household;
 
-  // State for post transactions
-  post_entity.PostTransactionsResponseEntity? _transactionsData;
-  double _amountDifference = 0.0;
-  bool _isLoadingTransactions = false;
-
   // Store transaction data (from list or loaded)
   TransactionEntity? _currentTransaction;
-
-  // Index of current transaction in the list (for switching)
-  int _currentTransactionIndex = 0;
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -77,104 +58,14 @@ class _TransactionDetailPageModernState
       // Reconstruct transaction from passed data if available
       if (widget.transactionData != null) {
         _currentTransaction = _reconstructTransaction(widget.transactionData!);
+        setState(() {
+          _isLoading = false;
+        });
       }
 
-      // Always load post transactions if we have the required params
-      _loadPostTransactionsIfPossible();
+      // Load transaction detail from API
+      _loadTransactionDetail();
     });
-  }
-
-  /// Convert post_entity.TransactionEntity to transaction_entity.TransactionEntity
-  TransactionEntity _convertPostTransactionToTransaction(
-    post_entity.TransactionEntity postTransaction,
-  ) {
-    // Convert HouseholdEntity to UserEntity
-    UserEntity convertHouseholdToUser(post_entity.HouseholdEntity? household) {
-      if (household == null) {
-        return UserEntity(
-          userId: '',
-          fullName: '',
-          phoneNumber: '',
-          pointBalance: 0,
-          rank: '',
-          roles: [],
-        );
-      }
-      return UserEntity(
-        userId: household.id,
-        fullName: household.fullName,
-        phoneNumber: household.phoneNumber,
-        pointBalance: household.pointBalance,
-        creditBalance: household.creditBalance,
-        rank: household.rank,
-        roles: household.roles,
-        avatarUrl: household.avatarUrl,
-      );
-    }
-
-    // Convert TransactionDetailEntity
-    List<TransactionDetailEntity> convertDetails(
-      List<post_entity.TransactionDetailEntity> details,
-    ) {
-      // Note: This method doesn't have access to context, so we use a default value
-      // The category name will be localized when displayed in UI
-      return details.map((detail) {
-        // Create default ScrapCategoryEntity if null
-        // Note: transaction domain uses different ScrapCategoryEntity structure
-        final category = detail.scrapCategory != null
-            ? ScrapCategoryEntity(
-                scrapCategoryId: detail.scrapCategory!.id,
-                categoryName: detail.scrapCategory!.name,
-                description: null,
-              )
-            : ScrapCategoryEntity(
-                scrapCategoryId: detail.scrapCategoryId,
-                categoryName: '', // Will be localized when displayed
-                description: null,
-              );
-
-        return TransactionDetailEntity(
-          transactionId: detail.transactionId,
-          scrapCategoryId: detail.scrapCategoryId,
-          scrapCategory: category,
-          pricePerUnit: detail.pricePerUnit,
-          unit: detail.unit,
-          quantity: detail.quantity,
-          finalPrice: detail.finalPrice,
-        );
-      }).toList();
-    }
-
-    return TransactionEntity(
-      transactionId: postTransaction.transactionId,
-      householdId: postTransaction.householdId,
-      household: convertHouseholdToUser(postTransaction.household),
-      scrapCollectorId: postTransaction.scrapCollectorId,
-      scrapCollector: convertHouseholdToUser(postTransaction.scrapCollector),
-      offerId: postTransaction.offerId,
-      offer: postTransaction.offer != null
-          ? CollectionOfferEntity(
-              collectionOfferId: postTransaction.offer!.collectionOfferId,
-              scrapPostId: postTransaction.offer!.scrapPostId,
-              scrapPost: postTransaction.offer!.scrapPost,
-              status: postTransaction.offer!.status,
-              createdAt: postTransaction.offer!.createdAt,
-              offerDetails: postTransaction.offer!.offerDetails,
-              scheduleProposals: const [], // Not available in post entity
-              timeSlotId: postTransaction.offer!.timeSlotId,
-              timeSlot: postTransaction.offer!.timeSlot,
-            )
-          : null,
-      status: postTransaction.status,
-      scheduledTime: postTransaction.scheduledTime,
-      checkInTime: postTransaction.checkInTime,
-      createdAt: postTransaction.createdAt,
-      updatedAt: postTransaction.updatedAt,
-      transactionDetails: convertDetails(postTransaction.transactionDetails),
-      totalPrice: postTransaction.totalPrice,
-      timeSlotId: postTransaction.timeSlotId,
-      timeSlot: postTransaction.timeSlot,
-    );
   }
 
   /// Reconstruct TransactionEntity from passed data
@@ -240,28 +131,6 @@ class _TransactionDetailPageModernState
     }
   }
 
-  /// Extract params and load post transactions
-  Future<void> _loadPostTransactionsIfPossible() async {
-    // Use provided params directly
-    final postId = widget.postId;
-    final collectorId = widget.collectorId;
-    final slotId = widget.slotId;
-
-    // Load post transactions if all required params are available
-    if (postId != null &&
-        postId.isNotEmpty &&
-        collectorId != null &&
-        collectorId.isNotEmpty &&
-        slotId != null &&
-        slotId.isNotEmpty) {
-      await _loadPostTransactions(
-        postId: postId,
-        collectorId: collectorId,
-        slotId: slotId,
-      );
-    }
-  }
-
   Future<void> _loadUserRole() async {
     final user = await _tokenStorage.getUserData();
     if (user != null && user.roles.isNotEmpty) {
@@ -277,113 +146,93 @@ class _TransactionDetailPageModernState
     }
   }
 
-  Future<void> _loadPostTransactions({
-    required String postId,
-    required String collectorId,
-    required String slotId,
-  }) async {
-    if (mounted) {
-      setState(() {
-        _isLoadingTransactions = true;
-      });
-    }
+  Future<void> _loadTransactionDetail() async {
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
-      await ref.read(scrapPostViewModelProvider.notifier).fetchPostTransactions(
-            postId: postId,
-            collectorId: collectorId,
-            slotId: slotId,
-          );
+      await ref
+          .read(transactionViewModelProvider.notifier)
+          .fetchTransactionDetail(widget.transactionId);
 
-      if (mounted) {
-        final state = ref.read(scrapPostViewModelProvider);
+      if (!mounted) return;
+
+      final state = ref.read(transactionViewModelProvider);
+
+      if (state.detailData != null) {
         setState(() {
-          _transactionsData = state.transactionsData;
-          _amountDifference = state.transactionsData?.amountDifference ?? 0.0;
-          _isLoadingTransactions = false;
-
-          // Update current transaction from list if available
-          if (state.transactionsData != null &&
-              state.transactionsData!.transactions.isNotEmpty) {
-            final currentTransactionId =
-                widget.transactionId ?? _currentTransaction?.transactionId;
-
-            if (currentTransactionId != null) {
-              // Find current transaction in the list
-              final foundIndex = state.transactionsData!.transactions
-                  .indexWhere((t) => t.transactionId == currentTransactionId);
-
-              if (foundIndex >= 0) {
-                // Convert post_entity.TransactionEntity to transaction_entity.TransactionEntity
-                _currentTransaction = _convertPostTransactionToTransaction(
-                  state.transactionsData!.transactions[foundIndex],
-                );
-                _currentTransactionIndex = foundIndex;
-              } else if (_currentTransaction == null &&
-                  state.transactionsData!.transactions.isNotEmpty) {
-                // If current transaction not found, use first one
-                _currentTransaction = _convertPostTransactionToTransaction(
-                  state.transactionsData!.transactions[0],
-                );
-                _currentTransactionIndex = 0;
-              }
-            } else if (_currentTransaction == null &&
-                state.transactionsData!.transactions.isNotEmpty) {
-              // No transactionId provided, use first one
-              _currentTransaction = _convertPostTransactionToTransaction(
-                state.transactionsData!.transactions[0],
-              );
-              _currentTransactionIndex = 0;
-            }
-          }
+          _currentTransaction = state.detailData;
+          _isLoading = false;
+        });
+      } else {
+        if (!mounted) return;
+        final s = S.of(context)!;
+        setState(() {
+          _isLoading = false;
+          _errorMessage = state.errorMessage ?? s.operation_failed;
         });
       }
     } catch (e) {
-      debugPrint('❌ ERROR LOAD POST TRANSACTIONS: $e');
-      if (mounted) {
-        setState(() {
-          _isLoadingTransactions = false;
-          // Fallback: use totalPrice if cannot load
-          _amountDifference = 0.0;
-        });
-      }
+      if (!mounted) return;
+      final s = S.of(context)!;
+      setState(() {
+        _isLoading = false;
+        _errorMessage = '${s.error_occurred}: ${e.toString()}';
+      });
     }
   }
 
   Future<void> _onRefresh() async {
-    // Reload post transactions if params are available
-    _loadPostTransactionsIfPossible();
+    await _loadTransactionDetail();
   }
 
   void _onActionCompleted() {
     setState(() => _hasChanges = true);
     
-    // If household role, reload and navigate back to list after accept/reject
-    if (_userRole == Role.household) {
-      // Reload post transactions to get updated status
-      _loadPostTransactionsIfPossible().then((_) {
-        if (!mounted) return;
-        
-        // Check if transaction status changed (accept -> completed, reject -> canceled)
-        if (_currentTransaction != null) {
-          final status = _currentTransaction!.statusEnum;
-          if (status == TransactionStatus.completed ||
-              status == TransactionStatus.canceledByUser ||
-              status == TransactionStatus.canceledBySystem) {
-            // Navigate back to transaction list page
-            if (context.canPop()) {
-              context.pop(true); // Return with changes flag
-            } else {
-              context.go('/household-list-transactions');
-            }
-            return;
+    // Reload transaction detail after action
+    _loadTransactionDetail().then((_) {
+      if (!mounted) return;
+      
+      // If household role and transaction was accepted/rejected, navigate back to list
+      if (_userRole == Role.household && _currentTransaction != null) {
+        final status = _currentTransaction!.statusEnum;
+        if (status == TransactionStatus.completed ||
+            status == TransactionStatus.canceledByUser ||
+            status == TransactionStatus.canceledBySystem) {
+          // Navigate back to transaction list page
+          if (context.canPop()) {
+            context.pop(true); // Return with changes flag
+          } else {
+            context.go('/household-list-transactions');
           }
+          return;
         }
-      });
-    } else {
-      // Reload post transactions after action (for collectors)
-      _loadPostTransactionsIfPossible();
-    }
+      }
+      
+      // After check-in, status should become InProgress -> redirect to multi-detail
+      if (_currentTransaction != null &&
+          _currentTransaction!.statusEnum == TransactionStatus.inProgress) {
+        final transactionId = _currentTransaction!.transactionId;
+
+        // If we have original transactionData (from list), reuse it so that
+        // multi-detail can load related transactions (postId, slotId, ...)
+        final extra = widget.transactionData != null
+            ? widget.transactionData!
+            : {
+                'transactionId': transactionId,
+                'hasTransactionData': true,
+              };
+
+        context.pushNamed(
+          'transaction-detail',
+          extra: extra,
+        );
+      }
+    });
   }
 
   void _onBack() {
@@ -395,7 +244,6 @@ class _TransactionDetailPageModernState
     final theme = Theme.of(context);
     final spacing = theme.extension<AppSpacing>()!;
     final s = S.of(context)!;
-    final state = ref.watch(transactionViewModelProvider);
 
     return PopScope(
       canPop: false,
@@ -409,22 +257,25 @@ class _TransactionDetailPageModernState
         extendBodyBehindAppBar: true,
         body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
-          child: _buildBody(state, theme, spacing, s),
+          child: _buildBody(theme, spacing, s),
         ),
       ),
     );
   }
 
-  Widget _buildBody(dynamic state, ThemeData theme, AppSpacing spacing, S s) {
-    // Use transaction from list if available, otherwise show error
-    if (_currentTransaction == null) {
+  Widget _buildBody(ThemeData theme, AppSpacing spacing, S s) {
+    if (_isLoading) {
+      return const _LoadingState(
+        key:  ValueKey('loading'),
+      );
+    }
+
+    if (_errorMessage != null || _currentTransaction == null) {
+      final errorMsg = _errorMessage ?? s.not_found;
       return _TransactionErrorState(
         key: const ValueKey('error'),
-        onRetry: () {
-          // If transaction is null, we can't retry without transactionId
-          // This should not happen if called from list
-          _onBack();
-        },
+        errorMessage: errorMsg,
+        onRetry: _loadTransactionDetail,
         onBack: _onBack,
       );
     }
@@ -433,22 +284,6 @@ class _TransactionDetailPageModernState
       key: const ValueKey('content'),
       transaction: _currentTransaction!,
       userRole: _userRole,
-      amountDifference: _amountDifference,
-      isLoadingTransactions: _isLoadingTransactions,
-      transactionsData: _transactionsData,
-      currentTransactionIndex: _currentTransactionIndex,
-      onTransactionChanged: (index) {
-        if (_transactionsData != null &&
-            index >= 0 &&
-            index < _transactionsData!.transactions.length) {
-          setState(() {
-            _currentTransaction = _convertPostTransactionToTransaction(
-              _transactionsData!.transactions[index],
-            );
-            _currentTransactionIndex = index;
-          });
-        }
-      },
       onRefresh: _onRefresh,
       onActionCompleted: _onActionCompleted,
       onBack: _onBack,
@@ -460,11 +295,6 @@ class _TransactionDetailPageModernState
 class _TransactionDetailContent extends StatelessWidget {
   final TransactionEntity transaction;
   final Role userRole;
-  final double amountDifference;
-  final bool isLoadingTransactions;
-  final post_entity.PostTransactionsResponseEntity? transactionsData;
-  final int currentTransactionIndex;
-  final ValueChanged<int>? onTransactionChanged;
   final VoidCallback onRefresh;
   final VoidCallback onActionCompleted;
   final VoidCallback onBack;
@@ -473,11 +303,6 @@ class _TransactionDetailContent extends StatelessWidget {
     super.key,
     required this.transaction,
     required this.userRole,
-    required this.amountDifference,
-    required this.isLoadingTransactions,
-    this.transactionsData,
-    this.currentTransactionIndex = 0,
-    this.onTransactionChanged,
     required this.onRefresh,
     required this.onActionCompleted,
     required this.onBack,
@@ -487,7 +312,6 @@ class _TransactionDetailContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final spacing = theme.extension<AppSpacing>()!.screenPadding;
-    // final s = S.of(context)!;
 
     return Stack(
       children: [
@@ -517,13 +341,9 @@ class _TransactionDetailContent extends StatelessWidget {
                         spacing,
                         spacing * 6,
                       ),
-                      child: TransactionDetailContentBody(
+                      child: _SingleTransactionContentBody(
                         transaction: transaction,
                         userRole: userRole,
-                        transactionsData: transactionsData,
-                        isLoadingTransactions: isLoadingTransactions,
-                        currentTransactionIndex: currentTransactionIndex,
-                        onTransactionChanged: onTransactionChanged,
                       ),
                     ),
                   ),
@@ -541,9 +361,10 @@ class _TransactionDetailContent extends StatelessWidget {
           child: TransactionDetailBottomActions(
             transaction: transaction,
             userRole: userRole,
-            amountDifference: amountDifference,
+            amountDifference:
+                0.0, // No amount difference for single transaction
             onActionCompleted: onActionCompleted,
-            transactionsData: transactionsData,
+            transactionsData: null, // No related transactions
           ),
         ),
 
@@ -556,6 +377,76 @@ class _TransactionDetailContent extends StatelessWidget {
             userRole: userRole,
           ),
         ),
+      ],
+    );
+  }
+}
+
+/// Content body for single transaction (no related transactions)
+class _SingleTransactionContentBody extends StatelessWidget {
+  final TransactionEntity transaction;
+  final Role userRole;
+
+  const _SingleTransactionContentBody({
+    required this.transaction,
+    required this.userRole,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!.screenPadding;
+    final s = S.of(context)!;
+
+    return Column(
+      children: [
+        // Header with status and ID
+        TransactionHeaderInfo(
+          transaction: transaction,
+          amountDifference: null,
+          isLoadingTransactions: false,
+        ),
+        SizedBox(height: spacing * 1.5),
+
+        // Summary card
+        TransactionSummaryCard(
+          transaction: transaction,
+          amountDifference: null,
+          isLoadingTransactions: false,
+        ),
+        SizedBox(height: spacing * 1.5),
+
+        // Time slot card
+        TransactionTimeSlotCard(transaction: transaction),
+        SizedBox(height: spacing * 1.5),
+
+        // Pickup address
+        TransactionAddressInfo(
+          address: transaction.offer?.scrapPost?.address,
+          theme: theme,
+          space: spacing,
+        ),
+        SizedBox(height: spacing),
+
+        // Party info
+        TransactionPartyInfo(
+          transaction: transaction,
+          userRole: userRole,
+          theme: theme,
+          space: spacing,
+          s: s,
+        ),
+        SizedBox(height: spacing * 1.5),
+
+        // Transaction items
+        if (transaction.transactionDetails.isNotEmpty)
+          TransactionItemsSection(
+            transactionDetails: transaction.transactionDetails,
+            transaction: transaction,
+            theme: theme,
+            space: spacing,
+            s: s,
+          ),
       ],
     );
   }
@@ -797,13 +688,47 @@ class _TransactionBackgroundGradient extends StatelessWidget {
   }
 }
 
+/// Loading state widget
+class _LoadingState extends StatelessWidget {
+  const _LoadingState({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!.screenPadding;
+    final s = S.of(context)!;
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(theme.primaryColor),
+            ),
+            SizedBox(height: spacing),
+            Text(
+              s.loading,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.hintColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Error state widget
 class _TransactionErrorState extends StatelessWidget {
+  final String errorMessage;
   final VoidCallback onRetry;
   final VoidCallback onBack;
 
   const _TransactionErrorState({
     super.key,
+    required this.errorMessage,
     required this.onRetry,
     required this.onBack,
   });
@@ -811,8 +736,51 @@ class _TransactionErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final spacing = theme.extension<AppSpacing>()!.screenPadding;
     final s = S.of(context)!;
 
-    return Center(child: Text(s.login_error, style: theme.textTheme.bodyLarge));
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: onBack,
+        ),
+        title: Text(s.transaction_detail),
+      ),
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.all(spacing * 1.5),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                size: 64,
+                color: AppColors.danger,
+              ),
+              SizedBox(height: spacing),
+              Text(
+                errorMessage,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.hintColor,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: spacing * 1.5),
+              ElevatedButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh),
+                label: Text(s.retry),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.primaryColor,
+                  foregroundColor: theme.scaffoldBackgroundColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -3,6 +3,7 @@ import 'package:GreenConnectMobile/features/offer/data/repository/offer_reposito
 import 'package:GreenConnectMobile/features/offer/domain/repository/offer_repository.dart';
 import 'package:GreenConnectMobile/features/offer/domain/usecases/add_offer_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/offer/domain/usecases/create_offer_usecase.dart';
+import 'package:GreenConnectMobile/features/offer/domain/usecases/create_supplementary_offer_usecase.dart';
 import 'package:GreenConnectMobile/features/offer/domain/usecases/delete_offer_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/offer/domain/usecases/get_all_offers_usecase.dart';
 import 'package:GreenConnectMobile/features/offer/domain/usecases/get_offer_detail_usecase.dart';
@@ -36,6 +37,12 @@ final offerRepositoryProvider = Provider<OfferRepository>((ref) {
 // Create offer
 final createOfferUsecaseProvider = Provider<CreateOfferUsecase>((ref) {
   return CreateOfferUsecase(ref.read(offerRepositoryProvider));
+});
+
+// Create supplementary offer
+final createSupplementaryOfferUsecaseProvider =
+    Provider<CreateSupplementaryOfferUsecase>((ref) {
+  return CreateSupplementaryOfferUsecase(ref.read(offerRepositoryProvider));
 });
 
 // Get offers by post

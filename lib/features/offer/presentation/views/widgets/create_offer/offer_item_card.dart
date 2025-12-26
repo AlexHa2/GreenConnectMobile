@@ -1,4 +1,6 @@
+import 'package:GreenConnectMobile/core/enum/scrap_post_detail_type.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +12,7 @@ class OfferItemCard extends StatelessWidget {
   final bool canToggle;
   final double totalPrice;
   final String unit;
+  final ScrapPostDetailType detailType;
   final VoidCallback onToggle;
   final ValueChanged<double> onPriceChanged;
   final ValueChanged<String> onUnitChanged;
@@ -23,6 +26,7 @@ class OfferItemCard extends StatelessWidget {
     required this.canToggle,
     required this.totalPrice,
     required this.unit,
+    required this.detailType,
     required this.onToggle,
     required this.onPriceChanged,
     required this.onUnitChanged,
@@ -87,7 +91,7 @@ class OfferItemCard extends StatelessWidget {
             const Divider(height: 1),
             Padding(
               padding: EdgeInsets.all(space),
-              child: _buildPricingForm(context, theme, space),
+              child: _buildPricingSection(context, theme, space),
             ),
           ],
         ],
@@ -145,7 +149,69 @@ class OfferItemCard extends StatelessWidget {
     return Icon(Icons.check_circle_rounded, color: theme.primaryColor);
   }
 
-  Widget _buildPricingForm(BuildContext context, ThemeData theme, double space) {
+  Widget _buildPricingSection(
+      BuildContext context, ThemeData theme, double space) {
+    // Handle different types
+    switch (detailType) {
+      case ScrapPostDetailType.donation:
+        return _buildDonationSection(context, theme, space);
+      case ScrapPostDetailType.service:
+        return _buildServicePricingForm(context, theme, space);
+      case ScrapPostDetailType.sale:
+        return _buildSalePricingForm(context, theme, space);
+    }
+  }
+
+  Widget _buildDonationSection(
+      BuildContext context, ThemeData theme, double space) {
+    final s = S.of(context)!;
+
+    return Container(
+      padding: EdgeInsets.all(space),
+      decoration: BoxDecoration(
+        color: theme.primaryColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(space * 0.75),
+        border: Border.all(
+          color: theme.primaryColor.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.card_giftcard_rounded,
+            color: theme.primaryColor,
+            size: 24,
+          ),
+          SizedBox(width: space * 0.75),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  s.price_label_donation,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.primaryColor,
+                  ),
+                ),
+                SizedBox(height: space * 0.25),
+                Text(
+                  s.donation_info_text,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.hintColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSalePricingForm(
+      BuildContext context, ThemeData theme, double space) {
     final s = S.of(context)!;
 
     return Row(
@@ -157,7 +223,7 @@ class OfferItemCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                s.price_per_unit,
+                s.price_label_sale,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.hintColor,
                   fontWeight: FontWeight.w500,
@@ -165,7 +231,8 @@ class OfferItemCard extends StatelessWidget {
               ),
               SizedBox(height: space * 0.5),
               TextFormField(
-                initialValue: totalPrice.toString(),
+                key: ValueKey('sale_price_$categoryName'),
+                initialValue: totalPrice == 0.0 ? '' : totalPrice.toString(),
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   hintText: '0',
@@ -214,7 +281,7 @@ class OfferItemCard extends StatelessWidget {
               ),
               SizedBox(height: space * 0.5),
               DropdownButtonFormField<String>(
-                initialValue: unit,
+                value: unit,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(space * 0.75),
@@ -236,6 +303,143 @@ class OfferItemCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildServicePricingForm(
+      BuildContext context, ThemeData theme, double space) {
+    final s = S.of(context)!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Info text
+        Container(
+          padding: EdgeInsets.all(space * 0.75),
+          margin: EdgeInsets.only(bottom: space),
+          decoration: BoxDecoration(
+            color: AppColors.info.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(space * 0.75),
+            border: Border.all(
+              color: AppColors.info.withValues(alpha: 0.3),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.info_outline_rounded,
+                color: AppColors.info,
+                size: 20,
+              ),
+              SizedBox(width: space * 0.5),
+              Expanded(
+                child: Text(
+                  s.service_info_text,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.info,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Price form
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    s.price_label_service,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.hintColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: space * 0.5),
+                  TextFormField(
+                    key: ValueKey('service_price_$categoryName'),
+                    initialValue:
+                        totalPrice == 0.0 ? '' : totalPrice.toString(),
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      hintText: '0',
+                      prefixText: 'VND ',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(space * 0.75),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: space,
+                        vertical: space * 0.75,
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return s.please_enter_price;
+                      }
+                      if (double.tryParse(value) == null) {
+                        return s.invalid_price;
+                      }
+                      final price = double.tryParse(value)!;
+                      if (price <= 0) {
+                        return s.price_must_be_greater_than_zero;
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      final price = double.tryParse(value) ?? 0.0;
+                      onPriceChanged(price);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(width: space * 0.75),
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    s.unit,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.hintColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: space * 0.5),
+                  DropdownButtonFormField<String>(
+                    value: unit,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(space * 0.75),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: space,
+                        vertical: space * 0.75,
+                      ),
+                    ),
+                    items: [
+                      DropdownMenuItem(value: s.kg, child: Text(s.kg)),
+                      DropdownMenuItem(value: s.g, child: Text(s.g)),
+                      DropdownMenuItem(value: s.ton, child: Text(s.ton)),
+                      DropdownMenuItem(value: s.piece, child: Text(s.piece)),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) onUnitChanged(value);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ],
     );

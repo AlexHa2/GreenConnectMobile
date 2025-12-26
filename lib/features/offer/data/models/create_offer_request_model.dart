@@ -2,11 +2,9 @@ import 'package:GreenConnectMobile/features/offer/domain/entities/create_offer_r
 
 class CreateOfferRequestModel {
   final List<OfferDetailRequestModel> offerDetails;
-  final ScheduleProposalRequestModel scheduleProposal;
 
   CreateOfferRequestModel({
     required this.offerDetails,
-    required this.scheduleProposal,
   });
 
   factory CreateOfferRequestModel.fromEntity(CreateOfferRequestEntity entity) {
@@ -14,15 +12,12 @@ class CreateOfferRequestModel {
       offerDetails: entity.offerDetails
           .map((e) => OfferDetailRequestModel.fromEntity(e))
           .toList(),
-      scheduleProposal:
-          ScheduleProposalRequestModel.fromEntity(entity.scheduleProposal),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'offerDetails': offerDetails.map((e) => e.toJson()).toList(),
-      'scheduleProposal': scheduleProposal.toJson(),
     };
   }
 

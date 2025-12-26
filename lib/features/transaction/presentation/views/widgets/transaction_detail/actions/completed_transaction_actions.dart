@@ -36,12 +36,12 @@ class CompletedTransactionActions extends StatelessWidget {
             onActionCompleted();
           }
         },
-        icon: Icon(Icons.report_problem, size: spacing * 1.8),
+        icon: Icon(Icons.report_problem, size: spacing * 1.5),
         label: Text(s.complain),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.danger,
           side: const BorderSide(color: AppColors.danger, width: 1.5),
-          padding: EdgeInsets.symmetric(vertical: spacing),
+          padding: EdgeInsets.symmetric(vertical: spacing * 0.75),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(spacing),
           ),
@@ -65,12 +65,12 @@ class CompletedTransactionActions extends StatelessWidget {
                 onActionCompleted();
               }
             },
-            icon: Icon(Icons.star, size: spacing * 1.8),
+            icon: Icon(Icons.star, size: spacing * 1.5),
             label: Text(s.write_review),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.warning,
               foregroundColor: theme.scaffoldBackgroundColor,
-              padding: EdgeInsets.symmetric(vertical: spacing),
+              padding: EdgeInsets.symmetric(vertical: spacing * 0.75),
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(spacing),
@@ -78,7 +78,7 @@ class CompletedTransactionActions extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(width: spacing),
+        SizedBox(width: spacing * 0.75),
         // Complain button
         Expanded(
           child: OutlinedButton.icon(
@@ -91,12 +91,12 @@ class CompletedTransactionActions extends StatelessWidget {
                 onActionCompleted();
               }
             },
-            icon: Icon(Icons.report_problem, size: spacing * 1.8),
+            icon: Icon(Icons.report_problem, size: spacing * 1.5),
             label: Text(s.complain),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.danger,
               side: const BorderSide(color: AppColors.danger, width: 1.5),
-              padding: EdgeInsets.symmetric(vertical: spacing),
+              padding: EdgeInsets.symmetric(vertical: spacing * 0.75),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(spacing),
               ),

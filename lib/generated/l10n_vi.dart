@@ -3026,4 +3026,79 @@ class SVi extends S {
 
   @override
   String get change_image => 'Đổi hình ảnh';
+
+  @override
+  String get please_select_time_slot => 'Vui lòng chọn khung thời gian';
+
+  @override
+  String get select_time_slot => 'Chọn Khung Thời Gian';
+
+  @override
+  String get selected_time_slot => 'Khung Thời Gian Đã Chọn';
+
+  @override
+  String get price_label_sale => 'Giá thu mua';
+
+  @override
+  String get price_label_service => 'Giá đề nghị cho người đăng trả';
+
+  @override
+  String get price_label_donation => 'Miễn phí';
+
+  @override
+  String get donation_info_text => 'Món hàng này được tặng miễn phí';
+
+  @override
+  String get service_info_text => 'Đây là giá bạn đề nghị cho người đăng trả';
+
+  @override
+  String get supplementary_offer_note =>
+      'Giao dịch sẽ được tạo ngay lập tức mà không cần chờ chấp nhận';
+
+  @override
+  String get transaction_created_successfully => 'Tạo giao dịch thành công';
+
+  @override
+  String get buy_more => 'Mua thêm';
+
+  @override
+  String get request_payment => 'Yêu cầu thanh toán';
+
+  @override
+  String transactions_count(int count) {
+    return '$count Giao dịch';
+  }
+
+  @override
+  String transaction_number(int number) {
+    return 'Giao dịch $number';
+  }
+
+  @override
+  String copied_id(String id) {
+    return 'Đã sao chép ID: $id';
+  }
+
+  @override
+  String get id_label => 'Mã:';
+
+  @override
+  String get total_difference => 'Tổng chênh lệch';
+
+  @override
+  String get from_all_transactions => '(Từ tất cả giao dịch)';
+
+  @override
+  String get transaction_value => 'Giá trị giao dịch';
+
+  @override
+  String get related_transactions => 'Giao dịch liên quan';
+
+  @override
+  String amount_difference(String amount) {
+    return 'Chênh lệch số tiền: $amount';
+  }
+
+  @override
+  String get quantity_not_entered => '(Chưa nhập số lượng)';
 }

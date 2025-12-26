@@ -1,27 +1,87 @@
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/actions/payment_method_bottom_sheet.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ApproveButton extends ConsumerWidget {
-  final String transactionId;
+  final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
+  final bool skipPaymentMethod;
 
   const ApproveButton({
     super.key,
-    required this.transactionId,
+    required this.transaction,
     required this.onActionCompleted,
+    this.skipPaymentMethod = false,
   });
 
   Future<void> _handleComplete(BuildContext context, WidgetRef ref) async {
-    // Show payment method selection bottom sheet
+    final s = S.of(context)!;
+
+    // If skipPaymentMethod is true (totalPrice <= 0), call processTransaction directly without payment method
+    if (skipPaymentMethod) {
+      try {
+        // Get required parameters
+        final scrapPostId = transaction.offer?.scrapPostId ?? '';
+        final collectorId = transaction.scrapCollectorId;
+        final slotId = transaction.timeSlotId ?? transaction.offer?.timeSlotId ?? '';
+        
+        if (scrapPostId.isEmpty || collectorId.isEmpty || slotId.isEmpty) {
+          if (context.mounted) {
+            CustomToast.show(context, s.operation_failed, type: ToastType.error);
+          }
+          return;
+        }
+
+        // Call API to complete transaction without payment method
+        final success = await ref
+            .read(transactionViewModelProvider.notifier)
+            .processTransaction(
+              scrapPostId: scrapPostId,
+              collectorId: collectorId,
+              slotId: slotId,
+              transactionId: transaction.transactionId,
+              isAccepted: true,
+              // No paymentMethod parameter when totalPrice <= 0
+            );
+
+        if (!context.mounted) return;
+
+        if (success) {
+          CustomToast.show(
+            context,
+            s.transaction_approved,
+            type: ToastType.success,
+          );
+          onActionCompleted();
+        } else {
+          final state = ref.read(transactionViewModelProvider);
+          final errorMsg = state.errorMessage;
+          
+          CustomToast.show(
+            context,
+            errorMsg ?? s.operation_failed,
+            type: ToastType.error,
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          CustomToast.show(context, s.operation_failed, type: ToastType.error);
+        }
+      }
+      return;
+    }
+
+    // Show payment method selection bottom sheet (when totalPrice > 0)
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => PaymentMethodBottomSheet(
-        transactionId: transactionId,
+        transaction: transaction,
         onActionCompleted: onActionCompleted,
       ),
     );

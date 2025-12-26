@@ -3028,4 +3028,81 @@ class SEn extends S {
 
   @override
   String get change_image => 'Change Image';
+
+  @override
+  String get please_select_time_slot => 'Please select a time slot';
+
+  @override
+  String get select_time_slot => 'Select Time Slot';
+
+  @override
+  String get selected_time_slot => 'Selected Time Slot';
+
+  @override
+  String get price_label_sale => 'Purchase Price';
+
+  @override
+  String get price_label_service => 'Suggested Price for Poster';
+
+  @override
+  String get price_label_donation => 'Free';
+
+  @override
+  String get donation_info_text => 'This item is free (donation)';
+
+  @override
+  String get service_info_text =>
+      'This is the price you suggest for the poster to pay';
+
+  @override
+  String get supplementary_offer_note =>
+      'Transaction will be created immediately without waiting for acceptance';
+
+  @override
+  String get transaction_created_successfully =>
+      'Transaction created successfully';
+
+  @override
+  String get buy_more => 'Buy More';
+
+  @override
+  String get request_payment => 'Request Payment';
+
+  @override
+  String transactions_count(int count) {
+    return '$count Transactions';
+  }
+
+  @override
+  String transaction_number(int number) {
+    return 'Transaction $number';
+  }
+
+  @override
+  String copied_id(String id) {
+    return 'Copied ID: $id';
+  }
+
+  @override
+  String get id_label => 'ID:';
+
+  @override
+  String get total_difference => 'Total Difference';
+
+  @override
+  String get from_all_transactions => '(From all transactions)';
+
+  @override
+  String get transaction_value => 'Transaction Value';
+
+  @override
+  String get related_transactions => 'Related Transactions';
+
+  @override
+  String amount_difference(String amount) {
+    return 'Amount Difference: $amount';
+  }
+
+  @override
+  String get quantity_not_entered => '(Quantity not entered)';
 }

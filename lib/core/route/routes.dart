@@ -38,10 +38,13 @@ import 'package:GreenConnectMobile/features/reward/presentation/views/reward_his
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/rewards_page.dart';
 import 'package:GreenConnectMobile/features/schedule/presentation/views/schedules_list_page.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/credit_transactions_list_page.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/payment_transactions_list_page.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/qr_code_payment_page.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transaction_detail_page_modern.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/views/transaction_detail_page_onlyone_modern.dart'
+    as onlyone;
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transactions_list_page.dart';
 import 'package:GreenConnectMobile/shared/layouts/collector_layout.dart';
 import 'package:GreenConnectMobile/shared/layouts/household_layout.dart';
@@ -315,8 +318,31 @@ final GoRouter greenRouter = GoRouter(
       name: 'transaction-detail',
       builder: (context, state) {
         final initialData = state.extra as Map<String, dynamic>? ?? {};
+        // Extract all fields from extra data
         return TransactionDetailPageModern(
-          transactionId: initialData['transactionId'] as String,
+          transactionId: initialData['transactionId'] as String?,
+          postId: initialData['postId'] as String?,
+          collectorId: initialData['collectorId'] as String?,
+          slotId: initialData['slotId'] as String?,
+          // Additional transaction data for reconstruction
+          transactionData: initialData['hasTransactionData'] == true 
+              ? initialData 
+              : null,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/transaction-detail-onlyone',
+      name: 'transaction-detail-onlyone',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        final transactionId = initialData['transactionId'] as String;
+
+        return onlyone.TransactionDetailPageModern(
+          transactionId: transactionId,
+          // Additional transaction data for reconstruction
+          transactionData:
+              initialData['hasTransactionData'] == true ? initialData : null,
         );
       },
     ),
@@ -436,6 +462,7 @@ final GoRouter greenRouter = GoRouter(
         final data = state.extra as Map<String, dynamic>;
         return QRCodePaymentPage(
           transactionId: data['transactionId'] as String,
+          transaction: data['transaction'] as TransactionEntity?,
           onActionCompleted: data['onActionCompleted'] as VoidCallback,
         );
       },

@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/features/offer/data/models/collection_offer_model.dart';
+import 'package:GreenConnectMobile/features/post/data/models/scrap_post/time_slot_model.dart';
 import 'package:GreenConnectMobile/features/profile/data/models/user_model.dart';
 import 'package:GreenConnectMobile/features/transaction/data/models/transaction_detail_model.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
@@ -18,6 +19,8 @@ class TransactionModel {
   final DateTime? updatedAt;
   final List<TransactionDetailModel> transactionDetails;
   final double totalPrice;
+  final String? timeSlotId;
+  final TimeSlotModel? timeSlot;
 
   TransactionModel({
     required this.transactionId,
@@ -34,6 +37,8 @@ class TransactionModel {
     this.updatedAt,
     this.transactionDetails = const [],
     this.totalPrice = 0,
+    this.timeSlotId,
+    this.timeSlot,
   });
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
@@ -63,6 +68,10 @@ class TransactionModel {
               .toList()
           : [],
       totalPrice: (json['totalPrice'] ?? 0).toDouble(),
+      timeSlotId: json['timeSlotId']?.toString(),
+      timeSlot: json['timeSlot'] != null
+          ? TimeSlotModel.fromJson(json['timeSlot'])
+          : null,
     );
   }
 
@@ -82,6 +91,8 @@ class TransactionModel {
         'transactionDetails':
             transactionDetails.map((e) => e.toJson()).toList(),
         'totalPrice': totalPrice,
+        'timeSlotId': timeSlotId,
+        'timeSlot': timeSlot?.toJson(),
       };
 
   TransactionEntity toEntity() {
@@ -100,6 +111,8 @@ class TransactionModel {
       updatedAt: updatedAt,
       transactionDetails: transactionDetails.map((e) => e.toEntity()).toList(),
       totalPrice: totalPrice,
+      timeSlotId: timeSlotId,
+      timeSlot: timeSlot?.toEntity(),
     );
   }
 }

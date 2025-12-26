@@ -1,6 +1,9 @@
 import 'package:GreenConnectMobile/core/enum/offer_status.dart';
 import 'package:GreenConnectMobile/core/enum/role.dart';
+import 'package:GreenConnectMobile/core/enum/scrap_post_detail_type.dart';
 import 'package:GreenConnectMobile/features/offer/domain/entities/offer_detail_entity.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/type_badge.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +18,7 @@ class PricingInfoSection extends StatelessWidget {
   final OfferStatus? offerStatus;
   final bool? mustTakeAll;
   final Role? userRole;
+  final ScrapPostEntity? scrapPost;
   final Function(String detailId, double price, String unit)? onUpdate;
   final Function(String detailId)? onDelete;
 
@@ -27,6 +31,7 @@ class PricingInfoSection extends StatelessWidget {
     this.offerStatus,
     this.mustTakeAll,
     this.userRole,
+    this.scrapPost,
     this.onUpdate,
     this.onDelete,
   });
@@ -36,7 +41,24 @@ class PricingInfoSection extends StatelessWidget {
     final numberFormat = NumberFormat('#,###', 'vi_VN');
     double totalEstimated = 0;
     for (final detail in offerDetails) {
-      totalEstimated += detail.pricePerUnit;
+      // Get the type from scrapPost details
+      ScrapPostDetailType? detailType;
+      final post = scrapPost;
+      if (post != null && post.scrapPostDetails.isNotEmpty) {
+        final postDetail = post.scrapPostDetails.firstWhere(
+          (pd) => pd.scrapCategoryId == detail.scrapCategoryId,
+          orElse: () => post.scrapPostDetails.first,
+        );
+        detailType = ScrapPostDetailType.parseType(postDetail.type);
+      }
+
+      // For service type, subtract from total (household pays collector)
+      // For sale and donation, add to total
+      if (detailType == ScrapPostDetailType.service) {
+        totalEstimated -= detail.pricePerUnit;
+      } else {
+        totalEstimated += detail.pricePerUnit;
+      }
     }
     final s = S.of(context)!;
     return Container(
@@ -96,14 +118,29 @@ class PricingInfoSection extends StatelessWidget {
                     children: [
                       // Pricing items
                       ...offerDetails.map((detail) {
+                        // Get the type from scrapPost details
+                        ScrapPostDetailType? detailType;
+                        final post = scrapPost;
+                        if (post != null && post.scrapPostDetails.isNotEmpty) {
+                          final postDetail = post.scrapPostDetails.firstWhere(
+                            (pd) =>
+                                pd.scrapCategoryId == detail.scrapCategoryId,
+                            orElse: () => post.scrapPostDetails.first,
+                          );
+                          detailType =
+                              ScrapPostDetailType.parseType(postDetail.type);
+                        }
+
                         // Only allow edit/delete for collector users (not household)
-                        final isCollector = userRole != null && userRole != Role.household;
-                        final canEdit =
-                            isCollector &&
+                        final isCollector =
+                            userRole != null && userRole != Role.household;
+                        final isDonation =
+                            detailType == ScrapPostDetailType.donation;
+                        final canEdit = isCollector &&
                             offerStatus != null &&
-                            offerStatus != OfferStatus.accepted;
-                        final canDelete =
-                            canEdit &&
+                            offerStatus != OfferStatus.accepted &&
+                            !isDonation; // Don't allow edit for donation
+                        final canDelete = canEdit &&
                             (mustTakeAll == null || mustTakeAll == false) &&
                             offerDetails.length >
                                 1; // Can't delete if only 1 item left
@@ -123,13 +160,12 @@ class PricingInfoSection extends StatelessWidget {
                             children: [
                               // Category icon
                               GestureDetector(
-                                onTap:
-                                    detail.imageUrl != null &&
+                                onTap: detail.imageUrl != null &&
                                         detail.imageUrl!.isNotEmpty
                                     ? () => _showFullImage(
-                                        context,
-                                        detail.imageUrl!,
-                                      )
+                                          context,
+                                          detail.imageUrl!,
+                                        )
                                     : null,
                                 child: Container(
                                   width: 40,
@@ -146,15 +182,15 @@ class PricingInfoSection extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(
                                       spacing / 2,
                                     ),
-                                    child:
-                                        detail.imageUrl != null &&
+                                    child: detail.imageUrl != null &&
                                             detail.imageUrl!.isNotEmpty
                                         ? Image.network(
                                             detail.imageUrl!,
                                             width: 40,
                                             height: 40,
                                             fit: BoxFit.cover,
-                                            loadingBuilder: (context, child, loadingProgress) {
+                                            loadingBuilder: (context, child,
+                                                loadingProgress) {
                                               if (loadingProgress == null) {
                                                 return child;
                                               }
@@ -162,23 +198,24 @@ class PricingInfoSection extends StatelessWidget {
                                                 child: SizedBox(
                                                   width: 20,
                                                   height: 20,
-                                                  child: CircularProgressIndicator(
+                                                  child:
+                                                      CircularProgressIndicator(
                                                     strokeWidth: 2,
                                                     color: theme.primaryColor,
-                                                    value:
-                                                        loadingProgress
+                                                    value: loadingProgress
                                                                 .expectedTotalBytes !=
                                                             null
                                                         ? loadingProgress
-                                                                  .cumulativeBytesLoaded /
-                                                              loadingProgress
-                                                                  .expectedTotalBytes!
+                                                                .cumulativeBytesLoaded /
+                                                            loadingProgress
+                                                                .expectedTotalBytes!
                                                         : null,
                                                   ),
                                                 ),
                                               );
                                             },
-                                            errorBuilder: (_, __, ___) => Image.asset(
+                                            errorBuilder: (_, __, ___) =>
+                                                Image.asset(
                                               'assets/images/green_connect_logo.png',
                                               width: 40,
                                               height: 40,
@@ -200,23 +237,29 @@ class PricingInfoSection extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      detail.scrapCategory!.categoryName,
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w600,
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            detail.scrapCategory!.categoryName,
+                                            style: theme.textTheme.bodyMedium
+                                                ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
+                                        ),
+                                        // Type badge
+                                        if (detailType != null)
+                                          TypeBadge(type: detailType.name),
+                                      ],
                                     ),
                                     SizedBox(height: spacing / 4),
                                     Text(
                                       detail.unit,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: theme
-                                                .textTheme
-                                                .bodySmall
-                                                ?.color,
-                                          ),
+                                      style:
+                                          theme.textTheme.bodySmall?.copyWith(
+                                        color: theme.textTheme.bodySmall?.color,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -227,11 +270,11 @@ class PricingInfoSection extends StatelessWidget {
                                 children: [
                                   Text(
                                     '${numberFormat.format(detail.pricePerUnit)} ${s.per_unit} ',
-                                    style: theme.textTheme.titleMedium
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: theme.primaryColor,
-                                        ),
+                                    style:
+                                        theme.textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.primaryColor,
+                                    ),
                                   ),
                                   // SizedBox(height: spacing / 4),
                                   Text(
@@ -383,6 +426,17 @@ class PricingInfoSection extends StatelessWidget {
   void _showUpdateDialog(BuildContext context, OfferDetailEntity detail) {
     if (onUpdate == null) return;
 
+    // Get the type from scrapPost details
+    ScrapPostDetailType? detailType;
+    final post = scrapPost;
+    if (post != null && post.scrapPostDetails.isNotEmpty) {
+      final postDetail = post.scrapPostDetails.firstWhere(
+        (pd) => pd.scrapCategoryId == detail.scrapCategoryId,
+        orElse: () => post.scrapPostDetails.first,
+      );
+      detailType = ScrapPostDetailType.parseType(postDetail.type);
+    }
+
     final priceController = TextEditingController(
       text: detail.pricePerUnit.toString(),
     );
@@ -391,165 +445,200 @@ class PricingInfoSection extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(spacing / 2),
-        ),
-        title: Row(
-          children: [
-            Icon(Icons.edit_outlined, color: theme.primaryColor),
-            SizedBox(width: spacing / 2),
-            Expanded(
-              child: Text(
-                s.update_pricing,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(spacing / 2),
+          ),
+          title: Row(
             children: [
-              // Category name (readonly)
-              Container(
-                padding: EdgeInsets.all(spacing),
-                decoration: BoxDecoration(
-                  color: theme.primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(spacing / 2),
-                ),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap:
-                          detail.imageUrl != null && detail.imageUrl!.isNotEmpty
-                          ? () => _showFullImage(context, detail.imageUrl!)
-                          : null,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(spacing / 2),
-                        child:
-                            detail.imageUrl != null &&
-                                detail.imageUrl!.isNotEmpty
-                            ? Image.network(
-                                detail.imageUrl!,
-                                width: 20,
-                                height: 20,
-                                fit: BoxFit.cover,
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: Center(
-                                          child: SizedBox(
-                                            width: 12,
-                                            height: 12,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 1.5,
-                                              color: theme.primaryColor,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                errorBuilder: (_, __, ___) => Image.asset(
-                                  'assets/images/green_connect_logo.png',
-                                  width: 20,
-                                  height: 20,
-                                  fit: BoxFit.cover,
-                                ),
-                              )
-                            : Image.asset(
-                                'assets/images/green_connect_logo.png',
-                                width: 20,
-                                height: 20,
-                                fit: BoxFit.cover,
-                              ),
-                      ),
-                    ),
-                    SizedBox(width: spacing / 2),
-                    Expanded(
-                      child: Text(
-                        detail.scrapCategory!.categoryName,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: spacing),
-              Text(s.price_per_unit, style: theme.textTheme.bodyMedium),
-              SizedBox(height: spacing / 2),
-              // Price input
-              TextField(
-                controller: priceController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(spacing / 2),
-                  ),
-                ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                ],
-              ),
-              SizedBox(height: spacing),
-              // Unit input
-              Text(s.unit, style: theme.textTheme.bodyMedium),
-              SizedBox(height: spacing / 2),
-              TextField(
-                controller: unitController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(spacing / 2),
+              Icon(Icons.edit_outlined, color: theme.primaryColor),
+              SizedBox(width: spacing / 2),
+              Expanded(
+                child: Text(
+                  s.update_pricing,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(s.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final price = double.tryParse(priceController.text);
-              final unit = unitController.text.trim();
-
-              if (price == null || price <= 0) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(s.invalid_price)));
-                return;
-              }
-
-              if (unit.isEmpty) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(s.unit_is_required)));
-                return;
-              }
-
-              onUpdate!(detail.offerDetailId, price, unit);
-              Navigator.pop(dialogContext);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.warningUpdate,
-              foregroundColor: theme.scaffoldBackgroundColor,
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Category name (readonly)
+                Container(
+                  padding: EdgeInsets.all(spacing),
+                  decoration: BoxDecoration(
+                    color: theme.primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(spacing / 2),
+                  ),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: detail.imageUrl != null &&
+                                detail.imageUrl!.isNotEmpty
+                            ? () => _showFullImage(context, detail.imageUrl!)
+                            : null,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(spacing / 2),
+                          child: detail.imageUrl != null &&
+                                  detail.imageUrl!.isNotEmpty
+                              ? Image.network(
+                                  detail.imageUrl!,
+                                  width: 20,
+                                  height: 20,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: Center(
+                                        child: SizedBox(
+                                          width: 12,
+                                          height: 12,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 1.5,
+                                            color: theme.primaryColor,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (_, __, ___) => Image.asset(
+                                    'assets/images/green_connect_logo.png',
+                                    width: 20,
+                                    height: 20,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : Image.asset(
+                                  'assets/images/green_connect_logo.png',
+                                  width: 20,
+                                  height: 20,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                      ),
+                      SizedBox(width: spacing / 2),
+                      Expanded(
+                        child: Text(
+                          detail.scrapCategory!.categoryName,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: spacing),
+                Text(s.price_per_unit, style: theme.textTheme.bodyMedium),
+                SizedBox(height: spacing / 2),
+                // Price input
+                TextField(
+                  controller: priceController,
+                  enabled: detailType != ScrapPostDetailType.donation,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(spacing / 2),
+                    ),
+                    hintText: detailType == ScrapPostDetailType.donation
+                        ? '0 (Donation)'
+                        : null,
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                  ],
+                ),
+                SizedBox(height: spacing),
+                // Unit input
+                Text(s.unit, style: theme.textTheme.bodyMedium),
+                SizedBox(height: spacing / 2),
+                DropdownButtonFormField<String>(
+                  initialValue: unitController.text,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(spacing / 2),
+                    ),
+                  ),
+                  items: [
+                    DropdownMenuItem(value: s.kg, child: Text(s.kg)),
+                    DropdownMenuItem(value: s.g, child: Text(s.g)),
+                    DropdownMenuItem(value: s.ton, child: Text(s.ton)),
+                    DropdownMenuItem(value: s.piece, child: Text(s.piece)),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setDialogState(() {
+                        unitController.text = value;
+                      });
+                    }
+                  },
+                ),
+              ],
             ),
-            child: Text(s.update),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(s.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final price = double.tryParse(priceController.text);
+                final unit = unitController.text.trim();
+
+                // Validation based on type
+                if (detailType == ScrapPostDetailType.donation) {
+                  // For donation, always set price to 0
+                  onUpdate!(detail.offerDetailId, 0.0, unit);
+                  Navigator.pop(dialogContext);
+                  return;
+                }
+
+                // For sale and service, price must be > 0
+                if (price == null || price <= 0) {
+                  if (detailType == ScrapPostDetailType.sale ||
+                      detailType == ScrapPostDetailType.service) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(
+                        SnackBar(content: Text(s.please_enter_price)));
+                    return;
+                  }
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(s.invalid_price)));
+                  return;
+                }
+
+                if (unit.isEmpty) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(s.unit_is_required)));
+                  return;
+                }
+
+                onUpdate!(detail.offerDetailId, price, unit);
+                Navigator.pop(dialogContext);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.warningUpdate,
+                foregroundColor: theme.scaffoldBackgroundColor,
+              ),
+              child: Text(s.update),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -594,19 +683,19 @@ class PricingInfoSection extends StatelessWidget {
                   GestureDetector(
                     onTap:
                         detail.imageUrl != null && detail.imageUrl!.isNotEmpty
-                        ? () => _showFullImage(context, detail.imageUrl!)
-                        : null,
+                            ? () => _showFullImage(context, detail.imageUrl!)
+                            : null,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(spacing / 4),
                       child:
                           detail.imageUrl != null && detail.imageUrl!.isNotEmpty
-                          ? Image.network(
-                              detail.imageUrl!,
-                              width: 20,
-                              height: 20,
-                              fit: BoxFit.cover,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
+                              ? Image.network(
+                                  detail.imageUrl!,
+                                  width: 20,
+                                  height: 20,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
                                     if (loadingProgress == null) return child;
                                     return SizedBox(
                                       width: 20,
@@ -623,19 +712,19 @@ class PricingInfoSection extends StatelessWidget {
                                       ),
                                     );
                                   },
-                              errorBuilder: (_, __, ___) => Image.asset(
-                                'assets/images/green_connect_logo.png',
-                                width: 20,
-                                height: 20,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : Image.asset(
-                              'assets/images/green_connect_logo.png',
-                              width: 20,
-                              height: 20,
-                              fit: BoxFit.cover,
-                            ),
+                                  errorBuilder: (_, __, ___) => Image.asset(
+                                    'assets/images/green_connect_logo.png',
+                                    width: 20,
+                                    height: 20,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : Image.asset(
+                                  'assets/images/green_connect_logo.png',
+                                  width: 20,
+                                  height: 20,
+                                  fit: BoxFit.cover,
+                                ),
                     ),
                   ),
                   SizedBox(width: spacing / 2),
@@ -688,7 +777,7 @@ class PricingInfoSection extends StatelessWidget {
   void _showFullImage(BuildContext context, String imageUrl) {
     showDialog(
       context: context,
-      barrierColor: Colors.black87,
+      barrierColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
       builder: (dialogContext) => Dialog(
         backgroundColor: Colors.transparent,
         insetPadding: EdgeInsets.all(spacing),
@@ -708,10 +797,10 @@ class PricingInfoSection extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           CircularProgressIndicator(
-                            color: Colors.white,
+                            color: theme.scaffoldBackgroundColor,
                             value: loadingProgress.expectedTotalBytes != null
                                 ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
+                                    loadingProgress.expectedTotalBytes!
                                 : null,
                           ),
                           SizedBox(height: spacing),
@@ -719,7 +808,8 @@ class PricingInfoSection extends StatelessWidget {
                             loadingProgress.expectedTotalBytes != null
                                 ? '${(loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! * 100).toStringAsFixed(0)}%'
                                 : 'Loading...',
-                            style:  TextStyle(color: theme.scaffoldBackgroundColor),
+                            style:
+                                TextStyle(color: theme.scaffoldBackgroundColor),
                           ),
                         ],
                       ),
@@ -737,7 +827,8 @@ class PricingInfoSection extends StatelessWidget {
                         SizedBox(height: spacing),
                         Text(
                           'Cannot load image',
-                          style: TextStyle(color: theme.scaffoldBackgroundColor),
+                          style:
+                              TextStyle(color: theme.scaffoldBackgroundColor),
                         ),
                       ],
                     ),
@@ -755,7 +846,8 @@ class PricingInfoSection extends StatelessWidget {
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.close, color: theme.scaffoldBackgroundColor),
+                  child:
+                      Icon(Icons.close, color: theme.scaffoldBackgroundColor),
                 ),
                 onPressed: () => Navigator.pop(dialogContext),
               ),

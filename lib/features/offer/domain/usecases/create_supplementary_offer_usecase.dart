@@ -1,19 +1,18 @@
 import 'package:GreenConnectMobile/features/offer/domain/entities/create_offer_request_entity.dart';
 import 'package:GreenConnectMobile/features/offer/domain/repository/offer_repository.dart';
 
-class CreateOfferUsecase {
+class CreateSupplementaryOfferUsecase {
   final OfferRepository repository;
-  CreateOfferUsecase(this.repository);
+  CreateSupplementaryOfferUsecase(this.repository);
 
   Future<bool> call({
     required String postId,
     required CreateOfferRequestEntity request,
-    required String slotTimeId,
   }) {
-    return repository.createOffer(
+    return repository.createSupplementaryOffer(
       postId: postId,
       request: request,
-      slotTimeId: slotTimeId,
     );
   }
 }
+

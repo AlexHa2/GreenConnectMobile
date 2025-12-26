@@ -163,12 +163,23 @@ class _UpdateRecyclingPostPageState
     if (items != null) {
       for (var item in items) {
         if (item is ScrapPostDetailEntity) {
+          // Parse type from server (could be "Sale", "Donation", "Service" or lowercase)
+          ScrapPostDetailType itemType = ScrapPostDetailType.sale; // Default
+          if (item.type.isNotEmpty) {
+            try {
+              itemType = ScrapPostDetailType.fromJson(item.type);
+            } catch (e) {
+              debugPrint('⚠️ [INIT] Failed to parse type: ${item.type}, using default');
+            }
+          }
+          
           final itemData = ScrapItemData(
             categoryId: item.scrapCategoryId,
             categoryName: item.scrapCategory?.categoryName ??
                 'Category ${item.scrapCategoryId}',
             amountDescription: item.amountDescription,
             imageUrl: item.imageUrl,
+            type: itemType,
           );
 
           _scrapItems.add(itemData);
@@ -835,12 +846,21 @@ class _UpdateRecyclingPostPageState
           imageUrl = _extractFileNameFromUrl(imageUrl);
         }
 
+        // Capitalize first letter of type (e.g., "sale" -> "Sale")
+        final typeString = item.type.toJson();
+        final capitalizedType = typeString.isNotEmpty
+            ? typeString[0].toUpperCase() + typeString.substring(1)
+            : typeString;
+        
+        // Debug: Log type to ensure it's correct
+        debugPrint('📝 [UPDATE] Item type: ${item.type.name} -> $capitalizedType');
+
         final detailEntity = ScrapPostDetailEntity(
           scrapCategoryId: item.categoryId,
           amountDescription: item.amountDescription,
           imageUrl: imageUrl,
           status: PostDetailStatus.available.name,
-          type: ScrapPostDetailType.sale.toString(),
+          type: capitalizedType,
         );
 
         if (_existingItemsMap[item.categoryId] == true) {
@@ -925,8 +945,8 @@ class _UpdateRecyclingPostPageState
         final result = await vm.createTimeSlot(
           postId: _postId,
           specificDate: formatDateOnly(slot.date),
-          startTime: '${formatTimeOfDay(slot.startTime)}:00.000Z',
-          endTime: '${formatTimeOfDay(slot.endTime)}:00.000Z',
+          startTime: formatTimeOfDay(slot.startTime),
+          endTime: formatTimeOfDay(slot.endTime),
           refreshDetail: false, // Disable auto refresh
         );
         if (result != null && result.id != null) {
@@ -958,8 +978,8 @@ class _UpdateRecyclingPostPageState
               postId: _postId,
               timeSlotId: serverId,
               specificDate: currentDate,
-              startTime: '${formatTimeOfDay(current.startTime)}:00.000Z',
-              endTime: '${formatTimeOfDay(current.endTime)}:00.000Z',
+              startTime: formatTimeOfDay(current.startTime),
+              endTime: formatTimeOfDay(current.endTime),
               refreshDetail: false, // Disable auto refresh
             );
             if (result == null) {
@@ -1279,6 +1299,29 @@ class _UpdateRecyclingPostPageState
                     changedFields.add('amountDescription');
                   }
 
+                  // Extract type from dialog result
+                  ScrapPostDetailType newType = itemData.type; // Default to current type
+                  if (updated['type'] != null) {
+                    if (updated['type'] is ScrapPostDetailType) {
+                      newType = updated['type'] as ScrapPostDetailType;
+                      if (newType != itemData.type) {
+                        changedFields.add('type');
+                      }
+                      debugPrint('✅ [UPDATE] Type from dialog (enum): ${newType.name}');
+                    } else if (updated['type'] is String) {
+                      // If type is returned as string, parse it
+                      newType = ScrapPostDetailType.fromJson(updated['type'] as String);
+                      if (newType != itemData.type) {
+                        changedFields.add('type');
+                      }
+                      debugPrint('✅ [UPDATE] Type from dialog (string): ${updated['type']} -> ${newType.name}');
+                    } else {
+                      debugPrint('⚠️ [UPDATE] Type is unexpected type: ${updated['type'].runtimeType}');
+                    }
+                  } else {
+                    debugPrint('⚠️ [UPDATE] Type is null, using current: ${itemData.type.name}');
+                  }
+
                   if (changedFields.isNotEmpty) {
                     setState(() {
                       _scrapItems[index] = ScrapItemData(
@@ -1286,7 +1329,7 @@ class _UpdateRecyclingPostPageState
                         categoryName: matchedCat.categoryName,
                         amountDescription:
                             StringHelper.truncateForVarchar255(newAmountDesc),
-                        type: itemData.type,
+                        type: newType,
                         imageUrl: newImageUrl,
                         imageFile: newImageFile,
                       );

@@ -1,14 +1,15 @@
 import 'package:GreenConnectMobile/features/post/data/datasources/scrap_post_remote_datasource.dart';
 import 'package:GreenConnectMobile/features/post/data/repository/scrap_post_repository_impl.dart';
 import 'package:GreenConnectMobile/features/post/domain/repository/scrap_post_repository.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/analyze_scrap_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/create_scrap_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/create_time_slot_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/delete_scrap_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/delete_time_slot_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_household_report_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_my_scrap_post_usecases.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/get_post_transactions_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_scrap_post_detail_usecases.dart';
-import 'package:GreenConnectMobile/features/post/domain/usecases/analyze_scrap_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/scrap_post_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/search_posts_for_collector_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/toggle_scrap_post_usecase.dart';
@@ -103,6 +104,12 @@ final searchPostsForCollectorUsecaseProvider =
 final getHouseholdReportUsecaseProvider =
     Provider<GetHouseholdReportUsecase>((ref) {
   return GetHouseholdReportUsecase(ref.read(scrapPostRepositoryProvider));
+});
+
+// Get post transactions
+final getPostTransactionsUsecaseProvider =
+    Provider<GetPostTransactionsUsecase>((ref) {
+  return GetPostTransactionsUsecase(ref.read(scrapPostRepositoryProvider));
 });
 
 // Create time slot
