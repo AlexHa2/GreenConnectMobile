@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/confirm_dialog_helper.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
@@ -7,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RejectButton extends ConsumerWidget {
-  final String transactionId;
+  final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
 
   const RejectButton({
     super.key,
-    required this.transactionId,
+    required this.transaction,
     required this.onActionCompleted,
   });
 
@@ -31,18 +32,47 @@ class RejectButton extends ConsumerWidget {
     if (confirmed != true || !context.mounted) return;
 
     try {
-      // Call API to cancel transaction
-      await ref
-          .read(transactionViewModelProvider.notifier)
-          .processTransaction(transactionId: transactionId, isAccepted: false);
+      // Get required parameters
+      final scrapPostId = transaction.offer?.scrapPostId ?? '';
+      final collectorId = transaction.scrapCollectorId;
+      final slotId = transaction.timeSlotId ?? transaction.offer?.timeSlotId ?? '';
+      
+      if (scrapPostId.isEmpty || collectorId.isEmpty || slotId.isEmpty) {
+        if (context.mounted) {
+          CustomToast.show(context, s.operation_failed, type: ToastType.error);
+        }
+        return;
+      }
 
-      if (context.mounted) {
+      // Call API to cancel transaction
+      final success = await ref
+          .read(transactionViewModelProvider.notifier)
+          .processTransaction(
+            scrapPostId: scrapPostId,
+            collectorId: collectorId,
+            slotId: slotId,
+            transactionId: transaction.transactionId,
+            isAccepted: false,
+          );
+
+      if (!context.mounted) return;
+
+      if (success) {
         CustomToast.show(
           context,
           s.transaction_cancelled,
           type: ToastType.success,
         );
         onActionCompleted();
+      } else {
+        final state = ref.read(transactionViewModelProvider);
+        final errorMsg = state.errorMessage;
+        
+        CustomToast.show(
+          context,
+          errorMsg ?? s.operation_failed,
+          type: ToastType.error,
+        );
       }
     } catch (e) {
       if (context.mounted) {

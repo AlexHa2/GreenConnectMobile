@@ -1,10 +1,9 @@
 class CreateOfferRequestEntity {
   final List<OfferDetailRequest> offerDetails;
-  final ScheduleProposalRequest scheduleProposal;
+
 
   CreateOfferRequestEntity({
     required this.offerDetails,
-    required this.scheduleProposal,
   });
 }
 

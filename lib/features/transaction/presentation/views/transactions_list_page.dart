@@ -1,6 +1,8 @@
 import 'package:GreenConnectMobile/core/di/profile_injector.dart';
 import 'package:GreenConnectMobile/core/enum/role.dart';
+import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_list/transaction_list_card.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_list/transaction_list_empty_state.dart';
@@ -30,9 +32,12 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
   final int _pageSize = 20;
   bool _isLoadingMore = false;
   bool _hasMoreData = true;
+  
+  // Local accumulated data for pagination
+  List<TransactionEntity> _accumulatedData = [];
 
   // Filter state
-  String _filterType = 'updateAt'; // 'createAt' or 'updateAt'
+  String _filterType = 'createAt'; // 'createAt' or 'updateAt'
   bool _isDescending = true; // true = newest first, false = oldest first
 
   @override
@@ -80,6 +85,7 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
     if (isRefresh) {
       _currentPage = 1;
       _hasMoreData = true;
+      _accumulatedData.clear();
     }
 
     await ref
@@ -95,6 +101,11 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
       final state = ref.read(transactionViewModelProvider);
       setState(() {
         if (state.listData != null) {
+          if (isRefresh) {
+            _accumulatedData = List.from(state.listData!.data);
+          } else {
+            _accumulatedData = List.from(state.listData!.data);
+          }
           _hasMoreData = state.listData!.data.length >= _pageSize;
         }
       });
@@ -108,9 +119,6 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
       _isLoadingMore = true;
       _currentPage++;
     });
-
-    final currentData =
-        ref.read(transactionViewModelProvider).listData?.data ?? [];
 
     await ref
         .read(transactionViewModelProvider.notifier)
@@ -126,14 +134,10 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
       setState(() {
         _isLoadingMore = false;
         if (state.listData != null) {
-          // Append new data
+          // Append new data to accumulated list
           final newData = state.listData!.data;
+          _accumulatedData = [..._accumulatedData, ...newData];
           _hasMoreData = newData.length >= _pageSize;
-
-          // Merge data
-          final allData = [...currentData, ...newData];
-          state.listData!.data.clear();
-          state.listData!.data.addAll(allData);
         }
       });
     }
@@ -141,6 +145,26 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
 
   Future<void> _onRefresh() async {
     await _loadTransactions(isRefresh: true);
+  }
+
+  TransactionStatus _getStatusFromString(String status) {
+    switch (status.toLowerCase()) {
+      case 'scheduled':
+        return TransactionStatus.scheduled;
+      case 'in_progress':
+      case 'inprogress':
+        return TransactionStatus.inProgress;
+      case 'completed':
+        return TransactionStatus.completed;
+      case 'canceled_by_user':
+      case 'canceledbyuser':
+        return TransactionStatus.canceledByUser;
+      case 'canceled_by_system':
+      case 'canceledbysystem':
+        return TransactionStatus.canceledBySystem;
+      default:
+        return TransactionStatus.scheduled;
+    }
   }
 
   void _showFilterMenu() {
@@ -158,10 +182,54 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
     );
   }
 
-  void _navigateToDetail(String transactionId) async {
+  void _navigateToDetail(TransactionEntity transaction) async {
+    // Extract all necessary fields from transaction entity
+    // GoRouter may not serialize complex objects properly, so we extract fields
+    final postId = transaction.offer?.scrapPostId;
+    final collectorId = transaction.scrapCollectorId;
+    final slotId = transaction.timeSlotId ?? transaction.offer?.timeSlotId;
+
+    final statusEnum = _getStatusFromString(transaction.status);
+
+    // Route selection based on status:
+    // - Scheduled -> transaction-detail-onlyone (check-in first)
+    // - InProgress -> transaction-detail (multi-transaction, input quantity)
+    // - Others -> transaction-detail-onlyone (read-only / single transaction)
+    final routeName = statusEnum == TransactionStatus.inProgress
+        ? 'transaction-detail'
+        : 'transaction-detail-onlyone';
+    
     final result = await context.pushNamed<bool>(
-      'transaction-detail',
-      extra: {'transactionId': transactionId},
+      routeName,
+      extra: {
+        'transactionId': transaction.transactionId,
+        // Pass required params for post transactions
+        if (postId != null && postId.isNotEmpty) 'postId': postId,
+        if (collectorId.isNotEmpty) 'collectorId': collectorId,
+        if (slotId != null && slotId.isNotEmpty) 'slotId': slotId,
+        // Pass transaction data as JSON-serializable map for reconstruction
+        'hasTransactionData': true,
+        'transactionStatus': transaction.status,
+        'transactionTotalPrice': transaction.totalPrice,
+        'transactionCreatedAt': transaction.createdAt.toIso8601String(),
+        'transactionScheduledTime': transaction.scheduledTime?.toIso8601String(),
+        'transactionCheckInTime': transaction.checkInTime?.toIso8601String(),
+        'transactionUpdatedAt': transaction.updatedAt?.toIso8601String(),
+        'householdId': transaction.householdId,
+        'householdName': transaction.household.fullName,
+        'householdPhone': transaction.household.phoneNumber,
+        'householdPointBalance': transaction.household.pointBalance,
+        'householdRank': transaction.household.rank,
+        'householdRoles': transaction.household.roles,
+        'scrapCollectorId': transaction.scrapCollectorId,
+        'collectorName': transaction.scrapCollector.fullName,
+        'collectorPhone': transaction.scrapCollector.phoneNumber,
+        'collectorPointBalance': transaction.scrapCollector.pointBalance,
+        'collectorRank': transaction.scrapCollector.rank,
+        'collectorRoles': transaction.scrapCollector.roles,
+        'offerId': transaction.offerId,
+        'timeSlotId': transaction.timeSlotId,
+      },
     );
 
     // Refresh list if transaction was updated
@@ -196,31 +264,28 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
             Expanded(
               child: transactionState.isLoadingList && _currentPage == 1
                   ? const Center(child: RotatingLeafLoader())
-                  : transactionState.listData == null ||
-                        transactionState.listData!.data.isEmpty
+                  : _accumulatedData.isEmpty
                   ? const TransactionListEmptyState()
                   : ListView.separated(
                       controller: _scrollController,
                       padding: EdgeInsets.all(space),
                       physics: const AlwaysScrollableScrollPhysics(),
                       itemCount:
-                          transactionState.listData!.data.length +
+                          _accumulatedData.length +
                           (_isLoadingMore ? 1 : 0),
                       separatorBuilder: (context, index) =>
                           SizedBox(height: space),
                       itemBuilder: (context, index) {
-                        if (index == transactionState.listData!.data.length) {
+                        if (index == _accumulatedData.length) {
                           return const TransactionListLoadingIndicator();
                         }
 
-                        final transaction =
-                            transactionState.listData!.data[index];
+                        final transaction = _accumulatedData[index];
 
                         return TransactionListCard(
                           transaction: transaction,
                           userRole: _userRole,
-                          onTap: () =>
-                              _navigateToDetail(transaction.transactionId),
+                          onTap: () => _navigateToDetail(transaction),
                           onReviewTap: () async {
                             final result = await context.pushNamed<bool>(
                               'create-feedback',

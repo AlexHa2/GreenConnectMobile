@@ -1,6 +1,7 @@
 import 'package:GreenConnectMobile/core/error/failure.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/confirm_dialog_helper.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setting.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
@@ -11,11 +12,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class QRCodePaymentPage extends ConsumerStatefulWidget {
   final String transactionId;
+  final TransactionEntity? transaction;
   final VoidCallback onActionCompleted;
 
   const QRCodePaymentPage({
     super.key,
     required this.transactionId,
+    this.transaction,
     required this.onActionCompleted,
   });
 
@@ -178,12 +181,44 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
     setState(() => _isProcessing = true);
 
     try {
-      // Call API to complete transaction
+      // Get transaction data from widget or state
+      TransactionEntity? transaction = widget.transaction;
+      if (transaction == null) {
+        final state = ref.read(transactionViewModelProvider);
+        transaction = state.detailData;
+      }
+      
+      if (transaction == null) {
+        if (mounted) {
+          setState(() => _isProcessing = false);
+          CustomToast.show(context, s.operation_failed, type: ToastType.error);
+        }
+        return;
+      }
+
+      // Get required parameters
+      final scrapPostId = transaction.offer?.scrapPostId ?? '';
+      final collectorId = transaction.scrapCollectorId;
+      final slotId = transaction.timeSlotId ?? transaction.offer?.timeSlotId ?? '';
+      
+      if (scrapPostId.isEmpty || collectorId.isEmpty || slotId.isEmpty) {
+        if (mounted) {
+          setState(() => _isProcessing = false);
+          CustomToast.show(context, s.operation_failed, type: ToastType.error);
+        }
+        return;
+      }
+
+      // Call API to complete transaction with bank transfer
       await ref
           .read(transactionViewModelProvider.notifier)
           .processTransaction(
+            scrapPostId: scrapPostId,
+            collectorId: collectorId,
+            slotId: slotId,
             transactionId: widget.transactionId,
             isAccepted: true,
+            paymentMethod: 'BankTransfer',
           );
 
       if (mounted) {

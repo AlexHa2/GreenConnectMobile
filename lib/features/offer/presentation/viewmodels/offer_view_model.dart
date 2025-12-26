@@ -2,6 +2,7 @@ import 'package:GreenConnectMobile/core/error/failure.dart';
 import 'package:GreenConnectMobile/features/offer/domain/entities/create_offer_request_entity.dart';
 import 'package:GreenConnectMobile/features/offer/domain/usecases/add_offer_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/offer/domain/usecases/create_offer_usecase.dart';
+import 'package:GreenConnectMobile/features/offer/domain/usecases/create_supplementary_offer_usecase.dart';
 import 'package:GreenConnectMobile/features/offer/domain/usecases/delete_offer_detail_usecase.dart';
 import 'package:GreenConnectMobile/features/offer/domain/usecases/get_all_offers_usecase.dart';
 import 'package:GreenConnectMobile/features/offer/domain/usecases/get_offer_detail_usecase.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OfferViewModel extends Notifier<OfferState> {
   late CreateOfferUsecase _createOffer;
+  late CreateSupplementaryOfferUsecase _createSupplementaryOffer;
   late GetOffersByPostUsecase _getOffersByPost;
   late GetAllOffersUsecase _getAllOffers;
   late GetOfferDetailUsecase _getOfferDetail;
@@ -28,6 +30,7 @@ class OfferViewModel extends Notifier<OfferState> {
   @override
   OfferState build() {
     _createOffer = ref.read(createOfferUsecaseProvider);
+    _createSupplementaryOffer = ref.read(createSupplementaryOfferUsecaseProvider);
     _getOffersByPost = ref.read(getOffersByPostUsecaseProvider);
     _getAllOffers = ref.read(getAllOffersUsecaseProvider);
     _getOfferDetail = ref.read(getOfferDetailUsecaseProvider);
@@ -43,7 +46,7 @@ class OfferViewModel extends Notifier<OfferState> {
   Future<bool> createOffer({
     required String postId,
     required CreateOfferRequestEntity request,
-    String? slotTimeId,
+    required String slotTimeId,
   }) async {
     state = state.copyWith(isProcessing: true, errorMessage: null);
 
@@ -59,12 +62,73 @@ class OfferViewModel extends Notifier<OfferState> {
       String errorMsg = 'An error occurred';
       if (e is AppException) {
         debugPrint('❌ ERROR CREATE OFFER: ${e.message}');
-        errorMsg = e.message ?? errorMsg;
+        if (e is BusinessException) {
+          errorMsg = e.message ?? 'Bad Request';
+        } else if (e.message != null && e.message!.isNotEmpty) {
+          errorMsg = e.message!;
+        } else {
+          errorMsg = e.toString();
+        }
       } else {
         errorMsg = e.toString();
       }
       debugPrint('📌 STACK TRACE: $stack');
+      debugPrint('📌 ERROR MESSAGE: $errorMsg');
       state = state.copyWith(isProcessing: false, errorMessage: errorMsg);
+      return false;
+    }
+  }
+
+  /// Create supplementary offer for a post
+  Future<bool> createSupplementaryOffer({
+    required String postId,
+    required CreateOfferRequestEntity request,
+  }) async {
+    state = state.copyWith(isProcessing: true, errorMessage: null);
+
+    try {
+      final success = await _createSupplementaryOffer(
+        postId: postId,
+        request: request,
+      );
+      state = state.copyWith(isProcessing: false);
+      return success;
+    } catch (e, stack) {
+      String errorMsg = 'An error occurred';
+      if (e is AppException) {
+        debugPrint('❌ ERROR CREATE SUPPLEMENTARY OFFER: ${e.message}');
+        // Handle 404 error specifically
+        if (e is BusinessException && e.statusCode == 404) {
+          errorMsg = 'Bạn chưa tạo offer nên không thể mua thêm. Vui lòng tạo offer trước.';
+        } else if (e is BusinessException) {
+          errorMsg = e.message ?? 'Bad Request';
+        } else if (e.message != null && e.message!.isNotEmpty) {
+          errorMsg = e.message!;
+        } else {
+          errorMsg = e.toString();
+        }
+      } else {
+        errorMsg = e.toString();
+      }
+      debugPrint('📌 STACK TRACE: $stack');
+      debugPrint('📌 ERROR MESSAGE: $errorMsg');
+      state = state.copyWith(isProcessing: false, errorMessage: errorMsg);
+      return false;
+    }
+  }
+
+  /// Check if collector has accepted offer for a post
+  Future<bool> hasAcceptedOffer(String postId) async {
+    try {
+      await fetchOffersByPost(
+        postId: postId,
+        status: 'accepted',
+        page: 1,
+        size: 1,
+      );
+      final offers = state.listData?.data ?? [];
+      return offers.isNotEmpty;
+    } catch (e) {
       return false;
     }
   }

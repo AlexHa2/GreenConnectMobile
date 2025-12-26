@@ -1,3 +1,4 @@
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/type_badge.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
@@ -144,10 +145,23 @@ class _InputScrapQuantityDialogState extends State<InputScrapQuantityDialog> {
                   ],
                 ),
               ),
-              SizedBox(height: spacing * 1.5),
+              SizedBox(height: spacing),
               ...offerDetails.map((detail) {
                 final controller = _quantityControllers[detail.scrapCategoryId];
                 if (controller == null) return const SizedBox.shrink();
+
+                // Get type from scrapPost details (for badge)
+                String? detailType;
+                final scrapPost = widget.transaction.offer?.scrapPost;
+                if (scrapPost != null) {
+                  final postDetail = scrapPost.scrapPostDetails
+                      .where(
+                          (pd) => pd.scrapCategoryId == detail.scrapCategoryId)
+                      .firstOrNull;
+                  if (postDetail != null && postDetail.type.isNotEmpty) {
+                    detailType = postDetail.type;
+                  }
+                }
 
                 return Padding(
                   padding: EdgeInsets.only(bottom: spacing),
@@ -161,41 +175,95 @@ class _InputScrapQuantityDialogState extends State<InputScrapQuantityDialog> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        /// ===== HEADER =====
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.recycling,
-                              color: theme.primaryColor,
-                              size: spacing * 1.5,
+                            // Image / Icon
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(spacing / 2),
+                                color: theme.cardColor,
+                              ),
+                              child: detail.imageUrl != null &&
+                                      detail.imageUrl!.isNotEmpty
+                                  ? ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.circular(spacing / 2),
+                                      child: Image.network(
+                                        detail.imageUrl!,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => Icon(
+                                          Icons.recycling,
+                                          color: theme.primaryColor,
+                                        ),
+                                      ),
+                                    )
+                                  : Icon(
+                                      Icons.recycling,
+                                      color: theme.primaryColor,
+                                    ),
                             ),
-                            SizedBox(width: spacing / 2),
+                            SizedBox(width: spacing * 0.75),
+
+                            // Category name
                             Expanded(
                               child: Text(
                                 detail.scrapCategory?.categoryName ??
                                     '${s.unknown} (${detail.scrapCategoryId})',
                                 style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
+
+                            // Type badge
+                            if (detailType != null && detailType.isNotEmpty)
+                              Padding(
+                                padding: EdgeInsets.only(left: spacing / 2),
+                                child: TypeBadge(type: detailType),
+                              ),
                           ],
                         ),
-                        SizedBox(height: spacing / 2),
-                        Text(
-                          s.price_display(
-                            detail.pricePerUnit.toStringAsFixed(0),
-                            s.per_unit,
-                            detail.unit,
+
+                        SizedBox(height: spacing),
+
+                        /// ===== INFO SECTION =====
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: spacing * 0.75,
+                            vertical: spacing * 0.6,
                           ),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.hintColor,
+                          decoration: BoxDecoration(
+                            color: theme.cardColor,
+                            borderRadius: BorderRadius.circular(spacing / 2),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                s.price_display(
+                                  detail.pricePerUnit.toStringAsFixed(0),
+                                  s.per_unit,
+                                  detail.unit,
+                                ),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.hintColor,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
+
                         SizedBox(height: spacing),
+
+                        /// ===== INPUT =====
                         TextFormField(
                           controller: controller,
                           decoration: InputDecoration(
-                            labelText: s.quantity_with_unit(detail.unit),
                             hintText: s.enter_actual_quantity_hint,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(spacing / 2),

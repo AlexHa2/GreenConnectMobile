@@ -1,5 +1,6 @@
 import 'package:GreenConnectMobile/core/enum/post_status.dart';
 import 'package:GreenConnectMobile/core/helper/post_detail_status_helper.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/type_badge.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/full_image_viewer.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class PostItemNoAction extends StatelessWidget {
   final String? imageUrl;
   final PostDetailStatus? status;
   final bool isCollectorView;
+  final String? type; // Type string: "sale", "donation", or "service"
 
   const PostItemNoAction({
     super.key,
@@ -20,6 +22,7 @@ class PostItemNoAction extends StatelessWidget {
     this.imageUrl,
     this.status,
     this.isCollectorView = false,
+    this.type,
   });
 
   @override
@@ -190,6 +193,11 @@ class PostItemNoAction extends StatelessWidget {
                               color: theme.primaryColor,
                               bgAlpha: 0.1,
                             ),
+                            // Type badge (Sale, Donation, Service)
+                            if (type != null && type!.isNotEmpty)
+                              TypeBadge(
+                                type: type!,
+                              ),
                           ],
                         ),
                         SizedBox(height: space * 0.5),

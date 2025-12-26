@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:GreenConnectMobile/core/error/failure.dart';
@@ -12,6 +13,7 @@ import 'package:GreenConnectMobile/features/post/domain/usecases/delete_scrap_de
 import 'package:GreenConnectMobile/features/post/domain/usecases/delete_time_slot_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_household_report_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_my_scrap_post_usecases.dart';
+import 'package:GreenConnectMobile/features/post/domain/usecases/get_post_transactions_usecase.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/get_scrap_post_detail_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/scrap_post_usecases.dart';
 import 'package:GreenConnectMobile/features/post/domain/usecases/search_posts_for_collector_usecase.dart';
@@ -35,10 +37,13 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
   late CreateScrapDetailUsecase _createDetail;
   late SearchPostsForCollectorUsecase _searchPostsForCollector;
   late GetHouseholdReportUsecase _getHouseholdReport;
+  late GetPostTransactionsUsecase _getPostTransactions;
   late AnalyzeScrapUsecase _analyzeScrap;
   late CreateTimeSlotUsecase _createTimeSlot;
   late UpdateTimeSlotUsecase _updateTimeSlot;
   late DeleteTimeSlotUsecase _deleteTimeSlot;
+  
+  Timer? _progressSimulationTimer;
   @override
   ScrapPostState build() {
     _getMyPosts = ref.read(getMyScrapPostsUsecaseProvider);
@@ -51,6 +56,7 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
     _createDetail = ref.read(createScrapDetailUsecaseProvider);
     _searchPostsForCollector = ref.read(searchPostsForCollectorUsecaseProvider);
     _getHouseholdReport = ref.read(getHouseholdReportUsecaseProvider);
+    _getPostTransactions = ref.read(getPostTransactionsUsecaseProvider);
     _analyzeScrap = ref.read(analyzeScrapUsecaseProvider);
     _createTimeSlot = ref.read(createTimeSlotUsecaseProvider);
     _updateTimeSlot = ref.read(updateTimeSlotUsecaseProvider);
@@ -322,30 +328,127 @@ class ScrapPostViewModel extends Notifier<ScrapPostState> {
     }
   }
 
+  /// Fetch Post Transactions
+  Future<void> fetchPostTransactions({
+    required String postId,
+    required String collectorId,
+    required String slotId,
+  }) async {
+    state = state.copyWith(isLoadingTransactions: true, errorMessage: null);
+
+    try {
+      final result = await _getPostTransactions(
+        postId: postId,
+        collectorId: collectorId,
+        slotId: slotId,
+      );
+      state = state.copyWith(
+        isLoadingTransactions: false,
+        transactionsData: result,
+      );
+    } catch (e, stack) {
+      if (e is AppException) {
+        debugPrint('❌ ERROR FETCH POST TRANSACTIONS: ${e.message}');
+      }
+      debugPrint('📌 STACK TRACE: $stack');
+      state = state.copyWith(
+        isLoadingTransactions: false,
+        errorMessage: e.toString(),
+      );
+    }
+  }
+
   /// Analyze scrap image (AI)
+  /// 
+  /// Features:
+  /// - Extended timeout (10 minutes)
+  /// - Automatic retry with exponential backoff
+  /// - Progress tracking for upload
+  /// 
+  /// Parameters:
+  /// - [imageBytes]: Image bytes to analyze
+  /// - [fileName]: Name of the image file
+  /// - [onProgress]: Callback for upload progress (sent, total, progress)
+  /// - [maxRetries]: Maximum number of retry attempts (default: 3)
   Future<AnalyzeScrapResultEntity?> analyzeScrap({
     required Uint8List imageBytes,
     required String fileName,
+    void Function(int sent, int total, double progress)? onProgress,
+    int maxRetries = 3,
   }) async {
-    state = state.copyWith(isAnalyzing: true, errorMessage: null);
+    // Cancel any existing progress simulation
+    _progressSimulationTimer?.cancel();
+    
+    state = state.copyWith(
+      isAnalyzing: true,
+      errorMessage: null,
+      analyzeProgress: 0.0,
+    );
+
+    // Track upload completion
+    bool uploadCompleted = false;
+    const double uploadCompleteThreshold = 0.15; // Consider upload done at 15%
+    const double maxSimulatedProgress = 0.9; // Max progress before actual completion
+    const Duration progressUpdateInterval = Duration(milliseconds: 200); // Update every 200ms
+
+    // Start progress simulation timer
+    _progressSimulationTimer = Timer.periodic(progressUpdateInterval, (timer) {
+      if (!state.isAnalyzing) {
+        timer.cancel();
+        return;
+      }
+
+      final currentProgress = state.analyzeProgress;
+      
+      // If upload is completed, simulate progress from current to maxSimulatedProgress
+      if (uploadCompleted && currentProgress < maxSimulatedProgress) {
+        // Increase progress gradually (about 2% per update, reaching 90% in ~7.5 seconds)
+        final increment = 0.02;
+        final newProgress = (currentProgress + increment).clamp(0.0, maxSimulatedProgress);
+        state = state.copyWith(analyzeProgress: newProgress);
+      }
+    });
 
     try {
       final result = await _analyzeScrap(
         imageBytes: imageBytes,
         fileName: fileName,
+        onProgress: (sent, total, progress) {
+          // Update state with upload progress (capped at uploadCompleteThreshold)
+          if (progress <= uploadCompleteThreshold) {
+            state = state.copyWith(analyzeProgress: progress);
+          } else if (!uploadCompleted) {
+            // Mark upload as completed and set progress to threshold
+            uploadCompleted = true;
+            state = state.copyWith(analyzeProgress: uploadCompleteThreshold);
+          }
+          
+          // Call user-provided callback if any
+          onProgress?.call(sent, total, progress);
+        },
+        maxRetries: maxRetries,
       );
+      
+      // Cancel progress simulation
+      _progressSimulationTimer?.cancel();
+      
       state = state.copyWith(
         isAnalyzing: false,
         analyzeResult: result,
+        analyzeProgress: 1.0, // Complete
       );
       return result;
     } catch (e, stack) {
+      // Cancel progress simulation on error
+      _progressSimulationTimer?.cancel();
+      
       if (e is AppException) {
         debugPrint('❌ ERROR ANALYZE SCRAP: ${e.message}');
       }
       debugPrint('📌 STACK TRACE: $stack');
       state = state.copyWith(
         isAnalyzing: false,
+        analyzeProgress: 0.0,
         errorMessage: e.toString(),
       );
       return null;

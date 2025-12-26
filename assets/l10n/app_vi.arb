@@ -1058,6 +1058,56 @@
   "analyzing": "Đang phân tích...",
   "analyze_with_ai": "Phân tích bằng AI",
   "change_image": "Đổi hình ảnh",
+  "please_select_time_slot": "Vui lòng chọn khung thời gian",
+  "select_time_slot": "Chọn Khung Thời Gian",
+  "selected_time_slot": "Khung Thời Gian Đã Chọn",
+  "price_label_sale": "Giá thu mua",
+  "price_label_service": "Giá đề nghị cho người đăng trả",
+  "price_label_donation": "Miễn phí",
+  "donation_info_text": "Món hàng này được tặng miễn phí",
+  "service_info_text": "Đây là giá bạn đề nghị cho người đăng trả",
+  "supplementary_offer_note": "Giao dịch sẽ được tạo ngay lập tức mà không cần chờ chấp nhận",
+  "transaction_created_successfully": "Tạo giao dịch thành công",
+  "buy_more": "Mua thêm",
+  "request_payment": "Yêu cầu thanh toán",
+  "transactions_count": "{count} Giao dịch",
+  "@transactions_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "transaction_number": "Giao dịch {number}",
+  "@transaction_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "copied_id": "Đã sao chép ID: {id}",
+  "@copied_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "id_label": "Mã:",
+  "total_difference": "Tổng chênh lệch",
+  "from_all_transactions": "(Từ tất cả giao dịch)",
+  "transaction_value": "Giá trị giao dịch",
+  "related_transactions": "Giao dịch liên quan",
+  "amount_difference": "Chênh lệch số tiền: {amount}",
+  "@amount_difference": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "quantity_not_entered": "(Chưa nhập số lượng)",
   "recurring_schedules": "Lịch Lặp Lại",
   "recurring_schedules_description": "Lịch lặp lại cho phép bạn tạo một lịch cho bài đăng sẽ được tạo tự động vào thời gian cụ thể.",
   "recurring_schedules_create": "Tạo lịch lặp lại",

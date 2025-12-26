@@ -1,9 +1,11 @@
 import 'dart:typed_data';
 
+import 'package:GreenConnectMobile/core/network/api_client.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/create_scrap_post_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/household_report_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/paginated_scrap_post_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/analyze_scrap_result_model.dart';
+import 'package:GreenConnectMobile/features/post/data/models/scrap_post/post_transactions_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_detail_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/time_slot_model.dart';
@@ -58,6 +60,8 @@ abstract class ScrapPostRemoteDataSource {
   Future<AnalyzeScrapResultModel> analyzeScrap({
     required Uint8List imageBytes,
     required String fileName,
+    UploadProgressCallback? onProgress,
+    int maxRetries = 3,
   });
 
   Future<TimeSlotModel> createTimeSlot({
@@ -78,5 +82,11 @@ abstract class ScrapPostRemoteDataSource {
   Future<bool> deleteTimeSlot({
     required String postId,
     required String timeSlotId,
+  });
+
+  Future<PostTransactionsResponseModel> getPostTransactions({
+    required String postId,
+    required String collectorId,
+    required String slotId,
   });
 }

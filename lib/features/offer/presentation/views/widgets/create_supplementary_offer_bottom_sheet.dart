@@ -14,21 +14,23 @@ import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CreateOfferBottomSheet extends ConsumerStatefulWidget {
+class CreateSupplementaryOfferBottomSheet extends ConsumerStatefulWidget {
   final ScrapPostEntity post;
 
-  const CreateOfferBottomSheet({super.key, required this.post});
+  const CreateSupplementaryOfferBottomSheet({
+    super.key,
+    required this.post,
+  });
 
   @override
-  ConsumerState<CreateOfferBottomSheet> createState() =>
-      _CreateOfferBottomSheetState();
+  ConsumerState<CreateSupplementaryOfferBottomSheet> createState() =>
+      _CreateSupplementaryOfferBottomSheetState();
 }
 
-class _CreateOfferBottomSheetState
-    extends ConsumerState<CreateOfferBottomSheet> {
+class _CreateSupplementaryOfferBottomSheetState
+    extends ConsumerState<CreateSupplementaryOfferBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, OfferItemData> _offerItems = {};
-  String? _selectedSlotTimeId;
   bool _isSubmitting = false;
 
   @override
@@ -49,7 +51,7 @@ class _CreateOfferBottomSheetState
           final initialPrice = detailType == ScrapPostDetailType.donation
               ? 0.0
               : 0.0; // Both start at 0, but donation stays at 0
-          
+
           _offerItems[detail.scrapCategory!.scrapCategoryId] = OfferItemData(
             categoryId: detail.scrapCategory!.scrapCategoryId,
             categoryName: detail.scrapCategory!.categoryName,
@@ -60,11 +62,6 @@ class _CreateOfferBottomSheetState
         }
       }
     }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   void _toggleItem(String categoryId, String categoryName) {
@@ -82,12 +79,12 @@ class _CreateOfferBottomSheetState
           orElse: () => widget.post.scrapPostDetails.first,
         );
         final detailType = ScrapPostDetailType.parseType(detail.type);
-        
+
         // For donation, set price to 0 and keep it fixed
         final initialPrice = detailType == ScrapPostDetailType.donation
             ? 0.0
             : 0.0; // Both start at 0, but donation stays at 0
-        
+
         _offerItems[categoryId] = OfferItemData(
           categoryId: categoryId,
           categoryName: categoryName,
@@ -99,7 +96,7 @@ class _CreateOfferBottomSheetState
     });
   }
 
-  Future<void> _submitOffer() async {
+  Future<void> _submitSupplementaryOffer() async {
     // Prevent double submission
     if (_isSubmitting) return;
 
@@ -114,15 +111,6 @@ class _CreateOfferBottomSheetState
       return;
     }
 
-    if (_selectedSlotTimeId == null || _selectedSlotTimeId!.isEmpty) {
-      CustomToast.show(
-        context,
-        S.of(context)!.please_select_time_slot,
-        type: ToastType.error,
-      );
-      return;
-    }
-
     // Validate prices for SALE and SERVICE items
     for (var item in _offerItems.values) {
       final detail = widget.post.scrapPostDetails.firstWhere(
@@ -130,7 +118,7 @@ class _CreateOfferBottomSheetState
         orElse: () => widget.post.scrapPostDetails.first,
       );
       final detailType = ScrapPostDetailType.parseType(detail.type);
-      
+
       // SALE and SERVICE must have price > 0
       if ((detailType == ScrapPostDetailType.sale ||
               detailType == ScrapPostDetailType.service) &&
@@ -158,12 +146,12 @@ class _CreateOfferBottomSheetState
               orElse: () => widget.post.scrapPostDetails.first,
             );
             final detailType = ScrapPostDetailType.parseType(detail.type);
-            
+
             // For donation, always set price to 0
             final price = detailType == ScrapPostDetailType.donation
                 ? 0.0
                 : item.totalPrice;
-            
+
             return OfferDetailRequest(
               scrapCategoryId: item.categoryId,
               pricePerUnit: price,
@@ -177,10 +165,11 @@ class _CreateOfferBottomSheetState
       offerDetails: offerDetails,
     );
 
-    final success = await ref.read(offerViewModelProvider.notifier).createOffer(
+    final success = await ref
+        .read(offerViewModelProvider.notifier)
+        .createSupplementaryOffer(
           postId: widget.post.scrapPostId.toString(),
           request: request,
-          slotTimeId: _selectedSlotTimeId!,
         );
 
     if (mounted) {
@@ -191,7 +180,7 @@ class _CreateOfferBottomSheetState
       if (success) {
         CustomToast.show(
           context,
-          S.of(context)!.offer_created_successfully,
+          S.of(context)!.transaction_created_successfully,
           type: ToastType.success,
         );
         Navigator.pop(context, true);
@@ -240,6 +229,39 @@ class _CreateOfferBottomSheetState
           ),
 
           const Divider(height: 1),
+
+          // Info banner
+          Container(
+            margin: EdgeInsets.all(space),
+            padding: EdgeInsets.all(space),
+            decoration: BoxDecoration(
+              color: theme.primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(space),
+              border: Border.all(
+                color: theme.primaryColor.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  color: theme.primaryColor,
+                  size: 20,
+                ),
+                SizedBox(width: space * 0.5),
+                Expanded(
+                  child: Text(
+                    s.supplementary_offer_note,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.primaryColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
 
           // Content
           Flexible(
@@ -313,69 +335,6 @@ class _CreateOfferBottomSheetState
                     );
                   }),
 
-                  SizedBox(height: space * 1.5),
-
-                  // Time slots section
-                  if (widget.post.scrapPostTimeSlots.isNotEmpty) ...[
-                    Text(
-                      s.select_time_slot,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: space * 0.75),
-                    ...widget.post.scrapPostTimeSlots.map((slot) {
-                      final slotId = slot.id;
-                      if (slotId == null || slotId.isEmpty) {
-                        return const SizedBox.shrink();
-                      }
-
-                      final isSelected = _selectedSlotTimeId == slotId;
-
-                      return Container(
-                        margin: EdgeInsets.only(bottom: space * 0.5),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: isSelected
-                                ? theme.primaryColor
-                                : theme.dividerColor,
-                            width: isSelected ? 2 : 1,
-                          ),
-                          borderRadius: BorderRadius.circular(space),
-                          color: isSelected
-                              ? theme.primaryColor.withValues(alpha: 0.1)
-                              : theme.canvasColor,
-                        ),
-                        child: ListTile(
-                          leading: Radio<String>(
-                            value: slotId,
-                            groupValue: _selectedSlotTimeId,
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedSlotTimeId = value;
-                              });
-                            },
-                          ),
-                          title: Text(
-                            slot.specificDate,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          subtitle: Text(
-                            '${slot.startTime} - ${slot.endTime}',
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                          onTap: () {
-                            setState(() {
-                              _selectedSlotTimeId = slotId;
-                            });
-                          },
-                        ),
-                      );
-                    }),
-                  ],
-
                   SizedBox(height: space * 2),
                 ],
               ),
@@ -385,10 +344,11 @@ class _CreateOfferBottomSheetState
           // Submit button
           OfferSubmitButton(
             isProcessing: isProcessing || _isSubmitting,
-            onSubmit: _submitOffer,
+            onSubmit: _submitSupplementaryOffer,
           ),
         ],
       ),
     );
   }
 }
+

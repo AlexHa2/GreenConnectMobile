@@ -230,19 +230,27 @@ class PostItem extends StatelessWidget {
                       FilledButton.tonalIcon(
                         onPressed: onGoToOffers,
                         style: FilledButton.styleFrom(
+                          backgroundColor: theme.primaryColor,
                           padding: EdgeInsets.symmetric(
-                            horizontal: space * 2 / 3,
-                            vertical: space / 2,
+                            horizontal: space,
+                            vertical: space,
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(space),
                           ),
                           visualDensity: VisualDensity.compact,
                         ),
-                        icon: const Icon(Icons.receipt_long_rounded, size: 16),
+                        icon: Icon(
+                          Icons.receipt_long_rounded,
+                          size: 16,
+                          color: theme.scaffoldBackgroundColor,
+                        ),
                         label: Text(
                           S.of(context)!.view_offers,
-                          style: const TextStyle(fontSize: 13),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: theme.scaffoldBackgroundColor,
+                          ),
                         ),
                       ),
                     if (isAccepted)
@@ -250,8 +258,8 @@ class PostItem extends StatelessWidget {
                         onPressed: onGoToTransaction,
                         style: FilledButton.styleFrom(
                           padding: EdgeInsets.symmetric(
-                            horizontal: space * 2 / 3,
-                            vertical: space / 2,
+                            horizontal: space,
+                            vertical: space,
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(space),

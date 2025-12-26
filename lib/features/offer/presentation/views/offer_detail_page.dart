@@ -1,5 +1,4 @@
 import 'package:GreenConnectMobile/core/di/profile_injector.dart';
-import 'package:GreenConnectMobile/core/enum/offer_status.dart';
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/providers/offer_providers.dart';
@@ -9,8 +8,8 @@ import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/off
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/offer_action_handler.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/post_info_section.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/pricing_info_section.dart';
-import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/schedule_proposals_section.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/status_header_section.dart';
+import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/time_slot_section.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_leaf_loading.dart';
@@ -240,6 +239,7 @@ class _OfferDetailPageState extends ConsumerState<OfferDetailPage> {
                     offerStatus: offer.status,
                     mustTakeAll: offer.scrapPost?.mustTakeAll,
                     userRole: _userRole,
+                    scrapPost: offer.scrapPost,
                     onUpdate: widget.isCollectorView
                         ? (detailId, price, unit) => _handleUpdateOfferDetail(
                             detailId: detailId,
@@ -253,41 +253,16 @@ class _OfferDetailPageState extends ConsumerState<OfferDetailPage> {
                   ),
                   SizedBox(height: spacing),
 
-                  // Schedule proposals
-                  ScheduleProposalsSection(
-                    schedules: offer.scheduleProposals,
-                    theme: theme,
-                    spacing: spacing,
-                    s: s,
-                    isHouseholdView: !widget.isCollectorView,
-                    offerStatus: offer.status.label,
-                    onRejectSchedule: !widget.isCollectorView
-                        ? (scheduleId) => _actionHandler.handleProcessSchedule(
-                            scheduleId: scheduleId,
-                            isAccepted: false,
-                          )
-                        : null,
-                    onReschedule:
-                        widget.isCollectorView &&
-                            offer.status == OfferStatus.pending
-                        ? (proposedTime, responseMessage) =>
-                              _actionHandler.handleReschedule(
-                                proposedTime: proposedTime,
-                                responseMessage: responseMessage,
-                              )
-                        : null,
-                    onUpdateSchedule:
-                        widget.isCollectorView &&
-                            offer.status == OfferStatus.pending
-                        ? (scheduleId, proposedTime, responseMessage) =>
-                              _actionHandler.handleUpdateSchedule(
-                                scheduleId: scheduleId,
-                                proposedTime: proposedTime,
-                                responseMessage: responseMessage,
-                              )
-                        : null,
-                  ),
-                  SizedBox(height: spacing),
+                  // Selected time slot
+                  if (offer.timeSlot != null) ...[
+                    TimeSlotSection(
+                      timeSlot: offer.timeSlot,
+                      theme: theme,
+                      spacing: spacing,
+                      s: s,
+                    ),
+                    SizedBox(height: spacing),
+                  ],
 
                   // Post information
                   if (offer.scrapPost != null) ...[

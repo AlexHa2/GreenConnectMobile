@@ -47,19 +47,22 @@ class _HouseHoldHomeState extends ConsumerState<HouseHoldHome>
 
   Future<void> _refreshData() async {
     final now = DateTime.now();
-    final startOfDay = DateTime(now.year, now.month, now.day);
-    final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    final endOfToday = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+    final startOfSixMonthsAgo = DateTime(
+      endOfToday.year,
+      endOfToday.month - 6,
+      endOfToday.day,
+    );
 
     await Future.wait([
       ref
           .read(scrapPostViewModelProvider.notifier)
           .fetchMyPosts(page: 1, size: 2),
       ref.read(notificationViewModelProvider.notifier).fetchNotifications(),
-      ref
-          .read(scrapPostViewModelProvider.notifier)
-          .fetchHouseholdReport(
-            start: startOfDay.toIso8601String(),
-            end: endOfDay.toIso8601String(),
+      ref.read(scrapPostViewModelProvider.notifier).fetchHouseholdReport(
+            start: startOfSixMonthsAgo.toIso8601String(),
+            end: endOfToday.toIso8601String(),
           ),
     ]);
     loadUser();

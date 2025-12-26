@@ -23,13 +23,17 @@ abstract class TransactionRepository {
   });
 
   Future<List<TransactionDetailEntity>> updateTransactionDetails({
-    required String transactionId,
+    required String scrapPostId,
+    required String slotId,
     required List<TransactionDetailRequest> details,
   });
 
   Future<bool> processTransaction({
-    required String transactionId,
+    required String scrapPostId,
+    required String collectorId,
+    required String slotId,
     required bool isAccepted,
+    String? paymentMethod, // "BankTransfer" or "Cash"
   });
 
   Future<bool> toggleCancelTransaction(String transactionId);

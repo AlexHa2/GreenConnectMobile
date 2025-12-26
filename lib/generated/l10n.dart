@@ -5857,6 +5857,138 @@ abstract class S {
   /// **'Change Image'**
   String get change_image;
 
+  /// No description provided for @please_select_time_slot.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a time slot'**
+  String get please_select_time_slot;
+
+  /// No description provided for @select_time_slot.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Time Slot'**
+  String get select_time_slot;
+
+  /// No description provided for @selected_time_slot.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected Time Slot'**
+  String get selected_time_slot;
+
+  /// No description provided for @price_label_sale.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase Price'**
+  String get price_label_sale;
+
+  /// No description provided for @price_label_service.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested Price for Poster'**
+  String get price_label_service;
+
+  /// No description provided for @price_label_donation.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get price_label_donation;
+
+  /// No description provided for @donation_info_text.
+  ///
+  /// In en, this message translates to:
+  /// **'This item is free (donation)'**
+  String get donation_info_text;
+
+  /// No description provided for @service_info_text.
+  ///
+  /// In en, this message translates to:
+  /// **'This is the price you suggest for the poster to pay'**
+  String get service_info_text;
+
+  /// No description provided for @supplementary_offer_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction will be created immediately without waiting for acceptance'**
+  String get supplementary_offer_note;
+
+  /// No description provided for @transaction_created_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction created successfully'**
+  String get transaction_created_successfully;
+
+  /// No description provided for @buy_more.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy More'**
+  String get buy_more;
+
+  /// No description provided for @request_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Payment'**
+  String get request_payment;
+
+  /// No description provided for @transactions_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Transactions'**
+  String transactions_count(int count);
+
+  /// No description provided for @transaction_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction {number}'**
+  String transaction_number(int number);
+
+  /// No description provided for @copied_id.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied ID: {id}'**
+  String copied_id(String id);
+
+  /// No description provided for @id_label.
+  ///
+  /// In en, this message translates to:
+  /// **'ID:'**
+  String get id_label;
+
+  /// No description provided for @total_difference.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Difference'**
+  String get total_difference;
+
+  /// No description provided for @from_all_transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'(From all transactions)'**
+  String get from_all_transactions;
+
+  /// No description provided for @transaction_value.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Value'**
+  String get transaction_value;
+
+  /// No description provided for @related_transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Related Transactions'**
+  String get related_transactions;
+
+  /// No description provided for @amount_difference.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount Difference: {amount}'**
+  String amount_difference(String amount);
+
+  /// No description provided for @quantity_not_entered.
+  ///
+  /// In en, this message translates to:
+  /// **'(Quantity not entered)'**
+  String get quantity_not_entered;
+
   /// No description provided for @recurring_schedules.
   ///
   /// In en, this message translates to:

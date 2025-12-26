@@ -6,7 +6,7 @@ abstract class OfferRemoteDataSource {
   Future<bool> createOffer({
     required String postId,
     required CreateOfferRequestModel request,
-    String? slotTimeId,
+    required String slotTimeId,
   });
 
   Future<PaginatedOfferModel> getOffersByPost({
@@ -50,5 +50,10 @@ abstract class OfferRemoteDataSource {
   Future<bool> deleteOfferDetail({
     required String offerId,
     required String detailId,
+  });
+
+  Future<bool> createSupplementaryOffer({
+    required String postId,
+    required CreateOfferRequestModel request,
   });
 }

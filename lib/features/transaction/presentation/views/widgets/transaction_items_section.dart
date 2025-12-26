@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/core/helper/currency_helper.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/type_badge.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
@@ -58,9 +59,10 @@ class TransactionItemsSection extends StatelessWidget {
             final index = entry.key;
             final item = entry.value;
             final imageUrl = _getImageUrlForItem(item);
+            final itemType = _getTypeForItem(item);
             return Column(
               children: [
-                _buildItemRow(item, imageUrl, s),
+                _buildItemRow(item, imageUrl, itemType, s),
                 if (index < transactionDetails.length - 1)
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: space),
@@ -103,8 +105,14 @@ class TransactionItemsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildItemRow(TransactionDetailEntity item, String? imageUrl, S s) {
+  Widget _buildItemRow(
+    TransactionDetailEntity item,
+    String? imageUrl,
+    String? itemType,
+    S s,
+  ) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Image or Icon
         ClipRRect(
@@ -155,17 +163,30 @@ class TransactionItemsSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                item.scrapCategory.categoryName,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+              // Category name and type badge in a row
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      item.scrapCategory.categoryName,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (itemType != null && itemType.isNotEmpty) ...[
+                    SizedBox(width: space * 0.5),
+                    TypeBadge(type: itemType),
+                  ],
+                ],
               ),
               SizedBox(height: space / 4),
               Text(
                 item.quantity > 0
                     ? '${item.quantity} × ${formatVND(item.pricePerUnit)}/${item.unit}'
-                    : '${formatVND(item.pricePerUnit)}/${item.unit} (Chưa nhập số lượng)',
+                    : '${formatVND(item.pricePerUnit)}/${item.unit} ${s.quantity_not_entered}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.textTheme.bodySmall?.color?.withValues(
                     alpha: 0.7,
@@ -175,6 +196,8 @@ class TransactionItemsSection extends StatelessWidget {
             ],
           ),
         ),
+
+        SizedBox(width: space * 0.5),
 
         // Price
         Text(
@@ -207,6 +230,24 @@ class TransactionItemsSection extends StatelessWidget {
         (detail) => detail.scrapCategoryId == item.scrapCategoryId,
       );
       return matchingDetail.imageUrl;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Get type for a transaction item by matching scrapCategoryId with scrapPostDetails
+  String? _getTypeForItem(TransactionDetailEntity item) {
+    final scrapPost = transaction.offer?.scrapPost;
+    if (scrapPost == null || scrapPost.scrapPostDetails.isEmpty) {
+      return null;
+    }
+
+    // Find matching scrap post detail by scrapCategoryId
+    try {
+      final matchingDetail = scrapPost.scrapPostDetails.firstWhere(
+        (detail) => detail.scrapCategoryId == item.scrapCategoryId,
+      );
+      return matchingDetail.type;
     } catch (e) {
       return null;
     }

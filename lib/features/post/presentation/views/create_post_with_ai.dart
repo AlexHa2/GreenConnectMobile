@@ -15,6 +15,7 @@ import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_enti
 import 'package:GreenConnectMobile/features/post/domain/entities/time_slot.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_category_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
+import 'package:GreenConnectMobile/features/post/presentation/viewmodels/states/scrap_post_state.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/add_item_bottom_sheet.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/add_time_slot_bottom_sheet.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/create_post_header.dart';
@@ -638,11 +639,20 @@ class _CreateRecyclingPostWithAIPageState
           finalImageUrl = defaultImageUrl;
         }
 
+        // Debug: Log type to ensure it's correct
+        debugPrint('📝 [SUBMIT] Item type: ${item.type.name} -> ${item.type.toJson()}');
+        
+        // Capitalize first letter of type (e.g., "sale" -> "Sale")
+        final typeString = item.type.toJson();
+        final capitalizedType = typeString.isNotEmpty
+            ? typeString[0].toUpperCase() + typeString.substring(1)
+            : typeString;
+        
         return ScrapPostDetailEntity(
           scrapCategoryId: item.categoryId,
           amountDescription: item.amountDescription,
           imageUrl: finalImageUrl,
-          type: item.type.toJson(),
+          type: capitalizedType,
         );
       }).toList(),
       mustTakeAll: _isTakeAll,
@@ -917,6 +927,7 @@ class _CreateRecyclingPostWithAIPageState
     AppSpacing spacing,
     S s,
     bool isAnalyzing,
+    ScrapPostState scrapPostState,
   ) {
     return Card(
       child: Padding(
@@ -1022,7 +1033,7 @@ class _CreateRecyclingPostWithAIPageState
                         Positioned.fill(
                           child: Container(
                             decoration: BoxDecoration(
-                              color: theme.dividerColor,
+                              color: theme.dividerColor.withValues(alpha: 0.9),
                               borderRadius:
                                   BorderRadius.circular(spacing.screenPadding),
                             ),
@@ -1030,16 +1041,37 @@ class _CreateRecyclingPostWithAIPageState
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      theme.primaryColor,
+                                  // Progress indicator with value
+                                  SizedBox(
+                                    width: 60,
+                                    height: 60,
+                                    child: CircularProgressIndicator(
+                                      value: scrapPostState.analyzeProgress > 0
+                                          ? scrapPostState.analyzeProgress
+                                          : null,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        theme.primaryColor,
+                                      ),
+                                      backgroundColor: theme.primaryColor
+                                          .withValues(alpha: 0.2),
+                                      strokeWidth: 4,
                                     ),
                                   ),
                                   SizedBox(height: spacing.screenPadding / 2),
+                                  // Progress percentage
+                                  Text(
+                                    '${(scrapPostState.analyzeProgress * 100).toStringAsFixed(0)}%',
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      color: theme.primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: spacing.screenPadding / 4),
                                   Text(
                                     s.analyzing,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: theme.scaffoldBackgroundColor,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.scaffoldBackgroundColor
+                                          .withValues(alpha: 0.8),
                                     ),
                                   ),
                                 ],
@@ -1152,7 +1184,7 @@ class _CreateRecyclingPostWithAIPageState
         physics: const BouncingScrollPhysics(),
         children: [
           // AI Image Upload Section
-          _buildAIImageUploadSection(theme, spacing, s, isAnalyzing),
+          _buildAIImageUploadSection(theme, spacing, s, isAnalyzing, scrapPostState),
           SizedBox(height: spacing.screenPadding),
           Form(
             key: _formKey,
@@ -1326,10 +1358,23 @@ class _CreateRecyclingPostWithAIPageState
 
                   String? newImageUrl;
                   File? newImageFile;
-                  final ScrapPostDetailType newType =
-                      (updated['type'] is ScrapPostDetailType)
-                          ? updated['type'] as ScrapPostDetailType
-                          : itemData.type;
+                  
+                  // Ensure type is correctly extracted from dialog result
+                  ScrapPostDetailType newType = itemData.type; // Default to current type
+                  if (updated['type'] != null) {
+                    if (updated['type'] is ScrapPostDetailType) {
+                      newType = updated['type'] as ScrapPostDetailType;
+                      debugPrint('✅ [UPDATE] Type from dialog (enum): ${newType.name}');
+                    } else if (updated['type'] is String) {
+                      // If type is returned as string, parse it
+                      newType = ScrapPostDetailType.fromJson(updated['type'] as String);
+                      debugPrint('✅ [UPDATE] Type from dialog (string): ${updated['type']} -> ${newType.name}');
+                    } else {
+                      debugPrint('⚠️ [UPDATE] Type is unexpected type: ${updated['type'].runtimeType}');
+                    }
+                  } else {
+                    debugPrint('⚠️ [UPDATE] Type is null, using current: ${itemData.type.name}');
+                  }
 
                   Map<String, dynamic>? newAiData = itemData.aiData;
                   

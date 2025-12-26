@@ -3,15 +3,13 @@ import 'package:GreenConnectMobile/features/offer/domain/entities/create_offer_r
 import 'package:GreenConnectMobile/features/offer/domain/entities/paginated_offer_entity.dart';
 
 abstract class OfferRepository {
-  /// Tạo đề nghị thu gom cho một bài đăng
   /// POST /api/v1/posts/{postId}/offers?slotTimeId={slotTimeId}
   Future<bool> createOffer({
     required String postId,
     required CreateOfferRequestEntity request,
-    String? slotTimeId,
+    required String slotTimeId,
   });
 
-  /// Lấy danh sách các đề nghị cho một bài đăng cụ thể
   /// GET /api/v1/posts/{postId}/offers
   Future<PaginatedOfferEntity> getOffersByPost({
     required String postId,
@@ -20,7 +18,6 @@ abstract class OfferRepository {
     required int pageSize,
   });
 
-  /// Lấy danh sách tất cả các đề nghị (của collector)
   /// GET /api/v1/offers
   Future<PaginatedOfferEntity> getAllOffers({
     String? status,
@@ -29,7 +26,6 @@ abstract class OfferRepository {
     required int pageSize,
   });
 
-  /// Lấy chi tiết một đề nghị
   /// GET /api/v1/offers/{offerId}
   Future<CollectionOfferEntity> getOfferDetail(String offerId);
 
@@ -37,7 +33,6 @@ abstract class OfferRepository {
   /// PATCH /api/v1/offers/{offerId}/toggle-cancel
   Future<bool> toggleCancelOffer(String offerId);
 
-  /// Xử lý đề nghị (Accept/Reject)
   /// PATCH /api/v1/offers/{offerId}/process
   Future<bool> processOffer({
     required String offerId,
@@ -45,7 +40,6 @@ abstract class OfferRepository {
     String? responseMessage,
   });
 
-  /// Thêm chi tiết offer mới
   /// POST /api/v1/offers/{offerId}/details
   Future<CollectionOfferEntity> addOfferDetail({
     required String offerId,
@@ -54,7 +48,6 @@ abstract class OfferRepository {
     required String unit,
   });
 
-  /// Cập nhật chi tiết offer
   /// PUT /api/v1/offers/{offerId}/details/{detailId}
   Future<CollectionOfferEntity> updateOfferDetail({
     required String offerId,
@@ -63,10 +56,15 @@ abstract class OfferRepository {
     required String unit,
   });
 
-  /// Xóa chi tiết offer
   /// DELETE /api/v1/offers/{offerId}/details/{detailId}
   Future<bool> deleteOfferDetail({
     required String offerId,
     required String detailId,
+  });
+
+  /// POST /api/v1/offers/supplementary-offers?postId={postId}
+  Future<bool> createSupplementaryOffer({
+    required String postId,
+    required CreateOfferRequestEntity request,
   });
 }
