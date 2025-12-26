@@ -334,14 +334,23 @@ final GoRouter greenRouter = GoRouter(
       builder: (context, state) {
         final initialData = state.extra as Map<String, dynamic>? ?? {};
         // Extract all fields from extra data
+        final rawTransactionId = initialData['transactionId']?.toString();
+        final transactionId = rawTransactionId?.trim();
+
+        if (transactionId != null &&
+            transactionId.isNotEmpty &&
+            initialData['hasTransactionData'] != true) {
+          return onlyone.TransactionDetailPageModern(transactionId: transactionId);
+        }
+
         return TransactionDetailPageModern(
-          transactionId: initialData['transactionId'] as String?,
+          transactionId: transactionId,
           postId: initialData['postId'] as String?,
           collectorId: initialData['collectorId'] as String?,
           slotId: initialData['slotId'] as String?,
           // Additional transaction data for reconstruction
-          transactionData: initialData['hasTransactionData'] == true 
-              ? initialData 
+          transactionData: initialData['hasTransactionData'] == true
+              ? initialData
               : null,
         );
       },

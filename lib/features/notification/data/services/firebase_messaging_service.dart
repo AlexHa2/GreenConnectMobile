@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+import 'package:GreenConnectMobile/core/di/injector.dart';
+import 'package:GreenConnectMobile/core/enum/role.dart';
+import 'package:GreenConnectMobile/core/network/token_storage.dart';
+import 'package:GreenConnectMobile/core/route/routes.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -13,6 +19,8 @@ class FirebaseMessagingService {
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
+  Future<void> Function(Map<String, dynamic> data)? _onNotificationTap;
+
   String? _fcmToken;
   String? get fcmToken => _fcmToken;
 
@@ -20,8 +28,11 @@ class FirebaseMessagingService {
   Future<void> initialize({
     required Function(RemoteMessage) onMessageReceived,
     required Function(RemoteMessage) onMessageOpenedApp,
+    Future<void> Function(Map<String, dynamic> data)? onNotificationTap,
   }) async {
     debugPrint('🔥 Initializing Firebase Messaging Service');
+
+    _onNotificationTap = onNotificationTap;
 
     // Request permission for iOS
     await _requestPermission();
@@ -51,6 +62,7 @@ class FirebaseMessagingService {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       debugPrint('📬 Message opened from background: ${message.messageId}');
       onMessageOpenedApp(message);
+      _onNotificationTap?.call(message.data);
     });
 
     // Handle initial message (when app is opened from terminated state)
@@ -60,6 +72,7 @@ class FirebaseMessagingService {
         '📬 Initial message (terminated state): ${initialMessage.messageId}',
       );
       onMessageOpenedApp(initialMessage);
+      _onNotificationTap?.call(initialMessage.data);
     }
   }
 
@@ -106,7 +119,18 @@ class FirebaseMessagingService {
       initSettings,
       onDidReceiveNotificationResponse: (details) {
         debugPrint('📬 Local notification tapped: ${details.payload}');
-        // Handle notification tap
+        final payload = details.payload;
+        if (payload == null || payload.trim().isEmpty) return;
+        try {
+          final decoded = jsonDecode(payload);
+          if (decoded is Map<String, dynamic>) {
+            _onNotificationTap?.call(decoded);
+          } else if (decoded is Map) {
+            _onNotificationTap?.call(Map<String, dynamic>.from(decoded));
+          }
+        } catch (e) {
+          debugPrint('❌ Failed to parse local notification payload: $e');
+        }
       },
     );
 
@@ -158,8 +182,128 @@ class FirebaseMessagingService {
       notification.title,
       notification.body,
       notificationDetails,
-      payload: message.data.toString(),
+      payload: jsonEncode(message.data),
     );
+  }
+
+  Future<void> handleNotificationTapData(Map<String, dynamic> data) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        final tokenStorage = sl<TokenStorageService>();
+        final accessToken = await tokenStorage.getAccessToken();
+        final user = await tokenStorage.getUserData();
+
+        if (accessToken == null || accessToken.trim().isEmpty || user == null) {
+          greenRouter.go('/login');
+          return;
+        }
+
+        final entityTypeRaw =
+            (data['entityType'] ?? data['type'] ?? data['entity_type'])
+                ?.toString();
+        final entityId =
+            (data['entityId'] ?? data['entity_id'] ?? data['id'])
+                ?.toString()
+                .trim();
+
+        final entityType = entityTypeRaw?.toLowerCase().trim();
+        if (entityType == null || entityType.isEmpty) return;
+
+        debugPrint('🔔 Notification tap: entityType=$entityType, entityId=$entityId');
+
+        final isHousehold = Role.hasRole(user.roles, Role.household);
+        final isCollector =
+            Role.hasRole(user.roles, Role.individualCollector) ||
+            Role.hasRole(user.roles, Role.businessCollector);
+
+        switch (entityType) {
+          case 'message':
+          case 'chat':
+            if (isHousehold) {
+              greenRouter.go('/household-list-message');
+            } else if (isCollector) {
+              greenRouter.go('/list-message');
+            }
+            break;
+
+          case 'post':
+            if (entityId == null || entityId.isEmpty) return;
+            greenRouter.push(
+              '/detail-post',
+              extra: {
+                'postId': entityId,
+                if (isHousehold) 'isCollectorView': false,
+                if (isCollector) 'isCollectorView': true,
+              },
+            );
+            break;
+
+          case 'transaction':
+            if (entityId == null || entityId.isEmpty) return;
+            debugPrint('➡️ Navigate: /transaction-detail-onlyone ($entityId)');
+            greenRouter.push(
+              '/transaction-detail-onlyone',
+              extra: {
+                'transactionId': entityId,
+              },
+            );
+            break;
+
+          case 'offer':
+            if (entityId == null || entityId.isEmpty) return;
+            greenRouter.push(
+              '/offer-detail',
+              extra: {
+                'offerId': entityId,
+                if (isHousehold) 'isCollectorView': false,
+                if (isCollector) 'isCollectorView': true,
+              },
+            );
+            break;
+
+          case 'feedback':
+            if (entityId == null || entityId.isEmpty) return;
+            greenRouter.push(
+              '/feedback-detail',
+              extra: {
+                'feedbackId': entityId,
+              },
+            );
+            break;
+
+          case 'complaint':
+            if (entityId == null || entityId.isEmpty) return;
+            greenRouter.push(
+              '/complaint-detail',
+              extra: {
+                'complaintId': entityId,
+              },
+            );
+            break;
+
+          case 'schedule':
+            if (isCollector) {
+              greenRouter.go('/collector-schedule-list');
+            }
+            break;
+
+          case 'package':
+            greenRouter.push('/package-list');
+            break;
+
+          case 'reward':
+            if (isHousehold) {
+              greenRouter.go('/rewards');
+            }
+            break;
+
+          default:
+            break;
+        }
+      } catch (e) {
+        debugPrint('❌ Failed to handle notification tap: $e');
+      }
+    });
   }
 
   /// Subscribe to a topic
