@@ -1,4 +1,5 @@
 
+import 'package:GreenConnectMobile/core/enum/offer_status.dart';
 import 'package:GreenConnectMobile/features/offer/data/models/schedule_proposal_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,7 +14,7 @@ void main() {
         "proposedTime": "2025-12-10T14:00:00Z",
         "status": "Accepted",
         "createdAt": "2025-12-09T10:00:00Z",
-        "responseMessage": "Tôi có thể đến thu gom vào lúc 14:00"
+        "responseMessage": "Tôi có thể đến thu gom vào lúc 14:00",
       };
 
       // When
@@ -37,7 +38,7 @@ void main() {
         "proposedTime": "2025-12-10T14:00:00Z",
         "status": "Rejected",
         "createdAt": "2025-12-09T10:00:00Z",
-        "responseMessage": "Thời gian này không phù hợp"
+        "responseMessage": "Thời gian này không phù hợp",
       };
 
       // When
@@ -57,7 +58,7 @@ void main() {
         "proposedTime": "2025-12-10T14:00:00Z",
         "status": "Pending",
         "createdAt": "2025-12-09T10:00:00Z",
-        "responseMessage": "Đề xuất lịch hẹn mới"
+        "responseMessage": "Đề xuất lịch hẹn mới",
       };
 
       // When
@@ -74,7 +75,7 @@ void main() {
         scheduleProposalId: 'schedule-456',
         collectionOfferId: 'offer-456',
         proposedTime: DateTime.parse('2025-12-11T15:00:00Z'),
-        status: ScheduleProposalStatus.Pending,
+        status: ScheduleProposalStatus.pending,
         createdAt: DateTime.now(),
         responseMessage: 'Đề xuất lịch hẹn mới: 15:00 ngày 11/12',
       );

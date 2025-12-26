@@ -63,7 +63,7 @@ import 'l10n_vi.dart';
 /// property.
 abstract class S {
   S(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -85,16 +85,16 @@ abstract class S {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('vi'),
+    Locale('vi')
   ];
 
   /// No description provided for @hello_first.
@@ -676,7 +676,7 @@ abstract class S {
   /// No description provided for @pickup_time.
   ///
   /// In en, this message translates to:
-  /// **'Pickup Time'**
+  /// **'Time available'**
   String get pickup_time;
 
   /// No description provided for @add_scrap_items.
@@ -5700,6 +5700,432 @@ abstract class S {
   /// In en, this message translates to:
   /// **'failed'**
   String get failed;
+
+  /// No description provided for @scrap_type_sale.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale'**
+  String get scrap_type_sale;
+
+  /// No description provided for @scrap_type_donation.
+  ///
+  /// In en, this message translates to:
+  /// **'Donation'**
+  String get scrap_type_donation;
+
+  /// No description provided for @scrap_type_service.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get scrap_type_service;
+
+  /// No description provided for @scrap_type_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select type'**
+  String get scrap_type_hint;
+
+  /// No description provided for @scrap_type_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Type is required'**
+  String get scrap_type_required;
+
+  /// No description provided for @time_slot_section_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Time slots'**
+  String get time_slot_section_title;
+
+  /// No description provided for @time_slot_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get time_slot_date;
+
+  /// No description provided for @time_slot_start_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Start time'**
+  String get time_slot_start_time;
+
+  /// No description provided for @time_slot_end_time.
+  ///
+  /// In en, this message translates to:
+  /// **'End time'**
+  String get time_slot_end_time;
+
+  /// No description provided for @time_slot_add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add time slot'**
+  String get time_slot_add;
+
+  /// No description provided for @time_slot_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all time slot fields'**
+  String get time_slot_required;
+
+  /// No description provided for @time_slot_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Time slot number'**
+  String get time_slot_number;
+
+  /// No description provided for @number_of_items.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of items'**
+  String get number_of_items;
+
+  /// No description provided for @create_post_choose_method.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you want to create your post'**
+  String get create_post_choose_method;
+
+  /// No description provided for @create_post_manually_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create post manually'**
+  String get create_post_manually_subtitle;
+
+  /// No description provided for @create_post_manually_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in all information step by step'**
+  String get create_post_manually_description;
+
+  /// No description provided for @create_post_with_ai_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Post with AI'**
+  String get create_post_with_ai_title;
+
+  /// No description provided for @create_post_with_ai_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI-powered creation'**
+  String get create_post_with_ai_subtitle;
+
+  /// No description provided for @create_post_with_ai_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload an image and let AI analyze and fill information automatically'**
+  String get create_post_with_ai_description;
+
+  /// No description provided for @ai_analyzing_success.
+  ///
+  /// In en, this message translates to:
+  /// **'AI analyzing success'**
+  String get ai_analyzing_success;
+
+  /// No description provided for @ai_analysis.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Analysis'**
+  String get ai_analysis;
+
+  /// No description provided for @ai_filled.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Filled'**
+  String get ai_filled;
+
+  /// No description provided for @upload_image_for_ai_analysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Image for AI Analysis'**
+  String get upload_image_for_ai_analysis;
+
+  /// No description provided for @ai_will_analyze_and_auto_fill.
+  ///
+  /// In en, this message translates to:
+  /// **'AI will analyze and auto-fill post information'**
+  String get ai_will_analyze_and_auto_fill;
+
+  /// No description provided for @analyze_with_ai.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze with AI'**
+  String get analyze_with_ai;
+
+  /// No description provided for @change_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Image'**
+  String get change_image;
+
+  /// No description provided for @recurring_schedules.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring Schedules'**
+  String get recurring_schedules;
+
+  /// No description provided for @recurring_schedules_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring schedules allow you to create a schedule for a post that will be automatically created at a specific time.'**
+  String get recurring_schedules_description;
+
+  /// No description provided for @recurring_schedules_create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create recurring schedule'**
+  String get recurring_schedules_create;
+
+  /// No description provided for @recurring_schedules_empty_message.
+  ///
+  /// In en, this message translates to:
+  /// **'No recurring schedules yet'**
+  String get recurring_schedules_empty_message;
+
+  /// No description provided for @recurring_schedules_detail_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring Schedule Details'**
+  String get recurring_schedules_detail_title;
+
+  /// No description provided for @recurring_schedules_details_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule details'**
+  String get recurring_schedules_details_section;
+
+  /// No description provided for @recurring_schedule_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get recurring_schedule_address;
+
+  /// No description provided for @recurring_schedule_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Created at'**
+  String get recurring_schedule_created_at;
+
+  /// No description provided for @recurring_schedule_last_run_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Last run'**
+  String get recurring_schedule_last_run_date;
+
+  /// No description provided for @recurring_schedule_must_take_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Must take all'**
+  String get recurring_schedule_must_take_all;
+
+  /// No description provided for @recurring_schedules_create_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create recurring schedule'**
+  String get recurring_schedules_create_title;
+
+  /// No description provided for @recurring_schedules_create_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get recurring_schedules_create_submit;
+
+  /// No description provided for @recurring_schedules_create_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring schedule created successfully'**
+  String get recurring_schedules_create_success;
+
+  /// No description provided for @recurring_schedules_create_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create recurring schedule'**
+  String get recurring_schedules_create_failed;
+
+  /// No description provided for @recurring_schedule_field_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get recurring_schedule_field_title;
+
+  /// No description provided for @recurring_schedule_field_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get recurring_schedule_field_description;
+
+  /// No description provided for @recurring_schedule_field_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get recurring_schedule_field_address;
+
+  /// No description provided for @recurring_schedule_field_latitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get recurring_schedule_field_latitude;
+
+  /// No description provided for @recurring_schedule_field_longitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get recurring_schedule_field_longitude;
+
+  /// No description provided for @recurring_schedule_field_day_of_week.
+  ///
+  /// In en, this message translates to:
+  /// **'Day of week'**
+  String get recurring_schedule_field_day_of_week;
+
+  /// No description provided for @recurring_schedule_field_start_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Start time'**
+  String get recurring_schedule_field_start_time;
+
+  /// No description provided for @recurring_schedule_field_end_time.
+  ///
+  /// In en, this message translates to:
+  /// **'End time'**
+  String get recurring_schedule_field_end_time;
+
+  /// No description provided for @recurring_schedule_field_scrap_category_id.
+  ///
+  /// In en, this message translates to:
+  /// **'Scrap category ID'**
+  String get recurring_schedule_field_scrap_category_id;
+
+  /// No description provided for @recurring_schedule_field_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get recurring_schedule_field_quantity;
+
+  /// No description provided for @recurring_schedule_field_unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get recurring_schedule_field_unit;
+
+  /// No description provided for @recurring_schedule_field_amount_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount description'**
+  String get recurring_schedule_field_amount_description;
+
+  /// No description provided for @recurring_schedule_field_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get recurring_schedule_field_type;
+
+  /// No description provided for @recurring_schedules_update_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Update recurring schedule'**
+  String get recurring_schedules_update_title;
+
+  /// No description provided for @recurring_schedules_update_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get recurring_schedules_update_submit;
+
+  /// No description provided for @recurring_schedules_update_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring schedule updated successfully'**
+  String get recurring_schedules_update_success;
+
+  /// No description provided for @recurring_schedules_update_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update recurring schedule'**
+  String get recurring_schedules_update_failed;
+
+  /// No description provided for @recurring_schedules_toggle_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring schedule updated'**
+  String get recurring_schedules_toggle_success;
+
+  /// No description provided for @recurring_schedules_toggle_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update recurring schedule status'**
+  String get recurring_schedules_toggle_failed;
+
+  /// No description provided for @recurring_schedule_detail_create_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get recurring_schedule_detail_create_title;
+
+  /// No description provided for @recurring_schedule_detail_create_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get recurring_schedule_detail_create_submit;
+
+  /// No description provided for @recurring_schedule_detail_create_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Item added successfully'**
+  String get recurring_schedule_detail_create_success;
+
+  /// No description provided for @recurring_schedule_detail_create_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add item'**
+  String get recurring_schedule_detail_create_failed;
+
+  /// No description provided for @recurring_schedule_detail_update_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Update item'**
+  String get recurring_schedule_detail_update_title;
+
+  /// No description provided for @recurring_schedule_detail_update_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get recurring_schedule_detail_update_submit;
+
+  /// No description provided for @recurring_schedule_detail_update_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Item updated successfully'**
+  String get recurring_schedule_detail_update_success;
+
+  /// No description provided for @recurring_schedule_detail_update_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update item'**
+  String get recurring_schedule_detail_update_failed;
+
+  /// No description provided for @recurring_schedule_detail_delete_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete item'**
+  String get recurring_schedule_detail_delete_title;
+
+  /// No description provided for @recurring_schedule_detail_delete_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this item?'**
+  String get recurring_schedule_detail_delete_message;
+
+  /// No description provided for @recurring_schedule_detail_delete_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Item deleted successfully'**
+  String get recurring_schedule_detail_delete_success;
+
+  /// No description provided for @recurring_schedule_detail_delete_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete item'**
+  String get recurring_schedule_detail_delete_failed;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -5728,9 +6154,8 @@ S lookupS(Locale locale) {
   }
 
   throw FlutterError(
-    'S.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
-  );
+      'S.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }

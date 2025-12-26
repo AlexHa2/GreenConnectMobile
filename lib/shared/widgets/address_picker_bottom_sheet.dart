@@ -566,7 +566,7 @@ class _AddressPickerBottomSheetState extends State<AddressPickerBottomSheet> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: _savedLocations.length,
-                      separatorBuilder: (_, _) => const Divider(),
+                      separatorBuilder: (_, __) => const Divider(),
                       itemBuilder: (context, index) {
                         final location = _savedLocations[index];
                         return ListTile(

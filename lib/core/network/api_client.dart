@@ -10,8 +10,8 @@ class ApiClient {
   ApiClient(this._tokenStorage) : _dio = Dio() {
     _dio.options = BaseOptions(
       baseUrl: Env.baseUrl,
-      connectTimeout: const Duration(milliseconds: 10000),
-      receiveTimeout: const Duration(milliseconds: 10000),
+      connectTimeout: const Duration(milliseconds: 30000),
+      receiveTimeout: const Duration(milliseconds: 30000),
       headers: {'Content-Type': 'application/json'},
     );
 
@@ -50,8 +50,18 @@ class ApiClient {
     return _dio.post(path, data: data, options: options);
   }
 
-  Future<Response> patch(String path, {dynamic data, Options? options}) async {
-    return _dio.patch(path, data: data, options: options);
+  Future<Response> patch(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+  }) async {
+    return _dio.patch(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
+    );
   }
 
   Future<Response> put(String path, {dynamic data, Options? options}) async {
@@ -69,15 +79,11 @@ class ApiClient {
     FormData formData, {
     Options? options,
   }) async {
+    // Dio automatically sets Content-Type with boundary when FormData is used
     return _dio.post(
       path,
       data: formData,
-      options: options ??
-          Options(
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          ),
+      options: options,
     );
   }
 
@@ -88,15 +94,11 @@ class ApiClient {
     FormData formData, {
     Options? options,
   }) async {
+    // Dio automatically sets Content-Type with boundary when FormData is used
     return _dio.patch(
       path,
       data: formData,
-      options: options ??
-          Options(
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          ),
+      options: options,
     );
   }
 }

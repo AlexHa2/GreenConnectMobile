@@ -1,5 +1,5 @@
 class OfferItemData {
-  final int categoryId;
+  final String categoryId;
   final String categoryName;
   double totalPrice;
   String unit;

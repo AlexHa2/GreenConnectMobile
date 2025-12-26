@@ -341,16 +341,16 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
           context.push('/detail-post', extra: {
             'postId': entityId,
             'isCollectorView': true,
-          });
+          },);
         } else if (isHousehold) {
           context.push('/detail-post', extra: {
             'postId': entityId,
             'isCollectorView': false,
-          });
+          },);
         } else {
           context.push('/detail-post', extra: {
             'postId': entityId,
-          });
+          },);
         }
         break;
 
@@ -358,7 +358,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
         if (entityId == null) return;
         context.push('/transaction-detail', extra: {
           'transactionId': entityId,
-        });
+        },);
         break;
 
       case 'offer':
@@ -367,16 +367,16 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
           context.push('/offer-detail', extra: {
             'offerId': entityId,
             'isCollectorView': true,
-          });
+          },);
         } else if (isHousehold) {
           context.push('/offer-detail', extra: {
             'offerId': entityId,
             'isCollectorView': false,
-          });
+          },);
         } else {
           context.push('/offer-detail', extra: {
             'offerId': entityId,
-          });
+          },);
         }
         break;
 
@@ -384,14 +384,14 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
         if (entityId == null) return;
         context.push('/feedback-detail', extra: {
           'feedbackId': entityId,
-        });
+        },);
         break;
 
       case 'complaint':
         if (entityId == null) return;
         context.push('/complaint-detail', extra: {
           'complaintId': entityId,
-        });
+        },);
         break;
 
       case 'schedule':

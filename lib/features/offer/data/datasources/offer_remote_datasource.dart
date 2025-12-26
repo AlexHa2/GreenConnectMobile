@@ -3,9 +3,10 @@ import 'package:GreenConnectMobile/features/offer/data/models/create_offer_reque
 import 'package:GreenConnectMobile/features/offer/data/models/paginated_offer_model.dart';
 
 abstract class OfferRemoteDataSource {
-  Future<CollectionOfferModel> createOffer({
+  Future<bool> createOffer({
     required String postId,
     required CreateOfferRequestModel request,
+    String? slotTimeId,
   });
 
   Future<PaginatedOfferModel> getOffersByPost({
@@ -34,7 +35,7 @@ abstract class OfferRemoteDataSource {
 
   Future<CollectionOfferModel> addOfferDetail({
     required String offerId,
-    required int scrapCategoryId,
+    required String scrapCategoryId,
     required double pricePerUnit,
     required String unit,
   });

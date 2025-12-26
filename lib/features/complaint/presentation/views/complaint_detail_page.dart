@@ -1012,7 +1012,7 @@ class _ComplaintDetailPageState extends ConsumerState<ComplaintDetailPage> {
                       alpha: 0.8,
                     ),
                     transitionDuration: const Duration(milliseconds: 250),
-                    pageBuilder: (_, _, _) => FullImageViewer(
+                    pageBuilder: (_, __, ___) => FullImageViewer(
                       imagePath: complaint.evidenceUrl!,
                       isNetworkImage: true,
                       onClose: () => Navigator.pop(context),

@@ -43,7 +43,7 @@ class _CollectorListPostPageState extends ConsumerState<CollectorListPostPage> {
   String? _searchTitle;
   bool _sortByLocation = false;
   bool _sortByCreateAt = false;
-  int? _selectedCategoryId;
+  String? _selectedCategoryId;
 
   final List<ScrapPostEntity> _posts = [];
 
@@ -396,7 +396,6 @@ class _CollectorListPostPageState extends ConsumerState<CollectorListPostPage> {
                             child: PostItem(
                               title: post.title,
                               desc: post.description,
-                              time: post.availableTimeRange,
                               rawStatus: rawStatus,
                               localizedStatus: localizedStatus,
                               timeCreated:

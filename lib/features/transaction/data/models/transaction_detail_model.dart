@@ -3,7 +3,7 @@ import 'package:GreenConnectMobile/features/transaction/domain/entities/transact
 
 class TransactionDetailModel {
   final String transactionId;
-  final int scrapCategoryId;
+  final String scrapCategoryId;
   final ScrapCategoryModel scrapCategory;
   final double pricePerUnit;
   final String unit;
@@ -21,9 +21,10 @@ class TransactionDetailModel {
   });
 
   factory TransactionDetailModel.fromJson(Map<String, dynamic> json) {
+    final dynamic idRaw = json['scrapCategoryId'];
     return TransactionDetailModel(
       transactionId: json['transactionId'] ?? '',
-      scrapCategoryId: json['scrapCategoryId'] ?? 0,
+      scrapCategoryId: idRaw?.toString() ?? '',
       scrapCategory: ScrapCategoryModel.fromJson(json['scrapCategory'] ?? {}),
       pricePerUnit: (json['pricePerUnit'] ?? 0).toDouble(),
       unit: json['unit'] ?? '',

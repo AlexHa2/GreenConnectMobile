@@ -118,8 +118,7 @@ class _UpdateProfileDialogState extends ConsumerState<UpdateProfileDialog> {
     final now = DateTime.now();
     if (_selectedDob!.isAfter(now)) return s.dob_invalid;
 
-    final age =
-        now.year -
+    final age = now.year -
         _selectedDob!.year -
         ((now.month < _selectedDob!.month ||
                 (now.month == _selectedDob!.month &&
@@ -383,7 +382,7 @@ class _UpdateProfileDialogState extends ConsumerState<UpdateProfileDialog> {
                                             _selectedBank!.logo,
                                             width: 24,
                                             height: 24,
-                                            errorBuilder: (_, _, _) =>
+                                            errorBuilder: (_, __, ___) =>
                                                 const SizedBox(),
                                           ),
                                         ),
@@ -494,7 +493,7 @@ class _UpdateProfileDialogState extends ConsumerState<UpdateProfileDialog> {
                                   backgroundColor: AppColors.warningUpdate,
                                 ),
                                 icon: state.isLoading
-                                    ?  SizedBox(
+                                    ? SizedBox(
                                         width: 16,
                                         height: 16,
                                         child: CircularProgressIndicator(
@@ -578,13 +577,12 @@ class _UpdateProfileDialogState extends ConsumerState<UpdateProfileDialog> {
                                 bank.logo,
                                 width: 48,
                                 height: 48,
-                                errorBuilder: (_, _, _) => Container(
+                                errorBuilder: (_, __, ___) => Container(
                                   width: 48,
                                   height: 48,
                                   decoration: BoxDecoration(
                                     color: theme
-                                        .colorScheme
-                                        .surfaceContainerHighest,
+                                        .colorScheme.surfaceContainerHighest,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: const Icon(Icons.account_balance),

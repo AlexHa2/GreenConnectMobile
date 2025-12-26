@@ -1,5 +1,5 @@
 class ScrapCategoryEntity {
-  final int scrapCategoryId;
+  final String scrapCategoryId;
   final String categoryName;
   final String? description;
 

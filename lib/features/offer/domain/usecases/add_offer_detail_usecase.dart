@@ -7,7 +7,7 @@ class AddOfferDetailUsecase {
 
   Future<CollectionOfferEntity> call({
     required String offerId,
-    required int scrapCategoryId,
+    required String scrapCategoryId,
     required double pricePerUnit,
     required String unit,
   }) {

@@ -3,11 +3,12 @@ import 'package:GreenConnectMobile/features/post/data/models/scrap_category/scra
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_detail_entity.dart';
 
 class ScrapPostDetailModel {
-  final int scrapCategoryId;
+  final String scrapCategoryId;
   final ScrapCategoryModel? scrapCategory;
   final String amountDescription;
   final String imageUrl;
   final String? status;
+  final String type;
 
   ScrapPostDetailModel({
     required this.scrapCategoryId,
@@ -15,17 +16,20 @@ class ScrapPostDetailModel {
     required this.amountDescription,
     required this.imageUrl,
     this.status,
+    required this.type,
   });
 
   factory ScrapPostDetailModel.fromJson(Map<String, dynamic> json) {
+    final dynamic idRaw = json['scrapCategoryId'];
     return ScrapPostDetailModel(
-      scrapCategoryId: json['scrapCategoryId'],
+      scrapCategoryId: idRaw?.toString() ?? '',
       scrapCategory: json['scrapCategory'] != null
           ? ScrapCategoryModel.fromJson(json['scrapCategory'])
           : null,
       amountDescription: json['amountDescription'],
       imageUrl: json['imageUrl'],
       status: json['status'],
+      type: json['type'],
     );
   }
 
@@ -36,6 +40,7 @@ class ScrapPostDetailModel {
       'amountDescription': amountDescription,
       'imageUrl': imageUrl,
       'status': status,
+      'type': type,
     };
   }
 
@@ -46,6 +51,7 @@ class ScrapPostDetailModel {
       amountDescription: amountDescription,
       imageUrl: imageUrl,
       status: status,
+      type: type,
     );
   }
 }

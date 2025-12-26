@@ -32,7 +32,7 @@ class InputDetailsButton extends ConsumerWidget {
       // Convert to TransactionDetailRequest list
       final details = result.map((item) {
         return TransactionDetailRequest(
-          scrapCategoryId: item['scrapCategoryId'] as int,
+          scrapCategoryId: item['scrapCategoryId'] as String,
           pricePerUnit: item['pricePerUnit'] as double,
           unit: item['unit'] as String,
           quantity: item['quantity'] as double,

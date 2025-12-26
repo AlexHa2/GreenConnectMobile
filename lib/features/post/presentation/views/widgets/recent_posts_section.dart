@@ -115,7 +115,6 @@ class RecentPostsSection extends StatelessWidget {
         return PostItem(
           title: p.title,
           desc: p.description,
-          time: p.availableTimeRange,
           rawStatus: p.status ?? s.unknown,
           localizedStatus: PostStatusHelper.getLocalizedStatus(
             context,

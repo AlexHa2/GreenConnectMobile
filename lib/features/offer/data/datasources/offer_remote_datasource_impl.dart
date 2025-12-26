@@ -4,7 +4,6 @@ import 'package:GreenConnectMobile/features/offer/data/datasources/offer_remote_
 import 'package:GreenConnectMobile/features/offer/data/models/collection_offer_model.dart';
 import 'package:GreenConnectMobile/features/offer/data/models/create_offer_request_model.dart';
 import 'package:GreenConnectMobile/features/offer/data/models/paginated_offer_model.dart';
-import 'package:flutter/widgets.dart';
 
 class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
   final ApiClient _apiClient = sl<ApiClient>();
@@ -12,17 +11,22 @@ class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
   final String _postsBaseUrl = '/v1/posts';
 
   @override
-  Future<CollectionOfferModel> createOffer({
+  Future<bool> createOffer({
     required String postId,
     required CreateOfferRequestModel request,
+    String? slotTimeId,
   }) async {
-    debugPrint('Creating offer for postId: $postId with request: ${request.toJson()}');
+    var url = '$_postsBaseUrl/$postId/offers';
+    if (slotTimeId != null) {
+      url += '?slotTimeId=$slotTimeId';
+    }
+
     final res = await _apiClient.post(
-      '$_postsBaseUrl/$postId/offers',
-      data: request.toJson(),
+      url,
+      data: request.toJsonForCreate(),
     );
 
-    return CollectionOfferModel.fromJson(res.data);
+    return res.statusCode == 201;
   }
 
   @override
@@ -99,7 +103,7 @@ class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
   @override
   Future<CollectionOfferModel> addOfferDetail({
     required String offerId,
-    required int scrapCategoryId,
+    required String scrapCategoryId,
     required double pricePerUnit,
     required String unit,
   }) async {

@@ -8,7 +8,6 @@ class PostInfoForm extends StatelessWidget {
   final TextEditingController titleController;
   final TextEditingController descController;
   final TextEditingController addressController;
-  final TextEditingController timeController;
   final VoidCallback onSearchAddress;
   final VoidCallback? onGetCurrentLocation;
   final bool addressFound;
@@ -20,7 +19,6 @@ class PostInfoForm extends StatelessWidget {
     required this.titleController,
     required this.descController,
     required this.addressController,
-    required this.timeController,
     required this.onSearchAddress,
     required this.addressFound,
     this.onGetCurrentLocation,
@@ -158,11 +156,6 @@ class PostInfoForm extends StatelessWidget {
             ),
 
             SizedBox(height: spacing.screenPadding),
-            AppInputField(
-              label: S.of(context)!.pickup_time,
-              controller: timeController,
-              hint: S.of(context)!.pickup_time_hint,
-            ),
           ],
         ),
       ),

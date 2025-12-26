@@ -4,7 +4,7 @@ class DeleteScrapDetailUsecase {
   final ScrapPostRepository repository;
   DeleteScrapDetailUsecase(this.repository);
 
-  Future<bool> call({required String postId, required int categoryId}) {
+  Future<bool> call({required String postId, required String categoryId}) {
     return repository.deleteScrapDetail(
       postId: postId,
       scrapCategoryId: categoryId,
