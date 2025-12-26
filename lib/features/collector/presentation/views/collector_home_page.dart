@@ -10,6 +10,7 @@ import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class CollectorHomePage extends ConsumerStatefulWidget {
   const CollectorHomePage({super.key});
@@ -190,7 +191,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                s.your_earnings,
+                                'Xin chào ${user?.fullName ?? ''}',
                                 style: theme.textTheme.headlineLarge?.copyWith(
                                   color: theme.colorScheme.onPrimary,
                                   fontWeight: FontWeight.w800,
@@ -398,18 +399,6 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
             ),
 
             // Level Progress Card
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  space * 2,
-                  0,
-                  space * 2,
-                  space * 2,
-                ),
-                child: _buildLevelProgressCard(context, space, theme, s),
-              ),
-            ),
-
             // Quick Actions Section
             SliverToBoxAdapter(
               child: Padding(
@@ -432,6 +421,10 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
     S s, {
     required double totalEarning,
   }) {
+    final locale = S.of(context)!.localeName;
+    final formattedEarning = NumberFormat.decimalPattern(locale)
+        .format(totalEarning.isNaN ? 0 : totalEarning.round());
+
     return Container(
       padding: EdgeInsets.all(space * 3),
       decoration: BoxDecoration(
@@ -512,20 +505,8 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: EdgeInsets.only(top: space * 0.5),
-                child: Text(
-                  '\$',
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    color: theme.primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: space * 3.5,
-                  ),
-                ),
-              ),
-              SizedBox(width: space * 0.5),
               Text(
-                totalEarning.toStringAsFixed(0),
+                formattedEarning,
                 style: theme.textTheme.headlineLarge?.copyWith(
                   color: theme.primaryColor,
                   fontWeight: FontWeight.w900,
@@ -534,35 +515,51 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                   height: 1.1,
                 ),
               ),
+              SizedBox(width: space * 0.8),
+              Padding(
+                padding: EdgeInsets.only(top: space * 1.25),
+                child: Text(
+                  'VND',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.primaryColor,
+                    fontWeight: FontWeight.w800,
+                    fontSize: space * 1.8,
+                  ),
+                ),
+              ),
             ],
           ),
           SizedBox(height: space * 2.5),
           // Thông tin bổ sung
-          Container(
-            padding: EdgeInsets.all(space * 1.2),
-            decoration: BoxDecoration(
-              color: theme.primaryColor.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(space * 1.5),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.trending_up_rounded,
-                  color: theme.primaryColor,
-                  size: space * 2,
-                ),
-                SizedBox(width: space),
-                Expanded(
-                  child: Text(
-                    s.tap_to_see_detailed_breakdown,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontSize: space * 1.05,
-                      fontWeight: FontWeight.w500,
+          InkWell(
+            onTap: () => context.push('/collector-list-transactions'),
+            borderRadius: BorderRadius.circular(space * 1.5),
+            child: Container(
+              padding: EdgeInsets.all(space * 1.2),
+              decoration: BoxDecoration(
+                color: theme.primaryColor.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(space * 1.5),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.trending_up_rounded,
+                    color: theme.primaryColor,
+                    size: space * 2,
+                  ),
+                  SizedBox(width: space),
+                  Expanded(
+                    child: Text(
+                      s.tap_to_see_detailed_breakdown,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontSize: space * 1.05,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -842,124 +839,6 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLevelProgressCard(
-    BuildContext context,
-    double space,
-    ThemeData theme,
-    S s,
-  ) {
-    return Container(
-      padding: EdgeInsets.all(space * 2.5),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(space * 2.5),
-        boxShadow: [
-          BoxShadow(
-            color: theme.shadowColor.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.emoji_events_rounded,
-                color: theme.colorScheme.tertiary,
-                size: space * 2.2,
-              ),
-              SizedBox(width: space),
-              Text(
-                s.level_progress,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: space * 1.9,
-                  letterSpacing: -0.3,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: space * 1.5),
-          Text(
-            s.percent_to_level('75', '6'),
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontSize: space * 1.15,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: space * 1.5),
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(space * 2),
-                child: LinearProgressIndicator(
-                  value: 0.75,
-                  minHeight: space * 1.5,
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    theme.primaryColor.withValues(alpha: 0.3),
-                  ),
-                ),
-              ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(space * 2),
-                child: TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0.0, end: 0.75),
-                  duration: const Duration(milliseconds: 1500),
-                  curve: Curves.easeOutCubic,
-                  builder: (context, value, child) {
-                    return LinearProgressIndicator(
-                      value: value,
-                      minHeight: space * 1.5,
-                      backgroundColor: Colors.transparent,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        theme.primaryColor,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: space * 2),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.primaryColor,
-                foregroundColor: theme.colorScheme.onPrimary,
-                padding: EdgeInsets.symmetric(vertical: space * 1.4),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(space * 1.5),
-                ),
-                elevation: 2,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.visibility_rounded, size: space * 1.5),
-                  SizedBox(width: space * 0.8),
-                  Text(
-                    s.preview_level_up,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: space * 1.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
         ],
       ),
