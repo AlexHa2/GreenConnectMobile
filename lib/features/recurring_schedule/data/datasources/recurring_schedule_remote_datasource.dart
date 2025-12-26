@@ -87,7 +87,7 @@ class RecurringScheduleRemoteDataSourceImpl
   }) async {
     final res = await _apiClient.patch(
       '$_baseUrl/$scheduleId/details/$detailId',
-      data: {
+      queryParameters: {
         if (quantity != null) 'quantity': quantity,
         if (unit != null) 'unit': unit,
         if (amountDescription != null) 'amountDescription': amountDescription,

@@ -41,7 +41,7 @@ class CreateRecurringScheduleModel {
                 'unit': e.unit,
                 'amountDescription': e.amountDescription,
                 'type': e.type ?? 'Sale',
-              })
+              },)
           .toList(),
     };
   }

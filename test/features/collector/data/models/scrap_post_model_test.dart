@@ -18,7 +18,7 @@ void main() {
         "household": {
           "id": "household-456",
           "fullName": "Nguyễn Văn A",
-          "phoneNumber": "+84987654321"
+          "phoneNumber": "+84987654321",
         },
         "mustTakeAll": false,
         "scrapPostDetails": [
@@ -27,24 +27,24 @@ void main() {
             "scrapCategory": {
               "scrapCategoryId": "1",
               "name": "Nhựa PET",
-              "unit": "kg"
+              "unit": "kg",
             },
             "amountDescription": "Khoảng 50kg",
             "imageUrl": "https://example.com/image1.jpg",
-            "status": "Available"
+            "status": "Available",
           },
           {
             "scrapCategoryId": "2",
             "scrapCategory": {
               "scrapCategoryId": "2",
               "name": "Nhựa HDPE",
-              "unit": "kg"
+              "unit": "kg",
             },
             "amountDescription": "Khoảng 30kg",
             "imageUrl": "https://example.com/image2.jpg",
-            "status": "Available"
+            "status": "Available",
           }
-        ]
+        ],
       };
 
       // When - Collector xem bài post
@@ -74,7 +74,7 @@ void main() {
         "status": "Active",
         "createdAt": "2025-12-09T10:00:00Z",
         "mustTakeAll": false,
-        "scrapPostDetails": []
+        "scrapPostDetails": [],
       };
 
       // When

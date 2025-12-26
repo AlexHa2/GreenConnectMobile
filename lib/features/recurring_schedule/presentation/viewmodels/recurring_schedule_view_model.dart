@@ -204,7 +204,7 @@ class RecurringScheduleViewModel extends Notifier<RecurringScheduleState> {
   }
 
   Future<RecurringScheduleDetailEntity?> getScheduleDetailItem(
-      String detailId) async {
+      String detailId,) async {
     state = state.copyWith(isLoadingDetail: true, errorMessage: null);
     try {
       final res = await _getDetailItem(detailId);

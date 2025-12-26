@@ -51,7 +51,7 @@ class ComplaintRemoteDatasourceImpl implements ComplaintRemoteDatasource {
 
   @override
   Future<ComplaintModel> createComplaint(
-      CreateComplaintRequest request) async {
+      CreateComplaintRequest request,) async {
     final res = await _apiClient.post(
       _complaintsBaseUrl,
       data: request.toJson(),

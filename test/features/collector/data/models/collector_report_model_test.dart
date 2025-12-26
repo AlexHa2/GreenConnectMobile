@@ -12,7 +12,7 @@ void main() {
         "totalComplaints": 2,
         "complaints": [
           {"status": "Pending", "count": 1},
-          {"status": "Resolved", "count": 1}
+          {"status": "Resolved", "count": 1},
         ],
         "totalAccused": 0,
         "accused": [],
@@ -20,13 +20,13 @@ void main() {
         "offers": [
           {"status": "Accepted", "count": 20},
           {"status": "Pending", "count": 3},
-          {"status": "Rejected", "count": 2}
+          {"status": "Rejected", "count": 2},
         ],
         "totalTransactions": 20,
         "transactions": [
           {"status": "Completed", "count": 18},
-          {"status": "Pending", "count": 2}
-        ]
+          {"status": "Pending", "count": 2},
+        ],
       };
 
       // When - Parse the response
@@ -71,7 +71,7 @@ void main() {
         "totalOffers": null,
         "offers": null,
         "totalTransactions": null,
-        "transactions": null
+        "transactions": null,
       };
 
       // When
@@ -105,7 +105,7 @@ void main() {
         "totalOffers": 0,
         "offers": [],
         "totalTransactions": 0,
-        "transactions": []
+        "transactions": [],
       };
 
       // When
@@ -154,7 +154,7 @@ void main() {
         "totalOffers": 0,
         "offers": [],
         "totalTransactions": 0,
-        "transactions": []
+        "transactions": [],
       };
 
       // When
@@ -171,7 +171,7 @@ void main() {
       // Given
       final jsonStatusCount = {
         "status": "Completed",
-        "count": 5
+        "count": 5,
       };
 
       // When
@@ -186,7 +186,7 @@ void main() {
       // Given
       final jsonStatusCount = {
         "status": null,
-        "count": null
+        "count": null,
       };
 
       // When
@@ -219,24 +219,24 @@ void main() {
         "complaints": [
           {"status": "Pending", "count": 2},
           {"status": "InProgress", "count": 1},
-          {"status": "Resolved", "count": 2}
+          {"status": "Resolved", "count": 2},
         ],
         "totalAccused": 1,
         "accused": [
-          {"status": "Pending", "count": 1}
+          {"status": "Pending", "count": 1},
         ],
         "totalOffers": 100,
         "offers": [
           {"status": "Accepted", "count": 80},
           {"status": "Pending", "count": 15},
-          {"status": "Rejected", "count": 5}
+          {"status": "Rejected", "count": 5},
         ],
         "totalTransactions": 80,
         "transactions": [
           {"status": "Completed", "count": 75},
           {"status": "Pending", "count": 3},
-          {"status": "Cancelled", "count": 2}
-        ]
+          {"status": "Cancelled", "count": 2},
+        ],
       };
 
       // When
@@ -287,17 +287,17 @@ void main() {
         totalRating: 4.5,
         totalComplaints: 1,
         complaints: [
-          StatusCountModel(status: 'Pending', count: 1)
+          StatusCountModel(status: 'Pending', count: 1),
         ],
         totalAccused: 0,
         accused: [],
         totalOffers: 5,
         offers: [
-          StatusCountModel(status: 'Accepted', count: 5)
+          StatusCountModel(status: 'Accepted', count: 5),
         ],
         totalTransactions: 5,
         transactions: [
-          StatusCountModel(status: 'Completed', count: 5)
+          StatusCountModel(status: 'Completed', count: 5),
         ],
       );
 

@@ -5988,6 +5988,276 @@ abstract class S {
   /// In en, this message translates to:
   /// **'(Quantity not entered)'**
   String get quantity_not_entered;
+
+  /// No description provided for @recurring_schedules.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring Schedules'**
+  String get recurring_schedules;
+
+  /// No description provided for @recurring_schedules_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring schedules allow you to create a schedule for a post that will be automatically created at a specific time.'**
+  String get recurring_schedules_description;
+
+  /// No description provided for @recurring_schedules_create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create recurring schedule'**
+  String get recurring_schedules_create;
+
+  /// No description provided for @recurring_schedules_empty_message.
+  ///
+  /// In en, this message translates to:
+  /// **'No recurring schedules yet'**
+  String get recurring_schedules_empty_message;
+
+  /// No description provided for @recurring_schedules_detail_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring Schedule Details'**
+  String get recurring_schedules_detail_title;
+
+  /// No description provided for @recurring_schedules_details_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule details'**
+  String get recurring_schedules_details_section;
+
+  /// No description provided for @recurring_schedule_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get recurring_schedule_address;
+
+  /// No description provided for @recurring_schedule_created_at.
+  ///
+  /// In en, this message translates to:
+  /// **'Created at'**
+  String get recurring_schedule_created_at;
+
+  /// No description provided for @recurring_schedule_last_run_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Last run'**
+  String get recurring_schedule_last_run_date;
+
+  /// No description provided for @recurring_schedule_must_take_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Must take all'**
+  String get recurring_schedule_must_take_all;
+
+  /// No description provided for @recurring_schedules_create_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create recurring schedule'**
+  String get recurring_schedules_create_title;
+
+  /// No description provided for @recurring_schedules_create_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get recurring_schedules_create_submit;
+
+  /// No description provided for @recurring_schedules_create_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring schedule created successfully'**
+  String get recurring_schedules_create_success;
+
+  /// No description provided for @recurring_schedules_create_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create recurring schedule'**
+  String get recurring_schedules_create_failed;
+
+  /// No description provided for @recurring_schedule_field_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get recurring_schedule_field_title;
+
+  /// No description provided for @recurring_schedule_field_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get recurring_schedule_field_description;
+
+  /// No description provided for @recurring_schedule_field_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get recurring_schedule_field_address;
+
+  /// No description provided for @recurring_schedule_field_latitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get recurring_schedule_field_latitude;
+
+  /// No description provided for @recurring_schedule_field_longitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get recurring_schedule_field_longitude;
+
+  /// No description provided for @recurring_schedule_field_day_of_week.
+  ///
+  /// In en, this message translates to:
+  /// **'Day of week'**
+  String get recurring_schedule_field_day_of_week;
+
+  /// No description provided for @recurring_schedule_field_start_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Start time'**
+  String get recurring_schedule_field_start_time;
+
+  /// No description provided for @recurring_schedule_field_end_time.
+  ///
+  /// In en, this message translates to:
+  /// **'End time'**
+  String get recurring_schedule_field_end_time;
+
+  /// No description provided for @recurring_schedule_field_scrap_category_id.
+  ///
+  /// In en, this message translates to:
+  /// **'Scrap category ID'**
+  String get recurring_schedule_field_scrap_category_id;
+
+  /// No description provided for @recurring_schedule_field_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get recurring_schedule_field_quantity;
+
+  /// No description provided for @recurring_schedule_field_unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get recurring_schedule_field_unit;
+
+  /// No description provided for @recurring_schedule_field_amount_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount description'**
+  String get recurring_schedule_field_amount_description;
+
+  /// No description provided for @recurring_schedule_field_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get recurring_schedule_field_type;
+
+  /// No description provided for @recurring_schedules_update_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Update recurring schedule'**
+  String get recurring_schedules_update_title;
+
+  /// No description provided for @recurring_schedules_update_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get recurring_schedules_update_submit;
+
+  /// No description provided for @recurring_schedules_update_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring schedule updated successfully'**
+  String get recurring_schedules_update_success;
+
+  /// No description provided for @recurring_schedules_update_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update recurring schedule'**
+  String get recurring_schedules_update_failed;
+
+  /// No description provided for @recurring_schedules_toggle_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring schedule updated'**
+  String get recurring_schedules_toggle_success;
+
+  /// No description provided for @recurring_schedules_toggle_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update recurring schedule status'**
+  String get recurring_schedules_toggle_failed;
+
+  /// No description provided for @recurring_schedule_detail_create_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get recurring_schedule_detail_create_title;
+
+  /// No description provided for @recurring_schedule_detail_create_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get recurring_schedule_detail_create_submit;
+
+  /// No description provided for @recurring_schedule_detail_create_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Item added successfully'**
+  String get recurring_schedule_detail_create_success;
+
+  /// No description provided for @recurring_schedule_detail_create_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add item'**
+  String get recurring_schedule_detail_create_failed;
+
+  /// No description provided for @recurring_schedule_detail_update_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Update item'**
+  String get recurring_schedule_detail_update_title;
+
+  /// No description provided for @recurring_schedule_detail_update_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get recurring_schedule_detail_update_submit;
+
+  /// No description provided for @recurring_schedule_detail_update_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Item updated successfully'**
+  String get recurring_schedule_detail_update_success;
+
+  /// No description provided for @recurring_schedule_detail_update_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update item'**
+  String get recurring_schedule_detail_update_failed;
+
+  /// No description provided for @recurring_schedule_detail_delete_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete item'**
+  String get recurring_schedule_detail_delete_title;
+
+  /// No description provided for @recurring_schedule_detail_delete_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this item?'**
+  String get recurring_schedule_detail_delete_message;
+
+  /// No description provided for @recurring_schedule_detail_delete_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Item deleted successfully'**
+  String get recurring_schedule_detail_delete_success;
+
+  /// No description provided for @recurring_schedule_detail_delete_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete item'**
+  String get recurring_schedule_detail_delete_failed;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

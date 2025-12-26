@@ -39,7 +39,7 @@ void main() {
       expect(json['offerDetails'][1]['pricePerUnit'], 4.0);
       
       expect(json['scheduleProposal']['responseMessage'], 
-          'Tôi có thể đến thu gom vào lúc 14:00 ngày mai');
+          'Tôi có thể đến thu gom vào lúc 14:00 ngày mai',);
       expect(json['scheduleProposal']['proposedTime'], contains('2025-12-10'));
     });
 

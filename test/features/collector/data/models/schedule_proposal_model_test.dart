@@ -14,7 +14,7 @@ void main() {
         "proposedTime": "2025-12-10T14:00:00Z",
         "status": "Accepted",
         "createdAt": "2025-12-09T10:00:00Z",
-        "responseMessage": "Tôi có thể đến thu gom vào lúc 14:00"
+        "responseMessage": "Tôi có thể đến thu gom vào lúc 14:00",
       };
 
       // When
@@ -38,7 +38,7 @@ void main() {
         "proposedTime": "2025-12-10T14:00:00Z",
         "status": "Rejected",
         "createdAt": "2025-12-09T10:00:00Z",
-        "responseMessage": "Thời gian này không phù hợp"
+        "responseMessage": "Thời gian này không phù hợp",
       };
 
       // When
@@ -58,7 +58,7 @@ void main() {
         "proposedTime": "2025-12-10T14:00:00Z",
         "status": "Pending",
         "createdAt": "2025-12-09T10:00:00Z",
-        "responseMessage": "Đề xuất lịch hẹn mới"
+        "responseMessage": "Đề xuất lịch hẹn mới",
       };
 
       // When
