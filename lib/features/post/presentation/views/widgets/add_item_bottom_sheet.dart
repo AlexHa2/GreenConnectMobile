@@ -60,7 +60,7 @@ class _AddItemBottomSheetState extends State<AddItemBottomSheet> {
     }
     if (selectedCategoryId == null) {
       CustomToast.show(context, s.please_select_category,
-          type: ToastType.error);
+          type: ToastType.error,);
       return;
     }
     if (selectedType == null) {
@@ -234,7 +234,7 @@ class _AddItemBottomSheetState extends State<AddItemBottomSheet> {
                             value: t,
                             child: Text(
                               ScrapPostDetailTypeHelper.getLocalizedType(
-                                  context, t),
+                                  context, t,),
                             ),
                           ),
                         )

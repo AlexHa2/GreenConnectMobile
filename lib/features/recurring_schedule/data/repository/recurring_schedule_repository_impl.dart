@@ -1,5 +1,6 @@
 import 'package:GreenConnectMobile/core/error/exception_mapper.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/location_model.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/location_entity.dart';
 import 'package:GreenConnectMobile/features/recurring_schedule/data/datasources/abstract_datasources/recurring_schedule_remote_datasource.dart';
 import 'package:GreenConnectMobile/features/recurring_schedule/data/models/recurring_schedule/create_recurring_schedule_model.dart';
 import 'package:GreenConnectMobile/features/recurring_schedule/data/models/recurring_schedule/paginated_recurring_schedule_model.dart';
@@ -53,11 +54,16 @@ class RecurringScheduleRepositoryImpl implements RecurringScheduleRepository {
     required RecurringScheduleEntity schedule,
   }) {
     return guard(() async {
+      final safeLocation = schedule.location ??
+          LocationEntity(
+            longitude: 0,
+            latitude: 0,
+          );
       final model = UpdateRecurringScheduleModel(
         title: schedule.title,
         description: schedule.description,
         address: schedule.address,
-        location: LocationModel.fromEntity(schedule.location!),
+        location: LocationModel.fromEntity(safeLocation),
         mustTakeAll: schedule.mustTakeAll,
         dayOfWeek: schedule.dayOfWeek,
         startTime: schedule.startTime,

@@ -162,7 +162,7 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
                 if (!isCollectorView && parsedStatus == PostStatus.open)
                   IconButton(
                     icon: const Icon(Icons.delete_outline,
-                        color: AppColors.danger),
+                        color: AppColors.danger,),
                     onPressed: () {
                       showDialog(
                         context: context,
@@ -256,7 +256,7 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
                           '/offers-list',
                           extra: {
                             'postId': scrapPostId,
-                            'isCollectorView': false
+                            'isCollectorView': false,
                           },
                         );
                       },

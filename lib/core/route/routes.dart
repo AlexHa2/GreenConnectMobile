@@ -37,6 +37,8 @@ import 'package:GreenConnectMobile/features/reward/presentation/views/my_rewards
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_history_page.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/rewards_page.dart';
+import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/recurring_schedules_page.dart';
+import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/recurring_schedule_detail_page.dart';
 import 'package:GreenConnectMobile/features/schedule/presentation/views/schedules_list_page.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/credit_transactions_list_page.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/payment_transactions_list_page.dart';
@@ -153,6 +155,19 @@ final GoRouter greenRouter = GoRouter(
       path: '/collector-schedule-list',
       name: 'collector-schedule-list',
       builder: (context, state) => const SchedulesListPage(),
+    ),
+    GoRoute(
+      path: '/recurring-schedules',
+      name: 'recurring-schedules',
+      builder: (context, state) => const RecurringSchedulesPage(),
+    ),
+    GoRoute(
+      path: '/recurring-schedules/:id',
+      name: 'recurring-schedule-detail',
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return RecurringScheduleDetailPage(id: id);
+      },
     ),
     GoRoute(
       path: '/collector-list-transactions',

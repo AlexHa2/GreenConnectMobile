@@ -10,7 +10,7 @@ class PaginatedRecurringScheduleModel
   });
 
   factory PaginatedRecurringScheduleModel.fromJson(
-      Map<String, dynamic> json) {
+      Map<String, dynamic> json,) {
     return PaginatedRecurringScheduleModel(
       data: (json['data'] as List)
           .map((e) => RecurringScheduleModel.fromJson(e))

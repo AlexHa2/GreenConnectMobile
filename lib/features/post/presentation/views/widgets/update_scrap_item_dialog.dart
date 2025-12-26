@@ -157,7 +157,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                         (type) => DropdownMenuItem(
                           value: type,
                           child: Text(ScrapPostDetailTypeHelper.getLocalizedType(
-                              context, type)),
+                              context, type,),),
                         ),
                       )
                       .toList(),

@@ -3026,4 +3026,151 @@ class SVi extends S {
 
   @override
   String get change_image => 'Đổi hình ảnh';
+
+  @override
+  String get recurring_schedules => 'Lịch Lặp Lại';
+
+  @override
+  String get recurring_schedules_description =>
+      'Lịch lặp lại cho phép bạn tạo một lịch cho bài đăng sẽ được tạo tự động vào thời gian cụ thể.';
+
+  @override
+  String get recurring_schedules_create => 'Tạo lịch lặp lại';
+
+  @override
+  String get recurring_schedules_empty_message => 'Chưa có lịch lặp lại';
+
+  @override
+  String get recurring_schedules_detail_title => 'Chi tiết lịch lặp lại';
+
+  @override
+  String get recurring_schedules_details_section => 'Danh sách vật phẩm';
+
+  @override
+  String get recurring_schedule_address => 'Địa chỉ';
+
+  @override
+  String get recurring_schedule_created_at => 'Tạo lúc';
+
+  @override
+  String get recurring_schedule_last_run_date => 'Lần chạy gần nhất';
+
+  @override
+  String get recurring_schedule_must_take_all => 'Phải lấy hết';
+
+  @override
+  String get recurring_schedules_create_title => 'Tạo lịch lặp lại';
+
+  @override
+  String get recurring_schedules_create_submit => 'Tạo';
+
+  @override
+  String get recurring_schedules_create_success =>
+      'Tạo lịch lặp lại thành công';
+
+  @override
+  String get recurring_schedules_create_failed => 'Tạo lịch lặp lại thất bại';
+
+  @override
+  String get recurring_schedule_field_title => 'Tiêu đề';
+
+  @override
+  String get recurring_schedule_field_description => 'Mô tả';
+
+  @override
+  String get recurring_schedule_field_address => 'Địa chỉ';
+
+  @override
+  String get recurring_schedule_field_latitude => 'Vĩ độ';
+
+  @override
+  String get recurring_schedule_field_longitude => 'Kinh độ';
+
+  @override
+  String get recurring_schedule_field_day_of_week => 'Thứ';
+
+  @override
+  String get recurring_schedule_field_start_time => 'Giờ bắt đầu';
+
+  @override
+  String get recurring_schedule_field_end_time => 'Giờ kết thúc';
+
+  @override
+  String get recurring_schedule_field_scrap_category_id => 'ID loại ve chai';
+
+  @override
+  String get recurring_schedule_field_quantity => 'Số lượng';
+
+  @override
+  String get recurring_schedule_field_unit => 'Đơn vị';
+
+  @override
+  String get recurring_schedule_field_amount_description => 'Mô tả số lượng';
+
+  @override
+  String get recurring_schedule_field_type => 'Loại';
+
+  @override
+  String get recurring_schedules_update_title => 'Cập nhật lịch lặp lại';
+
+  @override
+  String get recurring_schedules_update_submit => 'Lưu';
+
+  @override
+  String get recurring_schedules_update_success =>
+      'Cập nhật lịch lặp lại thành công';
+
+  @override
+  String get recurring_schedules_update_failed =>
+      'Cập nhật lịch lặp lại thất bại';
+
+  @override
+  String get recurring_schedules_toggle_success =>
+      'Cập nhật trạng thái lịch lặp lại thành công';
+
+  @override
+  String get recurring_schedules_toggle_failed =>
+      'Cập nhật trạng thái lịch lặp lại thất bại';
+
+  @override
+  String get recurring_schedule_detail_create_title => 'Thêm vật phẩm';
+
+  @override
+  String get recurring_schedule_detail_create_submit => 'Thêm';
+
+  @override
+  String get recurring_schedule_detail_create_success =>
+      'Thêm vật phẩm thành công';
+
+  @override
+  String get recurring_schedule_detail_create_failed =>
+      'Thêm vật phẩm thất bại';
+
+  @override
+  String get recurring_schedule_detail_update_title => 'Cập nhật vật phẩm';
+
+  @override
+  String get recurring_schedule_detail_update_submit => 'Lưu';
+
+  @override
+  String get recurring_schedule_detail_update_success =>
+      'Cập nhật vật phẩm thành công';
+
+  @override
+  String get recurring_schedule_detail_update_failed =>
+      'Cập nhật vật phẩm thất bại';
+
+  @override
+  String get recurring_schedule_detail_delete_title => 'Xóa vật phẩm';
+
+  @override
+  String get recurring_schedule_detail_delete_message =>
+      'Bạn có chắc chắn muốn xóa vật phẩm này?';
+
+  @override
+  String get recurring_schedule_detail_delete_success =>
+      'Xóa vật phẩm thành công';
+
+  @override
+  String get recurring_schedule_detail_delete_failed => 'Xóa vật phẩm thất bại';
 }

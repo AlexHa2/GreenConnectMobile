@@ -179,7 +179,7 @@ class _CreateRecyclingPostWithAIPageState
   }
 
   Future<void> _handleAddressSelected(
-      String address, double? latitude, double? longitude) async {
+      String address, double? latitude, double? longitude,) async {
     setState(() => _pickupAddressController.text = address);
 
     if (latitude != null && longitude != null) {
@@ -331,9 +331,7 @@ class _CreateRecyclingPostWithAIPageState
 
       // Skip if no category found and no categories available
       if (categories.isEmpty) continue;
-      if (matchedCategory == null) {
-        matchedCategory = categories.first;
-      }
+      matchedCategory ??= categories.first;
 
       // Build amount description
       String amountDescription = item.itemName;
@@ -464,7 +462,7 @@ class _CreateRecyclingPostWithAIPageState
     if (_location == null || !_addressFound) {
       if (showToast) {
         CustomToast.show(context, s.error_invalid_address,
-            type: ToastType.error);
+            type: ToastType.error,);
       }
       return false;
     }
@@ -540,7 +538,7 @@ class _CreateRecyclingPostWithAIPageState
     if (_scrapItems.isEmpty) {
       if (showToast) {
         CustomToast.show(context, s.error_scrap_item_empty,
-            type: ToastType.error);
+            type: ToastType.error,);
       }
       return false;
     }
@@ -825,7 +823,7 @@ class _CreateRecyclingPostWithAIPageState
       if (success) {
         _resetAllData();
         CustomToast.show(context, s.success_post_created,
-            type: ToastType.success);
+            type: ToastType.success,);
         if (context.mounted) {
           navigateWithLoading(context, route: '/household-list-post');
         }
@@ -1108,7 +1106,7 @@ class _CreateRecyclingPostWithAIPageState
                               : Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.auto_awesome, size: 18),
+                                    const Icon(Icons.auto_awesome, size: 18),
                                     SizedBox(width: spacing.screenPadding / 2),
                                     Text(s.analyze_with_ai),
                                   ],
@@ -1141,6 +1139,7 @@ class _CreateRecyclingPostWithAIPageState
     );
   }
 
+  // ignore: non_constant_identifier_names
   Widget _buildStep0_PostInfo() {
     final theme = Theme.of(context);
     final spacing = theme.extension<AppSpacing>()!;
@@ -1227,6 +1226,7 @@ class _CreateRecyclingPostWithAIPageState
     );
   }
 
+  // ignore: non_constant_identifier_names
   Widget _buildStep1_TimeSlots() {
     return _pageContainer(
       child: ListView(
@@ -1243,6 +1243,7 @@ class _CreateRecyclingPostWithAIPageState
     );
   }
 
+  // ignore: non_constant_identifier_names
   Widget _buildStep2_Items(List<ScrapCategoryEntity> categories) {
     final theme = Theme.of(context);
     final spacing = theme.extension<AppSpacing>()!;
@@ -1369,6 +1370,7 @@ class _CreateRecyclingPostWithAIPageState
     );
   }
 
+  // ignore: non_constant_identifier_names
   Widget _buildStep3_Review() {
     return _pageContainer(
       child: ReviewPage(

@@ -21,7 +21,7 @@ class BankRepositoryImpl implements BankRepository {
 
   @override
   Future<PaymentUrlResponseEntity> createPaymentUrl(
-      CreatePaymentUrlEntity request) {
+      CreatePaymentUrlEntity request,) {
     return guard(() async {
       final model = CreatePaymentUrlModel.fromEntity(request);
       final response = await remoteDataSource.createPaymentUrl(model);

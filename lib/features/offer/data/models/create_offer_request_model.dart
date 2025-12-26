@@ -72,7 +72,7 @@ class ScheduleProposalRequestModel {
   });
 
   factory ScheduleProposalRequestModel.fromEntity(
-      ScheduleProposalRequest entity) {
+      ScheduleProposalRequest entity,) {
     return ScheduleProposalRequestModel(
       proposedTime: entity.proposedTime,
       responseMessage: entity.responseMessage,

@@ -24,7 +24,7 @@ void main() {
               "createdAt": "2025-11-27T18:07:21.119662Z",
               "updatedAt": "2025-11-28T21:28:02.743111Z",
               "transactionDetails": [],
-              "totalPrice": 0
+              "totalPrice": 0,
             },
             "reviewerId": "c79e5c99-7476-4cc2-bf94-2ed1f04593c1",
             "reviewer": {
@@ -34,7 +34,7 @@ void main() {
               "pointBalance": 0,
               "rank": "Bronze",
               "roles": [],
-              "avatarUrl": null
+              "avatarUrl": null,
             },
             "revieweeId": "fcae82f1-ec92-4939-8f7b-b89a2a32fc80",
             "reviewee": {
@@ -44,11 +44,11 @@ void main() {
               "pointBalance": 0,
               "rank": "Bronze",
               "roles": [],
-              "avatarUrl": null
+              "avatarUrl": null,
             },
             "rate": 5,
             "comment": "nicer theo tiếng hàn",
-            "createdAt": "2025-11-28T21:29:12.003681Z"
+            "createdAt": "2025-11-28T21:29:12.003681Z",
           }
         ],
         "pagination": {
@@ -56,8 +56,8 @@ void main() {
           "currentPage": 1,
           "totalPages": 1,
           "nextPage": null,
-          "prevPage": null
-        }
+          "prevPage": null,
+        },
       };
 
       // When - Parse the response
@@ -96,7 +96,7 @@ void main() {
               "pointBalance": 100,
               "rank": "Silver",
               "roles": ["household"],
-              "avatarUrl": "https://example.com/avatar.jpg"
+              "avatarUrl": "https://example.com/avatar.jpg",
             },
             "revieweeId": "reviewee-id",
             "reviewee": {
@@ -106,11 +106,11 @@ void main() {
               "pointBalance": 50,
               "rank": "Bronze",
               "roles": ["collector"],
-              "avatarUrl": null
+              "avatarUrl": null,
             },
             "rate": 4,
             "comment": "Good service",
-            "createdAt": "2025-11-29T10:00:00Z"
+            "createdAt": "2025-11-29T10:00:00Z",
           }
         ],
         "pagination": {
@@ -118,8 +118,8 @@ void main() {
           "currentPage": 1,
           "totalPages": 1,
           "nextPage": null,
-          "prevPage": null
-        }
+          "prevPage": null,
+        },
       };
 
       // When
@@ -142,8 +142,8 @@ void main() {
           "currentPage": 1,
           "totalPages": 0,
           "nextPage": null,
-          "prevPage": null
-        }
+          "prevPage": null,
+        },
       };
 
       // When

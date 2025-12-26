@@ -345,7 +345,7 @@ class _UpdateRecyclingPostPageState
   }
 
   Future<void> _handleAddressSelected(
-      String address, double? latitude, double? longitude) async {
+      String address, double? latitude, double? longitude,) async {
     setState(() => _pickupAddressController.text = address);
 
     if (latitude != null && longitude != null) {
@@ -441,7 +441,7 @@ class _UpdateRecyclingPostPageState
     if (!_addressFound) {
       if (showToast) {
         CustomToast.show(context, s.error_invalid_address,
-            type: ToastType.error);
+            type: ToastType.error,);
       }
       return false;
     }
@@ -517,7 +517,7 @@ class _UpdateRecyclingPostPageState
     if (_scrapItems.isEmpty) {
       if (showToast) {
         CustomToast.show(context, s.error_scrap_item_empty,
-            type: ToastType.error);
+            type: ToastType.error,);
       }
       return false;
     }
@@ -877,12 +877,14 @@ class _UpdateRecyclingPostPageState
         await vm.fetchDetail(_postId);
         
         CustomToast.show(
+          // ignore: use_build_context_synchronously
           context,
           "${s.update} ${s.post} ${s.successfully}",
           type: ToastType.success,
         );
         if (context.mounted) {
           navigateWithLoading(
+            // ignore: use_build_context_synchronously
             context,
             route: "/detail-post",
             extra: {'postId': _postId},
@@ -895,6 +897,7 @@ class _UpdateRecyclingPostPageState
         
         final errorMsg = ref.read(scrapPostViewModelProvider).errorMessage ??
             s.error_general;
+        // ignore: use_build_context_synchronously
         CustomToast.show(context, errorMsg, type: ToastType.error);
       }
     } catch (e, stackTrace) {
@@ -1070,6 +1073,7 @@ class _UpdateRecyclingPostPageState
     );
   }
 
+  // ignore: non_constant_identifier_names
   Widget _buildStep0_PostInfo() {
     final theme = Theme.of(context);
     final spacing = theme.extension<AppSpacing>()!;
@@ -1151,6 +1155,7 @@ class _UpdateRecyclingPostPageState
     );
   }
 
+  // ignore: non_constant_identifier_names
   Widget _buildStep1_TimeSlots() {
     return _pageContainer(
       child: ListView(
@@ -1167,6 +1172,7 @@ class _UpdateRecyclingPostPageState
     );
   }
 
+  // ignore: non_constant_identifier_names
   Widget _buildStep2_Items(List<ScrapCategoryEntity> categories) {
     final theme = Theme.of(context);
     final spacing = theme.extension<AppSpacing>()!;
@@ -1305,6 +1311,7 @@ class _UpdateRecyclingPostPageState
     );
   }
 
+  // ignore: non_constant_identifier_names
   Widget _buildStep3_Review() {
     return _pageContainer(
       child: ReviewPage(

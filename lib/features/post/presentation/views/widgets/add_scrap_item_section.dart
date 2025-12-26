@@ -113,8 +113,8 @@ class AddScrapItemSection extends StatelessWidget {
                           value: type,
                           child: Text(
                               ScrapPostDetailTypeHelper.getLocalizedType(
-                                  context, type)),
-                        ))
+                                  context, type,),),
+                        ),)
                     .toList(),
                 onChanged: onTypeChange,
                 validator: (value) =>
