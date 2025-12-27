@@ -12,12 +12,14 @@ class PaymentMethodBottomSheet extends ConsumerWidget {
   final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
   final VoidCallback? onApproveSuccess; // Callback when approve is successful to navigate to transaction list
+  final double? amountDifference; // Amount difference for payment
 
   const PaymentMethodBottomSheet({
     super.key,
     required this.transaction,
     required this.onActionCompleted,
     this.onApproveSuccess,
+    this.amountDifference,
   });
 
   Future<void> _handleCashPayment(BuildContext context, WidgetRef ref) async {
@@ -98,6 +100,7 @@ class PaymentMethodBottomSheet extends ConsumerWidget {
         'transactionId': transaction.transactionId,
         'transaction': transaction,
         'onActionCompleted': onActionCompleted,
+        'amountDifference': amountDifference,
       },
     );
     

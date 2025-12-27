@@ -271,11 +271,11 @@ class TransactionViewModel extends Notifier<TransactionState> {
   }
 
   /// Get transaction QR code
-  Future<String?> getTransactionQRCode(String transactionId) async {
+  Future<String?> getTransactionQRCode(String transactionId, double totalAmount) async {
     state = state.copyWith(isProcessing: true, errorMessage: null);
 
     try {
-      final qrCode = await _getTransactionQRCode(transactionId);
+      final qrCode = await _getTransactionQRCode(transactionId, totalAmount);
       state = state.copyWith(isProcessing: false);
       return qrCode;
     } catch (e, stack) {

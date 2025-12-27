@@ -137,9 +137,9 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<String> getTransactionQRCode(String transactionId) async {
+  Future<String> getTransactionQRCode(String transactionId, double totalAmount) async {
     return guard(() async {
-      return await _remoteDataSource.getTransactionQRCode(transactionId);
+      return await _remoteDataSource.getTransactionQRCode(transactionId, totalAmount);
     });
   }
 

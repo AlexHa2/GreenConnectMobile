@@ -54,7 +54,7 @@ abstract class TransactionRepository {
     required int pageSize,
   });
 
-  Future<String> getTransactionQRCode(String transactionId);
+  Future<String> getTransactionQRCode(String transactionId, double totalAmount);
 
   Future<CreditTransactionListResponse> getCreditTransactions({
     required int pageIndex,
