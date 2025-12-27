@@ -9,25 +9,33 @@ import 'package:GreenConnectMobile/features/transaction/presentation/views/widge
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/actions/input_details_button.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/actions/reject_button.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/actions/toggle_cancel_button.dart';
+import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Bottom action buttons for transaction detail
 class TransactionDetailBottomActions extends ConsumerWidget {
   final TransactionEntity transaction;
   final Role userRole;
-  final double amountDifference; // Amount difference từ post transactions
+  final double amountDifference; // Amount difference from post transactions
   final VoidCallback onActionCompleted;
   final post_entity.PostTransactionsResponseEntity? transactionsData;
+  final VoidCallback? onCheckInSuccess; // Callback when checkin is successful
+  final VoidCallback? onApproveSuccess; // Callback when approve is successful to navigate to transaction list
+  final VoidCallback? onRejectSuccess; // Callback when reject is successful to navigate to transaction list
 
   const TransactionDetailBottomActions({
     super.key,
     required this.transaction,
     required this.userRole,
-    this.amountDifference = 0.0, // Default 0 nếu không có
+    this.amountDifference = 0.0,
     required this.onActionCompleted,
     this.transactionsData,
+    this.onCheckInSuccess,
+    this.onApproveSuccess,
+    this.onRejectSuccess,
   });
 
   bool get _isHousehold => userRole == Role.household;
@@ -54,29 +62,56 @@ class TransactionDetailBottomActions extends ConsumerWidget {
   }
 
   /// Check if household should show approve button without payment method
-  /// Sử dụng amountDifference nếu có, fallback về totalPrice
+  /// only check amountDifference AFTER collector has entered quantity successfully
   bool get _shouldApproveWithoutPayment {
     if (!_canTakeAction) return false;
 
-    // Ưu tiên sử dụng amountDifference nếu đã load được
-    // Nếu amountDifference == 0 (default) và totalPrice > 0, có thể chưa load xong
-    // Nên fallback về totalPrice để đảm bảo logic đúng
-    final effectiveAmount =
-        amountDifference != 0.0 ? amountDifference : transaction.totalPrice;
+    // Only check amountDifference when collector has entered quantity
+    if (!_hasQuantityEntered) return false;
 
-    return effectiveAmount == 0;
+    // After collector has entered quantity, use amountDifference directly
+    // amountDifference <= 0: household doesn't need to pay/receive money
+    // amountDifference == 0: no payment needed
+    // amountDifference < 0: household will receive money (collector pays), no payment method needed
+    return amountDifference <= 0.0;
   }
 
   /// Check if household should show approve button with payment method
-  /// Sử dụng amountDifference nếu có, fallback về totalPrice
+  /// only check amountDifference AFTER collector has entered quantity successfully
   bool get _shouldApproveWithPayment {
     if (!_canTakeAction) return false;
 
-    // Ưu tiên sử dụng amountDifference nếu đã load được
-    final effectiveAmount =
-        amountDifference != 0.0 ? amountDifference : transaction.totalPrice;
+    // only check amountDifference when collector has entered quantity
+    if (!_hasQuantityEntered) return false;
 
-    return effectiveAmount != 0;
+    // after collector has entered quantity, use amountDifference directly
+    // amountDifference > 0: household need to pay or will receive money
+    return amountDifference > 0.0;
+  }
+
+  /// Check if collector should show payment method button
+  /// only check amountDifference AFTER collector has entered quantity successfully
+  /// When amountDifference < 0: Collector needs to pay household
+  bool get _shouldCollectorShowPayment {
+    if (!_isCollector ||
+        transaction.statusEnum != TransactionStatus.inProgress) {
+      return false;
+    }
+
+    // only check amountDifference when collector has entered quantity
+    if (!_hasQuantityEntered) return false;
+
+    // Validate that scrapPostId and slotId are available
+    final scrapPostId = transaction.offer?.scrapPostId ?? '';
+    final slotId =
+        transaction.timeSlotId ?? transaction.offer?.timeSlotId ?? '';
+
+    if (scrapPostId.isEmpty || slotId.isEmpty) {
+      return false;
+    }
+
+    // amountDifference < 0: Collector needs to pay household
+    return amountDifference < 0.0;
   }
 
   bool get _isCompleted {
@@ -107,6 +142,16 @@ class TransactionDetailBottomActions extends ConsumerWidget {
         transaction.timeSlotId ?? transaction.offer?.timeSlotId ?? '';
 
     return scrapPostId.isNotEmpty && slotId.isNotEmpty;
+  }
+
+  /// Check if collector has entered quantity for transaction
+  /// Transaction has quantity when transactionDetails has at least one item with quantity > 0
+  bool get _hasQuantityEntered {
+    if (transaction.transactionDetails.isEmpty) {
+      return false;
+    }
+    // Check if any transaction detail has quantity > 0
+    return transaction.transactionDetails.any((detail) => detail.quantity > 0);
   }
 
   @override
@@ -168,6 +213,75 @@ class TransactionDetailBottomActions extends ConsumerWidget {
           child: CheckInButton(
             transaction: transaction,
             onActionCompleted: onActionCompleted,
+            onCheckInSuccess: onCheckInSuccess,
+          ),
+        ),
+      );
+    }
+
+    // Show QR payment button for collector when amountDifference < 0
+    // Navigate QR code payment page
+    if (_shouldCollectorShowPayment) {
+      return Container(
+        padding: EdgeInsets.fromLTRB(
+          spacing,
+          spacing * 1.5, // Increased top padding for better spacing
+          spacing,
+          spacing / 12,
+        ),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Builder(
+            builder: (context) {
+              return FilledButton.icon(
+                onPressed: () async {
+                  // Navigate directly to QR code payment page
+                  // showActionButtons = false:
+                  final result = await context.push(
+                    '/qr-payment',
+                    extra: {
+                      'transactionId': transaction.transactionId,
+                      'transaction': transaction,
+                      'onActionCompleted': onActionCompleted,
+                      'showActionButtons': false, 
+                      'userRole': userRole, 
+                    },
+                  );
+
+                  if (result == true && context.mounted) {
+                    onActionCompleted();
+                  }
+                },
+                icon: const Icon(Icons.qr_code, size: 20),
+                label: Text(
+                  S.of(context)!.request_payment,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: theme.primaryColor,
+                  foregroundColor: theme.scaffoldBackgroundColor,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: spacing * 1.5,
+                    vertical: spacing * 1.2,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(spacing),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       );
@@ -260,6 +374,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
                 child: RejectButton(
                   transaction: transaction,
                   onActionCompleted: onActionCompleted,
+                  onRejectSuccess: onRejectSuccess, // Navigate to transaction list after successful reject
                 ),
               ),
               SizedBox(width: spacing),
@@ -269,6 +384,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
                   transaction: transaction,
                   onActionCompleted: onActionCompleted,
                   skipPaymentMethod: false,
+                  onApproveSuccess: onApproveSuccess, 
                 ),
               ),
             ],
@@ -277,7 +393,8 @@ class TransactionDetailBottomActions extends ConsumerWidget {
       );
     }
 
-    // When totalPrice <= 0: Show both reject and approve buttons (approve without payment method)
+    // When amountDifference <= 0: Show both reject and approve buttons (approve without payment method)
+    // This includes amountDifference == 0 (no payment) and amountDifference < 0 (household receives money)
     if (_shouldApproveWithoutPayment) {
       return Container(
         padding: EdgeInsets.fromLTRB(
@@ -304,6 +421,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
                 child: RejectButton(
                   transaction: transaction,
                   onActionCompleted: onActionCompleted,
+                  onRejectSuccess: onRejectSuccess, // Navigate to transaction list after successful reject
                 ),
               ),
               SizedBox(width: spacing),
@@ -313,6 +431,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
                   transaction: transaction,
                   onActionCompleted: onActionCompleted,
                   skipPaymentMethod: true,
+                  onApproveSuccess: onApproveSuccess,
                 ),
               ),
             ],

@@ -366,7 +366,7 @@ class _ProfileSettingState extends ConsumerState<ProfileSetting> {
                 CardInforProfileSetting(
                   icon: Icons.account_balance_wallet_outlined,
                   label: s.credit_balance,
-                  value: '${user?.creditBalance ?? 0} VNĐ',
+                  value: '${user?.creditBalance ?? 0} ${s.points}',
                 ),
                 if (user?.buyerType != null && user!.buyerType!.isNotEmpty)
                   CardInforProfileSetting(

@@ -1122,7 +1122,7 @@ class _RecurringSchedulesPageState
                       final start = _timeLabel(context, item.startTime);
                       final end = _timeLabel(context, item.endTime);
                       final created = _dateTimeLabel(context, item.createdAt);
-                      final lastRun = _dateTimeLabel(context, item.lastRunDate);
+                      // final lastRun = _dateTimeLabel(context, item.lastRunDate);
 
                       return Card(
                         elevation: 0,

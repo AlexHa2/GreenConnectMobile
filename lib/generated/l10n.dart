@@ -481,6 +481,30 @@ abstract class S {
   /// **'Featured Packages'**
   String get featured_packages;
 
+  /// No description provided for @useful_tips.
+  ///
+  /// In en, this message translates to:
+  /// **'Useful Tips'**
+  String get useful_tips;
+
+  /// No description provided for @tip_earn_points_regularly.
+  ///
+  /// In en, this message translates to:
+  /// **'Earn points regularly to receive more offers'**
+  String get tip_earn_points_regularly;
+
+  /// No description provided for @tip_use_points_for_packages.
+  ///
+  /// In en, this message translates to:
+  /// **'Use points to purchase service packages at discounted prices'**
+  String get tip_use_points_for_packages;
+
+  /// No description provided for @tip_view_history.
+  ///
+  /// In en, this message translates to:
+  /// **'View history to track your point usage'**
+  String get tip_view_history;
+
   /// No description provided for @value.
   ///
   /// In en, this message translates to:

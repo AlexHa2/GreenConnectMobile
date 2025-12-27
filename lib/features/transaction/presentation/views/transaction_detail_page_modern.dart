@@ -26,10 +26,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class TransactionDetailPageModern extends ConsumerStatefulWidget {
-  // Transaction ID (optional - để tìm transaction trong list)
+  // Transaction ID (optional - to find transaction in the list)
   final String? transactionId;
 
-  // Required params for post transactions (luôn có khi navigate đến route này)
+  // Required params for post transactions (always available when navigating to this route)
   final String? postId;
   final String? collectorId;
   final String? slotId;
@@ -70,8 +70,8 @@ class _TransactionDetailPageModernState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadUserRole();
 
-      // LUÔN gọi fetchPostTransactions() vì params postId, collectorId, slotId luôn có
-      // Data sẽ được load từ API, không dùng transactionData
+      // ALWAYS call fetchPostTransactions() because params postId, collectorId, slotId are always available
+      // Data will be loaded from API, not using transactionData
       if (widget.postId != null &&
           widget.postId!.isNotEmpty &&
           widget.collectorId != null &&
@@ -144,6 +144,7 @@ class _TransactionDetailPageModernState
           unit: detail.unit,
           quantity: detail.quantity,
           finalPrice: detail.finalPrice,
+          type: detail.type,
         );
       }).toList();
     }
@@ -227,6 +228,29 @@ class _TransactionDetailPageModernState
             final currentTransactionId =
                 widget.transactionId ?? _currentTransaction?.transactionId;
 
+            // Check if any transaction in the list has status "inProgress"
+            // Only navigate back if user didn't explicitly navigate to a specific transaction
+            // (i.e., no transactionId was provided)
+            if (currentTransactionId == null || currentTransactionId.isEmpty) {
+              final hasInProgressTransaction =
+                  state.transactionsData!.transactions.any((t) =>
+                      TransactionStatus.fromString(t.status) ==
+                      TransactionStatus.inProgress);
+
+              if (hasInProgressTransaction) {
+                // Navigate back to transaction list page only if no specific transaction was requested
+                debugPrint('⚠️ [TRANSACTION_DETAIL] No transactionId provided and found inProgress transaction, navigating back to list');
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    _navigateToTransactionList();
+                  }
+                });
+                return; // Exit early, don't set current transaction
+              }
+            } else {
+              debugPrint('✅ [TRANSACTION_DETAIL] TransactionId provided: $currentTransactionId, allowing navigation to detail page');
+            }
+
             int? selectedIndex;
 
             if (currentTransactionId != null) {
@@ -249,7 +273,6 @@ class _TransactionDetailPageModernState
               final transactionWithoutDetailsIndex = state
                   .transactionsData!.transactions
                   .indexWhere((t) => t.transactionDetails.isEmpty);
-
               if (transactionWithoutDetailsIndex >= 0) {
                 selectedIndex = transactionWithoutDetailsIndex;
               } else {
@@ -291,7 +314,7 @@ class _TransactionDetailPageModernState
   }
 
   Future<void> _onRefresh() async {
-    // Reload post transactions (params luôn có)
+    // Reload post transactions (params are always available)
     if (widget.postId != null &&
         widget.postId!.isNotEmpty &&
         widget.collectorId != null &&
@@ -312,7 +335,7 @@ class _TransactionDetailPageModernState
     // Check current status before reload to detect status changes
     final currentStatus = _currentTransaction?.statusEnum;
 
-    // Reload post transactions to get updated status (params luôn có)
+    // Reload post transactions to get updated status (params are always available)
     if (widget.postId != null &&
         widget.postId!.isNotEmpty &&
         widget.collectorId != null &&
@@ -446,14 +469,16 @@ class _TransactionDetailPageModernState
           });
         }
       },
-      convertPostTransactionToTransaction:
-          _transactionsData != null && _transactionsData!.transactions.isNotEmpty
-              ? (post_entity.TransactionEntity postTransaction) =>
-                  _convertPostTransactionToTransaction(postTransaction)
-              : null,
+      convertPostTransactionToTransaction: _transactionsData != null &&
+              _transactionsData!.transactions.isNotEmpty
+          ? (post_entity.TransactionEntity postTransaction) =>
+              _convertPostTransactionToTransaction(postTransaction)
+          : null,
       onRefresh: _onRefresh,
       onActionCompleted: _onActionCompleted,
       onBack: _onBack,
+      onApproveSuccess: _navigateToTransactionList, // Navigate to transaction list after successful approve
+      onRejectSuccess: _navigateToTransactionList, // Navigate to transaction list after successful reject
     );
   }
 }
@@ -467,10 +492,13 @@ class _TransactionDetailContent extends StatefulWidget {
   final post_entity.PostTransactionsResponseEntity? transactionsData;
   final int currentTransactionIndex;
   final ValueChanged<int>? onTransactionChanged;
-  final TransactionEntity Function(post_entity.TransactionEntity)? convertPostTransactionToTransaction;
+  final TransactionEntity Function(post_entity.TransactionEntity)?
+      convertPostTransactionToTransaction;
   final VoidCallback onRefresh;
   final VoidCallback onActionCompleted;
   final VoidCallback onBack;
+  final VoidCallback? onApproveSuccess; // Callback when approve is successful to navigate to transaction list
+  final VoidCallback? onRejectSuccess; // Callback when reject is successful to navigate to transaction list
 
   const _TransactionDetailContent({
     super.key,
@@ -485,10 +513,13 @@ class _TransactionDetailContent extends StatefulWidget {
     required this.onRefresh,
     required this.onActionCompleted,
     required this.onBack,
+    this.onApproveSuccess,
+    this.onRejectSuccess,
   });
 
   @override
-  State<_TransactionDetailContent> createState() => _TransactionDetailContentState();
+  State<_TransactionDetailContent> createState() =>
+      _TransactionDetailContentState();
 }
 
 class _TransactionDetailContentState extends State<_TransactionDetailContent> {
@@ -503,7 +534,8 @@ class _TransactionDetailContentState extends State<_TransactionDetailContent> {
   @override
   void didUpdateWidget(_TransactionDetailContent oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.transaction.transactionId != widget.transaction.transactionId ||
+    if (oldWidget.transaction.transactionId !=
+            widget.transaction.transactionId ||
         oldWidget.currentTransactionIndex != widget.currentTransactionIndex) {
       _currentTransaction = widget.transaction;
     }
@@ -542,7 +574,8 @@ class _TransactionDetailContentState extends State<_TransactionDetailContent> {
             child: Column(
               children: [
                 // Top app bar
-                TransactionDetailAppBar(onBack: widget.onBack, onRefresh: widget.onRefresh),
+                TransactionDetailAppBar(
+                    onBack: widget.onBack, onRefresh: widget.onRefresh),
 
                 // Scrollable content
                 Expanded(
@@ -585,6 +618,8 @@ class _TransactionDetailContentState extends State<_TransactionDetailContent> {
             amountDifference: widget.amountDifference,
             onActionCompleted: widget.onActionCompleted,
             transactionsData: widget.transactionsData,
+            onApproveSuccess: widget.onApproveSuccess, // Navigate to transaction list after successful approve
+            onRejectSuccess: widget.onRejectSuccess, // Navigate to transaction list after successful reject
           ),
         ),
 

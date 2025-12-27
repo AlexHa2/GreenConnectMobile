@@ -1,6 +1,5 @@
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
-import 'package:GreenConnectMobile/core/helper/currency_helper.dart';
 import 'package:GreenConnectMobile/core/helper/date_time_extension.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
@@ -231,7 +230,8 @@ class _TransactionCardInfo extends StatelessWidget {
         ] else if (transaction.scheduledTime != null) ...[
           _InfoRow(
             icon: Icons.schedule_outlined,
-            text: transaction.scheduledTime!.toCustomFormat(locale: s.localeName),
+            text:
+                transaction.scheduledTime!.toCustomFormat(locale: s.localeName),
           ),
         ],
       ],
@@ -365,55 +365,6 @@ class _InfoRow extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Price chip widget
-class _TransactionPriceChip extends StatelessWidget {
-  final double price;
-
-  const _TransactionPriceChip({required this.price});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final space = theme.extension<AppSpacing>()!.screenPadding;
-
-    return ConstrainedBox(
-      constraints: BoxConstraints(minWidth: space * 14),
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: space * 1.25,
-          vertical: space * 0.95,
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(space),
-          border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.18),
-            width: 1,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.payments_rounded,
-              size: space * 1.7,
-              color: AppColors.primary,
-            ),
-            SizedBox(width: space * 0.7),
-            Text(
-              '${formatVND(price)} VND',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: AppColors.primary,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

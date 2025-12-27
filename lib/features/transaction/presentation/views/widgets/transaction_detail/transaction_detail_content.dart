@@ -204,6 +204,7 @@ class _TransactionDetailContentBodyState
         unit: offerDetail.unit,
         quantity: 0, // Not entered yet
         finalPrice: 0, // No price since quantity is 0
+        type: offerDetail.type ?? '',
       );
     }).toList();
   }

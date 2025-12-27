@@ -59,7 +59,7 @@ class QuickActionsGrid extends StatelessWidget {
               _QuickActionCard(
                 icon: Icons.receipt_long_outlined,
                 label: s.transactions,
-                color: theme.primaryColor,
+                color: AppColors.info,
                 onTap: () => context.push('/household-list-transactions'),
               ),
               _QuickActionCard(
@@ -73,12 +73,6 @@ class QuickActionsGrid extends StatelessWidget {
                 label: s.complaints,
                 color: AppColors.danger,
                 onTap: () => context.push('/household-complaint-list'),
-              ),
-              _QuickActionCard(
-                icon: Icons.inventory_2_outlined,
-                label: s.packages,
-                color: AppColors.info,
-                onTap: () => context.push('/package-list'),
               ),
               _QuickActionCard(
                 icon: Icons.inventory_2_outlined,

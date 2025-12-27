@@ -10,12 +10,14 @@ class ApproveButton extends ConsumerWidget {
   final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
   final bool skipPaymentMethod;
+  final VoidCallback? onApproveSuccess; // Callback when approve is successful to navigate to transaction list
 
   const ApproveButton({
     super.key,
     required this.transaction,
     required this.onActionCompleted,
     this.skipPaymentMethod = false,
+    this.onApproveSuccess,
   });
 
   Future<void> _handleComplete(BuildContext context, WidgetRef ref) async {
@@ -57,6 +59,10 @@ class ApproveButton extends ConsumerWidget {
             type: ToastType.success,
           );
           onActionCompleted();
+          // Navigate to transaction list page if callback is available
+          if (onApproveSuccess != null) {
+            onApproveSuccess!();
+          }
         } else {
           final state = ref.read(transactionViewModelProvider);
           final errorMsg = state.errorMessage;
@@ -83,12 +89,17 @@ class ApproveButton extends ConsumerWidget {
       builder: (context) => PaymentMethodBottomSheet(
         transaction: transaction,
         onActionCompleted: onActionCompleted,
+        onApproveSuccess: onApproveSuccess, // Pass callback to navigate to transaction list
       ),
     );
 
     // If payment was successful, trigger the callback
     if (result == true) {
       onActionCompleted();
+      // Navigate to transaction list page if callback is available
+      if (onApproveSuccess != null) {
+        onApproveSuccess!();
+      }
     }
   }
 

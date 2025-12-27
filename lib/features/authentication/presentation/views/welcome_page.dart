@@ -33,7 +33,16 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final spacing = Theme.of(context).extension<AppSpacing>()!;
+    final screenSize = MediaQuery.of(context).size;
+    final screenHeight = screenSize.height;
     const logo = 'assets/images/green_connect_logo.png';
+    
+    // Tính toán responsive sizes
+    final logoSize = (screenHeight * 0.25).clamp(180.0, 260.0);
+    final fontSize = (screenHeight * 0.05).clamp(28.0, 42.0);
+    final spacingBetween = (screenHeight * 0.05).clamp(24.0, 42.0);
+    final spacingBottom = (screenHeight * 0.05).clamp(24.0, 42.0);
+    
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
@@ -45,79 +54,133 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
             /// ===== Main content =====
             Padding(
               padding: EdgeInsets.symmetric(horizontal: spacing.screenPadding),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // ===== Logo =====
-                  Expanded(
-                    flex: 3,
-                    child: Center(
-                      child: AnimatedOpacity(
-                        opacity: 1,
-                        duration: const Duration(seconds: 2),
-                        curve: Curves.easeIn,
-                        child: Image.asset(
-                          logo,
-                          width: 260,
-                          height: 260,
-                          fit: BoxFit.contain,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final availableHeight = constraints.maxHeight;
+                  final needsScroll = availableHeight < screenHeight * 0.8;
+                  
+                  final content = Column(
+                    mainAxisAlignment: needsScroll 
+                        ? MainAxisAlignment.start 
+                        : MainAxisAlignment.center,
+                    mainAxisSize: needsScroll 
+                        ? MainAxisSize.min 
+                        : MainAxisSize.max,
+                    children: [
+                      // ===== Logo =====
+                      if (!needsScroll)
+                        Expanded(
+                          flex: 3,
+                          child: Center(
+                            child: AnimatedOpacity(
+                              opacity: 1,
+                              duration: const Duration(seconds: 2),
+                              curve: Curves.easeIn,
+                              child: Image.asset(
+                                logo,
+                                width: logoSize,
+                                height: logoSize,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        SizedBox(height: spacingBetween * 0.5),
+                      
+                      if (!needsScroll) const SizedBox.shrink()
+                      else
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: spacingBetween),
+                          child: AnimatedOpacity(
+                            opacity: 1,
+                            duration: const Duration(seconds: 2),
+                            curve: Curves.easeIn,
+                            child: Image.asset(
+                              logo,
+                              width: logoSize,
+                              height: logoSize,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+
+                      // ===== Text hello =====
+                      AnimatedSlide(
+                        offset: const Offset(0, 0),
+                        duration: const Duration(milliseconds: 800),
+                        curve: Curves.easeOut,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                S.of(context)!.hello_first,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  fontSize: fontSize,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                S.of(context)!.hello_second,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  color: theme.primaryColor,
+                                  fontSize: fontSize,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
 
-                  // ===== Text hello =====
-                  AnimatedSlide(
-                    offset: const Offset(0, 0.1),
-                    duration: const Duration(milliseconds: 800),
-                    curve: Curves.easeOut,
-                    child: Column(
-                      children: [
-                        Text(
-                          S.of(context)!.hello_first,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontSize: 42,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      SizedBox(height: spacingBetween),
+
+                      // ===== Buttons =====
+                      GradientButton(
+                        key: const Key('goLogin'),
+                        text: S.of(context)!.login,
+                        onPressed: () {
+                          context.go('/login');
+                        },
+                      ),
+
+                      // const SizedBox(height: 10),
+                      // SizedBox(
+                      //   key: const Key('goRegister'),
+                      //   width: double.infinity,
+                      //   child: OutlinedButton(
+                      //     style: OutlinedButton.styleFrom(
+                      //       side: BorderSide(color: theme.primaryColor),
+                      //     ),
+                      //     onPressed: () => context.go('/register'),
+                      //     child: Text(S.of(context)!.register),
+                      //   ),
+                      // ),
+                      SizedBox(height: spacingBottom),
+                    ],
+                  );
+                  
+                  if (needsScroll) {
+                    return SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          S.of(context)!.hello_second,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: theme.primaryColor,
-                            fontSize: 42,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: IntrinsicHeight(
+                          child: content,
                         ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 42),
-
-                  // ===== Buttons =====
-                  GradientButton(
-                    key: const Key('goLogin'),
-                    text: S.of(context)!.login,
-                    onPressed: () {
-                      context.go('/login');
-                    },
-                  ),
-
-                  // const SizedBox(height: 10),
-                  // SizedBox(
-                  //   key: const Key('goRegister'),
-                  //   width: double.infinity,
-                  //   child: OutlinedButton(
-                  //     style: OutlinedButton.styleFrom(
-                  //       side: BorderSide(color: theme.primaryColor),
-                  //     ),
-                  //     onPressed: () => context.go('/register'),
-                  //     child: Text(S.of(context)!.register),
-                  //   ),
-                  // ),
-                  const SizedBox(height: 42),
-                ],
+                      ),
+                    );
+                  } else {
+                    return content;
+                  }
+                },
               ),
             ),
           ],
