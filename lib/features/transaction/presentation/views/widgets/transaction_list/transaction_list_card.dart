@@ -17,6 +17,7 @@ class TransactionListCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onReviewTap;
   final VoidCallback? onComplainTap;
+  final double? overridePrice;
 
   const TransactionListCard({
     super.key,
@@ -25,6 +26,7 @@ class TransactionListCard extends StatelessWidget {
     required this.onTap,
     this.onReviewTap,
     this.onComplainTap,
+    this.overridePrice,
   });
 
   @override
@@ -32,6 +34,16 @@ class TransactionListCard extends StatelessWidget {
     final theme = Theme.of(context);
     final space = theme.extension<AppSpacing>()!.screenPadding;
     final s = S.of(context)!;
+
+    final detailsTotal = transaction.transactionDetails.fold<double>(
+      0,
+      (sum, d) => sum + d.finalPrice,
+    );
+    final displayPrice = (overridePrice != null && overridePrice! > 0)
+        ? overridePrice!
+        : (transaction.totalPrice > 0
+            ? transaction.totalPrice
+            : (detailsTotal > 0 ? detailsTotal : 0.0));
 
     return InkWell(
       onTap: onTap,
@@ -68,9 +80,10 @@ class TransactionListCard extends StatelessWidget {
             ),
 
             // Price chip
-            if (transaction.totalPrice > 0) ...[
+            if (displayPrice > 0 ||
+                transaction.statusEnum == TransactionStatus.completed) ...[
               SizedBox(height: space),
-              _TransactionPriceChip(price: transaction.totalPrice),
+              _TransactionPriceChip(price: displayPrice),
             ],
 
             // Action buttons for completed transactions
@@ -395,10 +408,8 @@ class _TransactionPriceChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.attach_money, size: space * 1.5, color: AppColors.primary),
-          SizedBox(width: space * 0.5),
           Text(
-            formatVND(price),
+            '${formatVND(price)} VND',
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.primary,

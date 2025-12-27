@@ -505,14 +505,20 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                formattedEarning,
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  color: theme.primaryColor,
-                  fontWeight: FontWeight.w900,
-                  fontSize: space * 5.5,
-                  letterSpacing: -1.5,
-                  height: 1.1,
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    formattedEarning,
+                    style: theme.textTheme.headlineLarge?.copyWith(
+                      color: theme.primaryColor,
+                      fontWeight: FontWeight.w900,
+                      fontSize: space * 5.5,
+                      letterSpacing: -1.5,
+                      height: 1.1,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(width: space * 0.8),
@@ -975,15 +981,15 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                 extra: {'isCollectorView': true},
               ),
             ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.schedule_rounded,
-              label: s.scheduleListTitle,
-              color: Colors.purple,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/collector-schedule-list'),
-            ),
+            // _buildQuickActionCard(
+            //   context,
+            //   icon: Icons.schedule_rounded,
+            //   label: s.scheduleListTitle,
+            //   color: Colors.purple,
+            //   space: space,
+            //   theme: theme,
+            //   onTap: () => context.push('/collector-schedule-list'),
+            // ),
             _buildQuickActionCard(
               context,
               icon: Icons.receipt_long_rounded,

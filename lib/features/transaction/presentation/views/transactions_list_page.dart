@@ -36,6 +36,9 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
   // Local accumulated data for pagination
   List<TransactionEntity> _accumulatedData = [];
 
+  final Map<String, double> _priceOverrides = {};
+  final Set<String> _priceFetching = {};
+
   // Filter state
   String _filterType = 'createAt'; // 'createAt' or 'updateAt'
   bool _isDescending = true; // true = newest first, false = oldest first
@@ -109,6 +112,8 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
           _hasMoreData = state.listData!.data.length >= _pageSize;
         }
       });
+
+      await _prefetchMissingPrices();
     }
   }
 
@@ -140,6 +145,47 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
           _hasMoreData = newData.length >= _pageSize;
         }
       });
+
+      await _prefetchMissingPrices();
+    }
+  }
+
+  Future<void> _prefetchMissingPrices() async {
+    final usecase = ref.read(getTransactionDetailUsecaseProvider);
+
+    final candidates = _accumulatedData.where((t) {
+      if (t.statusEnum != TransactionStatus.completed) return false;
+      if (_priceOverrides.containsKey(t.transactionId)) return false;
+      if (_priceFetching.contains(t.transactionId)) return false;
+      final hasDetails = t.transactionDetails.isNotEmpty;
+      return t.totalPrice <= 0 && !hasDetails;
+    }).take(6).toList();
+
+    if (candidates.isEmpty) return;
+
+    for (final t in candidates) {
+      _priceFetching.add(t.transactionId);
+    }
+
+    for (final t in candidates) {
+      try {
+        final detail = await usecase(t.transactionId);
+        final detailsTotal = detail.transactionDetails.fold<double>(
+          0,
+          (sum, d) => sum + d.finalPrice,
+        );
+        final price = detail.totalPrice > 0
+            ? detail.totalPrice
+            : (detailsTotal > 0 ? detailsTotal : 0.0);
+        if (!mounted) return;
+        setState(() {
+          _priceOverrides[t.transactionId] = price;
+        });
+      } catch (_) {
+        // ignore
+      } finally {
+        _priceFetching.remove(t.transactionId);
+      }
     }
   }
 
@@ -285,6 +331,8 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
                         return TransactionListCard(
                           transaction: transaction,
                           userRole: _userRole,
+                          overridePrice:
+                              _priceOverrides[transaction.transactionId],
                           onTap: () => _navigateToDetail(transaction),
                           onReviewTap: () async {
                             final result = await context.pushNamed<bool>(
