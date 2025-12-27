@@ -32,13 +32,13 @@ import 'package:GreenConnectMobile/features/post/presentation/views/update_recyc
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setting.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setup.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/upgrade_verification.dart';
+import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/recurring_schedule_detail_page.dart';
+import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/recurring_schedules_page.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/list_history_post.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/my_rewards_page.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_history_page.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/rewards_page.dart';
-import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/recurring_schedules_page.dart';
-import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/recurring_schedule_detail_page.dart';
 import 'package:GreenConnectMobile/features/schedule/presentation/views/schedules_list_page.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/credit_transactions_list_page.dart';
@@ -333,25 +333,15 @@ final GoRouter greenRouter = GoRouter(
       name: 'transaction-detail',
       builder: (context, state) {
         final initialData = state.extra as Map<String, dynamic>? ?? {};
-        // Extract all fields from extra data
         final rawTransactionId = initialData['transactionId']?.toString();
         final transactionId = rawTransactionId?.trim();
 
-        if (transactionId != null &&
-            transactionId.isNotEmpty &&
-            initialData['hasTransactionData'] != true) {
-          return onlyone.TransactionDetailPageModern(transactionId: transactionId);
-        }
-
+        // TransactionDetailPageModern: luôn nhận postId, collectorId, slotId để load post transactions
         return TransactionDetailPageModern(
           transactionId: transactionId,
           postId: initialData['postId'] as String?,
           collectorId: initialData['collectorId'] as String?,
           slotId: initialData['slotId'] as String?,
-          // Additional transaction data for reconstruction
-          transactionData: initialData['hasTransactionData'] == true
-              ? initialData
-              : null,
         );
       },
     ),
@@ -362,11 +352,9 @@ final GoRouter greenRouter = GoRouter(
         final initialData = state.extra as Map<String, dynamic>? ?? {};
         final transactionId = initialData['transactionId'] as String;
 
+        // TransactionDetailPageModern (onlyone): chỉ nhận transactionId, gọi fetchTransactionDetail
         return onlyone.TransactionDetailPageModern(
           transactionId: transactionId,
-          // Additional transaction data for reconstruction
-          transactionData:
-              initialData['hasTransactionData'] == true ? initialData : null,
         );
       },
     ),

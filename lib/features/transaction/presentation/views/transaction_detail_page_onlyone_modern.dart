@@ -3,7 +3,6 @@ import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/message/presentation/providers/message_providers.dart';
-import 'package:GreenConnectMobile/features/profile/domain/entities/user_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/transaction_address_info.dart';
@@ -24,13 +23,9 @@ class TransactionDetailPageModern extends ConsumerStatefulWidget {
   // Transaction ID (required)
   final String transactionId;
 
-  // Additional transaction data from list (for reconstruction)
-  final Map<String, dynamic>? transactionData;
-
   const TransactionDetailPageModern({
     super.key,
     required this.transactionId,
-    this.transactionData,
   });
 
   @override
@@ -55,81 +50,11 @@ class _TransactionDetailPageModernState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadUserRole();
 
-      // Reconstruct transaction from passed data if available
-      if (widget.transactionData != null) {
-        _currentTransaction = _reconstructTransaction(widget.transactionData!);
-        setState(() {
-          _isLoading = false;
-        });
-      }
-
-      // Load transaction detail from API
+      // Load transaction detail from API (không dùng transactionData)
       _loadTransactionDetail();
     });
   }
 
-  /// Reconstruct TransactionEntity from passed data
-  TransactionEntity? _reconstructTransaction(Map<String, dynamic> data) {
-    try {
-      final transactionId = data['transactionId'] as String?;
-      if (transactionId == null) return null;
-
-      // Create UserEntity objects with required fields
-      final household = UserEntity(
-        userId: data['householdId'] as String? ?? '',
-        fullName: data['householdName'] as String? ?? '',
-        phoneNumber: data['householdPhone'] as String? ?? '',
-        pointBalance: (data['householdPointBalance'] as int?) ?? 0,
-        rank: data['householdRank'] as String? ?? '',
-        roles: (data['householdRoles'] as List<dynamic>?)
-                ?.map((e) => e.toString())
-                .toList() ??
-            [],
-      );
-
-      final scrapCollector = UserEntity(
-        userId: data['scrapCollectorId'] as String? ?? '',
-        fullName: data['collectorName'] as String? ?? '',
-        phoneNumber: data['collectorPhone'] as String? ?? '',
-        pointBalance: (data['collectorPointBalance'] as int?) ?? 0,
-        rank: data['collectorRank'] as String? ?? '',
-        roles: (data['collectorRoles'] as List<dynamic>?)
-                ?.map((e) => e.toString())
-                .toList() ??
-            [],
-      );
-
-      return TransactionEntity(
-        transactionId: transactionId,
-        householdId: data['householdId'] as String? ?? '',
-        household: household,
-        scrapCollectorId: data['scrapCollectorId'] as String? ?? '',
-        scrapCollector: scrapCollector,
-        offerId: data['offerId'] as String? ?? '',
-        offer: null, // Offer data not fully passed, will be null
-        status: data['transactionStatus'] as String? ?? '',
-        scheduledTime: data['transactionScheduledTime'] != null
-            ? DateTime.tryParse(data['transactionScheduledTime'] as String)
-            : null,
-        checkInTime: data['transactionCheckInTime'] != null
-            ? DateTime.tryParse(data['transactionCheckInTime'] as String)
-            : null,
-        createdAt: data['transactionCreatedAt'] != null
-            ? DateTime.parse(data['transactionCreatedAt'] as String)
-            : DateTime.now(),
-        updatedAt: data['transactionUpdatedAt'] != null
-            ? DateTime.tryParse(data['transactionUpdatedAt'] as String)
-            : null,
-        transactionDetails: const [],
-        totalPrice: (data['transactionTotalPrice'] as num?)?.toDouble() ?? 0.0,
-        timeSlotId: data['timeSlotId'] as String?,
-        timeSlot: null,
-      );
-    } catch (e) {
-      debugPrint('❌ ERROR RECONSTRUCT TRANSACTION: $e');
-      return null;
-    }
-  }
 
   Future<void> _loadUserRole() async {
     final user = await _tokenStorage.getUserData();
