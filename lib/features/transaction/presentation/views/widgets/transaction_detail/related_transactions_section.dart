@@ -245,7 +245,7 @@ class _RelatedTransactionCard extends StatelessWidget {
             if (slotId != null && slotId.isNotEmpty) 'slotId': slotId,
             'hasTransactionData': true,
             'transactionStatus': transaction.status,
-            'transactionTotalPrice': transaction.totalPrice,
+            'transactionTotalPrice': transaction.totalPrice.abs(),
             'transactionCreatedAt': transaction.createdAt.toIso8601String(),
             'transactionScheduledTime':
                 transaction.scheduledTime?.toIso8601String(),
@@ -378,7 +378,7 @@ class _RelatedTransactionCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    formatVND(transaction.totalPrice),
+                    "${formatVND(transaction.totalPrice.abs())} ${s.per_unit}",
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.primaryColor,
                       fontWeight: FontWeight.bold,

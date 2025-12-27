@@ -138,7 +138,7 @@ class TransactionActionButtons extends ConsumerWidget {
     return GradientButton(
       onPressed: () => _showCheckInDialog(context),
       text: s.check_in,
-      icon:  Icon(Icons.location_on, color: theme.scaffoldBackgroundColor),
+      icon: Icon(Icons.location_on, color: theme.scaffoldBackgroundColor),
     );
   }
 
@@ -154,7 +154,7 @@ class TransactionActionButtons extends ConsumerWidget {
     return GradientButton(
       onPressed: () => _showProcessDialog(context, isApprove: true),
       text: s.approve,
-      icon:  Icon(Icons.check, color:theme.scaffoldBackgroundColor),
+      icon: Icon(Icons.check, color: theme.scaffoldBackgroundColor),
     );
   }
 
@@ -213,9 +213,8 @@ class TransactionActionButtons extends ConsumerWidget {
           color: isCanceled ? AppColors.warningUpdate : AppColors.danger,
           width: 2,
         ),
-        foregroundColor: isCanceled
-            ? AppColors.warningUpdate
-            : AppColors.danger,
+        foregroundColor:
+            isCanceled ? AppColors.warningUpdate : AppColors.danger,
         backgroundColor: isCanceled
             ? AppColors.warningUpdate.withValues(alpha: 0.05)
             : AppColors.danger.withValues(alpha: 0.05),
@@ -400,7 +399,7 @@ class TransactionActionButtons extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         s.emergency_cancel_note,
-                        style:const TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.danger,
                           fontWeight: FontWeight.w500,
@@ -505,7 +504,7 @@ class TransactionActionButtons extends ConsumerWidget {
       SnackBar(
         content: Row(
           children: [
-             Icon(Icons.check_circle, color: theme.scaffoldBackgroundColor),
+            Icon(Icons.check_circle, color: theme.scaffoldBackgroundColor),
             SizedBox(width: space),
             Expanded(child: Text(message)),
           ],

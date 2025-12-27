@@ -2,30 +2,39 @@ import 'package:GreenConnectMobile/features/offer/domain/entities/offer_detail_e
 import 'package:GreenConnectMobile/features/post/domain/entities/transaction_entity.dart'
     as post_entity;
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/type_badge.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_request.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
+import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class InputAllTransactionsQuantityDialog extends StatefulWidget {
+class InputAllTransactionsQuantityDialog extends ConsumerStatefulWidget {
   final post_entity.PostTransactionsResponseEntity transactionsData;
+  final TransactionEntity transaction;
+  final VoidCallback onActionCompleted;
 
   const InputAllTransactionsQuantityDialog({
     super.key,
     required this.transactionsData,
+    required this.transaction,
+    required this.onActionCompleted,
   });
 
   @override
-  State<InputAllTransactionsQuantityDialog> createState() =>
+  ConsumerState<InputAllTransactionsQuantityDialog> createState() =>
       _InputAllTransactionsQuantityDialogState();
 }
 
 class _InputAllTransactionsQuantityDialogState
-    extends State<InputAllTransactionsQuantityDialog> {
+    extends ConsumerState<InputAllTransactionsQuantityDialog> {
   final Map<String, TextEditingController> _quantityControllers = {};
   final Map<String, _ItemInfo> _itemInfoMap = {};
   final _formKey = GlobalKey<FormState>();
-  final bool _isLoading = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -353,83 +362,97 @@ class _InputAllTransactionsQuantityDialogState
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    /// ===== HEADER =====
                                     Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        // Image or icon
-                                        if (itemInfo.imageUrl != null &&
-                                            itemInfo.imageUrl!.isNotEmpty)
-                                          ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                              spacing / 2,
-                                            ),
-                                            child: Image.network(
-                                              itemInfo.imageUrl!,
-                                              width: 40,
-                                              height: 40,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (_, __, ___) =>
-                                                  Icon(
-                                                Icons.recycling,
-                                                color: theme.primaryColor,
-                                                size: spacing * 1.5,
-                                              ),
-                                            ),
-                                          )
-                                        else
-                                          Icon(
-                                            Icons.recycling,
-                                            color: theme.primaryColor,
-                                            size: spacing * 1.5,
+                                        // Image / Icon
+                                        Container(
+                                          width: 44,
+                                          height: 44,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(spacing / 2),
+                                            color: theme.cardColor,
                                           ),
-                                        SizedBox(width: spacing / 2),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                itemInfo.categoryName,
-                                                style: theme
-                                                    .textTheme.titleSmall
-                                                    ?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              if (itemInfo.type != null &&
-                                                  itemInfo.type!.isNotEmpty)
-                                                Padding(
-                                                  padding: EdgeInsets.only(
-                                                      top: spacing * 0.3),
-                                                  child: TypeBadge(
-                                                    type: itemInfo.type!,
+                                          child: itemInfo.imageUrl != null &&
+                                                  itemInfo.imageUrl!.isNotEmpty
+                                              ? ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(spacing / 2),
+                                                  child: Image.network(
+                                                    itemInfo.imageUrl!,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder: (_, __, ___) => Icon(
+                                                      Icons.recycling,
+                                                      color: theme.primaryColor,
+                                                    ),
                                                   ),
+                                                )
+                                              : Icon(
+                                                  Icons.recycling,
+                                                  color: theme.primaryColor,
                                                 ),
-                                            ],
+                                        ),
+                                        SizedBox(width: spacing * 0.75),
+
+                                        // Category name
+                                        Expanded(
+                                          child: Text(
+                                            itemInfo.categoryName,
+                                            style: theme.textTheme.titleSmall?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
                                         ),
+
+                                        // Type badge
+                                        if (itemInfo.type != null &&
+                                            itemInfo.type!.isNotEmpty)
+                                          Padding(
+                                            padding: EdgeInsets.only(left: spacing / 2),
+                                            child: TypeBadge(type: itemInfo.type!),
+                                          ),
                                       ],
                                     ),
-                                    SizedBox(height: spacing / 2),
-                                    Text(
-                                      s.price_display(
-                                        itemInfo.pricePerUnit
-                                            .toStringAsFixed(0),
-                                        s.per_unit,
-                                        itemInfo.unit,
+
+                                    SizedBox(height: spacing),
+
+                                    /// ===== INFO SECTION =====
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: spacing * 0.75,
+                                        vertical: spacing * 0.6,
                                       ),
-                                      style:
-                                          theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.hintColor,
+                                      decoration: BoxDecoration(
+                                        color: theme.cardColor,
+                                        borderRadius: BorderRadius.circular(spacing / 2),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            s.price_display(
+                                              itemInfo.pricePerUnit.toStringAsFixed(0),
+                                              s.per_unit,
+                                              itemInfo.unit,
+                                            ),
+                                            style: theme.textTheme.bodySmall?.copyWith(
+                                              color: theme.hintColor,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
+
                                     SizedBox(height: spacing),
+
+                                    /// ===== INPUT =====
                                     TextFormField(
                                       controller: controller,
                                       autovalidateMode:
                                           AutovalidateMode.onUserInteraction,
                                       decoration: InputDecoration(
-                                        labelText:
-                                            s.quantity_with_unit(itemInfo.unit),
                                         hintText: s.enter_actual_quantity_hint,
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(
@@ -449,7 +472,7 @@ class _InputAllTransactionsQuantityDialogState
                                           return s.please_enter_quantity;
                                         }
                                         final quantity = double.tryParse(value);
-                                        if (quantity == null || quantity <= 0) {
+                                        if (quantity == null || quantity < 0) {
                                           return s.invalid_quantity;
                                         }
                                         return null;
@@ -479,7 +502,7 @@ class _InputAllTransactionsQuantityDialogState
                     child: ElevatedButton(
                       onPressed: _isLoading
                           ? null
-                          : () {
+                          : () async {
                               // Validate all form fields first
                               if (!_formKey.currentState!.validate()) {
                                 // Validation failed, errors will be shown under each field
@@ -487,21 +510,120 @@ class _InputAllTransactionsQuantityDialogState
                               }
 
                               // Get all items that user has entered quantity for
-                              final details = _getDetails();
+                              final detailsMap = _getDetails();
 
                               // Check if at least one item has quantity
-                              if (details.isEmpty) {
+                              if (detailsMap.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(s.please_enter_quantity),
+                                    content: Text(s.enter_at_least_one_item_toast),
                                     backgroundColor: AppColors.danger,
                                   ),
                                 );
                                 return;
                               }
 
-                              // Send all items that user entered quantity for
-                              Navigator.of(context).pop(details);
+                              // Convert to TransactionDetailRequest list
+                              final details = detailsMap.map((item) {
+                                return TransactionDetailRequest(
+                                  scrapCategoryId: item['scrapCategoryId'] as String,
+                                  pricePerUnit: item['pricePerUnit'] as double,
+                                  unit: item['unit'] as String,
+                                  quantity: item['quantity'] as double,
+                                );
+                              }).toList();
+
+                              // Get scrapPostId and slotId from transaction
+                              // Note: API endpoint is shared for all transactions in the same scrapPost and slot
+                              final scrapPostId = widget.transaction.offer?.scrapPostId ?? '';
+                              final slotId =
+                                  widget.transaction.timeSlotId ?? widget.transaction.offer?.timeSlotId ?? '';
+
+                              if (scrapPostId.isEmpty || slotId.isEmpty) {
+                                CustomToast.show(
+                                  context,
+                                  s.operation_failed,
+                                  type: ToastType.error,
+                                );
+                                return;
+                              }
+
+                              // API endpoint /v1/transactions/details?scrapPostId=...&slotId=...
+                              // is a shared endpoint for ALL transactions in the same scrapPost and slot
+                              // So we need to send ALL items in ONE request, not split by transaction
+                              // Use the first transaction's ID for refresh
+                              final firstTransactionId =
+                                  widget.transactionsData.transactions.first.transactionId;
+
+                              // Set loading state
+                              setState(() {
+                                _isLoading = true;
+                              });
+
+                              try {
+                                final success = await ref
+                                    .read(transactionViewModelProvider.notifier)
+                                    .updateTransactionDetails(
+                                      scrapPostId: scrapPostId,
+                                      slotId: slotId,
+                                      transactionId: firstTransactionId,
+                                      details: details, // Send ALL items in one request
+                                    );
+
+                                if (!mounted) return;
+
+                                setState(() {
+                                  _isLoading = false;
+                                });
+
+                                if (success) {
+                                  CustomToast.show(
+                                    context,
+                                    s.quantity_updated_successfully,
+                                    type: ToastType.success,
+                                  );
+
+                                  // Notify parent to refresh detail page
+                                  widget.onActionCompleted();
+                                  // Close the bottom sheet/dialog
+                                  Navigator.of(context).pop();
+                                } else {
+                                  final state = ref.read(transactionViewModelProvider);
+                                  final errorMsg = state.errorMessage;
+
+                                  if (errorMsg != null &&
+                                      (errorMsg.contains('Check-in') ||
+                                          errorMsg.contains('check-in') ||
+                                          errorMsg.contains('chưa Check-in'))) {
+                                    CustomToast.show(
+                                      context,
+                                      s.check_in_first_error,
+                                      type: ToastType.error,
+                                    );
+                                  } else if (errorMsg != null &&
+                                      (errorMsg.contains('loại ve chai') ||
+                                          errorMsg.contains('scrap category'))) {
+                                    CustomToast.show(
+                                      context,
+                                      s.invalid_scrap_category_error,
+                                      type: ToastType.error,
+                                    );
+                                  } else {
+                                    CustomToast.show(
+                                      context,
+                                      s.operation_failed,
+                                      type: ToastType.error,
+                                    );
+                                  }
+                                }
+                              } catch (e) {
+                                if (mounted) {
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                  CustomToast.show(context, s.operation_failed, type: ToastType.error);
+                                }
+                              }
                             },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.primaryColor,

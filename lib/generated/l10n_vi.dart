@@ -1951,7 +1951,7 @@ class SVi extends S {
   String get earliest_at_top => 'Sớm nhất ở trên';
 
   @override
-  String get emergency_cancel => 'Hủy Khẩn Cấp';
+  String get emergency_cancel => 'Hủy';
 
   @override
   String get emergency_cancel_confirm => 'Hủy Giao Dịch Khẩn Cấp';
@@ -3092,6 +3092,9 @@ class SVi extends S {
   String get transaction_value => 'Giá trị giao dịch';
 
   @override
+  String get total_money => 'Tổng tiền';
+
+  @override
   String get related_transactions => 'Giao dịch liên quan';
 
   @override
@@ -3248,4 +3251,19 @@ class SVi extends S {
 
   @override
   String get recurring_schedule_detail_delete_failed => 'Xóa vật phẩm thất bại';
+
+  @override
+  String get system_reference_price => 'Giá hệ thống';
+
+  @override
+  String get total_will_receive => 'Người đăng bài nhận';
+
+  @override
+  String get total_will_pay => 'Thu gom nhận';
+
+  @override
+  String get service_type => 'Loại hình dịch vụ';
+
+  @override
+  String get item_quantity => 'Số lượng vật phẩm';
 }

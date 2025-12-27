@@ -74,12 +74,13 @@ class _TransactionDetailPageModernState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadUserRole();
 
-      // Reconstruct transaction from passed data if available
+      // Reconstruct transaction from passed data if available (temporary, will be replaced by _loadPostTransactions)
       if (widget.transactionData != null) {
         _currentTransaction = _reconstructTransaction(widget.transactionData!);
       }
 
-      // Always load post transactions if we have the required params
+      // Always load post transactions to get fresh data from API
+      // This will replace _currentTransaction with data from _loadPostTransactions
       _loadPostTransactionsIfPossible();
     });
   }
@@ -241,13 +242,26 @@ class _TransactionDetailPageModernState
   }
 
   /// Extract params and load post transactions
+  /// Always try to load from _loadPostTransactions to ensure fresh data
   Future<void> _loadPostTransactionsIfPossible() async {
-    // Use provided params directly
-    final postId = widget.postId;
-    final collectorId = widget.collectorId;
-    final slotId = widget.slotId;
+    // Priority 1: Use provided params directly
+    String? postId = widget.postId;
+    String? collectorId = widget.collectorId;
+    String? slotId = widget.slotId;
+
+    // Priority 2: If params not provided, try to extract from current transaction
+    if ((postId == null || postId.isEmpty) && _currentTransaction != null) {
+      postId = _currentTransaction!.offer?.scrapPostId;
+    }
+    if ((collectorId == null || collectorId.isEmpty) && _currentTransaction != null) {
+      collectorId = _currentTransaction!.scrapCollectorId;
+    }
+    if ((slotId == null || slotId.isEmpty) && _currentTransaction != null) {
+      slotId = _currentTransaction!.timeSlotId ?? _currentTransaction!.offer?.timeSlotId;
+    }
 
     // Load post transactions if all required params are available
+    // Always load from API to ensure fresh data, not from passed transactionData
     if (postId != null &&
         postId.isNotEmpty &&
         collectorId != null &&
@@ -302,11 +316,14 @@ class _TransactionDetailPageModernState
           _amountDifference = state.transactionsData?.amountDifference ?? 0.0;
           _isLoadingTransactions = false;
 
-          // Update current transaction from list if available
+          // ALWAYS update current transaction from _loadPostTransactions data
+          // This ensures UI always shows data from API, not from passed transactionData
           if (state.transactionsData != null &&
               state.transactionsData!.transactions.isNotEmpty) {
             final currentTransactionId =
                 widget.transactionId ?? _currentTransaction?.transactionId;
+
+            int? selectedIndex;
 
             if (currentTransactionId != null) {
               // Find current transaction in the list
@@ -314,26 +331,43 @@ class _TransactionDetailPageModernState
                   .indexWhere((t) => t.transactionId == currentTransactionId);
 
               if (foundIndex >= 0) {
-                // Convert post_entity.TransactionEntity to transaction_entity.TransactionEntity
-                _currentTransaction = _convertPostTransactionToTransaction(
-                  state.transactionsData!.transactions[foundIndex],
-                );
-                _currentTransactionIndex = foundIndex;
-              } else if (_currentTransaction == null &&
-                  state.transactionsData!.transactions.isNotEmpty) {
-                // If current transaction not found, use first one
-                _currentTransaction = _convertPostTransactionToTransaction(
-                  state.transactionsData!.transactions[0],
-                );
-                _currentTransactionIndex = 0;
+                selectedIndex = foundIndex;
               }
-            } else if (_currentTransaction == null &&
-                state.transactionsData!.transactions.isNotEmpty) {
-              // No transactionId provided, use first one
+            }
+
+            // If no specific transaction found or no transactionId provided,
+            // try to find the best transaction to display:
+            // Priority 1: Transaction WITHOUT transactionDetails (needs data input) - for collector
+            // Priority 2: Transaction with transactionDetails (has data entered)
+            // Priority 3: First transaction
+            if (selectedIndex == null) {
+              // Find transaction WITHOUT transactionDetails first (needs input)
+              final transactionWithoutDetailsIndex = state.transactionsData!.transactions
+                  .indexWhere((t) => t.transactionDetails.isEmpty);
+
+              if (transactionWithoutDetailsIndex >= 0) {
+                selectedIndex = transactionWithoutDetailsIndex;
+              } else {
+                // If all transactions have details, find one with details
+                final transactionWithDetailsIndex = state.transactionsData!.transactions
+                    .indexWhere((t) => t.transactionDetails.isNotEmpty);
+
+                if (transactionWithDetailsIndex >= 0) {
+                  selectedIndex = transactionWithDetailsIndex;
+                } else {
+                  // Fallback: use first one
+                  selectedIndex = 0;
+                }
+              }
+            }
+
+            // ALWAYS use data from _loadPostTransactions (API)
+            if (selectedIndex >= 0 &&
+                selectedIndex < state.transactionsData!.transactions.length) {
               _currentTransaction = _convertPostTransactionToTransaction(
-                state.transactionsData!.transactions[0],
+                state.transactionsData!.transactions[selectedIndex],
               );
-              _currentTransactionIndex = 0;
+              _currentTransactionIndex = selectedIndex;
             }
           }
         });
@@ -358,31 +392,62 @@ class _TransactionDetailPageModernState
   void _onActionCompleted() {
     setState(() => _hasChanges = true);
     
-    // If household role, reload and navigate back to list after accept/reject
-    if (_userRole == Role.household) {
-      // Reload post transactions to get updated status
-      _loadPostTransactionsIfPossible().then((_) {
-        if (!mounted) return;
+    // Check current status before reload to detect status changes
+    final currentStatus = _currentTransaction?.statusEnum;
+    
+    // Reload post transactions to get updated status
+    _loadPostTransactionsIfPossible().then((_) {
+      if (!mounted) return;
+      
+      // Check transaction status after reload
+      if (_currentTransaction != null) {
+        final status = _currentTransaction!.statusEnum;
         
-        // Check if transaction status changed (accept -> completed, reject -> canceled)
-        if (_currentTransaction != null) {
-          final status = _currentTransaction!.statusEnum;
-          if (status == TransactionStatus.completed ||
-              status == TransactionStatus.canceledByUser ||
-              status == TransactionStatus.canceledBySystem) {
-            // Navigate back to transaction list page
-            if (context.canPop()) {
-              context.pop(true); // Return with changes flag
-            } else {
-              context.go('/household-list-transactions');
-            }
-            return;
-          }
+        // Only navigate back to list if status changed to a final state
+        // Don't navigate if status is still inProgress (e.g., after input details)
+        // Navigate for:
+        // - completed: after approve
+        // - canceledByUser: after reject or toggle cancel
+        // - canceledBySystem: system canceled
+        // - status changed from inProgress to something else
+        final statusChanged = currentStatus != null && currentStatus != status;
+        final isFinalState = status == TransactionStatus.completed ||
+            status == TransactionStatus.canceledByUser ||
+            status == TransactionStatus.canceledBySystem;
+        
+        if (isFinalState || (statusChanged && currentStatus == TransactionStatus.inProgress)) {
+          // Navigate back to transaction list page
+          _navigateToTransactionList();
         }
-      });
+        // If status is still inProgress, stay on detail page (e.g., after input details)
+      }
+    });
+  }
+
+  void _navigateToTransactionList() {
+    if (!mounted) return;
+    
+    // Try to pop first (if we came from list page)
+    if (context.canPop()) {
+      context.pop(true); // Return with changes flag
     } else {
-      // Reload post transactions after action (for collectors)
-      _loadPostTransactionsIfPossible();
+      // If can't pop, navigate to the correct list page based on user role
+      String targetRoute;
+      if (_userRole == Role.household) {
+        targetRoute = '/household-list-transactions';
+      } else if (_userRole == Role.individualCollector ||
+          _userRole == Role.businessCollector) {
+        targetRoute = '/collector-list-transactions';
+      } else {
+        // Fallback: if role is not set, don't navigate
+        debugPrint('⚠️ WARNING: User role not set, cannot navigate to transaction list');
+        return;
+      }
+      
+      // Use pushReplacement or go to ensure we navigate correctly
+      if (mounted) {
+        context.go(targetRoute);
+      }
     }
   }
 
@@ -515,7 +580,7 @@ class _TransactionDetailContent extends StatelessWidget {
                         spacing,
                         0,
                         spacing,
-                        spacing * 6,
+                        spacing * 12, // Increased to allow scrolling above floating chat button
                       ),
                       child: TransactionDetailContentBody(
                         transaction: transaction,
