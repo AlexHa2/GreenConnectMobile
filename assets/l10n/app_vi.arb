@@ -253,7 +253,7 @@
   "ward_commune_hint":"xã thuận an",
   "personal_information":"Thông tin cá nhân",
   "fullName":"Họ và tên",
-  "fullName_hint":"Alex ha",
+  "fullName_hint":"Nguyễn Văn A",
   "gender":"Giới tính",
   "date_of_birth":"Ngày sinh",
   "date_of_birth_hint":"2025-11-19",
@@ -401,7 +401,7 @@
   "cccd_warning_rules": "Không che mặt, không bị mờ, không chụp nghiêng/góc khuất.\nThời gian xác minh: ngay lập tức với AI.",
   "invalid_id_card_image": "Vui lòng tải lên ảnh mặt trước căn cước công dân hợp lệ. Đảm bảo ảnh rõ nét và hiển thị mặt trước của CCCD.",
   "ai_verification_error": "Không thể xác minh căn cước công dân. Vui lòng đảm bảo bạn tải lên ảnh mặt trước CCCD rõ ràng.",
-  "verification_already_pending": "Bạn đã có yêu cầu xác minh đang chờ duyệt. Vui lòng đợi phê duyệt.",
+  "verification_already_pending": "Căn cước đã được sử dụng cho hoặc không hợp lệ",
   "verification_conflict_error": "Đã tồn tại yêu cầu xác minh. Vui lòng liên hệ hỗ trợ nếu cần cập nhật.",
   "buyer_type":"Loại người thu gom",
   "update_verification":"Cập nhật xác thực",
@@ -1162,6 +1162,7 @@
   "total_will_receive":"Người đăng bài nhận",
   "total_will_pay":"Thu gom nhận",
   "service_type":"Loại hình dịch vụ",
-  "item_quantity":"Số lượng vật phẩm"
+  "item_quantity":"Số lượng vật phẩm",
+  "error_time_in_past":"Không thể chọn giờ trong quá khứ"
                       
 }

@@ -10,7 +10,6 @@ import 'package:GreenConnectMobile/features/recurring_schedule/presentation/prov
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/address_picker_bottom_sheet.dart';
-import 'package:GreenConnectMobile/shared/widgets/app_input_field.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +80,8 @@ class _CreateRecurringSchedulePageState
     return detail.scrapCategoryId;
   }
 
-  String _detailSubtitle(BuildContext context, RecurringScheduleDetailEntity d) {
+  String _detailSubtitle(
+      BuildContext context, RecurringScheduleDetailEntity d) {
     final s = S.of(context)!;
     final qty = d.quantity;
     final unit = (d.unit ?? '').trim();
@@ -187,8 +187,7 @@ class _CreateRecurringSchedulePageState
                         Expanded(
                           child: TextField(
                             controller: quantityCtrl,
-                            keyboardType:
-                                const TextInputType.numberWithOptions(
+                            keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                               signed: false,
                             ),
@@ -477,7 +476,8 @@ class _CreateRecurringSchedulePageState
                     TextField(
                       controller: amountDescCtrl,
                       decoration: InputDecoration(
-                        labelText: s.recurring_schedule_field_amount_description,
+                        labelText:
+                            s.recurring_schedule_field_amount_description,
                         isDense: true,
                       ),
                     ),
@@ -524,7 +524,8 @@ class _CreateRecurringSchedulePageState
                                   return;
                                 }
 
-                                if (scrapCategoryId != current.scrapCategoryId &&
+                                if (scrapCategoryId !=
+                                        current.scrapCategoryId &&
                                     _hasCategoryExists(scrapCategoryId)) {
                                   CustomToast.show(
                                     context,
@@ -546,7 +547,8 @@ class _CreateRecurringSchedulePageState
                                 }
 
                                 setState(() {
-                                  _details[index] = RecurringScheduleDetailEntity(
+                                  _details[index] =
+                                      RecurringScheduleDetailEntity(
                                     id: '',
                                     recurringScheduleId: '',
                                     scrapCategoryId: scrapCategoryId,
@@ -861,8 +863,14 @@ class _CreateRecurringSchedulePageState
 
     final steps = <({String title, IconData icon})>[
       (title: S.of(context)!.post_information, icon: Icons.list_alt_rounded),
-      (title: S.of(context)!.scheduleListTitle, icon: Icons.calendar_month_rounded),
-      (title: S.of(context)!.pricing_information, icon: Icons.inventory_2_rounded),
+      (
+        title: S.of(context)!.scheduleListTitle,
+        icon: Icons.calendar_month_rounded
+      ),
+      (
+        title: S.of(context)!.pricing_information,
+        icon: Icons.inventory_2_rounded
+      ),
     ];
 
     return Column(
@@ -895,7 +903,8 @@ class _CreateRecurringSchedulePageState
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 6,
-            backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.08),
+            backgroundColor:
+                theme.colorScheme.onSurface.withValues(alpha: 0.08),
             valueColor: AlwaysStoppedAnimation<Color>(theme.primaryColor),
           ),
         ),
@@ -969,8 +978,7 @@ class _CreateRecurringSchedulePageState
   Future<void> _submit() async {
     final s = S.of(context)!;
 
-    final okSteps =
-        _validateStep(0) && _validateStep(1) && _validateStep(2);
+    final okSteps = _validateStep(0) && _validateStep(1) && _validateStep(2);
     if (!okSteps) return;
 
     final title = _titleCtrl.text.trim();

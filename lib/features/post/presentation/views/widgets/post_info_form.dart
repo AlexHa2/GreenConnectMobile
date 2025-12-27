@@ -12,6 +12,7 @@ class PostInfoForm extends StatelessWidget {
   final VoidCallback? onGetCurrentLocation;
   final bool addressFound;
   final bool isLoadingLocation;
+  final String? addressValidationError;
 
   const PostInfoForm({
     super.key,
@@ -23,6 +24,7 @@ class PostInfoForm extends StatelessWidget {
     required this.addressFound,
     this.onGetCurrentLocation,
     this.isLoadingLocation = false,
+    this.addressValidationError,
   });
 
   @override
@@ -130,10 +132,26 @@ class PostInfoForm extends StatelessWidget {
                     ),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: BorderSide(color: theme.primaryColor),
+                      side: BorderSide(
+                        color: addressValidationError != null
+                            ? theme.colorScheme.error
+                            : theme.primaryColor,
+                      ),
                     ),
                   ),
                 ),
+                
+                // Show address validation error
+                if (addressValidationError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8, left: 12),
+                    child: Text(
+                      addressValidationError!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.error,
+                      ),
+                    ),
+                  ),
                 
                 // Hidden validator field
                 TextFormField(

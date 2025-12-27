@@ -1,5 +1,6 @@
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
+import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 
 class AddTimeSlotBottomSheet extends StatefulWidget {
@@ -23,6 +24,43 @@ class _AddTimeSlotBottomSheetState extends State<AddTimeSlotBottomSheet> {
   DateTime? pickedDate;
   TimeOfDay? startTime;
   TimeOfDay? endTime;
+
+  /// Check if a time is in the past for the selected date
+  bool _isTimeInPast(TimeOfDay time, [DateTime? date]) {
+    final selectedDate = date ?? pickedDate;
+    if (selectedDate == null) return false;
+    
+    final now = DateTime.now();
+    
+    // If selected date is today, check if time is in the past
+    if (selectedDate.year == now.year &&
+        selectedDate.month == now.month &&
+        selectedDate.day == now.day) {
+      final currentTime = TimeOfDay.fromDateTime(now);
+      return time.hour < currentTime.hour ||
+          (time.hour == currentTime.hour && time.minute < currentTime.minute);
+    }
+    
+    return false;
+  }
+
+  /// Get the minimum allowed time for the selected date
+  TimeOfDay _getMinimumTime() {
+    if (pickedDate == null) return TimeOfDay.now();
+    
+    final now = DateTime.now();
+    final selectedDate = pickedDate!;
+    
+    // If selected date is today, return current time
+    if (selectedDate.year == now.year &&
+        selectedDate.month == now.month &&
+        selectedDate.day == now.day) {
+      return TimeOfDay.fromDateTime(now);
+    }
+    
+    // For future dates, allow any time
+    return const TimeOfDay(hour: 0, minute: 0);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +122,19 @@ class _AddTimeSlotBottomSheetState extends State<AddTimeSlotBottomSheet> {
                       );
                       if (d != null) {
                         setState(() {
+                          // If date changed to today and current times are in the past, clear them
+                          final now = DateTime.now();
+                          if (d.year == now.year &&
+                              d.month == now.month &&
+                              d.day == now.day) {
+                            // Date is today, check if times are in the past
+                            if (startTime != null && _isTimeInPast(startTime!, d)) {
+                              startTime = null;
+                            }
+                            if (endTime != null && _isTimeInPast(endTime!, d)) {
+                              endTime = null;
+                            }
+                          }
                           pickedDate = d;
                         });
                       }
@@ -96,11 +147,27 @@ class _AddTimeSlotBottomSheetState extends State<AddTimeSlotBottomSheet> {
                     subtitle: Text(startText),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () async {
+                      final minimumTime = _getMinimumTime();
+                      final initialTime = startTime ?? minimumTime;
+                      
                       final t = await showTimePicker(
                         context: context,
-                        initialTime: TimeOfDay.now(),
+                        initialTime: initialTime,
                       );
                       if (t != null) {
+                        // Validate: don't allow past time if date is today
+                        if (_isTimeInPast(t)) {
+                          if (mounted && context.mounted) {
+                            CustomToast.show(
+                              context,
+                              s.error_time_in_past,
+                              
+                              type: ToastType.error,
+                            );
+                          }
+                          return;
+                        }
+                        
                         setState(() {
                           startTime = t;
                           // If endTime exists but becomes invalid, clear it
@@ -121,13 +188,35 @@ class _AddTimeSlotBottomSheetState extends State<AddTimeSlotBottomSheet> {
                     onTap: startTime == null
                         ? null
                         : () async {
-                            final suggested = startTime!
-                                .replacing(hour: (startTime!.hour + 1) % 24);
+                            final minimumTime = _getMinimumTime();
+                            // Suggested time should be at least startTime or minimumTime, whichever is later
+                            final suggestedHour = startTime!.hour < minimumTime.hour
+                                ? minimumTime.hour
+                                : (startTime!.hour + 1) % 24;
+                            final suggested = TimeOfDay(
+                              hour: suggestedHour,
+                              minute: startTime!.hour < minimumTime.hour
+                                  ? minimumTime.minute
+                                  : startTime!.minute,
+                            );
+                            
                             final t = await showTimePicker(
                               context: context,
-                              initialTime: suggested,
+                              initialTime: endTime ?? suggested,
                             );
                             if (t != null) {
+                              // Validate: don't allow past time if date is today
+                              if (_isTimeInPast(t)) {
+                                if (mounted) {
+                                  CustomToast.show(
+                                    context,
+                                    'Không thể chọn giờ trong quá khứ',
+                                    type: ToastType.error,
+                                  );
+                                }
+                                return;
+                              }
+                              
                               setState(() {
                                 endTime = t;
                               });

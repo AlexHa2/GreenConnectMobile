@@ -25,6 +25,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
   final VoidCallback? onCheckInSuccess; // Callback when checkin is successful
   final VoidCallback? onApproveSuccess; // Callback when approve is successful to navigate to transaction list
   final VoidCallback? onRejectSuccess; // Callback when reject is successful to navigate to transaction list
+  final VoidCallback? onInputDetailsSuccess; // Callback when input details is successful to navigate to transaction list
 
   const TransactionDetailBottomActions({
     super.key,
@@ -36,6 +37,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
     this.onCheckInSuccess,
     this.onApproveSuccess,
     this.onRejectSuccess,
+    this.onInputDetailsSuccess,
   });
 
   bool get _isHousehold => userRole == Role.household;
@@ -45,8 +47,11 @@ class TransactionDetailBottomActions extends ConsumerWidget {
       userRole == Role.businessCollector;
 
   bool get _canTakeAction {
-    if (!_isHousehold ||
-        transaction.statusEnum != TransactionStatus.inProgress) {
+    final isHousehold = _isHousehold;
+    final status = transaction.statusEnum;
+    final isInProgress = status == TransactionStatus.inProgress;
+    
+    if (!isHousehold || !isInProgress) {
       return false;
     }
 
@@ -56,37 +61,33 @@ class TransactionDetailBottomActions extends ConsumerWidget {
     final slotId =
         transaction.timeSlotId ?? transaction.offer?.timeSlotId ?? '';
 
-    return scrapPostId.isNotEmpty &&
+    final result = scrapPostId.isNotEmpty &&
         collectorId.isNotEmpty &&
         slotId.isNotEmpty;
+    
+    return result;
   }
 
   /// Check if household should show approve button without payment method
-  /// only check amountDifference AFTER collector has entered quantity successfully
+  /// When amountDifference <= 0, no payment method is needed
   bool get _shouldApproveWithoutPayment {
     if (!_canTakeAction) return false;
 
-    // Only check amountDifference when collector has entered quantity
-    if (!_hasQuantityEntered) return false;
-
-    // After collector has entered quantity, use amountDifference directly
-    // amountDifference <= 0: household doesn't need to pay/receive money
+    // When amountDifference <= 0, no payment is needed
     // amountDifference == 0: no payment needed
     // amountDifference < 0: household will receive money (collector pays), no payment method needed
+    // Don't check _hasQuantityEntered here - if amountDifference <= 0, no payment is needed
     return amountDifference <= 0.0;
   }
 
   /// Check if household should show approve button with payment method
-  /// only check amountDifference AFTER collector has entered quantity successfully
+  /// When amountDifference > 0, always require payment method selection
   bool get _shouldApproveWithPayment {
-    if (!_canTakeAction) return false;
+    final canTakeAction = _canTakeAction;
+    final result = canTakeAction && amountDifference > 0.0;
 
-    // only check amountDifference when collector has entered quantity
-    if (!_hasQuantityEntered) return false;
-
-    // after collector has entered quantity, use amountDifference directly
-    // amountDifference > 0: household need to pay or will receive money
-    return amountDifference > 0.0;
+    
+    return result;
   }
 
   /// Check if collector should show payment method button
@@ -317,6 +318,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
               transaction: transaction,
               onActionCompleted: onActionCompleted,
               transactionsData: transactionsData,
+              onInputDetailsSuccess: onInputDetailsSuccess, // Navigate to transaction list after successful input
             ),
           ),
         );
@@ -348,7 +350,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
 
     // Show approve/reject buttons for in-progress transactions (household)
     if (_shouldApproveWithPayment) {
-      // When totalPrice > 0: Show both reject and approve buttons (with payment method selection)
+      // When amountDifference > 0: Show both reject and approve buttons (with payment method selection)
       return Container(
         padding: EdgeInsets.fromLTRB(
           spacing,

@@ -1576,7 +1576,7 @@ abstract class S {
   /// No description provided for @fullName_hint.
   ///
   /// In en, this message translates to:
-  /// **'Alex ha'**
+  /// **'John Doe'**
   String get fullName_hint;
 
   /// No description provided for @gender.
@@ -6318,6 +6318,12 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Item quantity'**
   String get item_quantity;
+
+  /// No description provided for @error_time_in_past.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot select time in the past'**
+  String get error_time_in_past;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
