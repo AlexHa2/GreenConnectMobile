@@ -17,7 +17,6 @@ class TransactionListCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onReviewTap;
   final VoidCallback? onComplainTap;
-  final double? overridePrice;
 
   const TransactionListCard({
     super.key,
@@ -26,7 +25,6 @@ class TransactionListCard extends StatelessWidget {
     required this.onTap,
     this.onReviewTap,
     this.onComplainTap,
-    this.overridePrice,
   });
 
   @override
@@ -34,16 +32,6 @@ class TransactionListCard extends StatelessWidget {
     final theme = Theme.of(context);
     final space = theme.extension<AppSpacing>()!.screenPadding;
     final s = S.of(context)!;
-
-    final detailsTotal = transaction.transactionDetails.fold<double>(
-      0,
-      (sum, d) => sum + d.finalPrice,
-    );
-    final displayPrice = (overridePrice != null && overridePrice! > 0)
-        ? overridePrice!
-        : (transaction.totalPrice > 0
-            ? transaction.totalPrice
-            : (detailsTotal > 0 ? detailsTotal : 0.0));
 
     return InkWell(
       onTap: onTap,
@@ -78,13 +66,6 @@ class TransactionListCard extends StatelessWidget {
               userRole: userRole,
               s: s,
             ),
-
-            // Price chip
-            if (displayPrice > 0 ||
-                transaction.statusEnum == TransactionStatus.completed) ...[
-              SizedBox(height: space),
-              _TransactionPriceChip(price: displayPrice),
-            ],
 
             // Action buttons for completed transactions
             // Review: household only, Complaint: all roles
@@ -399,23 +380,39 @@ class _TransactionPriceChip extends StatelessWidget {
     final theme = Theme.of(context);
     final space = theme.extension<AppSpacing>()!.screenPadding;
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: space, vertical: space * 0.75),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(space * 0.75),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '${formatVND(price)} VND',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+    return ConstrainedBox(
+      constraints: BoxConstraints(minWidth: space * 14),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: space * 1.25,
+          vertical: space * 0.95,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(space),
+          border: Border.all(
+            color: AppColors.primary.withValues(alpha: 0.18),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.payments_rounded,
+              size: space * 1.7,
               color: AppColors.primary,
             ),
-          ),
-        ],
+            SizedBox(width: space * 0.7),
+            Text(
+              '${formatVND(price)} VND',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppColors.primary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

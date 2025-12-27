@@ -536,38 +536,6 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
             ],
           ),
           SizedBox(height: space * 2.5),
-          // Thông tin bổ sung
-          InkWell(
-            onTap: () => context.push('/collector-list-transactions'),
-            borderRadius: BorderRadius.circular(space * 1.5),
-            child: Container(
-              padding: EdgeInsets.all(space * 1.2),
-              decoration: BoxDecoration(
-                color: theme.primaryColor.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(space * 1.5),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.trending_up_rounded,
-                    color: theme.primaryColor,
-                    size: space * 2,
-                  ),
-                  SizedBox(width: space),
-                  Expanded(
-                    child: Text(
-                      s.tap_to_see_detailed_breakdown,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontSize: space * 1.05,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );
