@@ -1,8 +1,10 @@
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
 import 'package:GreenConnectMobile/core/helper/currency_helper.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/scrap_category_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/transaction_entity.dart'
     as post_entity;
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/related_transactions_section.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/transaction_address_info.dart';
@@ -16,13 +18,14 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 /// Main content body for transaction detail
-class TransactionDetailContentBody extends StatelessWidget {
+class TransactionDetailContentBody extends StatefulWidget {
   final TransactionEntity transaction;
   final Role userRole;
   final post_entity.PostTransactionsResponseEntity? transactionsData;
   final bool isLoadingTransactions;
   final int currentTransactionIndex;
   final ValueChanged<int>? onTransactionChanged;
+  final TransactionEntity Function(post_entity.TransactionEntity)? convertPostTransactionToTransaction;
 
   const TransactionDetailContentBody({
     super.key,
@@ -32,7 +35,57 @@ class TransactionDetailContentBody extends StatelessWidget {
     this.isLoadingTransactions = false,
     this.currentTransactionIndex = 0,
     this.onTransactionChanged,
+    this.convertPostTransactionToTransaction,
   });
+
+  @override
+  State<TransactionDetailContentBody> createState() =>
+      _TransactionDetailContentBodyState();
+}
+
+class _TransactionDetailContentBodyState
+    extends State<TransactionDetailContentBody> {
+  late PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPage = widget.currentTransactionIndex;
+    _pageController = PageController(initialPage: widget.currentTransactionIndex);
+  }
+
+  @override
+  void didUpdateWidget(TransactionDetailContentBody oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Sync PageController when currentTransactionIndex changes externally
+    if (oldWidget.currentTransactionIndex != widget.currentTransactionIndex &&
+        _currentPage != widget.currentTransactionIndex) {
+      _currentPage = widget.currentTransactionIndex;
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          widget.currentTransactionIndex,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onPageChanged(int index) {
+    if (_currentPage != index) {
+      setState(() {
+        _currentPage = index;
+      });
+      widget.onTransactionChanged?.call(index);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,30 +93,141 @@ class TransactionDetailContentBody extends StatelessWidget {
     final spacing = theme.extension<AppSpacing>()!.screenPadding;
     final s = S.of(context)!;
 
-    return Column(
-      children: [
-        // Transaction selector if multiple transactions
-        if (transactionsData != null &&
-            transactionsData!.transactions.length > 1)
+    // If we have multiple transactions, use PageView
+    if (widget.transactionsData != null &&
+        widget.transactionsData!.transactions.length > 1 &&
+        widget.convertPostTransactionToTransaction != null) {
+      return Column(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Transaction selector
           _TransactionSelector(
-            transactions: transactionsData!.transactions,
-            currentIndex: currentTransactionIndex,
-            onChanged: onTransactionChanged,
+            transactions: widget.transactionsData!.transactions,
+            currentIndex: _currentPage,
+            onChanged: (index) {
+              if (_pageController.hasClients) {
+                _pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              }
+            },
           ),
-        if (transactionsData != null &&
-            transactionsData!.transactions.length > 1)
           SizedBox(height: spacing * 1.5),
+          // PageView for transactions
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              onPageChanged: _onPageChanged,
+              itemCount: widget.transactionsData!.transactions.length,
+              itemBuilder: (context, index) {
+                final postTransaction =
+                    widget.transactionsData!.transactions[index];
+                final transaction =
+                    widget.convertPostTransactionToTransaction!(postTransaction);
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics(),
+                      ),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: IntrinsicHeight(
+                          child: _buildTransactionContent(
+                            context,
+                            transaction,
+                            theme,
+                            spacing,
+                            s,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      );
+    }
 
+    // Single transaction - no PageView needed
+    return SingleChildScrollView(
+      child: _buildTransactionContent(
+        context,
+        widget.transaction,
+        theme,
+        spacing,
+        s,
+      ),
+    );
+  }
+
+  /// Get items to display - use transactionDetails if available, otherwise use offerDetails
+  List<TransactionDetailEntity> _getItemsToDisplay(TransactionEntity transaction) {
+    // If transactionDetails is not empty, use it
+    if (transaction.transactionDetails.isNotEmpty) {
+      return transaction.transactionDetails;
+    }
+
+    // Otherwise, convert offerDetails to TransactionDetailEntity
+    final offer = transaction.offer;
+    if (offer == null || offer.offerDetails.isEmpty) {
+      return [];
+    }
+
+    return offer.offerDetails.map((offerDetail) {
+      // Create ScrapCategoryEntity from offerDetail
+      final category = offerDetail.scrapCategory != null
+          ? ScrapCategoryEntity(
+              scrapCategoryId: offerDetail.scrapCategory!.scrapCategoryId,
+              categoryName: offerDetail.scrapCategory!.categoryName,
+              description: null,
+            )
+          : ScrapCategoryEntity(
+              scrapCategoryId: offerDetail.scrapCategoryId,
+              categoryName: '', // Will be localized when displayed
+              description: null,
+            );
+
+      return TransactionDetailEntity(
+        transactionId: transaction.transactionId,
+        scrapCategoryId: offerDetail.scrapCategoryId,
+        scrapCategory: category,
+        pricePerUnit: offerDetail.pricePerUnit,
+        unit: offerDetail.unit,
+        quantity: 0, // Not entered yet
+        finalPrice: 0, // No price since quantity is 0
+      );
+    }).toList();
+  }
+
+  Widget _buildTransactionContent(
+    BuildContext context,
+    TransactionEntity transaction,
+    ThemeData theme,
+    double spacing,
+    S s,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
         TransactionHeaderInfo(
           transaction: transaction,
-          amountDifference: transactionsData?.amountDifference,
-          isLoadingTransactions: isLoadingTransactions,
+          amountDifference: widget.transactionsData?.amountDifference,
+          isLoadingTransactions: widget.isLoadingTransactions,
         ),
         SizedBox(height: spacing * 1.5),
         TransactionSummaryCard(
           transaction: transaction,
-          amountDifference: transactionsData?.amountDifference,
-          isLoadingTransactions: isLoadingTransactions,
+          amountDifference: widget.transactionsData?.amountDifference,
+          isLoadingTransactions: widget.isLoadingTransactions,
         ),
         SizedBox(height: spacing * 1.5),
         // Time slot card (separate)
@@ -78,25 +242,25 @@ class TransactionDetailContentBody extends StatelessWidget {
         SizedBox(height: spacing),
         TransactionPartyInfo(
           transaction: transaction,
-          userRole: userRole,
+          userRole: widget.userRole,
           theme: theme,
           space: spacing,
           s: s,
         ),
         SizedBox(height: spacing * 1.5),
-        if (transaction.transactionDetails.isNotEmpty)
-          TransactionItemsSection(
-            transactionDetails: transaction.transactionDetails,
-            transaction: transaction,
-            theme: theme,
-            space: spacing,
-            s: s,
-          ),
+        // Always show items section - use offerDetails if transactionDetails is empty
+        TransactionItemsSection(
+          transactionDetails: _getItemsToDisplay(transaction),
+          transaction: transaction,
+          theme: theme,
+          space: spacing,
+          s: s,
+        ),
         SizedBox(height: spacing * 1.5),
         // Related transactions section from fetchPostTransactions
         RelatedTransactionsSection(
-          transactionsData: transactionsData,
-          isLoadingTransactions: isLoadingTransactions,
+          transactionsData: widget.transactionsData,
+          isLoadingTransactions: widget.isLoadingTransactions,
           currentTransactionId: transaction.transactionId,
         ),
       ],

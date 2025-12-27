@@ -136,8 +136,10 @@ class TransactionViewModel extends Notifier<TransactionState> {
       state = state.copyWith(isProcessing: false);
 
       if (result.isNotEmpty) {
-        // Refresh detail after update
-        await fetchTransactionDetail(transactionId);
+        // Note: Don't refresh single transaction detail here
+        // The caller (e.g., input_all_transactions_quantity_dialog) will call
+        // onActionCompleted() which refreshes ALL transactions via _loadPostTransactions()
+        // This ensures all transactions are updated, not just the first one
         return true;
       }
       return false;

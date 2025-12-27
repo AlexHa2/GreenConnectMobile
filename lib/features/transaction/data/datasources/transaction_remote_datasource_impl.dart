@@ -142,6 +142,15 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
       '$_transactionsBaseUrl/details?$queryString',
       data: requestBody,
     );
+    
+    // Debug: Log the full response
+    if (kDebugMode) {
+      debugPrint('🔍 [updateTransactionDetails] Response:');
+      debugPrint('Response type: ${res.data.runtimeType}');
+      debugPrint('Response length: ${(res.data as List).length}');
+      debugPrint('Response data: ${jsonEncode(res.data)}');
+    }
+    
     return (res.data as List)
         .map((e) => TransactionDetailModel.fromJson(e))
         .toList();

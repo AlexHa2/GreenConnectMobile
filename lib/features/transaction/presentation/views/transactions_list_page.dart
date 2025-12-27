@@ -32,7 +32,7 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
   final int _pageSize = 20;
   bool _isLoadingMore = false;
   bool _hasMoreData = true;
-  
+
   // Local accumulated data for pagination
   List<TransactionEntity> _accumulatedData = [];
 
@@ -88,9 +88,7 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
       _accumulatedData.clear();
     }
 
-    await ref
-        .read(transactionViewModelProvider.notifier)
-        .fetchAllTransactions(
+    await ref.read(transactionViewModelProvider.notifier).fetchAllTransactions(
           page: _currentPage,
           size: _pageSize,
           sortByCreateAt: _filterType == 'createAt' ? _isDescending : null,
@@ -120,9 +118,7 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
       _currentPage++;
     });
 
-    await ref
-        .read(transactionViewModelProvider.notifier)
-        .fetchAllTransactions(
+    await ref.read(transactionViewModelProvider.notifier).fetchAllTransactions(
           page: _currentPage,
           size: _pageSize,
           sortByCreateAt: _filterType == 'createAt' ? _isDescending : null,
@@ -198,37 +194,14 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
     final routeName = statusEnum == TransactionStatus.inProgress
         ? 'transaction-detail'
         : 'transaction-detail-onlyone';
-    
+
     final result = await context.pushNamed<bool>(
       routeName,
       extra: {
         'transactionId': transaction.transactionId,
-        // Pass required params for post transactions
-        if (postId != null && postId.isNotEmpty) 'postId': postId,
-        if (collectorId.isNotEmpty) 'collectorId': collectorId,
-        if (slotId != null && slotId.isNotEmpty) 'slotId': slotId,
-        // Pass transaction data as JSON-serializable map for reconstruction
-        'hasTransactionData': true,
-        'transactionStatus': transaction.status,
-        'transactionTotalPrice': transaction.totalPrice,
-        'transactionCreatedAt': transaction.createdAt.toIso8601String(),
-        'transactionScheduledTime': transaction.scheduledTime?.toIso8601String(),
-        'transactionCheckInTime': transaction.checkInTime?.toIso8601String(),
-        'transactionUpdatedAt': transaction.updatedAt?.toIso8601String(),
-        'householdId': transaction.householdId,
-        'householdName': transaction.household.fullName,
-        'householdPhone': transaction.household.phoneNumber,
-        'householdPointBalance': transaction.household.pointBalance,
-        'householdRank': transaction.household.rank,
-        'householdRoles': transaction.household.roles,
-        'scrapCollectorId': transaction.scrapCollectorId,
-        'collectorName': transaction.scrapCollector.fullName,
-        'collectorPhone': transaction.scrapCollector.phoneNumber,
-        'collectorPointBalance': transaction.scrapCollector.pointBalance,
-        'collectorRank': transaction.scrapCollector.rank,
-        'collectorRoles': transaction.scrapCollector.roles,
-        'offerId': transaction.offerId,
-        'timeSlotId': transaction.timeSlotId,
+        'postId': postId,
+        'collectorId': collectorId,
+        'slotId': slotId,
       },
     );
 
@@ -265,50 +238,51 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
               child: transactionState.isLoadingList && _currentPage == 1
                   ? const Center(child: RotatingLeafLoader())
                   : _accumulatedData.isEmpty
-                  ? const TransactionListEmptyState()
-                  : ListView.separated(
-                      controller: _scrollController,
-                      padding: EdgeInsets.all(space),
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount:
-                          _accumulatedData.length +
-                          (_isLoadingMore ? 1 : 0),
-                      separatorBuilder: (context, index) =>
-                          SizedBox(height: space),
-                      itemBuilder: (context, index) {
-                        if (index == _accumulatedData.length) {
-                          return const TransactionListLoadingIndicator();
-                        }
+                      ? const TransactionListEmptyState()
+                      : ListView.separated(
+                          controller: _scrollController,
+                          padding: EdgeInsets.all(space),
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: _accumulatedData.length +
+                              (_isLoadingMore ? 1 : 0),
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: space),
+                          itemBuilder: (context, index) {
+                            if (index == _accumulatedData.length) {
+                              return const TransactionListLoadingIndicator();
+                            }
 
-                        final transaction = _accumulatedData[index];
+                            final transaction = _accumulatedData[index];
 
-                        return TransactionListCard(
-                          transaction: transaction,
-                          userRole: _userRole,
-                          onTap: () => _navigateToDetail(transaction),
-                          onReviewTap: () async {
-                            final result = await context.pushNamed<bool>(
-                              'create-feedback',
-                              extra: {
-                                'transactionId': transaction.transactionId,
+                            return TransactionListCard(
+                              transaction: transaction,
+                              userRole: _userRole,
+                              onTap: () => _navigateToDetail(transaction),
+                              onReviewTap: () async {
+                                final result = await context.pushNamed<bool>(
+                                  'create-feedback',
+                                  extra: {
+                                    'transactionId': transaction.transactionId,
+                                  },
+                                );
+                                if (result == true) {
+                                  _onRefresh();
+                                }
+                              },
+                              onComplainTap: () async {
+                                final result = await context.pushNamed<bool>(
+                                  'create-complaint',
+                                  extra: {
+                                    'transactionId': transaction.transactionId
+                                  },
+                                );
+                                if (result == true) {
+                                  _onRefresh();
+                                }
                               },
                             );
-                            if (result == true) {
-                              _onRefresh();
-                            }
                           },
-                          onComplainTap: () async {
-                            final result = await context.pushNamed<bool>(
-                              'create-complaint',
-                              extra: {'transactionId': transaction.transactionId},
-                            );
-                            if (result == true) {
-                              _onRefresh();
-                            }
-                          },
-                        );
-                      },
-                    ),
+                        ),
             ),
           ],
         ),

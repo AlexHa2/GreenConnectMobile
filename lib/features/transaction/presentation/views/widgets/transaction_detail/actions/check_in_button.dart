@@ -67,13 +67,8 @@ class CheckInButton extends ConsumerWidget {
               final collectorId = transaction.scrapCollectorId;
               final slotId = transaction.timeSlotId ?? transaction.offer?.timeSlotId;
 
-              // Check if we have enough info to navigate to full transaction detail
-              // If not, set hasTransactionData to ensure we get full page (not onlyone)
-              final hasEnoughInfo = (postId != null && postId.isNotEmpty) ||
-                  (collectorId.isNotEmpty) ||
-                  (slotId != null && slotId.isNotEmpty);
-
               // Navigate to transaction-detail (full page, not onlyone)
+              // Params postId, collectorId, slotId luôn có khi navigate đến route này
               context.pushNamed(
                 'transaction-detail',
                 extra: {
@@ -81,8 +76,7 @@ class CheckInButton extends ConsumerWidget {
                   if (postId != null && postId.isNotEmpty) 'postId': postId,
                   if (collectorId.isNotEmpty) 'collectorId': collectorId,
                   if (slotId != null && slotId.isNotEmpty) 'slotId': slotId,
-                  // Set hasTransactionData to ensure full page if we don't have enough info
-                  if (!hasEnoughInfo) 'hasTransactionData': true,
+                  // Bỏ hasTransactionData - data sẽ được load từ API
                 },
               );
             }

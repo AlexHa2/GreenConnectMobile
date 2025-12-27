@@ -243,30 +243,8 @@ class _RelatedTransactionCard extends StatelessWidget {
             if (postId != null && postId.isNotEmpty) 'postId': postId,
             if (collectorId.isNotEmpty) 'collectorId': collectorId,
             if (slotId != null && slotId.isNotEmpty) 'slotId': slotId,
-            'hasTransactionData': true,
-            'transactionStatus': transaction.status,
-            'transactionTotalPrice': transaction.totalPrice.abs(),
-            'transactionCreatedAt': transaction.createdAt.toIso8601String(),
-            'transactionScheduledTime':
-                transaction.scheduledTime?.toIso8601String(),
-            'transactionCheckInTime':
-                transaction.checkInTime?.toIso8601String(),
-            'transactionUpdatedAt': transaction.updatedAt?.toIso8601String(),
-            'householdId': transaction.householdId,
-            'householdName': transaction.household?.fullName ?? '',
-            'householdPhone': transaction.household?.phoneNumber ?? '',
-            'householdPointBalance': transaction.household?.pointBalance ?? 0,
-            'householdRank': transaction.household?.rank ?? '',
-            'householdRoles': transaction.household?.roles ?? [],
-            'scrapCollectorId': transaction.scrapCollectorId,
-            'collectorName': transaction.scrapCollector?.fullName ?? '',
-            'collectorPhone': transaction.scrapCollector?.phoneNumber ?? '',
-            'collectorPointBalance':
-                transaction.scrapCollector?.pointBalance ?? 0,
-            'collectorRank': transaction.scrapCollector?.rank ?? '',
-            'collectorRoles': transaction.scrapCollector?.roles ?? [],
-            'offerId': transaction.offerId,
-            'timeSlotId': transaction.timeSlotId,
+            // Bỏ hasTransactionData và các fields không cần thiết
+            // Data sẽ được load từ API thông qua fetchPostTransactions()
           },
         );
       },
