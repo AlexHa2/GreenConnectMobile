@@ -33,6 +33,7 @@ import 'package:GreenConnectMobile/features/profile/presentation/views/profile_s
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setup.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/upgrade_verification.dart';
 import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/recurring_schedule_detail_page.dart';
+import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/create_recurring_schedule_page.dart';
 import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/recurring_schedules_page.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/list_history_post.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/my_rewards_page.dart';
@@ -163,6 +164,11 @@ final GoRouter greenRouter = GoRouter(
       path: '/recurring-schedules',
       name: 'recurring-schedules',
       builder: (context, state) => const RecurringSchedulesPage(),
+    ),
+    GoRoute(
+      path: '/recurring-schedules-new',
+      name: 'recurring-schedules-create',
+      builder: (context, state) => const CreateRecurringSchedulePage(),
     ),
     GoRoute(
       path: '/recurring-schedules/:id',
