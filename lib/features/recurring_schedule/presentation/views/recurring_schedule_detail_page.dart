@@ -1500,7 +1500,10 @@ class _DetailItemCard extends StatelessWidget {
                         if ((detail.type ?? '').trim().isNotEmpty)
                           Chip(
                             label: Text(
-                              detail.type!,
+                              ScrapPostDetailTypeHelper.getLocalizedType(
+                                context,
+                                ScrapPostDetailType.parseType(detail.type!),
+                              ),
                               style: theme.textTheme.bodyMedium,
                             ),
                           ),
