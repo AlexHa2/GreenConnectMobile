@@ -192,21 +192,23 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                             children: [
                               Text(
                                 'Xin chào ${user?.fullName ?? ''}',
-                                style: theme.textTheme.headlineLarge?.copyWith(
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.headlineSmall?.copyWith(
                                   color: theme.colorScheme.onPrimary,
                                   fontWeight: FontWeight.w800,
-                                  fontSize: space * 3.2,
                                   letterSpacing: -0.5,
                                 ),
                               ),
                               SizedBox(height: space * 0.8),
                               Text(
                                 s.track_performance_impact,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                   color: theme.colorScheme.onPrimary.withValues(
                                     alpha: 0.95,
                                   ),
-                                  fontSize: space * 1.2,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
@@ -505,14 +507,20 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                formattedEarning,
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  color: theme.primaryColor,
-                  fontWeight: FontWeight.w900,
-                  fontSize: space * 5.5,
-                  letterSpacing: -1.5,
-                  height: 1.1,
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    formattedEarning,
+                    style: theme.textTheme.headlineLarge?.copyWith(
+                      color: theme.primaryColor,
+                      fontWeight: FontWeight.w900,
+                      fontSize: space * 5.5,
+                      letterSpacing: -1.5,
+                      height: 1.1,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(width: space * 0.8),
@@ -530,38 +538,6 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
             ],
           ),
           SizedBox(height: space * 2.5),
-          // Thông tin bổ sung
-          InkWell(
-            onTap: () => context.push('/collector-list-transactions'),
-            borderRadius: BorderRadius.circular(space * 1.5),
-            child: Container(
-              padding: EdgeInsets.all(space * 1.2),
-              decoration: BoxDecoration(
-                color: theme.primaryColor.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(space * 1.5),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.trending_up_rounded,
-                    color: theme.primaryColor,
-                    size: space * 2,
-                  ),
-                  SizedBox(width: space),
-                  Expanded(
-                    child: Text(
-                      s.tap_to_see_detailed_breakdown,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontSize: space * 1.05,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -627,20 +603,23 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
           Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontSize: space * 1.05,
               color: theme.colorScheme.onSurface,
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: space * 0.8),
-          Text(
-            value,
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              fontSize: space * 2.8,
-              color: color,
-              letterSpacing: -0.5,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: color,
+                letterSpacing: -0.5,
+              ),
             ),
           ),
         ],
@@ -938,82 +917,103 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
           ],
         ),
         SizedBox(height: space * 2),
-        Wrap(
-          spacing: space * 1.5,
-          runSpacing: space * 1.5,
-          children: [
-            _buildQuickActionCard(
-              context,
-              icon: Icons.local_offer_rounded,
-              label: s.offers,
-              color: theme.primaryColor,
-              space: space,
-              theme: theme,
-              onTap: () => context.push(
-                '/collector-offer-list',
-                extra: {'isCollectorView': true},
-              ),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.shop_rounded,
-              label: s.package_list,
-              color: theme.primaryColor,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/package-dashboard'),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.gif_box_rounded,
-              label: s.reward_store,
-              color: theme.primaryColor,
-              space: space,
-              theme: theme,
-              onTap: () => context.push(
-                '/reward-collector',
-                extra: {'isCollectorView': true},
-              ),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.schedule_rounded,
-              label: s.scheduleListTitle,
-              color: Colors.purple,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/collector-schedule-list'),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.receipt_long_rounded,
-              label: s.transactions,
-              color: Colors.blue,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/collector-list-transactions'),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.star_rounded,
-              label: s.feedbacks,
-              color: Colors.amber,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/collector-feedback-list'),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.report_problem_rounded,
-              label: s.complaints,
-              color: Colors.red,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/collector-complaint-list'),
-            ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final cardWidth =
+                (constraints.maxWidth - space * 1.5) / 2;
+            final cardHeight = cardWidth * 0.82;
 
-            //payment-transaction-history
-          ],
+            return Wrap(
+              spacing: space * 1.5,
+              runSpacing: space * 1.5,
+              children: [
+                _buildQuickActionCard(
+                  context,
+                  width: cardWidth,
+                  height: cardHeight,
+                  icon: Icons.local_offer_rounded,
+                  label: s.offers,
+                  color: theme.primaryColor,
+                  space: space,
+                  theme: theme,
+                  onTap: () => context.push(
+                    '/collector-offer-list',
+                    extra: {'isCollectorView': true},
+                  ),
+                ),
+                _buildQuickActionCard(
+                  context,
+                  width: cardWidth,
+                  height: cardHeight,
+                  icon: Icons.shop_rounded,
+                  label: s.package_list,
+                  color: theme.primaryColor,
+                  space: space,
+                  theme: theme,
+                  onTap: () => context.push('/package-dashboard'),
+                ),
+                _buildQuickActionCard(
+                  context,
+                  width: cardWidth,
+                  height: cardHeight,
+                  icon: Icons.gif_box_rounded,
+                  label: s.reward_store,
+                  color: theme.primaryColor,
+                  space: space,
+                  theme: theme,
+                  onTap: () => context.push(
+                    '/reward-collector',
+                    extra: {'isCollectorView': true},
+                  ),
+                ),
+                // _buildQuickActionCard(
+                //   context,
+                //   width: cardWidth,
+                //   icon: Icons.schedule_rounded,
+                //   label: s.scheduleListTitle,
+                //   color: Colors.purple,
+                //   space: space,
+                //   theme: theme,
+                //   onTap: () => context.push('/collector-schedule-list'),
+                // ),
+                _buildQuickActionCard(
+                  context,
+                  width: cardWidth,
+                  height: cardHeight,
+                  icon: Icons.receipt_long_rounded,
+                  label: s.transactions,
+                  color: Colors.blue,
+                  space: space,
+                  theme: theme,
+                  onTap: () => context.push('/collector-list-transactions'),
+                ),
+                _buildQuickActionCard(
+                  context,
+                  width: cardWidth,
+                  height: cardHeight,
+                  icon: Icons.star_rounded,
+                  label: s.feedbacks,
+                  color: Colors.amber,
+                  space: space,
+                  theme: theme,
+                  onTap: () => context.push('/collector-feedback-list'),
+                ),
+                _buildQuickActionCard(
+                  context,
+                  width: cardWidth,
+                  height: cardHeight,
+                  icon: Icons.report_problem_rounded,
+                  label: s.complaints,
+                  color: Colors.red,
+                  space: space,
+                  theme: theme,
+                  onTap: () => context.push('/collector-complaint-list'),
+                ),
+
+                //payment-transaction-history
+              ],
+            );
+          },
         ),
         SizedBox(height: space * 2),
       ],
@@ -1022,6 +1022,8 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
 
   Widget _buildQuickActionCard(
     BuildContext context, {
+    double? width,
+    double? height,
     required IconData icon,
     required String label,
     required Color color,
@@ -1030,14 +1032,15 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
     required VoidCallback onTap,
   }) {
     return SizedBox(
-      width: (MediaQuery.of(context).size.width - space * 6) / 2,
+      width: width,
+      height: height,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(space * 2),
           child: Container(
-            padding: EdgeInsets.all(space * 2),
+            padding: EdgeInsets.all(space * 1.6),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -1061,7 +1064,8 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               ],
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   padding: EdgeInsets.all(space * 1.2),
@@ -1077,16 +1081,17 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                   child: Icon(icon, color: color, size: space * 3),
                 ),
                 SizedBox(height: space * 1.2),
-                Text(
-                  label,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: space * 1.1,
-                    color: color,
+                Flexible(
+                  child: Text(
+                    label,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
