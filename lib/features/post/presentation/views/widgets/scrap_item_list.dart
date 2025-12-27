@@ -1,5 +1,6 @@
 import 'package:GreenConnectMobile/core/config/env.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_item_data.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/type_badge.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
@@ -64,15 +65,24 @@ class ScrapItemList extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        item.categoryName,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            item.categoryName,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: spacing.screenPadding / 2),
+                          TypeBadge(type: item.type.name),
+                        ],
                       ),
+                      SizedBox(height: spacing.screenPadding * 0.5),
                       if (item.amountDescription.isNotEmpty) ...[
                         SizedBox(height: spacing.screenPadding * 0.5),
                         Row(

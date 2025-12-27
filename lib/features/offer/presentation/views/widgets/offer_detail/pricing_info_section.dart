@@ -168,8 +168,8 @@ class PricingInfoSection extends StatelessWidget {
                                         )
                                     : null,
                                 child: Container(
-                                  width: 40,
-                                  height: 40,
+                                  width: spacing * 5,
+                                  height: spacing * 5,
                                   decoration: BoxDecoration(
                                     color: theme.primaryColor.withValues(
                                       alpha: 0.1,
@@ -237,21 +237,12 @@ class PricingInfoSection extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            detail.scrapCategory!.categoryName,
-                                            style: theme.textTheme.bodyMedium
-                                                ?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
-                                        // Type badge
-                                        if (detailType != null)
-                                          TypeBadge(type: detailType.name),
-                                      ],
+                                    Text(
+                                      detail.scrapCategory!.categoryName,
+                                      style:
+                                          theme.textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                     SizedBox(height: spacing / 4),
                                     Text(
@@ -264,24 +255,107 @@ class PricingInfoSection extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              // Price and Unit
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                              // Type badge and Price (aligned to the right)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text(
-                                    '${numberFormat.format(detail.pricePerUnit)} ${s.per_unit} ',
-                                    style:
-                                        theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: theme.primaryColor,
-                                    ),
-                                  ),
-                                  // SizedBox(height: spacing / 4),
-                                  Text(
-                                    '/${detail.unit}',
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.textTheme.bodySmall?.color,
-                                    ),
+                                  // Type badge
+                                  if (detailType != null) ...[
+                                    TypeBadge(type: detailType.name),
+                                    SizedBox(height: spacing / 4),
+                                  ],
+                                  // Price comparison: Collector's offer vs System reference
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      // Collector's suggested price (pricePerUnit)
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          // Price value
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                '${numberFormat.format(detail.pricePerUnit)} ${s.per_unit} ',
+                                                style: theme
+                                                    .textTheme.titleMedium
+                                                    ?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: theme.primaryColor,
+                                                ),
+                                              ),
+                                              Text(
+                                                '/${detail.unit}',
+                                                style: theme.textTheme.bodySmall
+                                                    ?.copyWith(
+                                                  color: theme.textTheme
+                                                      .bodySmall?.color,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      // System reference price (pricePerKg) - if available
+                                      if (detail.pricePerKg != null &&
+                                          detail.pricePerKg! > 0)
+                                        Padding(
+                                          padding:
+                                              EdgeInsets.only(top: spacing / 4),
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: spacing / 3,
+                                              vertical: spacing / 6,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: theme.canvasColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                spacing / 4,
+                                              ),
+                                              border: Border.all(
+                                                color: theme.colorScheme
+                                                    .onSurfaceVariant
+                                                    .withValues(alpha: 0.2),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.info_outline,
+                                                  size: 12,
+                                                  color: theme.colorScheme
+                                                      .onSurfaceVariant,
+                                                ),
+                                                SizedBox(width: spacing / 6),
+                                                Flexible(
+                                                  child: Text(
+                                                    '${s.system_reference_price}: ${numberFormat.format(detail.pricePerKg!)} ${s.per_unit}/kg',
+                                                    style: theme
+                                                        .textTheme.bodySmall
+                                                        ?.copyWith(
+                                                      color: theme.colorScheme
+                                                          .onSurfaceVariant,
+                                                      fontSize: 11,
+                                                      fontStyle:
+                                                          FontStyle.italic,
+                                                    ),
+                                                    textAlign: TextAlign.end,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -388,7 +462,8 @@ class PricingInfoSection extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    s.total_amount,
+                                    totalEstimated > 0 ? s.total_will_receive : s.total_will_pay,  
+
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -406,7 +481,7 @@ class PricingInfoSection extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '${numberFormat.format(totalEstimated)} ${s.per_unit}',
+                              '${numberFormat.format(totalEstimated.abs())} ${s.per_unit}',
                               style: theme.textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: theme.primaryColor,

@@ -3,7 +3,6 @@ import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/message/presentation/providers/message_providers.dart';
-import 'package:GreenConnectMobile/features/profile/domain/entities/user_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/transaction_address_info.dart';
@@ -24,13 +23,9 @@ class TransactionDetailPageModern extends ConsumerStatefulWidget {
   // Transaction ID (required)
   final String transactionId;
 
-  // Additional transaction data from list (for reconstruction)
-  final Map<String, dynamic>? transactionData;
-
   const TransactionDetailPageModern({
     super.key,
     required this.transactionId,
-    this.transactionData,
   });
 
   @override
@@ -55,81 +50,11 @@ class _TransactionDetailPageModernState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadUserRole();
 
-      // Reconstruct transaction from passed data if available
-      if (widget.transactionData != null) {
-        _currentTransaction = _reconstructTransaction(widget.transactionData!);
-        setState(() {
-          _isLoading = false;
-        });
-      }
-
-      // Load transaction detail from API
+      // Load transaction detail from API (không dùng transactionData)
       _loadTransactionDetail();
     });
   }
 
-  /// Reconstruct TransactionEntity from passed data
-  TransactionEntity? _reconstructTransaction(Map<String, dynamic> data) {
-    try {
-      final transactionId = data['transactionId'] as String?;
-      if (transactionId == null) return null;
-
-      // Create UserEntity objects with required fields
-      final household = UserEntity(
-        userId: data['householdId'] as String? ?? '',
-        fullName: data['householdName'] as String? ?? '',
-        phoneNumber: data['householdPhone'] as String? ?? '',
-        pointBalance: (data['householdPointBalance'] as int?) ?? 0,
-        rank: data['householdRank'] as String? ?? '',
-        roles: (data['householdRoles'] as List<dynamic>?)
-                ?.map((e) => e.toString())
-                .toList() ??
-            [],
-      );
-
-      final scrapCollector = UserEntity(
-        userId: data['scrapCollectorId'] as String? ?? '',
-        fullName: data['collectorName'] as String? ?? '',
-        phoneNumber: data['collectorPhone'] as String? ?? '',
-        pointBalance: (data['collectorPointBalance'] as int?) ?? 0,
-        rank: data['collectorRank'] as String? ?? '',
-        roles: (data['collectorRoles'] as List<dynamic>?)
-                ?.map((e) => e.toString())
-                .toList() ??
-            [],
-      );
-
-      return TransactionEntity(
-        transactionId: transactionId,
-        householdId: data['householdId'] as String? ?? '',
-        household: household,
-        scrapCollectorId: data['scrapCollectorId'] as String? ?? '',
-        scrapCollector: scrapCollector,
-        offerId: data['offerId'] as String? ?? '',
-        offer: null, // Offer data not fully passed, will be null
-        status: data['transactionStatus'] as String? ?? '',
-        scheduledTime: data['transactionScheduledTime'] != null
-            ? DateTime.tryParse(data['transactionScheduledTime'] as String)
-            : null,
-        checkInTime: data['transactionCheckInTime'] != null
-            ? DateTime.tryParse(data['transactionCheckInTime'] as String)
-            : null,
-        createdAt: data['transactionCreatedAt'] != null
-            ? DateTime.parse(data['transactionCreatedAt'] as String)
-            : DateTime.now(),
-        updatedAt: data['transactionUpdatedAt'] != null
-            ? DateTime.tryParse(data['transactionUpdatedAt'] as String)
-            : null,
-        transactionDetails: const [],
-        totalPrice: (data['transactionTotalPrice'] as num?)?.toDouble() ?? 0.0,
-        timeSlotId: data['timeSlotId'] as String?,
-        timeSlot: null,
-      );
-    } catch (e) {
-      debugPrint('❌ ERROR RECONSTRUCT TRANSACTION: $e');
-      return null;
-    }
-  }
 
   Future<void> _loadUserRole() async {
     final user = await _tokenStorage.getUserData();
@@ -193,44 +118,44 @@ class _TransactionDetailPageModernState
   void _onActionCompleted() {
     setState(() => _hasChanges = true);
     
+    // Check current status before reload to detect status changes
+    final currentStatus = _currentTransaction?.statusEnum;
+    
     // Reload transaction detail after action
     _loadTransactionDetail().then((_) {
       if (!mounted) return;
       
-      // If household role and transaction was accepted/rejected, navigate back to list
-      if (_userRole == Role.household && _currentTransaction != null) {
+      // Check transaction status after reload
+      if (_currentTransaction != null) {
         final status = _currentTransaction!.statusEnum;
-        if (status == TransactionStatus.completed ||
+        
+        // Only navigate back to list if status changed to a final state
+        // Don't navigate if status is still inProgress (e.g., after input details)
+        // Navigate for:
+        // - completed: after approve
+        // - canceledByUser: after reject or toggle cancel
+        // - canceledBySystem: system canceled
+        // - status changed from inProgress to something else
+        final statusChanged = currentStatus != null && currentStatus != status;
+        final isFinalState = status == TransactionStatus.completed ||
             status == TransactionStatus.canceledByUser ||
-            status == TransactionStatus.canceledBySystem) {
+            status == TransactionStatus.canceledBySystem;
+        
+        if (isFinalState || (statusChanged && currentStatus == TransactionStatus.inProgress)) {
           // Navigate back to transaction list page
           if (context.canPop()) {
             context.pop(true); // Return with changes flag
           } else {
-            context.go('/household-list-transactions');
+            // Determine the correct list page based on user role
+            if (_userRole == Role.household) {
+              context.go('/household-list-transactions');
+            } else if (_userRole == Role.individualCollector ||
+                _userRole == Role.businessCollector) {
+              context.go('/collector-list-transactions');
+            }
           }
-          return;
         }
-      }
-      
-      // After check-in, status should become InProgress -> redirect to multi-detail
-      if (_currentTransaction != null &&
-          _currentTransaction!.statusEnum == TransactionStatus.inProgress) {
-        final transactionId = _currentTransaction!.transactionId;
-
-        // If we have original transactionData (from list), reuse it so that
-        // multi-detail can load related transactions (postId, slotId, ...)
-        final extra = widget.transactionData != null
-            ? widget.transactionData!
-            : {
-                'transactionId': transactionId,
-                'hasTransactionData': true,
-              };
-
-        context.pushNamed(
-          'transaction-detail',
-          extra: extra,
-        );
+        // If status is still inProgress, stay on detail page (e.g., after input details)
       }
     });
   }
@@ -339,7 +264,7 @@ class _TransactionDetailContent extends StatelessWidget {
                         spacing,
                         0,
                         spacing,
-                        spacing * 6,
+                        spacing * 12, // Increased to allow scrolling above floating chat button
                       ),
                       child: _SingleTransactionContentBody(
                         transaction: transaction,

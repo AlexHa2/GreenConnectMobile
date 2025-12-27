@@ -1,31 +1,39 @@
-import 'package:GreenConnectMobile/features/offer/domain/entities/offer_detail_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/transaction_entity.dart'
     as post_entity;
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/type_badge.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_request.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
+import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class InputAllTransactionsQuantityDialog extends StatefulWidget {
+class InputAllTransactionsQuantityDialog extends ConsumerStatefulWidget {
   final post_entity.PostTransactionsResponseEntity transactionsData;
+  final TransactionEntity transaction;
+  final VoidCallback onActionCompleted;
 
   const InputAllTransactionsQuantityDialog({
     super.key,
     required this.transactionsData,
+    required this.transaction,
+    required this.onActionCompleted,
   });
 
   @override
-  State<InputAllTransactionsQuantityDialog> createState() =>
+  ConsumerState<InputAllTransactionsQuantityDialog> createState() =>
       _InputAllTransactionsQuantityDialogState();
 }
 
 class _InputAllTransactionsQuantityDialogState
-    extends State<InputAllTransactionsQuantityDialog> {
+    extends ConsumerState<InputAllTransactionsQuantityDialog> {
   final Map<String, TextEditingController> _quantityControllers = {};
   final Map<String, _ItemInfo> _itemInfoMap = {};
   final _formKey = GlobalKey<FormState>();
-  final bool _isLoading = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -34,116 +42,117 @@ class _InputAllTransactionsQuantityDialogState
   }
 
   void _initializeControllers() {
-    // Collect ALL items from ALL transactions
-    // Priority: offerDetails first (to ensure ALL items from offer are included),
-    // then transactionDetails (to catch any additional items)
-    // Group by scrapCategoryId + pricePerUnit + unit to handle different prices
+    // Collect ALL unique items from ALL transactions
+    // IMPORTANT: API does not allow duplicate scrapCategoryId in the same request
+    // So we group by scrapCategoryId only (not by scrapCategoryId + pricePerUnit + unit)
+    // If there are multiple items with same scrapCategoryId but different units/prices,
+    // we take the first one from offerDetails
     final itemMap = <String, _ItemInfo>{};
 
-    // Step 1: Collect ALL items from offerDetails of all transactions (PRIORITY)
-    // This ensures we have ALL items from the original offer
-    final allOfferDetails = <String, OfferDetailEntity>{};
+    // Step 1: Collect ALL unique items from offerDetails of all transactions
+    // Group by scrapCategoryId only to avoid API duplicate error
+    final processedCategoryIds = <String>{};
 
     for (final transaction in widget.transactionsData.transactions) {
       final offerDetails = transaction.offer?.offerDetails ?? [];
 
-      // Collect all offerDetails with their unique keys
       for (final detail in offerDetails) {
-        final key =
-            '${detail.scrapCategoryId}_${detail.pricePerUnit}_${detail.unit}';
-        if (!allOfferDetails.containsKey(key)) {
-          allOfferDetails[key] = detail;
-        }
-      }
-    }
+        // Use scrapCategoryId as key to ensure no duplicates
+        final categoryId = detail.scrapCategoryId;
 
-    // Step 2: Add all offerDetails items FIRST (this ensures we have ALL items from offer)
-    for (final entry in allOfferDetails.entries) {
-      final detail = entry.value;
-      final key = entry.key;
+        // Only process if this categoryId hasn't been processed yet
+        if (!processedCategoryIds.contains(categoryId)) {
+          processedCategoryIds.add(categoryId);
 
-      // Get existing quantity from transaction details if available
-      double? existingQuantity;
-      for (final transaction in widget.transactionsData.transactions) {
-        final existingDetail = transaction.transactionDetails
-            .where((td) =>
-                td.scrapCategoryId == detail.scrapCategoryId &&
-                td.pricePerUnit == detail.pricePerUnit &&
-                td.unit == detail.unit)
-            .firstOrNull;
-        if (existingDetail != null && existingDetail.quantity > 0) {
-          existingQuantity = existingDetail.quantity;
-          break;
-        }
-      }
-
-      // Get type from scrapPost details
-      String? itemType;
-      for (final transaction in widget.transactionsData.transactions) {
-        final scrapPost = transaction.offer?.scrapPost;
-        if (scrapPost != null) {
-          final postDetail = scrapPost.scrapPostDetails
-              .where((pd) => pd.scrapCategoryId == detail.scrapCategoryId)
-              .firstOrNull;
-          if (postDetail != null) {
-            itemType = postDetail.type;
-            break;
+          // Get existing quantity from transaction details if available
+          // Match by scrapCategoryId only (not unit/price) since API groups by categoryId
+          double? existingQuantity;
+          for (final t in widget.transactionsData.transactions) {
+            final existingDetail = t.transactionDetails
+                .where((td) => td.scrapCategoryId == categoryId)
+                .firstOrNull;
+            if (existingDetail != null && existingDetail.quantity > 0) {
+              existingQuantity = existingDetail.quantity;
+              break;
+            }
           }
-        }
-      }
 
-      itemMap[key] = _ItemInfo(
-        scrapCategoryId: detail.scrapCategoryId,
-        categoryName:
-            detail.scrapCategory?.categoryName ?? detail.scrapCategoryId,
-        pricePerUnit: detail.pricePerUnit,
-        unit: detail.unit,
-        imageUrl: detail.imageUrl,
-        existingQuantity: existingQuantity,
-        type: itemType,
-        key: key,
-      );
-    }
-
-    // Step 3: Also collect items from transactionDetails (to catch any items not in offerDetails)
-    for (final transaction in widget.transactionsData.transactions) {
-      final transactionDetails = transaction.transactionDetails;
-
-      for (final detail in transactionDetails) {
-        final key =
-            '${detail.scrapCategoryId}_${detail.pricePerUnit}_${detail.unit}';
-
-        // Only add if not already in itemMap (offerDetails takes priority)
-        if (!itemMap.containsKey(key)) {
-          // Get type from scrapPost details
+          // Get type and imageUrl from scrapPost details
           String? itemType;
-          for (final transaction in widget.transactionsData.transactions) {
-            final scrapPost = transaction.offer?.scrapPost;
+          String? imageUrl;
+          for (final t in widget.transactionsData.transactions) {
+            final scrapPost = t.offer?.scrapPost;
             if (scrapPost != null) {
               final postDetail = scrapPost.scrapPostDetails
-                  .where((pd) => pd.scrapCategoryId == detail.scrapCategoryId)
+                  .where((pd) => pd.scrapCategoryId == categoryId)
                   .firstOrNull;
               if (postDetail != null) {
                 itemType = postDetail.type;
+                imageUrl = postDetail.imageUrl;
                 break;
               }
             }
           }
 
+          // Use categoryId as key for itemMap
+          final key = categoryId;
           itemMap[key] = _ItemInfo(
+            scrapCategoryId: detail.scrapCategoryId,
+            categoryName:
+                detail.scrapCategory?.categoryName ?? detail.scrapCategoryId,
+            pricePerUnit: detail.pricePerUnit,
+            unit: detail.unit,
+            imageUrl: imageUrl ?? detail.imageUrl,
+            existingQuantity: existingQuantity,
+            type: itemType,
+            key: key,
+          );
+        }
+      }
+    }
+
+    // Step 2: Also collect items from transactionDetails that are not in offerDetails
+    // This catches any items that might have been added manually
+    for (final transaction in widget.transactionsData.transactions) {
+      final transactionDetails = transaction.transactionDetails;
+
+      for (final detail in transactionDetails) {
+        final categoryId = detail.scrapCategoryId;
+
+        // Only add if not already in itemMap (by categoryId)
+        if (!itemMap.containsKey(categoryId)) {
+          // Get type and imageUrl from scrapPost details
+          String? itemType;
+          String? imageUrl;
+          for (final t in widget.transactionsData.transactions) {
+            final scrapPost = t.offer?.scrapPost;
+            if (scrapPost != null) {
+              final postDetail = scrapPost.scrapPostDetails
+                  .where((pd) => pd.scrapCategoryId == categoryId)
+                  .firstOrNull;
+              if (postDetail != null) {
+                itemType = postDetail.type;
+                imageUrl = postDetail.imageUrl;
+                break;
+              }
+            }
+          }
+
+          itemMap[categoryId] = _ItemInfo(
             scrapCategoryId: detail.scrapCategoryId,
             categoryName: detail.scrapCategory?.name ?? detail.scrapCategoryId,
             pricePerUnit: detail.pricePerUnit,
             unit: detail.unit,
+            imageUrl: imageUrl,
             existingQuantity: detail.quantity > 0 ? detail.quantity : null,
             type: itemType,
-            key: key,
+            key: categoryId,
           );
         } else {
-          // Update existing quantity if transactionDetails has a value
-          final existingItem = itemMap[key]!;
+          // Update existing quantity if transactionDetails has a value and itemMap doesn't
+          final existingItem = itemMap[categoryId]!;
           if (existingItem.existingQuantity == null && detail.quantity > 0) {
-            itemMap[key] = _ItemInfo(
+            itemMap[categoryId] = _ItemInfo(
               scrapCategoryId: existingItem.scrapCategoryId,
               categoryName: existingItem.categoryName,
               pricePerUnit: existingItem.pricePerUnit,
@@ -175,6 +184,9 @@ class _InputAllTransactionsQuantityDialogState
     super.dispose();
   }
 
+  /// Get all details that user has entered quantity for
+  /// API endpoint is shared for all transactions, so we send ALL items in ONE request
+  /// API will automatically distribute items to corresponding transactions based on offerDetails
   List<Map<String, dynamic>> _getDetails() {
     final details = <Map<String, dynamic>>[];
 
@@ -353,83 +365,107 @@ class _InputAllTransactionsQuantityDialogState
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    /// ===== HEADER =====
                                     Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
-                                        // Image or icon
-                                        if (itemInfo.imageUrl != null &&
-                                            itemInfo.imageUrl!.isNotEmpty)
-                                          ClipRRect(
+                                        // Image / Icon
+                                        Container(
+                                          width: 44,
+                                          height: 44,
+                                          decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(
-                                              spacing / 2,
-                                            ),
-                                            child: Image.network(
-                                              itemInfo.imageUrl!,
-                                              width: 40,
-                                              height: 40,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (_, __, ___) =>
-                                                  Icon(
-                                                Icons.recycling,
-                                                color: theme.primaryColor,
-                                                size: spacing * 1.5,
-                                              ),
-                                            ),
-                                          )
-                                        else
-                                          Icon(
-                                            Icons.recycling,
-                                            color: theme.primaryColor,
-                                            size: spacing * 1.5,
+                                                spacing / 2),
+                                            color: theme.cardColor,
                                           ),
-                                        SizedBox(width: spacing / 2),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                itemInfo.categoryName,
-                                                style: theme
-                                                    .textTheme.titleSmall
-                                                    ?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              if (itemInfo.type != null &&
-                                                  itemInfo.type!.isNotEmpty)
-                                                Padding(
-                                                  padding: EdgeInsets.only(
-                                                      top: spacing * 0.3),
-                                                  child: TypeBadge(
-                                                    type: itemInfo.type!,
+                                          child: itemInfo.imageUrl != null &&
+                                                  itemInfo.imageUrl!.isNotEmpty
+                                              ? ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          spacing / 2),
+                                                  child: Image.network(
+                                                    itemInfo.imageUrl!,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder:
+                                                        (_, __, ___) => Icon(
+                                                      Icons.recycling,
+                                                      color: theme.primaryColor,
+                                                    ),
                                                   ),
+                                                )
+                                              : Icon(
+                                                  Icons.recycling,
+                                                  color: theme.primaryColor,
                                                 ),
-                                            ],
+                                        ),
+                                        SizedBox(width: spacing * 0.75),
+
+                                        // Category name
+                                        Expanded(
+                                          child: Text(
+                                            itemInfo.categoryName,
+                                            style: theme.textTheme.titleSmall
+                                                ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
                                         ),
+
+                                        // Type badge
+                                        if (itemInfo.type != null &&
+                                            itemInfo.type!.isNotEmpty)
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                left: spacing / 2),
+                                            child:
+                                                TypeBadge(type: itemInfo.type!),
+                                          ),
                                       ],
                                     ),
-                                    SizedBox(height: spacing / 2),
-                                    Text(
-                                      s.price_display(
-                                        itemInfo.pricePerUnit
-                                            .toStringAsFixed(0),
-                                        s.per_unit,
-                                        itemInfo.unit,
+
+                                    SizedBox(height: spacing),
+
+                                    /// ===== INFO SECTION =====
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: spacing * 0.75,
+                                        vertical: spacing * 0.6,
                                       ),
-                                      style:
-                                          theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.hintColor,
+                                      decoration: BoxDecoration(
+                                        color: theme.cardColor,
+                                        borderRadius:
+                                            BorderRadius.circular(spacing / 2),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            s.price_display(
+                                              itemInfo.pricePerUnit
+                                                  .toStringAsFixed(0),
+                                              s.per_unit,
+                                              itemInfo.unit,
+                                            ),
+                                            style: theme.textTheme.bodySmall
+                                                ?.copyWith(
+                                              color: theme.hintColor,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
+
                                     SizedBox(height: spacing),
+
+                                    /// ===== INPUT =====
                                     TextFormField(
                                       controller: controller,
                                       autovalidateMode:
                                           AutovalidateMode.onUserInteraction,
                                       decoration: InputDecoration(
-                                        labelText:
-                                            s.quantity_with_unit(itemInfo.unit),
                                         hintText: s.enter_actual_quantity_hint,
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(
@@ -449,7 +485,7 @@ class _InputAllTransactionsQuantityDialogState
                                           return s.please_enter_quantity;
                                         }
                                         final quantity = double.tryParse(value);
-                                        if (quantity == null || quantity <= 0) {
+                                        if (quantity == null || quantity < 0) {
                                           return s.invalid_quantity;
                                         }
                                         return null;
@@ -479,7 +515,7 @@ class _InputAllTransactionsQuantityDialogState
                     child: ElevatedButton(
                       onPressed: _isLoading
                           ? null
-                          : () {
+                          : () async {
                               // Validate all form fields first
                               if (!_formKey.currentState!.validate()) {
                                 // Validation failed, errors will be shown under each field
@@ -487,21 +523,129 @@ class _InputAllTransactionsQuantityDialogState
                               }
 
                               // Get all items that user has entered quantity for
-                              final details = _getDetails();
+                              final detailsMap = _getDetails();
 
                               // Check if at least one item has quantity
-                              if (details.isEmpty) {
+                              if (detailsMap.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(s.please_enter_quantity),
+                                    content:
+                                        Text(s.enter_at_least_one_item_toast),
                                     backgroundColor: AppColors.danger,
                                   ),
                                 );
                                 return;
                               }
 
-                              // Send all items that user entered quantity for
-                              Navigator.of(context).pop(details);
+                              // Convert to TransactionDetailRequest list
+                              final details = detailsMap.map((item) {
+                                return TransactionDetailRequest(
+                                  scrapCategoryId:
+                                      item['scrapCategoryId'] as String,
+                                  pricePerUnit: item['pricePerUnit'] as double,
+                                  unit: item['unit'] as String,
+                                  quantity: item['quantity'] as double,
+                                );
+                              }).toList();
+
+                              // Get scrapPostId and slotId from transaction
+                              // Note: API endpoint is shared for all transactions in the same scrapPost and slot
+                              final scrapPostId =
+                                  widget.transaction.offer?.scrapPostId ?? '';
+                              final slotId = widget.transaction.timeSlotId ??
+                                  widget.transaction.offer?.timeSlotId ??
+                                  '';
+
+                              if (scrapPostId.isEmpty || slotId.isEmpty) {
+                                CustomToast.show(
+                                  context,
+                                  s.operation_failed,
+                                  type: ToastType.error,
+                                );
+                                return;
+                              }
+
+                              // API endpoint /v1/transactions/details?scrapPostId=...&slotId=...
+                              // is a shared endpoint for ALL transactions in the same scrapPost and slot
+                              // We send ALL items in ONE request, and API will automatically distribute
+                              // items to corresponding transactions based on offerDetails
+                              // Use the first transaction's ID for the transactionId parameter (required by API)
+                              final firstTransactionId = widget.transactionsData
+                                  .transactions.first.transactionId;
+
+                              // Set loading state
+                              setState(() {
+                                _isLoading = true;
+                              });
+
+                              try {
+                                final success = await ref
+                                    .read(transactionViewModelProvider.notifier)
+                                    .updateTransactionDetails(
+                                      scrapPostId: scrapPostId,
+                                      slotId: slotId,
+                                      transactionId: firstTransactionId,
+                                      details:
+                                          details, // Send ALL items in one request
+                                    );
+
+                                if (!mounted) return;
+
+                                setState(() {
+                                  _isLoading = false;
+                                });
+
+                                if (success) {
+                                  CustomToast.show(
+                                    context,
+                                    s.quantity_updated_successfully,
+                                    type: ToastType.success,
+                                  );
+
+                                  // Notify parent to refresh detail page
+                                  widget.onActionCompleted();
+                                  // Close the bottom sheet/dialog
+                                  Navigator.of(context).pop();
+                                } else {
+                                  final state =
+                                      ref.read(transactionViewModelProvider);
+                                  final errorMsg = state.errorMessage;
+
+                                  if (errorMsg != null &&
+                                      (errorMsg.contains('Check-in') ||
+                                          errorMsg.contains('check-in') ||
+                                          errorMsg.contains('chưa Check-in'))) {
+                                    CustomToast.show(
+                                      context,
+                                      s.check_in_first_error,
+                                      type: ToastType.error,
+                                    );
+                                  } else if (errorMsg != null &&
+                                      (errorMsg.contains('loại ve chai') ||
+                                          errorMsg
+                                              .contains('scrap category'))) {
+                                    CustomToast.show(
+                                      context,
+                                      s.invalid_scrap_category_error,
+                                      type: ToastType.error,
+                                    );
+                                  } else {
+                                    CustomToast.show(
+                                      context,
+                                      s.operation_failed,
+                                      type: ToastType.error,
+                                    );
+                                  }
+                                }
+                              } catch (e) {
+                                if (mounted) {
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                  CustomToast.show(context, s.operation_failed,
+                                      type: ToastType.error);
+                                }
+                              }
                             },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.primaryColor,

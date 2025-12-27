@@ -148,7 +148,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
 
                 SizedBox(height: spacing.screenPadding * 1.5),
 
-                _buildLabel(context, 'Loại hình'),
+                _buildLabel(context, S.of(context)!.service_type),
                 SizedBox(height: spacing.screenPadding / 2),
                 DropdownButtonFormField<ScrapPostDetailType>(
                   initialValue: _selectedType,
@@ -156,8 +156,12 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                       .map(
                         (type) => DropdownMenuItem(
                           value: type,
-                          child: Text(ScrapPostDetailTypeHelper.getLocalizedType(
-                              context, type,),),
+                          child: Text(
+                            ScrapPostDetailTypeHelper.getLocalizedType(
+                              context,
+                              type,
+                            ),
+                          ),
                         ),
                       )
                       .toList(),
@@ -287,8 +291,7 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
     ThemeData theme,
     AppSpacing spacing,
   ) {
-    bool hasImage =
-        _newPickedFile != null ||
+    bool hasImage = _newPickedFile != null ||
         (_currentImageUrl != null && _currentImageUrl!.isNotEmpty);
 
     return GestureDetector(
@@ -309,7 +312,9 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
                     borderRadius: BorderRadius.circular(spacing.screenPadding),
                     child: _newPickedFile != null
                         ? Image.file(_newPickedFile!, fit: BoxFit.cover)
-                        : (_currentImageUrl != null && (_currentImageUrl!.startsWith('http://') || _currentImageUrl!.startsWith('https://')))
+                        : (_currentImageUrl != null &&
+                                (_currentImageUrl!.startsWith('http://') ||
+                                    _currentImageUrl!.startsWith('https://')))
                             ? Image.network(
                                 _currentImageUrl!,
                                 fit: BoxFit.cover,
@@ -426,10 +431,13 @@ class _UpdateScrapItemDialogState extends State<UpdateScrapItemDialog> {
     return Text(
       text,
       style: Theme.of(ctx).textTheme.bodyLarge?.copyWith(
-        fontWeight: FontWeight.w600,
-        color: Theme.of(ctx).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
-      ),
+            fontWeight: FontWeight.w600,
+            color: Theme.of(ctx)
+                .textTheme
+                .bodyLarge
+                ?.color
+                ?.withValues(alpha: 0.8),
+          ),
     );
   }
-
 }

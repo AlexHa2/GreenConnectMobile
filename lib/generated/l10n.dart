@@ -5971,6 +5971,12 @@ abstract class S {
   /// **'Transaction Value'**
   String get transaction_value;
 
+  /// No description provided for @total_money.
+  ///
+  /// In en, this message translates to:
+  /// **'Total money'**
+  String get total_money;
+
   /// No description provided for @related_transactions.
   ///
   /// In en, this message translates to:
@@ -6258,6 +6264,36 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Failed to delete item'**
   String get recurring_schedule_detail_delete_failed;
+
+  /// No description provided for @system_reference_price.
+  ///
+  /// In en, this message translates to:
+  /// **'System reference price'**
+  String get system_reference_price;
+
+  /// No description provided for @total_will_receive.
+  ///
+  /// In en, this message translates to:
+  /// **'The HouseHold will receive'**
+  String get total_will_receive;
+
+  /// No description provided for @total_will_pay.
+  ///
+  /// In en, this message translates to:
+  /// **'The Household will pay'**
+  String get total_will_pay;
+
+  /// No description provided for @service_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Service type'**
+  String get service_type;
+
+  /// No description provided for @item_quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Item quantity'**
+  String get item_quantity;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
