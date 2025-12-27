@@ -21,9 +21,10 @@ class ApproveButton extends ConsumerWidget {
   });
 
   Future<void> _handleComplete(BuildContext context, WidgetRef ref) async {
+    
     final s = S.of(context)!;
 
-    // If skipPaymentMethod is true (totalPrice <= 0), call processTransaction directly without payment method
+    // If skipPaymentMethod is true (amountDifference <= 0), call processTransaction directly without payment method
     if (skipPaymentMethod) {
       try {
         // Get required parameters
@@ -47,7 +48,7 @@ class ApproveButton extends ConsumerWidget {
               slotId: slotId,
               transactionId: transaction.transactionId,
               isAccepted: true,
-              // No paymentMethod parameter when totalPrice <= 0
+              // No paymentMethod parameter when amountDifference <= 0
             );
 
         if (!context.mounted) return;
@@ -81,16 +82,18 @@ class ApproveButton extends ConsumerWidget {
       return;
     }
 
-    // Show payment method selection bottom sheet (when totalPrice > 0)
+    // Show payment method selection bottom sheet (when amountDifference > 0)
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => PaymentMethodBottomSheet(
-        transaction: transaction,
-        onActionCompleted: onActionCompleted,
-        onApproveSuccess: onApproveSuccess, // Pass callback to navigate to transaction list
-      ),
+      builder: (context) {
+        return PaymentMethodBottomSheet(
+          transaction: transaction,
+          onActionCompleted: onActionCompleted,
+          onApproveSuccess: onApproveSuccess, // Pass callback to navigate to transaction list
+        );
+      },
     );
 
     // If payment was successful, trigger the callback

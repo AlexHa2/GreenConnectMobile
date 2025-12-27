@@ -62,6 +62,7 @@ class _CreateRecyclingPostPageState
   bool _addressFound = false;
   bool _isTakeAll = false;
   bool _isSubmitting = false;
+  String? _addressError;
 
   // ===== Step State =====
   int _currentStep = 0;
@@ -172,7 +173,10 @@ class _CreateRecyclingPostPageState
   }
 
   Future<void> _handleAddressSelected(
-      String address, double? latitude, double? longitude,) async {
+    String address,
+    double? latitude,
+    double? longitude,
+  ) async {
     setState(() => _pickupAddressController.text = address);
 
     if (latitude != null && longitude != null) {
@@ -190,6 +194,10 @@ class _CreateRecyclingPostPageState
     setState(() {
       _location = location;
       _addressFound = found;
+      // Clear address error when location is updated
+      if (found && location != null) {
+        _addressError = null;
+      }
     });
   }
 
@@ -246,6 +254,10 @@ class _CreateRecyclingPostPageState
 
   bool _validatePostInfoStep(bool showToast) {
     final s = S.of(context)!;
+
+    // Trigger form validation to show red errors on fields
+    _formKey.currentState?.validate();
+
     final title = _titleController.text.trim();
     final description = _descriptionController.text.trim();
     final address = _pickupAddressController.text.trim();
@@ -253,6 +265,20 @@ class _CreateRecyclingPostPageState
     final titleError = _validateTitle(title, s);
     final descError = _validateDescription(description, s);
     final addressError = _validateAddress(address, s);
+
+    // Update address error state
+    String? newAddressError;
+    if (addressError != null) {
+      newAddressError = addressError;
+    } else if (address.isNotEmpty && (_location == null || !_addressFound)) {
+      newAddressError = s.error_invalid_address;
+    } else {
+      newAddressError = null;
+    }
+
+    setState(() {
+      _addressError = newAddressError;
+    });
 
     if (titleError != null || descError != null || addressError != null) {
       if (showToast) {
@@ -265,8 +291,11 @@ class _CreateRecyclingPostPageState
 
     if (_location == null || !_addressFound) {
       if (showToast) {
-        CustomToast.show(context, s.error_invalid_address,
-            type: ToastType.error,);
+        CustomToast.show(
+          context,
+          s.error_invalid_address,
+          type: ToastType.error,
+        );
       }
       return false;
     }
@@ -341,8 +370,11 @@ class _CreateRecyclingPostPageState
     final s = S.of(context)!;
     if (_scrapItems.isEmpty) {
       if (showToast) {
-        CustomToast.show(context, s.error_scrap_item_empty,
-            type: ToastType.error,);
+        CustomToast.show(
+          context,
+          s.error_scrap_item_empty,
+          type: ToastType.error,
+        );
       }
       return false;
     }
@@ -418,14 +450,15 @@ class _CreateRecyclingPostPageState
       availableTimeRange: 'từ thứ 2 đến thứ 6 các giờ trong tuần',
       scrapPostDetails: _scrapItems.map((item) {
         // Debug: Log type to ensure it's correct
-        debugPrint('📝 [SUBMIT] Item type: ${item.type.name} -> ${item.type.toJson()}');
-        
+        debugPrint(
+            '📝 [SUBMIT] Item type: ${item.type.name} -> ${item.type.toJson()}');
+
         // Capitalize first letter of type (e.g., "sale" -> "Sale")
         final typeString = item.type.toJson();
         final capitalizedType = typeString.isNotEmpty
             ? typeString[0].toUpperCase() + typeString.substring(1)
             : typeString;
-        
+
         return ScrapPostDetailEntity(
           scrapCategoryId: item.categoryId,
           amountDescription: item.amountDescription,
@@ -556,6 +589,10 @@ class _CreateRecyclingPostPageState
           imageFile: imageFile,
         ),
       );
+      // Auto set isTakeAll to false if items <= 1
+      if (_scrapItems.length <= 1) {
+        _isTakeAll = false;
+      }
     });
 
     CustomToast.show(context, s.item_added_success, type: ToastType.success);
@@ -575,6 +612,7 @@ class _CreateRecyclingPostPageState
       _addressFound = false;
       _isTakeAll = false;
       _currentStep = 0;
+      _addressError = null;
     });
 
     _formKey.currentState?.reset();
@@ -610,8 +648,11 @@ class _CreateRecyclingPostPageState
 
       if (success) {
         _resetAllData();
-        CustomToast.show(context, s.success_post_created,
-            type: ToastType.success,);
+        CustomToast.show(
+          context,
+          s.success_post_created,
+          type: ToastType.success,
+        );
         if (context.mounted) {
           navigateWithLoading(context, route: '/household-list-post');
         }
@@ -734,6 +775,7 @@ class _CreateRecyclingPostPageState
               onSearchAddress: () {},
               onGetCurrentLocation: _openAddressPicker,
               addressFound: _addressFound,
+              addressValidationError: _addressError,
             ),
           ),
           SizedBox(height: spacing.screenPadding),
@@ -896,22 +938,28 @@ class _CreateRecyclingPostPageState
 
                   String? newImageUrl;
                   File? newImageFile;
-                  
+
                   // Ensure type is correctly extracted from dialog result
-                  ScrapPostDetailType newType = itemData.type; // Default to current type
+                  ScrapPostDetailType newType =
+                      itemData.type; // Default to current type
                   if (updated['type'] != null) {
                     if (updated['type'] is ScrapPostDetailType) {
                       newType = updated['type'] as ScrapPostDetailType;
-                      debugPrint('✅ [UPDATE] Type from dialog (enum): ${newType.name}');
+                      debugPrint(
+                          '✅ [UPDATE] Type from dialog (enum): ${newType.name}');
                     } else if (updated['type'] is String) {
                       // If type is returned as string, parse it
-                      newType = ScrapPostDetailType.fromJson(updated['type'] as String);
-                      debugPrint('✅ [UPDATE] Type from dialog (string): ${updated['type']} -> ${newType.name}');
+                      newType = ScrapPostDetailType.fromJson(
+                          updated['type'] as String);
+                      debugPrint(
+                          '✅ [UPDATE] Type from dialog (string): ${updated['type']} -> ${newType.name}');
                     } else {
-                      debugPrint('⚠️ [UPDATE] Type is unexpected type: ${updated['type'].runtimeType}');
+                      debugPrint(
+                          '⚠️ [UPDATE] Type is unexpected type: ${updated['type'].runtimeType}');
                     }
                   } else {
-                    debugPrint('⚠️ [UPDATE] Type is null, using current: ${itemData.type.name}');
+                    debugPrint(
+                        '⚠️ [UPDATE] Type is null, using current: ${itemData.type.name}');
                   }
 
                   if (updated['imageChanged'] == true) {
@@ -937,7 +985,13 @@ class _CreateRecyclingPostPageState
                   });
                 }
               },
-              onDelete: (item) => setState(() => _scrapItems.remove(item)),
+              onDelete: (item) => setState(() {
+                    _scrapItems.remove(item);
+                    // Auto set isTakeAll to false if items <= 1
+                    if (_scrapItems.length <= 1) {
+                      _isTakeAll = false;
+                    }
+                  }),
             ),
         ],
       ),
@@ -946,6 +1000,15 @@ class _CreateRecyclingPostPageState
 
   // ignore: non_constant_identifier_names
   Widget _buildStep3_Review() {
+    // Auto set isTakeAll to false if items <= 1 when entering review step
+    if (_scrapItems.length <= 1 && _isTakeAll) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() => _isTakeAll = false);
+        }
+      });
+    }
+
     return _pageContainer(
       child: ReviewPage(
         title: _titleController.text,

@@ -216,9 +216,12 @@ class _TransactionDetailPageModernState
 
       if (mounted) {
         final state = ref.read(scrapPostViewModelProvider);
+        final transactionsData = state.transactionsData;
+        final amountDiff = transactionsData?.amountDifference ?? 0.0;
+        
         setState(() {
-          _transactionsData = state.transactionsData;
-          _amountDifference = state.transactionsData?.amountDifference ?? 0.0;
+          _transactionsData = transactionsData;
+          _amountDifference = amountDiff;
           _isLoadingTransactions = false;
 
           // ALWAYS update current transaction from _loadPostTransactions data
@@ -239,7 +242,7 @@ class _TransactionDetailPageModernState
 
               if (hasInProgressTransaction) {
                 // Navigate back to transaction list page only if no specific transaction was requested
-                debugPrint('⚠️ [TRANSACTION_DETAIL] No transactionId provided and found inProgress transaction, navigating back to list');
+
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (mounted) {
                     _navigateToTransactionList();
@@ -247,8 +250,6 @@ class _TransactionDetailPageModernState
                 });
                 return; // Exit early, don't set current transaction
               }
-            } else {
-              debugPrint('✅ [TRANSACTION_DETAIL] TransactionId provided: $currentTransactionId, allowing navigation to detail page');
             }
 
             int? selectedIndex;
@@ -448,7 +449,7 @@ class _TransactionDetailPageModernState
         onBack: _onBack,
       );
     }
-
+    
     return _TransactionDetailContent(
       key: const ValueKey('content'),
       transaction: _currentTransaction!,
@@ -479,6 +480,7 @@ class _TransactionDetailPageModernState
       onBack: _onBack,
       onApproveSuccess: _navigateToTransactionList, // Navigate to transaction list after successful approve
       onRejectSuccess: _navigateToTransactionList, // Navigate to transaction list after successful reject
+      onInputDetailsSuccess: _navigateToTransactionList, // Navigate to transaction list after successful input details
     );
   }
 }
@@ -499,6 +501,7 @@ class _TransactionDetailContent extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback? onApproveSuccess; // Callback when approve is successful to navigate to transaction list
   final VoidCallback? onRejectSuccess; // Callback when reject is successful to navigate to transaction list
+  final VoidCallback? onInputDetailsSuccess; // Callback when input details is successful to navigate to transaction list
 
   const _TransactionDetailContent({
     super.key,
@@ -515,6 +518,7 @@ class _TransactionDetailContent extends StatefulWidget {
     required this.onBack,
     this.onApproveSuccess,
     this.onRejectSuccess,
+    this.onInputDetailsSuccess,
   });
 
   @override
@@ -620,6 +624,7 @@ class _TransactionDetailContentState extends State<_TransactionDetailContent> {
             transactionsData: widget.transactionsData,
             onApproveSuccess: widget.onApproveSuccess, // Navigate to transaction list after successful approve
             onRejectSuccess: widget.onRejectSuccess, // Navigate to transaction list after successful reject
+            onInputDetailsSuccess: widget.onInputDetailsSuccess, // Navigate to transaction list after successful input details
           ),
         ),
 

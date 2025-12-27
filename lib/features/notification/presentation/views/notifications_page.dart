@@ -141,9 +141,8 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
             ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: state.isLoading
-                ? null
-                : () => viewModel.refreshNotifications(),
+            onPressed:
+                state.isLoading ? null : () => viewModel.refreshNotifications(),
             tooltip: S.of(context)!.refresh_notifications,
           ),
         ],
@@ -265,8 +264,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
       onRefresh: _onRefresh,
       child: ListView.builder(
         controller: _scrollController,
-        itemCount:
-            state.notifications!.notifications.length +
+        itemCount: state.notifications!.notifications.length +
             (state.hasNextPage ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == state.notifications!.notifications.length) {
@@ -321,10 +319,14 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     final entityId = notification.entityId?.toString().trim();
     if (entityType == null) return;
 
-    debugPrint('🔔 Notification list tap: entityType=$entityType, entityId=$entityId');
+    debugPrint(
+        '🔔 Notification list tap: entityType=$entityType, entityId=$entityId');
 
-    final isHousehold = _currentUser != null && Role.hasRole(_currentUser!.roles, Role.household);
-    final isCollector = _currentUser != null && (Role.hasRole(_currentUser!.roles, Role.individualCollector) || Role.hasRole(_currentUser!.roles, Role.businessCollector));
+    final isHousehold = _currentUser != null &&
+        Role.hasRole(_currentUser!.roles, Role.household);
+    final isCollector = _currentUser != null &&
+        (Role.hasRole(_currentUser!.roles, Role.individualCollector) ||
+            Role.hasRole(_currentUser!.roles, Role.businessCollector));
 
     switch (entityType) {
       case 'message':
@@ -340,60 +342,84 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
       case 'post':
         if (entityId == null) return;
         if (isCollector) {
-          context.push('/detail-post', extra: {
-            'postId': entityId,
-            'isCollectorView': true,
-          },);
+          context.push(
+            '/detail-post',
+            extra: {
+              'postId': entityId,
+              'isCollectorView': true,
+            },
+          );
         } else if (isHousehold) {
-          context.push('/detail-post', extra: {
-            'postId': entityId,
-            'isCollectorView': false,
-          },);
+          context.push(
+            '/detail-post',
+            extra: {
+              'postId': entityId,
+              'isCollectorView': false,
+            },
+          );
         } else {
-          context.push('/detail-post', extra: {
-            'postId': entityId,
-          },);
+          context.push(
+            '/detail-post',
+            extra: {
+              'postId': entityId,
+            },
+          );
         }
         break;
 
-      case 'transaction':
-        if (entityId == null) return;
-        context.push('/transaction-detail-onlyone', extra: {
-          'transactionId': entityId,
-        },);
-        break;
+      // case 'transaction':
+      //   if (entityId == null) return;
+      //   context.push('/transaction-detail-onlyone', extra: {
+      //     'transactionId': entityId,
+      //   },);
+      //   break;
 
       case 'offer':
         if (entityId == null) return;
         if (isCollector) {
-          context.push('/offer-detail', extra: {
-            'offerId': entityId,
-            'isCollectorView': true,
-          },);
+          context.push(
+            '/offer-detail',
+            extra: {
+              'offerId': entityId,
+              'isCollectorView': true,
+            },
+          );
         } else if (isHousehold) {
-          context.push('/offer-detail', extra: {
-            'offerId': entityId,
-            'isCollectorView': false,
-          },);
+          context.push(
+            '/offer-detail',
+            extra: {
+              'offerId': entityId,
+              'isCollectorView': false,
+            },
+          );
         } else {
-          context.push('/offer-detail', extra: {
-            'offerId': entityId,
-          },);
+          context.push(
+            '/offer-detail',
+            extra: {
+              'offerId': entityId,
+            },
+          );
         }
         break;
 
       case 'feedback':
         if (entityId == null) return;
-        context.push('/feedback-detail', extra: {
-          'feedbackId': entityId,
-        },);
+        context.push(
+          '/feedback-detail',
+          extra: {
+            'feedbackId': entityId,
+          },
+        );
         break;
 
       case 'complaint':
         if (entityId == null) return;
-        context.push('/complaint-detail', extra: {
-          'complaintId': entityId,
-        },);
+        context.push(
+          '/complaint-detail',
+          extra: {
+            'complaintId': entityId,
+          },
+        );
         break;
 
       case 'schedule':

@@ -252,7 +252,7 @@
   "ward_commune_hint": "ward",
   "personal_information": "Personal Information",
   "fullName": "FullName",
-  "fullName_hint": "Alex ha",
+  "fullName_hint": "John Doe",
   "gender": "gender",
   "date_of_birth": "Date of birth",
   "date_of_birth_hint": "2025-11-19",
@@ -1163,6 +1163,8 @@
   "total_will_receive":"The HouseHold will receive",
   "total_will_pay":"The Household will pay",
   "service_type":"Service type",
-  "item_quantity":"Item quantity"
+  "item_quantity":"Item quantity",
+  "error_time_in_past":"Cannot select time in the past"
+                              
                                                 
 }

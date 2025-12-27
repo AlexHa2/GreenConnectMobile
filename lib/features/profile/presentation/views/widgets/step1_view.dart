@@ -244,11 +244,8 @@ class _ProfileSetupStep1ViewState extends State<ProfileSetupStep1View> {
         stateProvinceError = null;
       }
 
-      // Zip Code
-      if (zip.text.isEmpty) {
-        zipError = S.of(context)!.zip_code_error;
-        isValid = false;
-      } else if (!RegExp(r'^\d{5,10}$').hasMatch(zip.text)) {
+      // Zip Code - optional field, only check format if provided
+      if (zip.text.isNotEmpty && !RegExp(r'^\d{5,10}$').hasMatch(zip.text)) {
         zipError = S.of(context)!.zip_code_format_error;
         isValid = false;
       } else {

@@ -765,7 +765,7 @@ class SEn extends S {
   String get fullName => 'FullName';
 
   @override
-  String get fullName_hint => 'Alex ha';
+  String get fullName_hint => 'John Doe';
 
   @override
   String get gender => 'Gender';
@@ -3283,4 +3283,7 @@ class SEn extends S {
 
   @override
   String get item_quantity => 'Item quantity';
+
+  @override
+  String get error_time_in_past => 'Cannot select time in the past';
 }

@@ -17,39 +17,26 @@ class ProfileRemoteDatasource {
       '/v1/admin/verifications/update-verification';
 
   /// Verify user with multipart/form-data
-  /// Sends FrontImage file and BuyerType directly to the API
+  /// POST /v1/profile/verification
+  /// Form fields: BuyerType (String), FrontImage (File)
   Future<String> verifyUser({required VerificationEntity verify}) async {
-    if (verify.hasFiles) {
-      final formData = FormData.fromMap({
-        'BuyerType': verify.buyerType,
-        'FrontImage': MultipartFile.fromBytes(
-          verify.frontImageBytes!,
-          filename: verify.frontImageName ?? 'front.jpg',
-        ),
-      });
+    final filename = verify.frontImageName ?? 'front.jpg';
 
-      final response = await _apiClient.postMultipart(verifyUrl, formData);
+    final formData = FormData.fromMap({
+      'BuyerType': verify.buyerType,
+      'FrontImage': MultipartFile.fromBytes(
+        verify.frontImageBytes!,
+        filename: filename,
+      ),
+    });
 
-      // Handle response based on API structure
-      if (response.data is String) {
-        return response.data;
-      } else if (response.data is Map) {
-        return response.data['message'] ??
-            'Verification submitted successfully';
-      }
-      return 'Verification submitted successfully';
-    } else {
-      // Fallback to old URL-based flow (if still needed)
-      final response = await _apiClient.post(
-        verifyUrl,
-        data: {
-          'buyerType': verify.buyerType,
-          'documentFrontUrl': verify.documentFrontUrl,
-          'documentBackUrl': verify.documentBackUrl,
-        },
-      );
-      return response.data;
+    final response = await _apiClient.postMultipart(verifyUrl, formData);
+    if (response.data is Map) {
+      return response.data['message'] ??
+          response.data['Message'] ??
+          'Verification submitted successfully';
     }
+    return response.data?.toString() ?? 'Verification submitted successfully';
   }
 
   Future<ProfileEntity> getMe() async {
@@ -96,22 +83,26 @@ class ProfileRemoteDatasource {
     );
 
     // Check if we have file bytes (new flow with multipart)
-    if (verify.hasFiles) {
+    if (verify.frontImageBytes != null) {
+      final filename = verify.frontImageName ?? 'front.jpg';
+
       final formData = FormData.fromMap({
         'BuyerType': verify.buyerType,
         'FrontImage': MultipartFile.fromBytes(
           verify.frontImageBytes!,
-          filename: verify.frontImageName ?? 'front.jpg',
+          filename: filename,
         ),
       });
 
-      final response = await _apiClient.patchMultipart(updateVerificationUrl, formData);
+      final response =
+          await _apiClient.patchMultipart(updateVerificationUrl, formData);
 
       // Handle response based on API structure
       if (response.data is String) {
         return response.data;
       } else if (response.data is Map) {
         return response.data['message'] ??
+            response.data['Message'] ??
             'Verification updated successfully';
       }
       return 'Verification updated successfully';

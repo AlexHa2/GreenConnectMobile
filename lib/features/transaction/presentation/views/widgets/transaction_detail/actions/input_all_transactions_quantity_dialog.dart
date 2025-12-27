@@ -15,12 +15,14 @@ class InputAllTransactionsQuantityDialog extends ConsumerStatefulWidget {
   final post_entity.PostTransactionsResponseEntity transactionsData;
   final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
+  final VoidCallback? onInputDetailsSuccess; // Callback when input details is successful to navigate to transaction list
 
   const InputAllTransactionsQuantityDialog({
     super.key,
     required this.transactionsData,
     required this.transaction,
     required this.onActionCompleted,
+    this.onInputDetailsSuccess,
   });
 
   @override
@@ -606,6 +608,11 @@ class _InputAllTransactionsQuantityDialogState
                                   widget.onActionCompleted();
                                   // Close the bottom sheet/dialog
                                   Navigator.of(context).pop();
+                                  
+                                  // Navigate to transaction list page if callback is available
+                                  if (widget.onInputDetailsSuccess != null) {
+                                    widget.onInputDetailsSuccess!();
+                                  }
                                 } else {
                                   final state =
                                       ref.read(transactionViewModelProvider);

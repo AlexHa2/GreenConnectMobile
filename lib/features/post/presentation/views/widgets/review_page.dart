@@ -211,27 +211,28 @@ class ReviewPage extends StatelessWidget {
 
         SizedBox(height: spacing.screenPadding),
 
-        // Take all section
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(spacing.screenPadding),
-            border: Border.all(
-              color: theme.dividerColor,
+        // Take all section - only show when there are more than 1 items
+        if (scrapItems.length > 1)
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(spacing.screenPadding),
+              border: Border.all(
+                color: theme.dividerColor,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TakeAllSwitch(
+                  value: isTakeAll,
+                  onChange: (val) {
+                    if (isSubmitting) return;
+                    onTakeAllChanged(val);
+                  },
+                ),
+              ],
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TakeAllSwitch(
-                value: isTakeAll,
-                onChange: (val) {
-                  if (isSubmitting) return;
-                  onTakeAllChanged(val);
-                },
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }

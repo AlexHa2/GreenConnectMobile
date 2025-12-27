@@ -122,10 +122,16 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
           _qrCodeUrl = qrCode;
           _isLoadingQR = false;
         });
+        
+        // If QR code loaded successfully after coming back from bank settings,
+        // refresh transaction data in parent page
+        // This ensures transaction detail page shows updated data
+        if (qrCode != null && qrCode.isNotEmpty) {
+
+          widget.onActionCompleted();
+        }
       }
     } catch (e) {
-      debugPrint('❌ ERROR LOADING QR CODE: $e');
-      debugPrint('📊 Error type: ${e.runtimeType}');
 
       // Log detailed error info if it's AppException
       if (e is AppException) {
