@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/core/helper/currency_helper.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/type_badge.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
@@ -58,9 +59,10 @@ class TransactionItemsSection extends StatelessWidget {
             final index = entry.key;
             final item = entry.value;
             final imageUrl = _getImageUrlForItem(item);
+            final itemType = _getTypeForItem(item);
             return Column(
               children: [
-                _buildItemRow(item, imageUrl, s),
+                _buildItemRow(item, imageUrl, itemType, s),
                 if (index < transactionDetails.length - 1)
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: space),
@@ -103,8 +105,14 @@ class TransactionItemsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildItemRow(TransactionDetailEntity item, String? imageUrl, S s) {
+  Widget _buildItemRow(
+    TransactionDetailEntity item,
+    String? imageUrl,
+    String? itemType,
+    S s,
+  ) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Image or Icon
         ClipRRect(
@@ -155,17 +163,20 @@ class TransactionItemsSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Category name
               Text(
                 item.scrapCategory.categoryName,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: space / 4),
               Text(
                 item.quantity > 0
-                    ? '${item.quantity} × ${formatVND(item.pricePerUnit)}/${item.unit}'
-                    : '${formatVND(item.pricePerUnit)}/${item.unit} (Chưa nhập số lượng)',
+                    ? '${item.quantity}/${item.unit} × ${formatVND(item.pricePerUnit)}/${s.per_unit}'
+                    : '${formatVND(item.pricePerUnit)}/${item.unit} ${s.quantity_not_entered}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.textTheme.bodySmall?.color?.withValues(
                     alpha: 0.7,
@@ -176,15 +187,29 @@ class TransactionItemsSection extends StatelessWidget {
           ),
         ),
 
-        // Price
-        Text(
-          item.quantity > 0
-              ? '${formatVND(item.finalPrice)} ${s.per_unit}'
-              : '${formatVND(item.pricePerUnit)}/${item.unit}',
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.primaryColor,
-          ),
+        SizedBox(width: space * 0.5),
+
+        // Type badge and Price (aligned to the right)
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Type badge
+            if (itemType != null && itemType.isNotEmpty) ...[
+              TypeBadge(type: itemType),
+              SizedBox(width: space / 2),
+            ],
+            // Price
+            Text(
+              item.quantity > 0
+                  ? '${formatVND(item.finalPrice)} ${s.per_unit}'
+                  : '${formatVND(item.pricePerUnit)}/${item.unit}',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.primaryColor,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -207,6 +232,30 @@ class TransactionItemsSection extends StatelessWidget {
         (detail) => detail.scrapCategoryId == item.scrapCategoryId,
       );
       return matchingDetail.imageUrl;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Get type for a transaction item - use type from transactionDetails directly
+  String? _getTypeForItem(TransactionDetailEntity item) {
+    // Use type directly from transactionDetails if available
+    if (item.type.isNotEmpty) {
+      return item.type;
+    }
+
+    // Fallback: try to get type from scrapPostDetails if transactionDetails doesn't have it
+    final scrapPost = transaction.offer?.scrapPost;
+    if (scrapPost == null || scrapPost.scrapPostDetails.isEmpty) {
+      return null;
+    }
+
+    // Find matching scrap post detail by scrapCategoryId
+    try {
+      final matchingDetail = scrapPost.scrapPostDetails.firstWhere(
+        (detail) => detail.scrapCategoryId == item.scrapCategoryId,
+      );
+      return matchingDetail.type;
     } catch (e) {
       return null;
     }

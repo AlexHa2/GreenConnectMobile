@@ -14,6 +14,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:GreenConnectMobile/core/config/firebase_options.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
+import 'package:GreenConnectMobile/features/notification/data/services/firebase_messaging_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 
 Future<void> main() async {
@@ -31,6 +33,15 @@ Future<void> main() async {
   FlutterError.demangleStackTrace = (stack) => stack;
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  final fcmService = FirebaseMessagingService();
+  await fcmService.initialize(
+    onMessageReceived: (message) {},
+    onMessageOpenedApp: (message) {},
+    onNotificationTap: (data) => fcmService.handleNotificationTapData(data),
   );
   runApp(const ProviderScope(child: GreenConnectApp()));
 }

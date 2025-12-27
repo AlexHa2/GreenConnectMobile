@@ -154,7 +154,7 @@ class _CreateRecyclingPostPageState
     }
 
     setState(() => _timeSlots.add(newSlot));
-    context.pop();
+    // Bottom sheet will close itself via Navigator.pop(context)
   }
 
   // ========= UX: Address Picker =========
@@ -417,13 +417,22 @@ class _CreateRecyclingPostPageState
       address: _pickupAddressController.text.trim(),
       availableTimeRange: 'từ thứ 2 đến thứ 6 các giờ trong tuần',
       scrapPostDetails: _scrapItems.map((item) {
+        // Debug: Log type to ensure it's correct
+        debugPrint('📝 [SUBMIT] Item type: ${item.type.name} -> ${item.type.toJson()}');
+        
+        // Capitalize first letter of type (e.g., "sale" -> "Sale")
+        final typeString = item.type.toJson();
+        final capitalizedType = typeString.isNotEmpty
+            ? typeString[0].toUpperCase() + typeString.substring(1)
+            : typeString;
+        
         return ScrapPostDetailEntity(
           scrapCategoryId: item.categoryId,
           amountDescription: item.amountDescription,
           imageUrl: item.imageUrl != null
               ? _extractFileNameFromUrl(item.imageUrl!)
               : defaultImageUrl,
-          type: item.type.toJson(),
+          type: capitalizedType,
         );
       }).toList(),
       mustTakeAll: _isTakeAll,
@@ -887,10 +896,23 @@ class _CreateRecyclingPostPageState
 
                   String? newImageUrl;
                   File? newImageFile;
-                  final ScrapPostDetailType newType =
-                      (updated['type'] is ScrapPostDetailType)
-                          ? updated['type'] as ScrapPostDetailType
-                          : itemData.type;
+                  
+                  // Ensure type is correctly extracted from dialog result
+                  ScrapPostDetailType newType = itemData.type; // Default to current type
+                  if (updated['type'] != null) {
+                    if (updated['type'] is ScrapPostDetailType) {
+                      newType = updated['type'] as ScrapPostDetailType;
+                      debugPrint('✅ [UPDATE] Type from dialog (enum): ${newType.name}');
+                    } else if (updated['type'] is String) {
+                      // If type is returned as string, parse it
+                      newType = ScrapPostDetailType.fromJson(updated['type'] as String);
+                      debugPrint('✅ [UPDATE] Type from dialog (string): ${updated['type']} -> ${newType.name}');
+                    } else {
+                      debugPrint('⚠️ [UPDATE] Type is unexpected type: ${updated['type'].runtimeType}');
+                    }
+                  } else {
+                    debugPrint('⚠️ [UPDATE] Type is null, using current: ${itemData.type.name}');
+                  }
 
                   if (updated['imageChanged'] == true) {
                     final imageResult = _parseImageUpdate(updated['image']);

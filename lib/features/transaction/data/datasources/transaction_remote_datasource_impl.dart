@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:GreenConnectMobile/core/di/injector.dart';
 import 'package:GreenConnectMobile/core/network/api_client.dart';
 import 'package:GreenConnectMobile/features/transaction/data/datasources/transaction_remote_datasource.dart';
@@ -8,6 +10,7 @@ import 'package:GreenConnectMobile/features/transaction/data/models/transaction_
 import 'package:GreenConnectMobile/features/transaction/data/models/transaction_model.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/check_in_request.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_request.dart';
+import 'package:flutter/foundation.dart';
 
 class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   final ApiClient _apiClient = sl<ApiClient>();
@@ -113,13 +116,41 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
 
   @override
   Future<List<TransactionDetailModel>> updateTransactionDetails({
-    required String transactionId,
+    required String scrapPostId,
+    required String slotId,
     required List<TransactionDetailRequest> details,
   }) async {
+    final queryParams = <String, dynamic>{
+      'scrapPostId': scrapPostId,
+      'slotId': slotId,
+    };
+    final queryString = queryParams.entries
+        .map((e) => '${e.key}=${Uri.encodeComponent(e.value.toString())}')
+        .join('&');
+    
+    // Convert to JSON-serializable format
+    final requestBody = details.map((e) => e.toJson()).toList();
+    
+    // Debug: Log the request body to verify format
+    if (kDebugMode) {
+      debugPrint('🔍 [updateTransactionDetails] Request body:');
+      debugPrint(jsonEncode(requestBody));
+      debugPrint('🔍 [updateTransactionDetails] URL: $_transactionsBaseUrl/details?$queryString');
+    }
+    
     final res = await _apiClient.post(
-      '$_transactionsBaseUrl/$transactionId/details',
-      data: details.map((e) => e.toJson()).toList(),
+      '$_transactionsBaseUrl/details?$queryString',
+      data: requestBody,
     );
+    
+    // Debug: Log the full response
+    if (kDebugMode) {
+      debugPrint('🔍 [updateTransactionDetails] Response:');
+      debugPrint('Response type: ${res.data.runtimeType}');
+      debugPrint('Response length: ${(res.data as List).length}');
+      debugPrint('Response data: ${jsonEncode(res.data)}');
+    }
+    
     return (res.data as List)
         .map((e) => TransactionDetailModel.fromJson(e))
         .toList();
@@ -127,11 +158,29 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
 
   @override
   Future<bool> processTransaction({
-    required String transactionId,
+    required String scrapPostId,
+    required String collectorId,
+    required String slotId,
     required bool isAccepted,
+    String? paymentMethod,
   }) async {
+    final queryParams = <String, dynamic>{
+      'scrapPostId': scrapPostId,
+      'collectorId': collectorId,
+      'slotId': slotId,
+      'isAccepted': isAccepted,
+    };
+    
+    if (paymentMethod != null && paymentMethod.isNotEmpty) {
+      queryParams['paymentMethod'] = paymentMethod;
+    }
+    
+    final queryString = queryParams.entries
+        .map((e) => '${e.key}=${Uri.encodeComponent(e.value.toString())}')
+        .join('&');
+    
     final res = await _apiClient.patch(
-      '$_transactionsBaseUrl/$transactionId/process?isAccepted=$isAccepted',
+      '$_transactionsBaseUrl/process?$queryString',
     );
     return res.statusCode == 200;
   }

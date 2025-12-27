@@ -10,11 +10,14 @@ import 'package:GreenConnectMobile/features/post/domain/entities/scrap_category_
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_category_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/empty_state_widget.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/location_entity.dart';
+import 'package:GreenConnectMobile/core/enum/scrap_post_detail_type.dart';
+import 'package:GreenConnectMobile/core/helper/scrap_post_detail_type_helper.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_leaf_loading.dart';
 import 'package:GreenConnectMobile/shared/widgets/app_input_field.dart';
 import 'package:GreenConnectMobile/shared/widgets/address_picker_bottom_sheet.dart';
 import 'package:GreenConnectMobile/shared/widgets/button_gradient.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
+import 'package:GreenConnectMobile/features/post/presentation/views/widgets/post_info_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -45,22 +48,245 @@ class _RecurringSchedulesPageState
     final spacing = theme.extension<AppSpacing>()?.screenPadding ?? 12.0;
     final s = S.of(context)!;
 
+    final formKey = GlobalKey<FormState>();
+
+    const stepCount = 3;
+    int currentStep = 0;
+    final pageController = PageController(initialPage: currentStep);
+
     final titleCtrl = TextEditingController();
     final descCtrl = TextEditingController();
     final addressCtrl = TextEditingController();
-    final latCtrl = TextEditingController(text: '0');
-    final lngCtrl = TextEditingController(text: '0');
+    LocationEntity? location;
+    bool addressFound = false;
     String? selectedCategoryId;
     final quantityCtrl = TextEditingController(text: '0');
     final unitCtrl = TextEditingController();
     final amountDescCtrl = TextEditingController();
-    final typeCtrl = TextEditingController(text: 'Sale');
+    ScrapPostDetailType selectedType = ScrapPostDetailType.sale;
 
     bool mustTakeAll = true;
-    int dayOfWeek = 0;
+    int dayOfWeek = DateTime.now().weekday;
     TimeOfDay start = const TimeOfDay(hour: 7, minute: 0);
     TimeOfDay end = const TimeOfDay(hour: 8, minute: 0);
     bool isSubmitting = false;
+
+    bool validateStep(int step) {
+      if (step == 0) {
+        final title = titleCtrl.text.trim();
+        final description = descCtrl.text.trim();
+        final address = addressCtrl.text.trim();
+
+        final formState = formKey.currentState;
+        final ok = formState?.validate();
+
+        // When user is on later steps, the Form widget in step 0 might be
+        // offstage and formState can be null. In that case, we validate using
+        // controller values instead of blocking submission.
+        if (ok == false || formState == null) {
+          String? err;
+          if (title.isEmpty) {
+            err = s.error_required;
+          } else if (title.length < 3) {
+            err = s.error_post_title_min;
+          } else if (description.isEmpty) {
+            err = s.error_required;
+          } else if (description.length < 10) {
+            err = s.error_description_min;
+          } else if (address.isEmpty) {
+            err = s.error_required;
+          }
+
+          if (err != null) {
+            CustomToast.show(context, err, type: ToastType.warning);
+            return false;
+          }
+        }
+        if (location == null || !addressFound) {
+          CustomToast.show(
+            context,
+            s.error_invalid_address,
+            type: ToastType.warning,
+          );
+          return false;
+        }
+        return true;
+      }
+
+      if (step == 1) {
+        final startMinutes = start.hour * 60 + start.minute;
+        final endMinutes = end.hour * 60 + end.minute;
+        if (endMinutes <= startMinutes) {
+          CustomToast.show(
+            context,
+            s.error_occurred,
+            type: ToastType.warning,
+          );
+          return false;
+        }
+        return true;
+      }
+
+      if (step == 2) {
+        if (selectedCategoryId == null || selectedCategoryId!.trim().isEmpty) {
+          CustomToast.show(
+            context,
+            s.error_all_field,
+            type: ToastType.warning,
+          );
+          return false;
+        }
+        return true;
+      }
+
+      return true;
+    }
+
+    Future<void> jumpToStep(
+      void Function(void Function()) setModalState,
+      int step,
+    ) async {
+      if (step == currentStep) return;
+      if (step < 0 || step >= stepCount) return;
+
+      if (step > currentStep) {
+        final ok = validateStep(currentStep);
+        if (!ok) return;
+      }
+
+      setModalState(() => currentStep = step);
+      await pageController.animateToPage(
+        step,
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOut,
+      );
+    }
+
+    Widget buildStepHeader(void Function(void Function()) setModalState) {
+      final progress = (currentStep + 1) / stepCount;
+
+      final steps = <({String title, IconData icon})>[
+        (title: '${s.post} ${s.information}', icon: Icons.edit_note),
+        (title: s.recurring_schedules_create_title, icon: Icons.calendar_month),
+        (title: s.recurring_schedules_details_section, icon: Icons.category),
+      ];
+
+      return Padding(
+        padding: EdgeInsets.only(bottom: spacing),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(steps[currentStep].icon, size: 20),
+                SizedBox(width: spacing * 0.67),
+                Expanded(
+                  child: Text(
+                    steps[currentStep].title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  '${currentStep + 1}/$stepCount',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: spacing * 0.83),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(999),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: 0.0, end: progress.clamp(0.0, 1.0)),
+                duration: const Duration(milliseconds: 450),
+                curve: Curves.easeOutCubic,
+                builder: (context, animatedValue, child) {
+                  return LinearProgressIndicator(
+                    value: animatedValue,
+                    minHeight: 6,
+                    backgroundColor: theme.canvasColor,
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(theme.primaryColor),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: spacing * 0.83),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(stepCount, (index) {
+                  final isActive = index == currentStep;
+                  final canTap = index <= currentStep;
+
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      right: index == stepCount - 1 ? 0 : spacing * 0.67,
+                    ),
+                    child: InkWell(
+                      onTap: canTap
+                          ? () => jumpToStep(setModalState, index)
+                          : null,
+                      borderRadius: BorderRadius.circular(999),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: spacing,
+                          vertical: spacing * 0.67,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: isActive
+                                ? theme.colorScheme.primary
+                                : theme.dividerColor,
+                          ),
+                          color: isActive
+                              ? theme.primaryColor.withValues(alpha: 0.10)
+                              : theme.colorScheme.surface,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              steps[index].icon,
+                              size: 16,
+                              color: canTap
+                                  ? (isActive
+                                      ? theme.colorScheme.primary
+                                      : theme.iconTheme.color)
+                                  : theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.38),
+                            ),
+                            SizedBox(width: spacing / 2),
+                            Text(
+                              (index + 1).toString(),
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: canTap
+                                    ? (isActive
+                                        ? theme.colorScheme.primary
+                                        : theme.textTheme.labelLarge?.color)
+                                    : theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.38),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     Widget labeledField({
       required String label,
@@ -137,9 +363,9 @@ class _RecurringSchedulesPageState
     }
 
     String timeToIso(TimeOfDay t) {
-      final now = DateTime.now().toUtc();
-      final dt = DateTime.utc(now.year, now.month, now.day, t.hour, t.minute);
-      return dt.toIso8601String();
+      final hh = t.hour.toString().padLeft(2, '0');
+      final mm = t.minute.toString().padLeft(2, '0');
+      return '$hh:$mm:00.000';
     }
 
     void handleAddressSelected(
@@ -149,11 +375,12 @@ class _RecurringSchedulesPageState
       double? longitude,
     ) {
       addressCtrl.text = address;
-      if (latitude != null) {
-        latCtrl.text = latitude.toString();
-      }
-      if (longitude != null) {
-        lngCtrl.text = longitude.toString();
+      if (latitude != null && longitude != null) {
+        location = LocationEntity(latitude: latitude, longitude: longitude);
+        addressFound = true;
+      } else {
+        location = null;
+        addressFound = false;
       }
       setModalState(() {});
     }
@@ -202,336 +429,405 @@ class _RecurringSchedulesPageState
                     child: Card(
                       child: Padding(
                         padding: EdgeInsets.all(spacing * 2),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  s.recurring_schedules_create_title,
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    s.recurring_schedules_create_title,
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () => Navigator.pop(context),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: spacing),
-                          AppInputField(
-                            label: s.recurring_schedule_field_title,
-                            controller: titleCtrl,
-                            hint: s.recurring_schedule_field_title,
-                          ),
-                          SizedBox(height: spacing),
-                          AppInputField(
-                            label: s.recurring_schedule_field_description,
-                            controller: descCtrl,
-                            hint: s.recurring_schedule_field_description,
-                            maxLines: 2,
-                          ),
-                          SizedBox(height: spacing),
-                          Text(
-                            s.recurring_schedule_field_address,
-                            style: theme.textTheme.bodyLarge!.copyWith(
-                              fontWeight: FontWeight.w600,
+                                IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () => Navigator.pop(context),
+                                ),
+                              ],
                             ),
-                          ),
-                          SizedBox(height: spacing / 2),
-                          if (addressCtrl.text.trim().isNotEmpty)
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.only(bottom: 8),
-                              decoration: BoxDecoration(
-                                color: theme.primaryColor.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: theme.primaryColor.withValues(alpha: 0.3),
-                                ),
-                              ),
-                              child: Row(
+                            SizedBox(height: spacing * 0.5),
+                            buildStepHeader(setModalState),
+                            Expanded(
+                              child: PageView(
+                                controller: pageController,
+                                physics: const NeverScrollableScrollPhysics(),
                                 children: [
-                                  Icon(
-                                    Icons.location_on,
-                                    color: theme.primaryColor,
-                                    size: 20,
+                                  SingleChildScrollView(
+                                    child: Form(
+                                      key: formKey,
+                                      child: PostInfoForm(
+                                        formKey: formKey,
+                                        titleController: titleCtrl,
+                                        descController: descCtrl,
+                                        addressController: addressCtrl,
+                                        onSearchAddress: openAddressPicker,
+                                        onGetCurrentLocation: openAddressPicker,
+                                        addressFound: addressFound,
+                                        isLoadingLocation: false,
+                                      ),
+                                    ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      addressCtrl.text,
-                                      style: const TextStyle(fontSize: 14),
+                                  SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        SwitchListTile.adaptive(
+                                          contentPadding: EdgeInsets.zero,
+                                          title: Text(
+                                            s.recurring_schedule_must_take_all,
+                                            style: theme.textTheme.bodyLarge!
+                                                .copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          value: mustTakeAll,
+                                          onChanged: (v) => setModalState(
+                                            () => mustTakeAll = v,
+                                          ),
+                                        ),
+                                        SizedBox(height: spacing / 2),
+                                        Text(
+                                          s.recurring_schedule_field_day_of_week,
+                                          style: theme.textTheme.bodyLarge!
+                                              .copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        SizedBox(height: spacing / 2),
+                                        DropdownButtonFormField<int>(
+                                          initialValue: dayOfWeek,
+                                          decoration: const InputDecoration(
+                                            isDense: true,
+                                          ),
+                                          items: List.generate(7, (i) {
+                                            final value = i + 1; // 1..7
+                                            return DropdownMenuItem(
+                                              value: value,
+                                              child: Text(
+                                                _weekdayLabel(context, value),
+                                              ),
+                                            );
+                                          }),
+                                          onChanged: (v) {
+                                            if (v != null) {
+                                              setModalState(
+                                                () => dayOfWeek = v,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        SizedBox(height: spacing),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: InkWell(
+                                                onTap: () =>
+                                                    pickStart(setModalState),
+                                                child: InputDecorator(
+                                                  decoration: InputDecoration(
+                                                    labelText: s
+                                                        .recurring_schedule_field_start_time,
+                                                    isDense: true,
+                                                  ),
+                                                  child: Text(
+                                                    start.format(context),
+                                                    style: theme
+                                                        .textTheme.bodyMedium,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: spacing),
+                                            Expanded(
+                                              child: InkWell(
+                                                onTap: () =>
+                                                    pickEnd(setModalState),
+                                                child: InputDecorator(
+                                                  decoration: InputDecoration(
+                                                    labelText: s
+                                                        .recurring_schedule_field_end_time,
+                                                    isDense: true,
+                                                  ),
+                                                  child: Text(
+                                                    end.format(context),
+                                                    style: theme
+                                                        .textTheme.bodyMedium,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          s.recurring_schedules_details_section,
+                                          style: theme.textTheme.titleMedium
+                                              ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: spacing),
+                                        DropdownButtonFormField<String>(
+                                          initialValue: selectedCategoryId,
+                                          items: categories
+                                              .map(
+                                                (c) => DropdownMenuItem(
+                                                  value: c.scrapCategoryId,
+                                                  child: Text(c.categoryName),
+                                                ),
+                                              )
+                                              .toList(),
+                                          onChanged: (val) => setModalState(
+                                            () => selectedCategoryId = val,
+                                          ),
+                                          decoration: InputDecoration(
+                                            labelText: s.category,
+                                            isDense: true,
+                                          ),
+                                        ),
+                                        SizedBox(height: spacing),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: labeledField(
+                                                label: s
+                                                    .recurring_schedule_field_quantity,
+                                                controller: quantityCtrl,
+                                                hint: '0',
+                                                keyboardType:
+                                                    const TextInputType
+                                                        .numberWithOptions(
+                                                  decimal: true,
+                                                  signed: false,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: spacing),
+                                            Expanded(
+                                              child: AppInputField(
+                                                label: s
+                                                    .recurring_schedule_field_unit,
+                                                controller: unitCtrl,
+                                                hint: s
+                                                    .recurring_schedule_field_unit,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: spacing),
+                                        AppInputField(
+                                          label: s
+                                              .recurring_schedule_field_amount_description,
+                                          controller: amountDescCtrl,
+                                          hint: s
+                                              .recurring_schedule_field_amount_description,
+                                        ),
+                                        SizedBox(height: spacing),
+                                        DropdownButtonFormField<ScrapPostDetailType>(
+                                          value: selectedType,
+                                          decoration: InputDecoration(
+                                            labelText:
+                                                s.recurring_schedule_field_type,
+                                            isDense: true,
+                                          ),
+                                          items: ScrapPostDetailType.values
+                                              .map(
+                                                (t) => DropdownMenuItem(
+                                                  value: t,
+                                                  child: Text(
+                                                    ScrapPostDetailTypeHelper
+                                                        .getLocalizedType(
+                                                      context,
+                                                      t,
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                              .toList(),
+                                          onChanged: (v) {
+                                            if (v == null) return;
+                                            setModalState(
+                                              () => selectedType = v,
+                                            );
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton.icon(
-                              onPressed: openAddressPicker,
-                              icon: const Icon(Icons.edit_location_alt),
-                              label: Text(
-                                addressCtrl.text.trim().isEmpty
-                                    ? s.select_address
-                                    : s.change_address,
-                              ),
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                side: BorderSide(color: theme.primaryColor),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: spacing),
-                          SwitchListTile.adaptive(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(
-                              s.recurring_schedule_must_take_all,
-                              style: theme.textTheme.bodyLarge!.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            value: mustTakeAll,
-                            onChanged: (v) =>
-                                setModalState(() => mustTakeAll = v),
-                          ),
-                          SizedBox(height: spacing / 2),
-                          Text(
-                            s.recurring_schedule_field_day_of_week,
-                            style: theme.textTheme.bodyLarge!.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(height: spacing / 2),
-                          DropdownButtonFormField<int>(
-                            initialValue: dayOfWeek,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                            ),
-                            items: List.generate(
-                              7,
-                              (i) => DropdownMenuItem(
-                                value: i,
-                                child: Text(_weekdayLabel(context, i)),
-                              ),
-                            ),
-                            onChanged: (v) {
-                              if (v != null) setModalState(() => dayOfWeek = v);
-                            },
-                          ),
-                          SizedBox(height: spacing),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () => pickStart(setModalState),
-                                  child: InputDecorator(
-                                    decoration: InputDecoration(
-                                      labelText:
-                                          s.recurring_schedule_field_start_time,
-                                      isDense: true,
-                                    ),
-                                    child: Text(
-                                      start.format(context),
-                                      style: theme.textTheme.bodyMedium,
+                            SizedBox(height: spacing),
+                            Row(
+                              children: [
+                                if (currentStep > 0)
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      onPressed: isSubmitting
+                                          ? null
+                                          : () => jumpToStep(
+                                                setModalState,
+                                                currentStep - 1,
+                                              ),
+                                      child: Text(s.back),
                                     ),
                                   ),
-                                ),
-                              ),
-                              SizedBox(width: spacing),
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () => pickEnd(setModalState),
-                                  child: InputDecorator(
-                                    decoration: InputDecoration(
-                                      labelText:
-                                          s.recurring_schedule_field_end_time,
-                                      isDense: true,
-                                    ),
-                                    child: Text(
-                                      end.format(context),
-                                      style: theme.textTheme.bodyMedium,
-                                    ),
+                                if (currentStep > 0)
+                                  SizedBox(width: spacing),
+                                Expanded(
+                                  flex: 2,
+                                  child: GradientButton(
+                                    onPressed: isSubmitting
+                                        ? null
+                                        : () async {
+                                            if (currentStep < stepCount - 1) {
+                                              await jumpToStep(
+                                                setModalState,
+                                                currentStep + 1,
+                                              );
+                                              return;
+                                            }
+
+                                            final okSteps =
+                                                validateStep(0) &&
+                                                    validateStep(1) &&
+                                                    validateStep(2);
+                                            if (!okSteps) {
+                                              return;
+                                            }
+
+                                            final title = titleCtrl.text.trim();
+                                            final description =
+                                                descCtrl.text.trim();
+                                            final address =
+                                                addressCtrl.text.trim();
+                                            final scrapCategoryId =
+                                                selectedCategoryId;
+
+                                            final quantity = num.tryParse(
+                                                  quantityCtrl.text.trim(),
+                                                ) ??
+                                                0;
+
+                                            if (title.isEmpty ||
+                                                address.isEmpty ||
+                                                scrapCategoryId == null ||
+                                                scrapCategoryId.isEmpty) {
+                                              CustomToast.show(
+                                                context,
+                                                s.error_all_field,
+                                                type: ToastType.warning,
+                                              );
+                                              return;
+                                            }
+
+                                            setModalState(
+                                              () => isSubmitting = true,
+                                            );
+
+                                            try {
+                                              final backendDayOfWeek =
+                                                  dayOfWeek == 7 ? 0 : dayOfWeek;
+
+                                              final entity = RecurringScheduleEntity(
+                                                id: '',
+                                                title: title,
+                                                description: description,
+                                                address: address,
+                                                location: location!,
+                                                mustTakeAll: mustTakeAll,
+                                                dayOfWeek: backendDayOfWeek,
+                                                startTime: timeToIso(start),
+                                                endTime: timeToIso(end),
+                                                isActive: true,
+                                                scheduleDetails: [
+                                                  RecurringScheduleDetailEntity(
+                                                    id: '',
+                                                    recurringScheduleId: '',
+                                                    scrapCategoryId: scrapCategoryId,
+                                                    quantity: quantity,
+                                                    unit: unitCtrl.text.trim().isEmpty
+                                                        ? null
+                                                        : unitCtrl.text.trim(),
+                                                    amountDescription:
+                                                        amountDescCtrl.text.trim().isEmpty
+                                                            ? null
+                                                            : amountDescCtrl.text.trim(),
+                                                    type: selectedType.label,
+                                                  ),
+                                                ],
+                                                lastRunDate: null,
+                                                createdAt: null,
+                                              );
+
+                                              final ok = await ref
+                                                  .read(
+                                                    recurringScheduleViewModelProvider
+                                                        .notifier,
+                                                  )
+                                                  .createSchedule(entity);
+
+                                              if (!mounted) return;
+
+                                              if (ok) {
+                                                CustomToast.show(
+                                                  context,
+                                                  s.recurring_schedules_create_success,
+                                                  type: ToastType.success,
+                                                );
+                                                Navigator.pop(context);
+                                                await _onRefresh();
+                                              } else {
+                                                CustomToast.show(
+                                                  context,
+                                                  s.recurring_schedules_create_failed,
+                                                  type: ToastType.error,
+                                                );
+                                                setModalState(
+                                                  () => isSubmitting = false,
+                                                );
+                                              }
+                                            } catch (e) {
+                                              CustomToast.show(
+                                                context,
+                                                s.recurring_schedules_create_failed,
+                                                type: ToastType.error,
+                                              );
+                                              setModalState(
+                                                () => isSubmitting = false,
+                                              );
+                                            }
+                                          },
+                                    child: isSubmitting
+                                        ? const SizedBox(
+                                            width: 18,
+                                            height: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : Text(
+                                            currentStep < stepCount - 1
+                                                ? s.next
+                                                : s.recurring_schedules_create_submit,
+                                          ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: spacing * 1.5),
-                          Text(
-                            s.recurring_schedules_details_section,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                              ],
                             ),
-                          ),
-                          SizedBox(height: spacing),
-                          DropdownButtonFormField<String>(
-                            initialValue: selectedCategoryId,
-                            items: categories
-                                .map(
-                                  (c) => DropdownMenuItem(
-                                    value: c.scrapCategoryId,
-                                    child: Text(c.categoryName),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (val) =>
-                                setModalState(() => selectedCategoryId = val),
-                            decoration: InputDecoration(
-                              labelText: s.category,
-                              isDense: true,
-                            ),
-                          ),
-                          SizedBox(height: spacing),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: labeledField(
-                                  label: s.recurring_schedule_field_quantity,
-                                  controller: quantityCtrl,
-                                  hint: '0',
-                                  keyboardType:
-                                      const TextInputType.numberWithOptions(
-                                    decimal: true,
-                                    signed: false,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: spacing),
-                              Expanded(
-                                child: AppInputField(
-                                  label: s.recurring_schedule_field_unit,
-                                  controller: unitCtrl,
-                                  hint: s.recurring_schedule_field_unit,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: spacing),
-                          AppInputField(
-                            label: s.recurring_schedule_field_amount_description,
-                            controller: amountDescCtrl,
-                            hint: s.recurring_schedule_field_amount_description,
-                          ),
-                          SizedBox(height: spacing),
-                          AppInputField(
-                            label: s.recurring_schedule_field_type,
-                            controller: typeCtrl,
-                            hint: s.recurring_schedule_field_type,
-                          ),
-                          SizedBox(height: spacing * 1.5),
-                          GradientButton(
-                            onPressed: isSubmitting
-                                ? null
-                                : () async {
-                                    final title = titleCtrl.text.trim();
-                                    final description = descCtrl.text.trim();
-                                    final address = addressCtrl.text.trim();
-                                    final scrapCategoryId = selectedCategoryId;
-
-                                    final lat =
-                                        double.tryParse(latCtrl.text.trim()) ?? 0;
-                                    final lng =
-                                        double.tryParse(lngCtrl.text.trim()) ?? 0;
-
-                                    final quantity =
-                                        num.tryParse(quantityCtrl.text.trim()) ??
-                                            0;
-
-                                    if (title.isEmpty ||
-                                        address.isEmpty ||
-                                        scrapCategoryId == null ||
-                                        scrapCategoryId.isEmpty) {
-                                      CustomToast.show(
-                                        context,
-                                        s.error_all_field,
-                                        type: ToastType.warning,
-                                      );
-                                      return;
-                                    }
-
-                                    setModalState(() => isSubmitting = true);
-
-                                    final entity = RecurringScheduleEntity(
-                                      id: '',
-                                      title: title,
-                                      description: description,
-                                      address: address,
-                                      location: LocationEntity(
-                                        longitude: lng,
-                                        latitude: lat,
-                                      ),
-                                      mustTakeAll: mustTakeAll,
-                                      dayOfWeek: dayOfWeek,
-                                      startTime: timeToIso(start),
-                                      endTime: timeToIso(end),
-                                      isActive: true,
-                                      scheduleDetails: [
-                                        RecurringScheduleDetailEntity(
-                                          id: '',
-                                          recurringScheduleId: '',
-                                          scrapCategoryId: scrapCategoryId,
-                                          quantity: quantity,
-                                          unit: unitCtrl.text.trim().isEmpty
-                                              ? null
-                                              : unitCtrl.text.trim(),
-                                          amountDescription:
-                                              amountDescCtrl.text.trim().isEmpty
-                                                  ? null
-                                                  : amountDescCtrl.text.trim(),
-                                          type: typeCtrl.text.trim().isEmpty
-                                              ? null
-                                              : typeCtrl.text.trim(),
-                                        ),
-                                      ],
-                                      lastRunDate: null,
-                                      createdAt: null,
-                                    );
-
-                                    final ok = await ref
-                                        .read(recurringScheduleViewModelProvider
-                                            .notifier,)
-                                        .createSchedule(entity);
-
-                                    if (!mounted) return;
-
-                                    if (ok) {
-                                      CustomToast.show(
-                                        context,
-                                        s.recurring_schedules_create_success,
-                                        type: ToastType.success,
-                                      );
-                                      Navigator.pop(context);
-                                      await _onRefresh();
-                                    } else {
-                                      CustomToast.show(
-                                        // ignore: use_build_context_synchronously
-                                        context,
-                                        s.recurring_schedules_create_failed,
-                                        type: ToastType.error,
-                                      );
-                                      setModalState(() => isSubmitting = false);
-                                    }
-                                  },
-                            child: isSubmitting
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : Text(s.recurring_schedules_create_submit),
-                          ),
-                        ],
-                          ),
+                          ],
                         ),
                       ),
                     ),
@@ -826,7 +1122,7 @@ class _RecurringSchedulesPageState
                       final start = _timeLabel(context, item.startTime);
                       final end = _timeLabel(context, item.endTime);
                       final created = _dateTimeLabel(context, item.createdAt);
-                      final lastRun = _dateTimeLabel(context, item.lastRunDate);
+                      // final lastRun = _dateTimeLabel(context, item.lastRunDate);
 
                       return Card(
                         elevation: 0,
@@ -852,9 +1148,10 @@ class _RecurringSchedulesPageState
                             ),
                           ),
                           title: Text(
-                            '$weekday · $start - $end',
+                            item.title,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700,
+                              fontSize: 16,
                             ),
                           ),
                           subtitle: Padding(
@@ -862,17 +1159,58 @@ class _RecurringSchedulesPageState
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (created.isNotEmpty)
-                                  Text(
-                                    created,
-                                    style: theme.textTheme.bodySmall,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.schedule_rounded,
+                                      size: 16,
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        '$weekday · $start - $end',
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                          color: theme.colorScheme.onSurfaceVariant,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (item.address.isNotEmpty) ...[
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        Icons.location_on_outlined,
+                                        size: 16,
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Expanded(
+                                        child: Text(
+                                          item.address,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: theme.textTheme.bodyMedium?.copyWith(
+                                            color: theme.colorScheme.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                if (lastRun.isNotEmpty)
+                                ],
+                                if (created.isNotEmpty)
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 2),
+                                    padding: const EdgeInsets.only(top: 6),
                                     child: Text(
-                                      lastRun,
-                                      style: theme.textTheme.bodySmall,
+                                      'Tạo lúc: $created',
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
                                     ),
                                   ),
                               ],

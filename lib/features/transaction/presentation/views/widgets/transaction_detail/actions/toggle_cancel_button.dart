@@ -45,9 +45,8 @@ class ToggleCancelButton extends ConsumerWidget {
               child: Text(
                 isCanceled ? s.resume_transaction : s.emergency_cancel,
                 style: TextStyle(
-                  color: isCanceled
-                      ? AppColors.warningUpdate
-                      : AppColors.danger,
+                  color:
+                      isCanceled ? AppColors.warningUpdate : AppColors.danger,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -103,9 +102,8 @@ class ToggleCancelButton extends ConsumerWidget {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: isCanceled
-                  ? AppColors.warningUpdate
-                  : AppColors.danger,
+              backgroundColor:
+                  isCanceled ? AppColors.warningUpdate : AppColors.danger,
               foregroundColor: theme.scaffoldBackgroundColor,
             ),
             child: Text(isCanceled ? s.resume : s.emergency_cancel),
@@ -144,49 +142,61 @@ class ToggleCancelButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final theme = Theme.of(context);
     final s = S.of(context)!;
     final isCanceled =
         transaction.statusEnum == TransactionStatus.canceledByUser;
     final state = ref.watch(transactionViewModelProvider);
     final isProcessing = state.isProcessing;
+    final buttonColor = isCanceled ? AppColors.warningUpdate : AppColors.danger;
 
-    return OutlinedButton.icon(
-      onPressed: isProcessing ? null : () => _handleToggleCancel(context, ref),
-      icon: isProcessing
-          ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  isCanceled ? AppColors.warningUpdate : AppColors.danger,
-                ),
-              ),
-            )
-          : Icon(isCanceled ? Icons.restart_alt : Icons.warning_amber_rounded),
-      label: Text(
-        isCanceled ? s.resume_transaction : s.emergency_cancel,
-        style: const TextStyle(fontWeight: FontWeight.w600),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: buttonColor.withValues(alpha: 0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        side: BorderSide(
-          color: isCanceled ? AppColors.warningUpdate : AppColors.danger,
-          width: 2,
+      child: OutlinedButton.icon(
+        onPressed:
+            isProcessing ? null : () => _handleToggleCancel(context, ref),
+        icon: isProcessing
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                ),
+              )
+            : Icon(
+                isCanceled ? Icons.restart_alt : Icons.warning_amber_rounded,
+                size: 20,
+              ),
+        label: Text(
+          isCanceled ? s.resume_transaction : s.emergency_cancel,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
         ),
-        foregroundColor: isCanceled
-            ? AppColors.warningUpdate
-            : AppColors.danger,
-        backgroundColor: isCanceled
-            ? AppColors.warningUpdate.withValues(alpha: 0.05)
-            : AppColors.danger.withValues(alpha: 0.05),
-        disabledForegroundColor: isCanceled
-            ? AppColors.warningUpdate
-            : AppColors.danger,
-        disabledBackgroundColor: isCanceled
-            ? AppColors.warningUpdate.withValues(alpha: 0.05)
-            : AppColors.danger.withValues(alpha: 0.05),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          side: BorderSide(
+            color: buttonColor,
+            width: 2,
+          ),
+          foregroundColor: buttonColor,
+          backgroundColor: buttonColor.withValues(alpha: 0.05),
+          disabledForegroundColor: buttonColor,
+          disabledBackgroundColor: buttonColor.withValues(alpha: 0.05),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       ),
     );
   }

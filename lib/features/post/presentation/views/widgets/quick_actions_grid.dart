@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -58,26 +59,20 @@ class QuickActionsGrid extends StatelessWidget {
               _QuickActionCard(
                 icon: Icons.receipt_long_outlined,
                 label: s.transactions,
-                color: theme.primaryColor,
+                color: AppColors.info,
                 onTap: () => context.push('/household-list-transactions'),
               ),
               _QuickActionCard(
                 icon: Icons.feedback_outlined,
                 label: s.transaction_feedbacks,
-                color: theme.primaryColor,
+                color: AppColors.warningUpdate,
                 onTap: () => context.push('/household-feedback-list'),
               ),
               _QuickActionCard(
                 icon: Icons.report_problem_outlined,
                 label: s.complaints,
-                color: theme.primaryColor,
+                color: AppColors.danger,
                 onTap: () => context.push('/household-complaint-list'),
-              ),
-              _QuickActionCard(
-                icon: Icons.inventory_2_outlined,
-                label: s.packages,
-                color: theme.primaryColor,
-                onTap: () => context.push('/package-list'),
               ),
               _QuickActionCard(
                 icon: Icons.inventory_2_outlined,

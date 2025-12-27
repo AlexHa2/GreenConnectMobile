@@ -15,6 +15,7 @@ import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_enti
 import 'package:GreenConnectMobile/features/post/domain/entities/time_slot.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_category_providers.dart';
 import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
+import 'package:GreenConnectMobile/features/post/presentation/viewmodels/states/scrap_post_state.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/add_item_bottom_sheet.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/add_time_slot_bottom_sheet.dart';
 import 'package:GreenConnectMobile/features/post/presentation/views/widgets/create_post_header.dart';
@@ -179,7 +180,10 @@ class _CreateRecyclingPostWithAIPageState
   }
 
   Future<void> _handleAddressSelected(
-      String address, double? latitude, double? longitude,) async {
+    String address,
+    double? latitude,
+    double? longitude,
+  ) async {
     setState(() => _pickupAddressController.text = address);
 
     if (latitude != null && longitude != null) {
@@ -212,6 +216,7 @@ class _CreateRecyclingPostWithAIPageState
           _aiAnalyzeImage = File(pickedFile.path);
           _isAIFilled = false;
         });
+        await _analyzeImageWithAI();
       }
     } catch (e) {
       if (!mounted) return;
@@ -347,7 +352,7 @@ class _CreateRecyclingPostWithAIPageState
       String? imageUrlForDisplay; // Full URL for UI display
       File? imageFile;
       String? savedFilePath; // File path for API submission
-      
+
       // Priority: item.imageUrl (full URL) > original picked image
       if (item.imageUrl != null && item.imageUrl!.isNotEmpty) {
         // Use full URL from AI response for UI display
@@ -461,8 +466,11 @@ class _CreateRecyclingPostWithAIPageState
 
     if (_location == null || !_addressFound) {
       if (showToast) {
-        CustomToast.show(context, s.error_invalid_address,
-            type: ToastType.error,);
+        CustomToast.show(
+          context,
+          s.error_invalid_address,
+          type: ToastType.error,
+        );
       }
       return false;
     }
@@ -537,8 +545,11 @@ class _CreateRecyclingPostWithAIPageState
     final s = S.of(context)!;
     if (_scrapItems.isEmpty) {
       if (showToast) {
-        CustomToast.show(context, s.error_scrap_item_empty,
-            type: ToastType.error,);
+        CustomToast.show(
+          context,
+          s.error_scrap_item_empty,
+          type: ToastType.error,
+        );
       }
       return false;
     }
@@ -614,13 +625,14 @@ class _CreateRecyclingPostWithAIPageState
       availableTimeRange: 'từ thứ 2 đến thứ 6 các giờ trong tuần',
       scrapPostDetails: _scrapItems.map((item) {
         String finalImageUrl;
-        
+
         // Check if item has savedImageFilePath from AI and user hasn't changed it
         final savedFilePath = item.aiData?['savedImageFilePath'] as String?;
-        final hasChangedImage = item.imageFile != null; // User changed if imageFile exists
-        
-        if (savedFilePath != null && 
-            savedFilePath.isNotEmpty && 
+        final hasChangedImage =
+            item.imageFile != null; // User changed if imageFile exists
+
+        if (savedFilePath != null &&
+            savedFilePath.isNotEmpty &&
             !hasChangedImage) {
           // Use savedImageFilePath directly for API submission
           finalImageUrl = savedFilePath;
@@ -638,11 +650,21 @@ class _CreateRecyclingPostWithAIPageState
           finalImageUrl = defaultImageUrl;
         }
 
+        // Debug: Log type to ensure it's correct
+        debugPrint(
+            '📝 [SUBMIT] Item type: ${item.type.name} -> ${item.type.toJson()}');
+
+        // Capitalize first letter of type (e.g., "sale" -> "Sale")
+        final typeString = item.type.toJson();
+        final capitalizedType = typeString.isNotEmpty
+            ? typeString[0].toUpperCase() + typeString.substring(1)
+            : typeString;
+
         return ScrapPostDetailEntity(
           scrapCategoryId: item.categoryId,
           amountDescription: item.amountDescription,
           imageUrl: finalImageUrl,
-          type: item.type.toJson(),
+          type: capitalizedType,
         );
       }).toList(),
       mustTakeAll: _isTakeAll,
@@ -822,8 +844,11 @@ class _CreateRecyclingPostWithAIPageState
 
       if (success) {
         _resetAllData();
-        CustomToast.show(context, s.success_post_created,
-            type: ToastType.success,);
+        CustomToast.show(
+          context,
+          s.success_post_created,
+          type: ToastType.success,
+        );
         if (context.mounted) {
           navigateWithLoading(context, route: '/household-list-post');
         }
@@ -917,6 +942,7 @@ class _CreateRecyclingPostWithAIPageState
     AppSpacing spacing,
     S s,
     bool isAnalyzing,
+    ScrapPostState scrapPostState,
   ) {
     return Card(
       child: Padding(
@@ -1004,117 +1030,67 @@ class _CreateRecyclingPostWithAIPageState
                 ),
               )
             else
-              Column(
+              Stack(
                 children: [
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius:
-                            BorderRadius.circular(spacing.screenPadding),
-                        child: Image.file(
-                          _aiAnalyzeImage!,
-                          width: double.infinity,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      if (isAnalyzing)
-                        Positioned.fill(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: theme.dividerColor,
-                              borderRadius:
-                                  BorderRadius.circular(spacing.screenPadding),
-                            ),
-                            child: Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      theme.primaryColor,
-                                    ),
-                                  ),
-                                  SizedBox(height: spacing.screenPadding / 2),
-                                  Text(
-                                    s.analyzing,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: theme.scaffoldBackgroundColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(spacing.screenPadding),
+                    child: Image.file(
+                      _aiAnalyzeImage!,
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  SizedBox(height: spacing.screenPadding),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: IconButton(
-                          onPressed: _isSubmitting || isAnalyzing
-                              ? null
-                              : _pickImageForAI,
-                          icon: Icon(
-                            Icons.edit,
-                            color: theme.primaryColor,
-                          ),
-                          iconSize: 20,
-                          padding: EdgeInsets.all(spacing.screenPadding * 1.15),
-                          style: IconButton.styleFrom(
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(spacing.screenPadding),
-                            ),
-                            side: BorderSide(
-                              color: theme.primaryColor,
-                              width: 2,
-                            ),
-                          ),
+                  if (isAnalyzing)
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: theme.dividerColor.withValues(alpha: 0.9),
+                          borderRadius:
+                              BorderRadius.circular(spacing.screenPadding),
                         ),
-                      ),
-                      SizedBox(width: spacing.screenPadding / 2),
-                      Expanded(
-                        flex: 2,
-                        child: GradientButton(
-                          onPressed: _isSubmitting || isAnalyzing
-                              ? null
-                              : _analyzeImageWithAI,
-                          child: isAnalyzing
-                              ? Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                          theme.scaffoldBackgroundColor,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: spacing.screenPadding / 2),
-                                    Text(s.analyzing),
-                                  ],
-                                )
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.auto_awesome, size: 18),
-                                    SizedBox(width: spacing.screenPadding / 2),
-                                    Text(s.analyze_with_ai),
-                                  ],
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Progress indicator with value
+                              SizedBox(
+                                width: 60,
+                                height: 60,
+                                child: CircularProgressIndicator(
+                                  value: scrapPostState.analyzeProgress > 0
+                                      ? scrapPostState.analyzeProgress
+                                      : null,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    theme.primaryColor,
+                                  ),
+                                  backgroundColor:
+                                      theme.primaryColor.withValues(alpha: 0.2),
+                                  strokeWidth: 4,
                                 ),
+                              ),
+                              SizedBox(height: spacing.screenPadding / 2),
+                              // Progress percentage
+                              Text(
+                                '${(scrapPostState.analyzeProgress * 100).toStringAsFixed(0)}%',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  color: theme.primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: spacing.screenPadding / 4),
+                              Text(
+                                s.analyzing,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.scaffoldBackgroundColor
+                                      .withValues(alpha: 0.8),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
                 ],
               ),
           ],
@@ -1152,7 +1128,13 @@ class _CreateRecyclingPostWithAIPageState
         physics: const BouncingScrollPhysics(),
         children: [
           // AI Image Upload Section
-          _buildAIImageUploadSection(theme, spacing, s, isAnalyzing),
+          _buildAIImageUploadSection(
+            theme,
+            spacing,
+            s,
+            isAnalyzing,
+            scrapPostState,
+          ),
           SizedBox(height: spacing.screenPadding),
           Form(
             key: _formKey,
@@ -1326,13 +1308,23 @@ class _CreateRecyclingPostWithAIPageState
 
                   String? newImageUrl;
                   File? newImageFile;
-                  final ScrapPostDetailType newType =
-                      (updated['type'] is ScrapPostDetailType)
-                          ? updated['type'] as ScrapPostDetailType
-                          : itemData.type;
+
+                  // Ensure type is correctly extracted from dialog result
+                  ScrapPostDetailType newType =
+                      itemData.type; // Default to current type
+                  if (updated['type'] != null) {
+                    if (updated['type'] is ScrapPostDetailType) {
+                      newType = updated['type'] as ScrapPostDetailType;
+                    } else if (updated['type'] is String) {
+                      // If type is returned as string, parse it
+                      newType = ScrapPostDetailType.fromJson(
+                        updated['type'] as String,
+                      );
+                    }
+                  }
 
                   Map<String, dynamic>? newAiData = itemData.aiData;
-                  
+
                   if (updated['imageChanged'] == true) {
                     final imageResult = _parseImageUpdate(updated['image']);
                     newImageFile = imageResult.file;

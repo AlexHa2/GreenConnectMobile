@@ -10,8 +10,15 @@ class AnalyzeScrapUsecase {
   Future<AnalyzeScrapResultEntity> call({
     required Uint8List imageBytes,
     required String fileName,
+    void Function(int sent, int total, double progress)? onProgress,
+    int maxRetries = 3,
   }) {
-    return repository.analyzeScrap(imageBytes: imageBytes, fileName: fileName);
+    return repository.analyzeScrap(
+      imageBytes: imageBytes,
+      fileName: fileName,
+      onProgress: onProgress,
+      maxRetries: maxRetries,
+    );
   }
 }
 

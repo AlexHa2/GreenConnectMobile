@@ -12,6 +12,7 @@ import 'package:GreenConnectMobile/features/post/domain/entities/household_repor
 import 'package:GreenConnectMobile/features/post/domain/entities/paginated_scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_detail_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/entities/update_scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/post/domain/repository/scrap_post_repository.dart';
 
@@ -199,10 +200,16 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
   Future<AnalyzeScrapResultEntity> analyzeScrap({
     required Uint8List imageBytes,
     required String fileName,
+    void Function(int sent, int total, double progress)? onProgress,
+    int maxRetries = 3,
   }) {
     return guard(() async {
-      final AnalyzeScrapResultModel result =
-          await remote.analyzeScrap(imageBytes: imageBytes, fileName: fileName);
+      final AnalyzeScrapResultModel result = await remote.analyzeScrap(
+        imageBytes: imageBytes,
+        fileName: fileName,
+        onProgress: onProgress,
+        maxRetries: maxRetries,
+      );
       return result.toEntity();
     });
   }
@@ -255,6 +262,22 @@ class ScrapPostRepositoryImpl implements ScrapPostRepository {
         postId: postId,
         timeSlotId: timeSlotId,
       );
+    });
+  }
+
+  @override
+  Future<PostTransactionsResponseEntity> getPostTransactions({
+    required String postId,
+    required String collectorId,
+    required String slotId,
+  }) {
+    return guard(() async {
+      final result = await remote.getPostTransactions(
+        postId: postId,
+        collectorId: collectorId,
+        slotId: slotId,
+      );
+      return result.toEntity();
     });
   }
 }

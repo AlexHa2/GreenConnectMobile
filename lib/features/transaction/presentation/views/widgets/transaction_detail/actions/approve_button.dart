@@ -1,34 +1,105 @@
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/actions/payment_method_bottom_sheet.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
+import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ApproveButton extends ConsumerWidget {
-  final String transactionId;
+  final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
+  final bool skipPaymentMethod;
+  final VoidCallback? onApproveSuccess; // Callback when approve is successful to navigate to transaction list
 
   const ApproveButton({
     super.key,
-    required this.transactionId,
+    required this.transaction,
     required this.onActionCompleted,
+    this.skipPaymentMethod = false,
+    this.onApproveSuccess,
   });
 
   Future<void> _handleComplete(BuildContext context, WidgetRef ref) async {
-    // Show payment method selection bottom sheet
+    final s = S.of(context)!;
+
+    // If skipPaymentMethod is true (totalPrice <= 0), call processTransaction directly without payment method
+    if (skipPaymentMethod) {
+      try {
+        // Get required parameters
+        final scrapPostId = transaction.offer?.scrapPostId ?? '';
+        final collectorId = transaction.scrapCollectorId;
+        final slotId = transaction.timeSlotId ?? transaction.offer?.timeSlotId ?? '';
+        
+        if (scrapPostId.isEmpty || collectorId.isEmpty || slotId.isEmpty) {
+          if (context.mounted) {
+            CustomToast.show(context, s.operation_failed, type: ToastType.error);
+          }
+          return;
+        }
+
+        // Call API to complete transaction without payment method
+        final success = await ref
+            .read(transactionViewModelProvider.notifier)
+            .processTransaction(
+              scrapPostId: scrapPostId,
+              collectorId: collectorId,
+              slotId: slotId,
+              transactionId: transaction.transactionId,
+              isAccepted: true,
+              // No paymentMethod parameter when totalPrice <= 0
+            );
+
+        if (!context.mounted) return;
+
+        if (success) {
+          CustomToast.show(
+            context,
+            s.transaction_approved,
+            type: ToastType.success,
+          );
+          onActionCompleted();
+          // Navigate to transaction list page if callback is available
+          if (onApproveSuccess != null) {
+            onApproveSuccess!();
+          }
+        } else {
+          final state = ref.read(transactionViewModelProvider);
+          final errorMsg = state.errorMessage;
+          
+          CustomToast.show(
+            context,
+            errorMsg ?? s.operation_failed,
+            type: ToastType.error,
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          CustomToast.show(context, s.operation_failed, type: ToastType.error);
+        }
+      }
+      return;
+    }
+
+    // Show payment method selection bottom sheet (when totalPrice > 0)
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => PaymentMethodBottomSheet(
-        transactionId: transactionId,
+        transaction: transaction,
         onActionCompleted: onActionCompleted,
+        onApproveSuccess: onApproveSuccess, // Pass callback to navigate to transaction list
       ),
     );
 
     // If payment was successful, trigger the callback
     if (result == true) {
       onActionCompleted();
+      // Navigate to transaction list page if callback is available
+      if (onApproveSuccess != null) {
+        onApproveSuccess!();
+      }
     }
   }
 
@@ -39,32 +110,57 @@ class ApproveButton extends ConsumerWidget {
     final state = ref.watch(transactionViewModelProvider);
     final isProcessing = state.isProcessing;
 
-    return ElevatedButton(
-      onPressed: isProcessing ? null : () => _handleComplete(context, ref),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: theme.primaryColor,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        disabledBackgroundColor: theme.primaryColor.withValues(alpha: 0.6),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          colors: [
+            theme.primaryColor,
+            theme.primaryColor.withValues(alpha: 0.9),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.primaryColor.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      child: isProcessing
-          ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  theme.scaffoldBackgroundColor,
+      child: ElevatedButton(
+        onPressed: isProcessing ? null : () => _handleComplete(context, ref),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
+        ),
+        child: isProcessing
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    theme.scaffoldBackgroundColor,
+                  ),
+                ),
+              )
+            : Text(
+                s.completed,
+                style: TextStyle(
+                  color: theme.scaffoldBackgroundColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
                 ),
               ),
-            )
-          : Text(
-              s.completed,
-              style: TextStyle(
-                color: theme.scaffoldBackgroundColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+      ),
     );
   }
 }

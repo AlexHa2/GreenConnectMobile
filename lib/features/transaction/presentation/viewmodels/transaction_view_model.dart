@@ -120,6 +120,8 @@ class TransactionViewModel extends Notifier<TransactionState> {
 
   /// Update transaction details (weight/quantity)
   Future<bool> updateTransactionDetails({
+    required String scrapPostId,
+    required String slotId,
     required String transactionId,
     required List<TransactionDetailRequest> details,
   }) async {
@@ -127,14 +129,17 @@ class TransactionViewModel extends Notifier<TransactionState> {
 
     try {
       final result = await _updateDetails(
-        transactionId: transactionId,
+        scrapPostId: scrapPostId,
+        slotId: slotId,
         details: details,
       );
       state = state.copyWith(isProcessing: false);
 
       if (result.isNotEmpty) {
-        // Refresh detail after update
-        await fetchTransactionDetail(transactionId);
+        // Note: Don't refresh single transaction detail here
+        // The caller (e.g., input_all_transactions_quantity_dialog) will call
+        // onActionCompleted() which refreshes ALL transactions via _loadPostTransactions()
+        // This ensures all transactions are updated, not just the first one
         return true;
       }
       return false;
@@ -143,22 +148,31 @@ class TransactionViewModel extends Notifier<TransactionState> {
         debugPrint('❌ ERROR UPDATE DETAILS: ${e.message}');
       }
       debugPrint('📌 STACK TRACE: $stack');
-      state = state.copyWith(isProcessing: false, errorMessage: e.toString());
+      state = state.copyWith(
+          isProcessing: false,
+          errorMessage: (e as AppException).message.toString());
       return false;
     }
   }
 
   /// Process transaction (Accept/Reject by Household)
   Future<bool> processTransaction({
+    required String scrapPostId,
+    required String collectorId,
+    required String slotId,
     required String transactionId,
     required bool isAccepted,
+    String? paymentMethod,
   }) async {
     state = state.copyWith(isProcessing: true, errorMessage: null);
 
     try {
       final success = await _processTransaction(
-        transactionId: transactionId,
+        scrapPostId: scrapPostId,
+        collectorId: collectorId,
+        slotId: slotId,
         isAccepted: isAccepted,
+        paymentMethod: paymentMethod,
       );
       state = state.copyWith(isProcessing: false);
 

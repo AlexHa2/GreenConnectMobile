@@ -4,6 +4,7 @@ import 'package:GreenConnectMobile/features/offer/data/models/offer_detail_model
 import 'package:GreenConnectMobile/features/offer/data/models/schedule_proposal_model.dart';
 import 'package:GreenConnectMobile/features/offer/domain/entities/collection_offer_entity.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_model.dart';
+import 'package:GreenConnectMobile/features/post/data/models/scrap_post/time_slot_model.dart';
 
 class CollectionOfferModel {
   final String collectionOfferId;
@@ -14,6 +15,8 @@ class CollectionOfferModel {
   final DateTime createdAt;
   final List<OfferDetailModel> offerDetails;
   final List<ScheduleProposalModel> scheduleProposals;
+  final String? timeSlotId;
+  final TimeSlotModel? timeSlot;
 
   CollectionOfferModel({
     required this.collectionOfferId,
@@ -24,6 +27,8 @@ class CollectionOfferModel {
     required this.createdAt,
     required this.offerDetails,
     required this.scheduleProposals,
+    this.timeSlotId,
+    this.timeSlot,
   });
 
   factory CollectionOfferModel.fromJson(Map<String, dynamic> json) {
@@ -31,19 +36,23 @@ class CollectionOfferModel {
     final Map<String, String?> imageUrlMap = {};
     if (json['scrapPost'] != null &&
         json['scrapPost']['scrapPostDetails'] != null) {
-      for (var detail in json['scrapPost']['scrapPostDetails'] as List) {
-        final dynamic idRaw = detail['scrapCategoryId'];
-        final categoryId = idRaw?.toString();
-        final imageUrl = detail['imageUrl'] as String?;
-        if (categoryId != null && categoryId.isNotEmpty) {
-          imageUrlMap[categoryId] = imageUrl;
+      final scrapPostDetails = json['scrapPost']['scrapPostDetails'];
+      if (scrapPostDetails is List) {
+        for (var detail in scrapPostDetails) {
+          final dynamic idRaw = detail['scrapCategoryId'];
+          final categoryId = idRaw?.toString();
+          final imageUrl = detail['imageUrl'] as String?;
+          if (categoryId != null && categoryId.isNotEmpty) {
+            imageUrlMap[categoryId] = imageUrl;
+          }
         }
       }
     }
 
     // Parse offerDetails and inject imageUrl
+    // Note: Response mới có thể có pricePerKg, type trong offerDetails
     final List<OfferDetailModel> offerDetailsList = [];
-    if (json['offerDetails'] != null) {
+    if (json['offerDetails'] != null && json['offerDetails'] is List) {
       for (var offerDetailJson in json['offerDetails'] as List) {
         final dynamic idRaw = offerDetailJson['scrapCategoryId'];
         final categoryId = idRaw?.toString();
@@ -56,24 +65,30 @@ class CollectionOfferModel {
     }
 
     return CollectionOfferModel(
-      collectionOfferId: json['collectionOfferId'],
-      scrapPostId: json['scrapPostId'],
+      collectionOfferId: json['collectionOfferId'] as String,
+      scrapPostId: json['scrapPostId'] as String,
       scrapPost: json['scrapPost'] != null
-          ? ScrapPostModel.fromJson(json['scrapPost'])
+          ? ScrapPostModel.fromJson(json['scrapPost'] as Map<String, dynamic>)
           : null,
+      // Note: Response mới không có scrapCollector/collector nữa, 
+      // thông tin collector nằm trong scrapPost.household
       scrapCollector: json['scrapCollector'] != null
-          ? CollectorModel.fromJson(json['scrapCollector'])
+          ? CollectorModel.fromJson(json['scrapCollector'] as Map<String, dynamic>)
           : json['collector'] != null
-          ? CollectorModel.fromJson(json['collector'])
+          ? CollectorModel.fromJson(json['collector'] as Map<String, dynamic>)
           : null,
-      status: OfferStatus.parseStatus(json['status']),
-      createdAt: DateTime.parse(json['createdAt']),
+      status: OfferStatus.parseStatus(json['status'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String),
       offerDetails: offerDetailsList,
-      scheduleProposals: json['scheduleProposals'] != null
+      scheduleProposals: json['scheduleProposals'] != null && json['scheduleProposals'] is List
           ? (json['scheduleProposals'] as List)
-                .map((e) => ScheduleProposalModel.fromJson(e))
+                .map((e) => ScheduleProposalModel.fromJson(e as Map<String, dynamic>))
                 .toList()
           : [],
+      timeSlotId: json['timeSlotId'] as String?,
+      timeSlot: json['timeSlot'] != null
+          ? TimeSlotModel.fromJson(json['timeSlot'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -98,6 +113,8 @@ class CollectionOfferModel {
       createdAt: createdAt,
       offerDetails: offerDetails.map((e) => e.toEntity()).toList(),
       scheduleProposals: scheduleProposals.map((e) => e.toEntity()).toList(),
+      timeSlotId: timeSlotId,
+      timeSlot: timeSlot?.toEntity(),
     );
   }
 }

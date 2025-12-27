@@ -10,6 +10,7 @@ import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class CollectorHomePage extends ConsumerStatefulWidget {
   const CollectorHomePage({super.key});
@@ -190,22 +191,24 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                s.your_earnings,
-                                style: theme.textTheme.headlineLarge?.copyWith(
+                                'Xin chào ${user?.fullName ?? ''}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.headlineSmall?.copyWith(
                                   color: theme.colorScheme.onPrimary,
                                   fontWeight: FontWeight.w800,
-                                  fontSize: space * 3.2,
                                   letterSpacing: -0.5,
                                 ),
                               ),
                               SizedBox(height: space * 0.8),
                               Text(
                                 s.track_performance_impact,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                   color: theme.colorScheme.onPrimary.withValues(
                                     alpha: 0.95,
                                   ),
-                                  fontSize: space * 1.2,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
@@ -398,18 +401,6 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
             ),
 
             // Level Progress Card
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  space * 2,
-                  0,
-                  space * 2,
-                  space * 2,
-                ),
-                child: _buildLevelProgressCard(context, space, theme, s),
-              ),
-            ),
-
             // Quick Actions Section
             SliverToBoxAdapter(
               child: Padding(
@@ -432,6 +423,10 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
     S s, {
     required double totalEarning,
   }) {
+    final locale = S.of(context)!.localeName;
+    final formattedEarning = NumberFormat.decimalPattern(locale)
+        .format(totalEarning.isNaN ? 0 : totalEarning.round());
+
     return Container(
       padding: EdgeInsets.all(space * 3),
       decoration: BoxDecoration(
@@ -512,59 +507,37 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: EdgeInsets.only(top: space * 0.5),
-                child: Text(
-                  '\$',
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    color: theme.primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: space * 3.5,
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    formattedEarning,
+                    style: theme.textTheme.headlineLarge?.copyWith(
+                      color: theme.primaryColor,
+                      fontWeight: FontWeight.w900,
+                      fontSize: space * 5.5,
+                      letterSpacing: -1.5,
+                      height: 1.1,
+                    ),
                   ),
                 ),
               ),
-              SizedBox(width: space * 0.5),
-              Text(
-                totalEarning.toStringAsFixed(0),
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  color: theme.primaryColor,
-                  fontWeight: FontWeight.w900,
-                  fontSize: space * 5.5,
-                  letterSpacing: -1.5,
-                  height: 1.1,
+              SizedBox(width: space * 0.8),
+              Padding(
+                padding: EdgeInsets.only(top: space * 1.25),
+                child: Text(
+                  'VND',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.primaryColor,
+                    fontWeight: FontWeight.w800,
+                    fontSize: space * 1.8,
+                  ),
                 ),
               ),
             ],
           ),
           SizedBox(height: space * 2.5),
-          // Thông tin bổ sung
-          Container(
-            padding: EdgeInsets.all(space * 1.2),
-            decoration: BoxDecoration(
-              color: theme.primaryColor.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(space * 1.5),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.trending_up_rounded,
-                  color: theme.primaryColor,
-                  size: space * 2,
-                ),
-                SizedBox(width: space),
-                Expanded(
-                  child: Text(
-                    s.tap_to_see_detailed_breakdown,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontSize: space * 1.05,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -630,20 +603,23 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
           Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontSize: space * 1.05,
               color: theme.colorScheme.onSurface,
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: space * 0.8),
-          Text(
-            value,
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              fontSize: space * 2.8,
-              color: color,
-              letterSpacing: -0.5,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: color,
+                letterSpacing: -0.5,
+              ),
             ),
           ),
         ],
@@ -848,124 +824,6 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
     );
   }
 
-  Widget _buildLevelProgressCard(
-    BuildContext context,
-    double space,
-    ThemeData theme,
-    S s,
-  ) {
-    return Container(
-      padding: EdgeInsets.all(space * 2.5),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(space * 2.5),
-        boxShadow: [
-          BoxShadow(
-            color: theme.shadowColor.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.emoji_events_rounded,
-                color: theme.colorScheme.tertiary,
-                size: space * 2.2,
-              ),
-              SizedBox(width: space),
-              Text(
-                s.level_progress,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: space * 1.9,
-                  letterSpacing: -0.3,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: space * 1.5),
-          Text(
-            s.percent_to_level('75', '6'),
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontSize: space * 1.15,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: space * 1.5),
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(space * 2),
-                child: LinearProgressIndicator(
-                  value: 0.75,
-                  minHeight: space * 1.5,
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    theme.primaryColor.withValues(alpha: 0.3),
-                  ),
-                ),
-              ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(space * 2),
-                child: TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0.0, end: 0.75),
-                  duration: const Duration(milliseconds: 1500),
-                  curve: Curves.easeOutCubic,
-                  builder: (context, value, child) {
-                    return LinearProgressIndicator(
-                      value: value,
-                      minHeight: space * 1.5,
-                      backgroundColor: Colors.transparent,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        theme.primaryColor,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: space * 2),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.primaryColor,
-                foregroundColor: theme.colorScheme.onPrimary,
-                padding: EdgeInsets.symmetric(vertical: space * 1.4),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(space * 1.5),
-                ),
-                elevation: 2,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.visibility_rounded, size: space * 1.5),
-                  SizedBox(width: space * 0.8),
-                  Text(
-                    s.preview_level_up,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: space * 1.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget buildAdditionalStatsSection(
     BuildContext context,
     double space,
@@ -1059,82 +917,103 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
           ],
         ),
         SizedBox(height: space * 2),
-        Wrap(
-          spacing: space * 1.5,
-          runSpacing: space * 1.5,
-          children: [
-            _buildQuickActionCard(
-              context,
-              icon: Icons.local_offer_rounded,
-              label: s.offers,
-              color: theme.primaryColor,
-              space: space,
-              theme: theme,
-              onTap: () => context.push(
-                '/collector-offer-list',
-                extra: {'isCollectorView': true},
-              ),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.shop_rounded,
-              label: s.package_list,
-              color: theme.primaryColor,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/package-dashboard'),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.gif_box_rounded,
-              label: s.reward_store,
-              color: theme.primaryColor,
-              space: space,
-              theme: theme,
-              onTap: () => context.push(
-                '/reward-collector',
-                extra: {'isCollectorView': true},
-              ),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.schedule_rounded,
-              label: s.scheduleListTitle,
-              color: Colors.purple,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/collector-schedule-list'),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.receipt_long_rounded,
-              label: s.transactions,
-              color: Colors.blue,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/collector-list-transactions'),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.star_rounded,
-              label: s.feedbacks,
-              color: Colors.amber,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/collector-feedback-list'),
-            ),
-            _buildQuickActionCard(
-              context,
-              icon: Icons.report_problem_rounded,
-              label: s.complaints,
-              color: Colors.red,
-              space: space,
-              theme: theme,
-              onTap: () => context.push('/collector-complaint-list'),
-            ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final cardWidth =
+                (constraints.maxWidth - space * 1.5) / 2;
+            final cardHeight = cardWidth * 0.82;
 
-            //payment-transaction-history
-          ],
+            return Wrap(
+              spacing: space * 1.5,
+              runSpacing: space * 1.5,
+              children: [
+                _buildQuickActionCard(
+                  context,
+                  width: cardWidth,
+                  height: cardHeight,
+                  icon: Icons.local_offer_rounded,
+                  label: s.offers,
+                  color: theme.primaryColor,
+                  space: space,
+                  theme: theme,
+                  onTap: () => context.push(
+                    '/collector-offer-list',
+                    extra: {'isCollectorView': true},
+                  ),
+                ),
+                _buildQuickActionCard(
+                  context,
+                  width: cardWidth,
+                  height: cardHeight,
+                  icon: Icons.shop_rounded,
+                  label: s.package_list,
+                  color: theme.primaryColor,
+                  space: space,
+                  theme: theme,
+                  onTap: () => context.push('/package-dashboard'),
+                ),
+                _buildQuickActionCard(
+                  context,
+                  width: cardWidth,
+                  height: cardHeight,
+                  icon: Icons.gif_box_rounded,
+                  label: s.reward_store,
+                  color: theme.primaryColor,
+                  space: space,
+                  theme: theme,
+                  onTap: () => context.push(
+                    '/reward-collector',
+                    extra: {'isCollectorView': true},
+                  ),
+                ),
+                // _buildQuickActionCard(
+                //   context,
+                //   width: cardWidth,
+                //   icon: Icons.schedule_rounded,
+                //   label: s.scheduleListTitle,
+                //   color: Colors.purple,
+                //   space: space,
+                //   theme: theme,
+                //   onTap: () => context.push('/collector-schedule-list'),
+                // ),
+                _buildQuickActionCard(
+                  context,
+                  width: cardWidth,
+                  height: cardHeight,
+                  icon: Icons.receipt_long_rounded,
+                  label: s.transactions,
+                  color: Colors.blue,
+                  space: space,
+                  theme: theme,
+                  onTap: () => context.push('/collector-list-transactions'),
+                ),
+                _buildQuickActionCard(
+                  context,
+                  width: cardWidth,
+                  height: cardHeight,
+                  icon: Icons.star_rounded,
+                  label: s.feedbacks,
+                  color: Colors.amber,
+                  space: space,
+                  theme: theme,
+                  onTap: () => context.push('/collector-feedback-list'),
+                ),
+                _buildQuickActionCard(
+                  context,
+                  width: cardWidth,
+                  height: cardHeight,
+                  icon: Icons.report_problem_rounded,
+                  label: s.complaints,
+                  color: Colors.red,
+                  space: space,
+                  theme: theme,
+                  onTap: () => context.push('/collector-complaint-list'),
+                ),
+
+                //payment-transaction-history
+              ],
+            );
+          },
         ),
         SizedBox(height: space * 2),
       ],
@@ -1143,6 +1022,8 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
 
   Widget _buildQuickActionCard(
     BuildContext context, {
+    double? width,
+    double? height,
     required IconData icon,
     required String label,
     required Color color,
@@ -1151,14 +1032,15 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
     required VoidCallback onTap,
   }) {
     return SizedBox(
-      width: (MediaQuery.of(context).size.width - space * 6) / 2,
+      width: width,
+      height: height,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(space * 2),
           child: Container(
-            padding: EdgeInsets.all(space * 2),
+            padding: EdgeInsets.all(space * 1.6),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -1182,7 +1064,8 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
               ],
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   padding: EdgeInsets.all(space * 1.2),
@@ -1198,16 +1081,17 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                   child: Icon(icon, color: color, size: space * 3),
                 ),
                 SizedBox(height: space * 1.2),
-                Text(
-                  label,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: space * 1.1,
-                    color: color,
+                Flexible(
+                  child: Text(
+                    label,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/confirm_dialog_helper.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
@@ -8,13 +9,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class PaymentMethodBottomSheet extends ConsumerWidget {
-  final String transactionId;
+  final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
+  final VoidCallback? onApproveSuccess; // Callback when approve is successful to navigate to transaction list
 
   const PaymentMethodBottomSheet({
     super.key,
-    required this.transactionId,
+    required this.transaction,
     required this.onActionCompleted,
+    this.onApproveSuccess,
   });
 
   Future<void> _handleCashPayment(BuildContext context, WidgetRef ref) async {
@@ -32,18 +35,52 @@ class PaymentMethodBottomSheet extends ConsumerWidget {
     if (confirmed != true || !context.mounted) return;
 
     try {
-      // Call API to complete transaction with cash payment
-      await ref
-          .read(transactionViewModelProvider.notifier)
-          .processTransaction(transactionId: transactionId, isAccepted: true);
+      // Get required parameters
+      final scrapPostId = transaction.offer?.scrapPostId ?? '';
+      final collectorId = transaction.scrapCollectorId;
+      final slotId = transaction.timeSlotId ?? transaction.offer?.timeSlotId ?? '';
+      
+      if (scrapPostId.isEmpty || collectorId.isEmpty || slotId.isEmpty) {
+        if (context.mounted) {
+          CustomToast.show(context, s.operation_failed, type: ToastType.error);
+        }
+        return;
+      }
 
-      if (context.mounted) {
+      // Call API to complete transaction with cash payment
+      final success = await ref
+          .read(transactionViewModelProvider.notifier)
+          .processTransaction(
+            scrapPostId: scrapPostId,
+            collectorId: collectorId,
+            slotId: slotId,
+            transactionId: transaction.transactionId,
+            isAccepted: true,
+            paymentMethod: 'Cash',
+          );
+
+      if (!context.mounted) return;
+
+      if (success) {
         CustomToast.show(
           context,
           s.transaction_approved,
           type: ToastType.success,
         );
         Navigator.of(context).pop(true); // Return success
+        // Navigate to transaction list page if callback is available
+        if (onApproveSuccess != null) {
+          onApproveSuccess!();
+        }
+      } else {
+        final state = ref.read(transactionViewModelProvider);
+        final errorMsg = state.errorMessage;
+        
+        CustomToast.show(
+          context,
+          errorMsg ?? s.operation_failed,
+          type: ToastType.error,
+        );
       }
     } catch (e) {
       if (context.mounted) {
@@ -57,7 +94,8 @@ class PaymentMethodBottomSheet extends ConsumerWidget {
     final result = await context.push(
       '/qr-payment',
       extra: {
-        'transactionId': transactionId,
+        'transactionId': transaction.transactionId,
+        'transaction': transaction,
         'onActionCompleted': onActionCompleted,
       },
     );

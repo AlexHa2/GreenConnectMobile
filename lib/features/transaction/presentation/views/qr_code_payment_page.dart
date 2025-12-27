@@ -1,6 +1,10 @@
+import 'package:GreenConnectMobile/core/di/profile_injector.dart';
+import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/error/failure.dart';
+import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/offer_detail/confirm_dialog_helper.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setting.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
@@ -8,15 +12,22 @@ import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class QRCodePaymentPage extends ConsumerStatefulWidget {
   final String transactionId;
+  final TransactionEntity? transaction;
   final VoidCallback onActionCompleted;
+  final bool showActionButtons; // If false: hide "Complete" button, only show back to transaction list button
+  final Role? userRole; // User role to navigate to correct transaction list page
 
   const QRCodePaymentPage({
     super.key,
     required this.transactionId,
+    this.transaction,
     required this.onActionCompleted,
+    this.showActionButtons = true, // Default true to maintain backward compatibility
+    this.userRole,
   });
 
   @override
@@ -28,13 +39,70 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
   bool _isLoadingQR = true;
   String? _errorMessage;
   bool _isProcessing = false;
+  Role? _userRole;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadUserRole();
       _loadQRCode();
     });
+  }
+
+  Future<void> _loadUserRole() async {
+    final tokenStorage = sl<TokenStorageService>();
+    final user = await tokenStorage.getUserData();
+    if (user != null && user.roles.isNotEmpty) {
+      setState(() {
+        if (Role.hasRole(user.roles, Role.household)) {
+          _userRole = Role.household;
+        } else if (Role.hasRole(user.roles, Role.individualCollector)) {
+          _userRole = Role.individualCollector;
+        } else if (Role.hasRole(user.roles, Role.businessCollector)) {
+          _userRole = Role.businessCollector;
+        }
+      });
+    } else if (widget.userRole != null) {
+      // Use provided role if available
+      setState(() {
+        _userRole = widget.userRole;
+      });
+    }
+  }
+
+  void _navigateToTransactionList() {
+    if (!mounted) return;
+
+    // Use provided role or loaded role
+    final role = widget.userRole ?? _userRole;
+
+    if (role == null) {
+      // Fallback: just pop if role is not available
+      if (context.canPop()) {
+        context.pop();
+      }
+      return;
+    }
+
+    // Navigate to the correct list page based on user role
+    String targetRoute;
+    if (role == Role.household) {
+      targetRoute = '/household-list-transactions';
+    } else if (role == Role.individualCollector ||
+        role == Role.businessCollector) {
+      targetRoute = '/collector-list-transactions';
+    } else {
+      // Fallback: just pop
+      if (context.canPop()) {
+        context.pop();
+      }
+      return;
+    }
+
+    if (mounted) {
+      context.go(targetRoute);
+    }
   }
 
   Future<void> _loadQRCode() async {
@@ -89,7 +157,6 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
       // Priority 2: Check for bank-related message in BusinessException
       // Fallback if statusCode is null for some reason
       if (e is BusinessException && isBankRelated) {
-        debugPrint('💳 Bank-related error detected in message');
         if (mounted) {
           setState(() {
             _errorMessage = 'BANK_INFO_REQUIRED';
@@ -102,7 +169,6 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
       // Priority 3: Any other BusinessException (404, 409, etc.)
       // Could be other bank-related issues
       if (e is BusinessException) {
-        debugPrint('💳 Business exception - Showing bank update UI');
         if (mounted) {
           setState(() {
             _errorMessage = 'BANK_INFO_REQUIRED';
@@ -114,7 +180,6 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
 
       // Priority 4: UnauthorizedException
       if (e is UnauthorizedException) {
-        debugPrint('🔒 Unauthorized - Showing bank update UI');
         if (mounted) {
           setState(() {
             _errorMessage = 'BANK_INFO_REQUIRED';
@@ -126,7 +191,6 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
 
       // Priority 5: Other errors (ServerException, NetworkException, etc.)
       // Show generic error UI with retry button
-      debugPrint('⚠️ Generic error - Showing error UI');
       if (mounted) {
         setState(() {
           _errorMessage = e.toString();
@@ -151,7 +215,6 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
     // When user comes back, automatically reload QR code
     // This will check if bank info has been updated successfully
     if (mounted) {
-      debugPrint('🔄 Returned from settings - Reloading QR code...');
       // Use addPostFrameCallback to avoid setState during build
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
@@ -178,12 +241,44 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
     setState(() => _isProcessing = true);
 
     try {
-      // Call API to complete transaction
+      // Get transaction data from widget or state
+      TransactionEntity? transaction = widget.transaction;
+      if (transaction == null) {
+        final state = ref.read(transactionViewModelProvider);
+        transaction = state.detailData;
+      }
+      
+      if (transaction == null) {
+        if (mounted) {
+          setState(() => _isProcessing = false);
+          CustomToast.show(context, s.operation_failed, type: ToastType.error);
+        }
+        return;
+      }
+
+      // Get required parameters
+      final scrapPostId = transaction.offer?.scrapPostId ?? '';
+      final collectorId = transaction.scrapCollectorId;
+      final slotId = transaction.timeSlotId ?? transaction.offer?.timeSlotId ?? '';
+      
+      if (scrapPostId.isEmpty || collectorId.isEmpty || slotId.isEmpty) {
+        if (mounted) {
+          setState(() => _isProcessing = false);
+          CustomToast.show(context, s.operation_failed, type: ToastType.error);
+        }
+        return;
+      }
+
+      // Call API to complete transaction with bank transfer
       await ref
           .read(transactionViewModelProvider.notifier)
           .processTransaction(
+            scrapPostId: scrapPostId,
+            collectorId: collectorId,
+            slotId: slotId,
             transactionId: widget.transactionId,
             isAccepted: true,
+            paymentMethod: 'BankTransfer',
           );
 
       if (mounted) {
@@ -213,7 +308,9 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
         title: Text(s.qr_payment_title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(false),
+          onPressed: widget.showActionButtons
+              ? () => Navigator.of(context).pop(false)
+              : _navigateToTransactionList,
         ),
       ),
       body: _isLoadingQR
@@ -394,42 +491,44 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
                         ),
                         const SizedBox(height: 20),
 
-                        // Complete button
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _isProcessing ? null : _handleComplete,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: theme.primaryColor,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                        // Complete button - only show when showActionButtons = true
+                        if (widget.showActionButtons) ...[
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _isProcessing ? null : _handleComplete,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: theme.primaryColor,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                disabledBackgroundColor: theme.primaryColor
+                                    .withValues(alpha: 0.6),
                               ),
-                              disabledBackgroundColor: theme.primaryColor
-                                  .withValues(alpha: 0.6),
-                            ),
-                            child: _isProcessing
-                                ? SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        theme.scaffoldBackgroundColor,
+                              child: _isProcessing
+                                  ? SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                          theme.scaffoldBackgroundColor,
+                                        ),
+                                      ),
+                                    )
+                                  : Text(
+                                      s.completed,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: theme.scaffoldBackgroundColor,
                                       ),
                                     ),
-                                  )
-                                : Text(
-                                    s.completed,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: theme.scaffoldBackgroundColor,
-                                    ),
-                                  ),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
+                          const SizedBox(height: 16),
+                        ],
                       ],
                     ),
                   ),
@@ -574,7 +673,9 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context).pop(false),
+                    onPressed: widget.showActionButtons
+                        ? () => Navigator.of(context).pop(false)
+                        : _navigateToTransactionList,
                     icon: const Icon(Icons.arrow_back),
                     label: const Text(
                       'Quay lại',

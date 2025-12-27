@@ -3,6 +3,15 @@ import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
 import 'package:GreenConnectMobile/core/network/token_storage.dart';
 import 'package:GreenConnectMobile/features/message/presentation/providers/message_providers.dart';
+import 'package:GreenConnectMobile/features/offer/domain/entities/collection_offer_entity.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/household_entity.dart'
+    as post_entity;
+import 'package:GreenConnectMobile/features/post/domain/entities/scrap_category_entity.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/transaction_entity.dart'
+    as post_entity;
+import 'package:GreenConnectMobile/features/post/presentation/providers/scrap_post_providers.dart';
+import 'package:GreenConnectMobile/features/profile/domain/entities/user_entity.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_detail_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/providers/transaction_providers.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/transaction_detail_app_bar.dart';
@@ -11,16 +20,27 @@ import 'package:GreenConnectMobile/features/transaction/presentation/views/widge
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
-import 'package:GreenConnectMobile/shared/widgets/custom_leaf_loading.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class TransactionDetailPageModern extends ConsumerStatefulWidget {
-  final String transactionId;
+  // Transaction ID (optional - to find transaction in the list)
+  final String? transactionId;
 
-  const TransactionDetailPageModern({super.key, required this.transactionId});
+  // Required params for post transactions (always available when navigating to this route)
+  final String? postId;
+  final String? collectorId;
+  final String? slotId;
+
+  const TransactionDetailPageModern({
+    super.key,
+    this.transactionId,
+    this.postId,
+    this.collectorId,
+    this.slotId,
+  });
 
   @override
   ConsumerState<TransactionDetailPageModern> createState() =>
@@ -33,13 +53,132 @@ class _TransactionDetailPageModernState
   bool _hasChanges = false;
   Role _userRole = Role.household;
 
+  // State for post transactions
+  post_entity.PostTransactionsResponseEntity? _transactionsData;
+  double _amountDifference = 0.0;
+  bool _isLoadingTransactions = false;
+
+  // Store transaction data (from list or loaded)
+  TransactionEntity? _currentTransaction;
+
+  // Index of current transaction in the list (for switching)
+  int _currentTransactionIndex = 0;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadUserRole();
-      _loadTransactionDetail();
+
+      // ALWAYS call fetchPostTransactions() because params postId, collectorId, slotId are always available
+      // Data will be loaded from API, not using transactionData
+      if (widget.postId != null &&
+          widget.postId!.isNotEmpty &&
+          widget.collectorId != null &&
+          widget.collectorId!.isNotEmpty &&
+          widget.slotId != null &&
+          widget.slotId!.isNotEmpty) {
+        _loadPostTransactions(
+          postId: widget.postId!,
+          collectorId: widget.collectorId!,
+          slotId: widget.slotId!,
+        );
+      }
     });
+  }
+
+  /// Convert post_entity.TransactionEntity to transaction_entity.TransactionEntity
+  TransactionEntity _convertPostTransactionToTransaction(
+    post_entity.TransactionEntity postTransaction,
+  ) {
+    // Convert HouseholdEntity to UserEntity
+    UserEntity convertHouseholdToUser(post_entity.HouseholdEntity? household) {
+      if (household == null) {
+        return UserEntity(
+          userId: '',
+          fullName: '',
+          phoneNumber: '',
+          pointBalance: 0,
+          rank: '',
+          roles: [],
+        );
+      }
+      return UserEntity(
+        userId: household.id,
+        fullName: household.fullName,
+        phoneNumber: household.phoneNumber,
+        pointBalance: household.pointBalance,
+        creditBalance: household.creditBalance,
+        rank: household.rank,
+        roles: household.roles,
+        avatarUrl: household.avatarUrl,
+      );
+    }
+
+    // Convert TransactionDetailEntity
+    List<TransactionDetailEntity> convertDetails(
+      List<post_entity.TransactionDetailEntity> details,
+    ) {
+      // Note: This method doesn't have access to context, so we use a default value
+      // The category name will be localized when displayed in UI
+      return details.map((detail) {
+        // Create default ScrapCategoryEntity if null
+        // Note: transaction domain uses different ScrapCategoryEntity structure
+        final category = detail.scrapCategory != null
+            ? ScrapCategoryEntity(
+                scrapCategoryId: detail.scrapCategory!.id,
+                categoryName: detail.scrapCategory!.name,
+                description: null,
+              )
+            : ScrapCategoryEntity(
+                scrapCategoryId: detail.scrapCategoryId,
+                categoryName: '', // Will be localized when displayed
+                description: null,
+              );
+
+        return TransactionDetailEntity(
+          transactionId: detail.transactionId,
+          scrapCategoryId: detail.scrapCategoryId,
+          scrapCategory: category,
+          pricePerUnit: detail.pricePerUnit,
+          unit: detail.unit,
+          quantity: detail.quantity,
+          finalPrice: detail.finalPrice,
+          type: detail.type,
+        );
+      }).toList();
+    }
+
+    return TransactionEntity(
+      transactionId: postTransaction.transactionId,
+      householdId: postTransaction.householdId,
+      household: convertHouseholdToUser(postTransaction.household),
+      scrapCollectorId: postTransaction.scrapCollectorId,
+      scrapCollector: convertHouseholdToUser(postTransaction.scrapCollector),
+      offerId: postTransaction.offerId,
+      offer: postTransaction.offer != null
+          ? CollectionOfferEntity(
+              collectionOfferId: postTransaction.offer!.collectionOfferId,
+              scrapPostId: postTransaction.offer!.scrapPostId,
+              scrapPost: postTransaction.offer!.scrapPost,
+              status: postTransaction.offer!.status,
+              createdAt: postTransaction.offer!.createdAt,
+              offerDetails: postTransaction.offer!.offerDetails,
+              scheduleProposals: const [], // Not available in post entity
+              timeSlotId: postTransaction.offer!.timeSlotId,
+              timeSlot: postTransaction.offer!.timeSlot,
+            )
+          : null,
+      status: postTransaction.status,
+      scheduledTime: postTransaction.scheduledTime,
+      checkInTime: postTransaction.checkInTime,
+      createdAt: postTransaction.createdAt,
+      updatedAt: postTransaction.updatedAt,
+      transactionDetails: convertDetails(postTransaction.transactionDetails),
+      totalPrice: postTransaction.totalPrice,
+      timeSlotId: postTransaction.timeSlotId,
+      timeSlot: postTransaction.timeSlot,
+    );
   }
 
   Future<void> _loadUserRole() async {
@@ -57,19 +196,214 @@ class _TransactionDetailPageModernState
     }
   }
 
-  Future<void> _loadTransactionDetail() async {
-    await ref
-        .read(transactionViewModelProvider.notifier)
-        .fetchTransactionDetail(widget.transactionId);
+  Future<void> _loadPostTransactions({
+    required String postId,
+    required String collectorId,
+    required String slotId,
+  }) async {
+    if (mounted) {
+      setState(() {
+        _isLoadingTransactions = true;
+      });
+    }
+
+    try {
+      await ref.read(scrapPostViewModelProvider.notifier).fetchPostTransactions(
+            postId: postId,
+            collectorId: collectorId,
+            slotId: slotId,
+          );
+
+      if (mounted) {
+        final state = ref.read(scrapPostViewModelProvider);
+        setState(() {
+          _transactionsData = state.transactionsData;
+          _amountDifference = state.transactionsData?.amountDifference ?? 0.0;
+          _isLoadingTransactions = false;
+
+          // ALWAYS update current transaction from _loadPostTransactions data
+          // This ensures UI always shows data from API, not from passed transactionData
+          if (state.transactionsData != null &&
+              state.transactionsData!.transactions.isNotEmpty) {
+            final currentTransactionId =
+                widget.transactionId ?? _currentTransaction?.transactionId;
+
+            // Check if any transaction in the list has status "inProgress"
+            // Only navigate back if user didn't explicitly navigate to a specific transaction
+            // (i.e., no transactionId was provided)
+            if (currentTransactionId == null || currentTransactionId.isEmpty) {
+              final hasInProgressTransaction =
+                  state.transactionsData!.transactions.any((t) =>
+                      TransactionStatus.fromString(t.status) ==
+                      TransactionStatus.inProgress);
+
+              if (hasInProgressTransaction) {
+                // Navigate back to transaction list page only if no specific transaction was requested
+                debugPrint('⚠️ [TRANSACTION_DETAIL] No transactionId provided and found inProgress transaction, navigating back to list');
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    _navigateToTransactionList();
+                  }
+                });
+                return; // Exit early, don't set current transaction
+              }
+            } else {
+              debugPrint('✅ [TRANSACTION_DETAIL] TransactionId provided: $currentTransactionId, allowing navigation to detail page');
+            }
+
+            int? selectedIndex;
+
+            if (currentTransactionId != null) {
+              // Find current transaction in the list
+              final foundIndex = state.transactionsData!.transactions
+                  .indexWhere((t) => t.transactionId == currentTransactionId);
+
+              if (foundIndex >= 0) {
+                selectedIndex = foundIndex;
+              }
+            }
+
+            // If no specific transaction found or no transactionId provided,
+            // try to find the best transaction to display:
+            // Priority 1: Transaction WITHOUT transactionDetails (needs data input) - for collector
+            // Priority 2: Transaction with transactionDetails (has data entered)
+            // Priority 3: First transaction
+            if (selectedIndex == null) {
+              // Find transaction WITHOUT transactionDetails first (needs input)
+              final transactionWithoutDetailsIndex = state
+                  .transactionsData!.transactions
+                  .indexWhere((t) => t.transactionDetails.isEmpty);
+              if (transactionWithoutDetailsIndex >= 0) {
+                selectedIndex = transactionWithoutDetailsIndex;
+              } else {
+                // If all transactions have details, find one with details
+                final transactionWithDetailsIndex = state
+                    .transactionsData!.transactions
+                    .indexWhere((t) => t.transactionDetails.isNotEmpty);
+
+                if (transactionWithDetailsIndex >= 0) {
+                  selectedIndex = transactionWithDetailsIndex;
+                } else {
+                  // Fallback: use first one
+                  selectedIndex = 0;
+                }
+              }
+            }
+
+            // ALWAYS use data from _loadPostTransactions (API)
+            if (selectedIndex >= 0 &&
+                selectedIndex < state.transactionsData!.transactions.length) {
+              _currentTransaction = _convertPostTransactionToTransaction(
+                state.transactionsData!.transactions[selectedIndex],
+              );
+              _currentTransactionIndex = selectedIndex;
+            }
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint('❌ ERROR LOAD POST TRANSACTIONS: $e');
+      if (mounted) {
+        setState(() {
+          _isLoadingTransactions = false;
+          // Fallback: use totalPrice if cannot load
+          _amountDifference = 0.0;
+        });
+      }
+    }
   }
 
   Future<void> _onRefresh() async {
-    await _loadTransactionDetail();
+    // Reload post transactions (params are always available)
+    if (widget.postId != null &&
+        widget.postId!.isNotEmpty &&
+        widget.collectorId != null &&
+        widget.collectorId!.isNotEmpty &&
+        widget.slotId != null &&
+        widget.slotId!.isNotEmpty) {
+      await _loadPostTransactions(
+        postId: widget.postId!,
+        collectorId: widget.collectorId!,
+        slotId: widget.slotId!,
+      );
+    }
   }
 
   void _onActionCompleted() {
     setState(() => _hasChanges = true);
-    _loadTransactionDetail();
+
+    // Check current status before reload to detect status changes
+    final currentStatus = _currentTransaction?.statusEnum;
+
+    // Reload post transactions to get updated status (params are always available)
+    if (widget.postId != null &&
+        widget.postId!.isNotEmpty &&
+        widget.collectorId != null &&
+        widget.collectorId!.isNotEmpty &&
+        widget.slotId != null &&
+        widget.slotId!.isNotEmpty) {
+      _loadPostTransactions(
+        postId: widget.postId!,
+        collectorId: widget.collectorId!,
+        slotId: widget.slotId!,
+      ).then((_) {
+        if (!mounted) return;
+
+        // Check transaction status after reload
+        if (_currentTransaction != null) {
+          final status = _currentTransaction!.statusEnum;
+
+          // Only navigate back to list if status changed to a final state
+          // Don't navigate if status is still inProgress (e.g., after input details)
+          // Navigate for:
+          // - completed: after approve
+          // - canceledByUser: after reject or toggle cancel
+          // - canceledBySystem: system canceled
+          // - status changed from inProgress to something else
+          final statusChanged =
+              currentStatus != null && currentStatus != status;
+          final isFinalState = status == TransactionStatus.completed ||
+              status == TransactionStatus.canceledByUser ||
+              status == TransactionStatus.canceledBySystem;
+
+          if (isFinalState ||
+              (statusChanged &&
+                  currentStatus == TransactionStatus.inProgress)) {
+            // Navigate back to transaction list page
+            _navigateToTransactionList();
+          }
+          // If status is still inProgress, stay on detail page (e.g., after input details)
+        }
+      });
+    }
+  }
+
+  void _navigateToTransactionList() {
+    if (!mounted) return;
+
+    // Try to pop first (if we came from list page)
+    if (context.canPop()) {
+      context.pop(true); // Return with changes flag
+    } else {
+      // If can't pop, navigate to the correct list page based on user role
+      String targetRoute;
+      if (_userRole == Role.household) {
+        targetRoute = '/household-list-transactions';
+      } else if (_userRole == Role.individualCollector ||
+          _userRole == Role.businessCollector) {
+        targetRoute = '/collector-list-transactions';
+      } else {
+        // Fallback: if role is not set, don't navigate
+        debugPrint(
+            '⚠️ WARNING: User role not set, cannot navigate to transaction list');
+        return;
+      }
+
+      // Use pushReplacement or go to ensure we navigate correctly
+      if (mounted) {
+        context.go(targetRoute);
+      }
+    }
   }
 
   void _onBack() {
@@ -102,48 +436,125 @@ class _TransactionDetailPageModernState
   }
 
   Widget _buildBody(dynamic state, ThemeData theme, AppSpacing spacing, S s) {
-    if (state.isLoadingDetail) {
-      return const Center(
-        key: ValueKey('loading'),
-        child: RotatingLeafLoader(),
-      );
-    }
-
-    if (state.detailData == null) {
+    // Use transaction from list if available, otherwise show error
+    if (_currentTransaction == null) {
       return _TransactionErrorState(
         key: const ValueKey('error'),
-        onRetry: _loadTransactionDetail,
+        onRetry: () {
+          // If transaction is null, we can't retry without transactionId
+          // This should not happen if called from list
+          _onBack();
+        },
         onBack: _onBack,
       );
     }
 
     return _TransactionDetailContent(
       key: const ValueKey('content'),
-      transaction: state.detailData!,
+      transaction: _currentTransaction!,
       userRole: _userRole,
+      amountDifference: _amountDifference,
+      isLoadingTransactions: _isLoadingTransactions,
+      transactionsData: _transactionsData,
+      currentTransactionIndex: _currentTransactionIndex,
+      onTransactionChanged: (index) {
+        if (_transactionsData != null &&
+            index >= 0 &&
+            index < _transactionsData!.transactions.length) {
+          setState(() {
+            _currentTransaction = _convertPostTransactionToTransaction(
+              _transactionsData!.transactions[index],
+            );
+            _currentTransactionIndex = index;
+          });
+        }
+      },
+      convertPostTransactionToTransaction: _transactionsData != null &&
+              _transactionsData!.transactions.isNotEmpty
+          ? (post_entity.TransactionEntity postTransaction) =>
+              _convertPostTransactionToTransaction(postTransaction)
+          : null,
       onRefresh: _onRefresh,
       onActionCompleted: _onActionCompleted,
       onBack: _onBack,
+      onApproveSuccess: _navigateToTransactionList, // Navigate to transaction list after successful approve
+      onRejectSuccess: _navigateToTransactionList, // Navigate to transaction list after successful reject
     );
   }
 }
 
 /// Main content widget for transaction detail
-class _TransactionDetailContent extends StatelessWidget {
+class _TransactionDetailContent extends StatefulWidget {
   final TransactionEntity transaction;
   final Role userRole;
+  final double amountDifference;
+  final bool isLoadingTransactions;
+  final post_entity.PostTransactionsResponseEntity? transactionsData;
+  final int currentTransactionIndex;
+  final ValueChanged<int>? onTransactionChanged;
+  final TransactionEntity Function(post_entity.TransactionEntity)?
+      convertPostTransactionToTransaction;
   final VoidCallback onRefresh;
   final VoidCallback onActionCompleted;
   final VoidCallback onBack;
+  final VoidCallback? onApproveSuccess; // Callback when approve is successful to navigate to transaction list
+  final VoidCallback? onRejectSuccess; // Callback when reject is successful to navigate to transaction list
 
   const _TransactionDetailContent({
     super.key,
     required this.transaction,
     required this.userRole,
+    required this.amountDifference,
+    required this.isLoadingTransactions,
+    this.transactionsData,
+    this.currentTransactionIndex = 0,
+    this.onTransactionChanged,
+    this.convertPostTransactionToTransaction,
     required this.onRefresh,
     required this.onActionCompleted,
     required this.onBack,
+    this.onApproveSuccess,
+    this.onRejectSuccess,
   });
+
+  @override
+  State<_TransactionDetailContent> createState() =>
+      _TransactionDetailContentState();
+}
+
+class _TransactionDetailContentState extends State<_TransactionDetailContent> {
+  late TransactionEntity _currentTransaction;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentTransaction = widget.transaction;
+  }
+
+  @override
+  void didUpdateWidget(_TransactionDetailContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.transaction.transactionId !=
+            widget.transaction.transactionId ||
+        oldWidget.currentTransactionIndex != widget.currentTransactionIndex) {
+      _currentTransaction = widget.transaction;
+    }
+  }
+
+  void _handleTransactionChanged(int index) {
+    widget.onTransactionChanged?.call(index);
+    // Update local state immediately for smooth UI update
+    if (widget.transactionsData != null &&
+        index >= 0 &&
+        index < widget.transactionsData!.transactions.length &&
+        widget.convertPostTransactionToTransaction != null) {
+      setState(() {
+        _currentTransaction = widget.convertPostTransactionToTransaction!(
+          widget.transactionsData!.transactions[index],
+        );
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -153,8 +564,8 @@ class _TransactionDetailContent extends StatelessWidget {
 
     return Stack(
       children: [
-        // Background gradient
-        _TransactionBackgroundGradient(status: transaction.statusEnum),
+        // Background gradient - use current transaction status
+        _TransactionBackgroundGradient(status: _currentTransaction.statusEnum),
 
         // Main content
         Positioned.fill(
@@ -163,25 +574,30 @@ class _TransactionDetailContent extends StatelessWidget {
             child: Column(
               children: [
                 // Top app bar
-                TransactionDetailAppBar(onBack: onBack, onRefresh: onRefresh),
+                TransactionDetailAppBar(
+                    onBack: widget.onBack, onRefresh: widget.onRefresh),
 
                 // Scrollable content
                 Expanded(
                   child: RefreshIndicator(
-                    onRefresh: () async => onRefresh(),
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics(),
-                      ),
+                    onRefresh: () async => widget.onRefresh(),
+                    child: Padding(
                       padding: EdgeInsets.fromLTRB(
                         spacing,
                         0,
                         spacing,
-                        spacing * 6,
+                        spacing *
+                            12, // Increased to allow scrolling above floating chat button
                       ),
                       child: TransactionDetailContentBody(
-                        transaction: transaction,
-                        userRole: userRole,
+                        transaction: _currentTransaction,
+                        userRole: widget.userRole,
+                        transactionsData: widget.transactionsData,
+                        isLoadingTransactions: widget.isLoadingTransactions,
+                        currentTransactionIndex: widget.currentTransactionIndex,
+                        onTransactionChanged: _handleTransactionChanged,
+                        convertPostTransactionToTransaction:
+                            widget.convertPostTransactionToTransaction,
                       ),
                     ),
                   ),
@@ -197,19 +613,23 @@ class _TransactionDetailContent extends StatelessWidget {
           right: 0,
           bottom: 0,
           child: TransactionDetailBottomActions(
-            transaction: transaction,
-            userRole: userRole,
-            onActionCompleted: onActionCompleted,
+            transaction: _currentTransaction,
+            userRole: widget.userRole,
+            amountDifference: widget.amountDifference,
+            onActionCompleted: widget.onActionCompleted,
+            transactionsData: widget.transactionsData,
+            onApproveSuccess: widget.onApproveSuccess, // Navigate to transaction list after successful approve
+            onRejectSuccess: widget.onRejectSuccess, // Navigate to transaction list after successful reject
           ),
         ),
 
         // Floating chat button
         Positioned(
-          right: 16,
-          bottom: 100,
+          right: spacing,
+          bottom: spacing * 6.5,
           child: _ChatFloatingButton(
-            transaction: transaction,
-            userRole: userRole,
+            transaction: _currentTransaction,
+            userRole: widget.userRole,
           ),
         ),
       ],
@@ -283,12 +703,15 @@ class _ChatFloatingButton extends ConsumerWidget {
           type: ToastType.info,
         );
 
-        // Send initial "Hello" message to create chat room
+        // Send initial greeting message to create chat room
+        final greetingMessage = s.chat_room_created_success.isNotEmpty
+            ? s.chat_room_created_success
+            : 'Hello! 👋';
         final success = await ref
             .read(messageViewModelProvider.notifier)
             .sendMessageWithTransaction(
               transactionId: transaction.transactionId,
-              content: 'Hello! 👋',
+              content: greetingMessage,
             );
 
         if (!success) {
@@ -349,9 +772,10 @@ class _ChatFloatingButton extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
+        final s = S.of(context)!;
         CustomToast.show(
           context,
-          'Error: ${e.toString()}',
+          '${s.error_occurred}: ${e.toString()}',
           type: ToastType.error,
         );
       }
@@ -371,7 +795,10 @@ class _ChatFloatingButton extends ConsumerWidget {
         onTap: () => _openChat(context, ref),
         borderRadius: BorderRadius.circular(space),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.symmetric(
+            horizontal: space,
+            vertical: space * 0.75,
+          ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(space),
             gradient: LinearGradient(
@@ -391,7 +818,7 @@ class _ChatFloatingButton extends ConsumerWidget {
                 color: theme.scaffoldBackgroundColor,
                 size: 20,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: space * 0.5),
               Text(
                 s.message,
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -431,11 +858,12 @@ class _TransactionBackgroundGradient extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = Theme.of(context).extension<AppSpacing>()!.screenPadding;
     return Positioned(
       top: 0,
       left: 0,
       right: 0,
-      height: 280,
+      height: spacing * 24, // 280 / 16 = 17.5
       child: Container(
         decoration: BoxDecoration(
           color: _getStatusColor(context).withValues(alpha: 0.8),

@@ -1,5 +1,7 @@
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/transaction_entity.dart'
+    as post_entity;
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/actions/approve_button.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/actions/check_in_button.dart';
@@ -7,21 +9,33 @@ import 'package:GreenConnectMobile/features/transaction/presentation/views/widge
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/actions/input_details_button.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/actions/reject_button.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/widgets/transaction_detail/actions/toggle_cancel_button.dart';
+import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Bottom action buttons for transaction detail
 class TransactionDetailBottomActions extends ConsumerWidget {
   final TransactionEntity transaction;
   final Role userRole;
+  final double amountDifference; // Amount difference from post transactions
   final VoidCallback onActionCompleted;
+  final post_entity.PostTransactionsResponseEntity? transactionsData;
+  final VoidCallback? onCheckInSuccess; // Callback when checkin is successful
+  final VoidCallback? onApproveSuccess; // Callback when approve is successful to navigate to transaction list
+  final VoidCallback? onRejectSuccess; // Callback when reject is successful to navigate to transaction list
 
   const TransactionDetailBottomActions({
     super.key,
     required this.transaction,
     required this.userRole,
+    this.amountDifference = 0.0,
     required this.onActionCompleted,
+    this.transactionsData,
+    this.onCheckInSuccess,
+    this.onApproveSuccess,
+    this.onRejectSuccess,
   });
 
   bool get _isHousehold => userRole == Role.household;
@@ -31,8 +45,73 @@ class TransactionDetailBottomActions extends ConsumerWidget {
       userRole == Role.businessCollector;
 
   bool get _canTakeAction {
-    final status = transaction.statusEnum;
-    return _isHousehold && status == TransactionStatus.inProgress;
+    if (!_isHousehold ||
+        transaction.statusEnum != TransactionStatus.inProgress) {
+      return false;
+    }
+
+    // Validate that scrapPostId, collectorId, and slotId are available
+    final scrapPostId = transaction.offer?.scrapPostId ?? '';
+    final collectorId = transaction.scrapCollectorId;
+    final slotId =
+        transaction.timeSlotId ?? transaction.offer?.timeSlotId ?? '';
+
+    return scrapPostId.isNotEmpty &&
+        collectorId.isNotEmpty &&
+        slotId.isNotEmpty;
+  }
+
+  /// Check if household should show approve button without payment method
+  /// only check amountDifference AFTER collector has entered quantity successfully
+  bool get _shouldApproveWithoutPayment {
+    if (!_canTakeAction) return false;
+
+    // Only check amountDifference when collector has entered quantity
+    if (!_hasQuantityEntered) return false;
+
+    // After collector has entered quantity, use amountDifference directly
+    // amountDifference <= 0: household doesn't need to pay/receive money
+    // amountDifference == 0: no payment needed
+    // amountDifference < 0: household will receive money (collector pays), no payment method needed
+    return amountDifference <= 0.0;
+  }
+
+  /// Check if household should show approve button with payment method
+  /// only check amountDifference AFTER collector has entered quantity successfully
+  bool get _shouldApproveWithPayment {
+    if (!_canTakeAction) return false;
+
+    // only check amountDifference when collector has entered quantity
+    if (!_hasQuantityEntered) return false;
+
+    // after collector has entered quantity, use amountDifference directly
+    // amountDifference > 0: household need to pay or will receive money
+    return amountDifference > 0.0;
+  }
+
+  /// Check if collector should show payment method button
+  /// only check amountDifference AFTER collector has entered quantity successfully
+  /// When amountDifference < 0: Collector needs to pay household
+  bool get _shouldCollectorShowPayment {
+    if (!_isCollector ||
+        transaction.statusEnum != TransactionStatus.inProgress) {
+      return false;
+    }
+
+    // only check amountDifference when collector has entered quantity
+    if (!_hasQuantityEntered) return false;
+
+    // Validate that scrapPostId and slotId are available
+    final scrapPostId = transaction.offer?.scrapPostId ?? '';
+    final slotId =
+        transaction.timeSlotId ?? transaction.offer?.timeSlotId ?? '';
+
+    if (scrapPostId.isEmpty || slotId.isEmpty) {
+      return false;
+    }
+
+    // amountDifference < 0: Collector needs to pay household
+    return amountDifference < 0.0;
   }
 
   bool get _isCompleted {
@@ -52,8 +131,27 @@ class TransactionDetailBottomActions extends ConsumerWidget {
   }
 
   bool get _canInputDetails {
-    return _isCollector &&
-        transaction.statusEnum == TransactionStatus.inProgress;
+    if (!_isCollector ||
+        transaction.statusEnum != TransactionStatus.inProgress) {
+      return false;
+    }
+
+    // Validate that scrapPostId and slotId are available
+    final scrapPostId = transaction.offer?.scrapPostId ?? '';
+    final slotId =
+        transaction.timeSlotId ?? transaction.offer?.timeSlotId ?? '';
+
+    return scrapPostId.isNotEmpty && slotId.isNotEmpty;
+  }
+
+  /// Check if collector has entered quantity for transaction
+  /// Transaction has quantity when transactionDetails has at least one item with quantity > 0
+  bool get _hasQuantityEntered {
+    if (transaction.transactionDetails.isEmpty) {
+      return false;
+    }
+    // Check if any transaction detail has quantity > 0
+    return transaction.transactionDetails.any((detail) => detail.quantity > 0);
   }
 
   @override
@@ -65,7 +163,12 @@ class TransactionDetailBottomActions extends ConsumerWidget {
     // Review button: household only, Complaint button: all roles
     if (_isCompleted) {
       return Container(
-        padding: EdgeInsets.all(spacing),
+        padding: EdgeInsets.fromLTRB(
+          spacing,
+          spacing * 1.5, // Increased top padding for better spacing
+          spacing,
+          spacing / 12,
+        ),
         decoration: BoxDecoration(
           color: theme.cardColor,
           boxShadow: [
@@ -77,6 +180,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
           ],
         ),
         child: SafeArea(
+          top: false,
           child: CompletedTransactionActions(
             transactionId: transaction.transactionId,
             onActionCompleted: onActionCompleted,
@@ -89,7 +193,12 @@ class TransactionDetailBottomActions extends ConsumerWidget {
     // Show check-in button for collector when Scheduled
     if (_canCheckIn) {
       return Container(
-        padding: EdgeInsets.all(spacing),
+        padding: EdgeInsets.fromLTRB(
+          spacing,
+          spacing * 1.5, // Increased top padding for better spacing
+          spacing,
+          spacing / 12,
+        ),
         decoration: BoxDecoration(
           color: theme.cardColor,
           boxShadow: [
@@ -104,45 +213,22 @@ class TransactionDetailBottomActions extends ConsumerWidget {
           child: CheckInButton(
             transaction: transaction,
             onActionCompleted: onActionCompleted,
+            onCheckInSuccess: onCheckInSuccess,
           ),
         ),
       );
     }
 
-    // Show input details and toggle cancel buttons for collector when InProgress
-    if (_canInputDetails || _canToggleCancel) {
-      final buttons = <Widget>[];
-
-      // Priority: Input details button (for entering actual scrap quantity)
-      if (_canInputDetails) {
-        buttons.add(
-          Expanded(
-            flex: 2,
-            child: InputDetailsButton(
-              transaction: transaction,
-              onActionCompleted: onActionCompleted,
-            ),
-          ),
-        );
-      }
-
-      // Toggle cancel button (emergency cancel/resume)
-      if (_canToggleCancel) {
-        if (buttons.isNotEmpty) {
-          buttons.add(SizedBox(width: spacing));
-        }
-        buttons.add(
-          Expanded(
-            child: ToggleCancelButton(
-              transaction: transaction,
-              onActionCompleted: onActionCompleted,
-            ),
-          ),
-        );
-      }
-
+    // Show QR payment button for collector when amountDifference < 0
+    // Navigate QR code payment page
+    if (_shouldCollectorShowPayment) {
       return Container(
-        padding: EdgeInsets.all(spacing),
+        padding: EdgeInsets.fromLTRB(
+          spacing,
+          spacing * 1.5, // Increased top padding for better spacing
+          spacing,
+          spacing / 12,
+        ),
         decoration: BoxDecoration(
           color: theme.cardColor,
           boxShadow: [
@@ -154,15 +240,122 @@ class TransactionDetailBottomActions extends ConsumerWidget {
           ],
         ),
         child: SafeArea(
+          child: Builder(
+            builder: (context) {
+              return FilledButton.icon(
+                onPressed: () async {
+                  // Navigate directly to QR code payment page
+                  // showActionButtons = false:
+                  final result = await context.push(
+                    '/qr-payment',
+                    extra: {
+                      'transactionId': transaction.transactionId,
+                      'transaction': transaction,
+                      'onActionCompleted': onActionCompleted,
+                      'showActionButtons': false, 
+                      'userRole': userRole, 
+                    },
+                  );
+
+                  if (result == true && context.mounted) {
+                    onActionCompleted();
+                  }
+                },
+                icon: const Icon(Icons.qr_code, size: 20),
+                label: Text(
+                  S.of(context)!.request_payment,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: theme.primaryColor,
+                  foregroundColor: theme.scaffoldBackgroundColor,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: spacing * 1.5,
+                    vertical: spacing * 1.2,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(spacing),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+    }
+
+    // Show input details and toggle cancel buttons for collector when InProgress
+    if (_canInputDetails || _canToggleCancel) {
+      final buttons = <Widget>[];
+
+      // Priority 3: Toggle cancel button (emergency cancel/resume) - danger color, left side
+      if (_canToggleCancel) {
+        buttons.add(
+          Expanded(
+            flex: 1,
+            child: ToggleCancelButton(
+              transaction: transaction,
+              onActionCompleted: onActionCompleted,
+            ),
+          ),
+        );
+      }
+
+      // Priority 1: Input details button (for entering actual scrap quantity) - primary color, right side
+      // Always show when collector can input details, regardless of totalPrice
+      if (_canInputDetails) {
+        if (buttons.isNotEmpty) {
+          buttons.add(SizedBox(width: spacing));
+        }
+        buttons.add(
+          Expanded(
+            flex: 2,
+            child: InputDetailsButton(
+              transaction: transaction,
+              onActionCompleted: onActionCompleted,
+              transactionsData: transactionsData,
+            ),
+          ),
+        );
+      }
+
+      return Container(
+        padding: EdgeInsets.fromLTRB(
+          spacing,
+          spacing * 1.5, // Increased top padding for better spacing
+          spacing,
+          spacing / 12,
+        ),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          top: false,
           child: buttons.length == 1 ? buttons.first : Row(children: buttons),
         ),
       );
     }
 
     // Show approve/reject buttons for in-progress transactions (household)
-    if (_canTakeAction) {
+    if (_shouldApproveWithPayment) {
+      // When totalPrice > 0: Show both reject and approve buttons (with payment method selection)
       return Container(
-        padding: EdgeInsets.all(spacing),
+        padding: EdgeInsets.fromLTRB(
+          spacing,
+          spacing * 1.5, // Increased top padding for better spacing
+          spacing,
+          spacing / 12,
+        ),
         decoration: BoxDecoration(
           color: theme.cardColor,
           boxShadow: [
@@ -177,16 +370,68 @@ class TransactionDetailBottomActions extends ConsumerWidget {
           child: Row(
             children: [
               Expanded(
+                flex: 1,
                 child: RejectButton(
-                  transactionId: transaction.transactionId,
+                  transaction: transaction,
                   onActionCompleted: onActionCompleted,
+                  onRejectSuccess: onRejectSuccess, // Navigate to transaction list after successful reject
                 ),
               ),
               SizedBox(width: spacing),
               Expanded(
+                flex: 2,
                 child: ApproveButton(
-                  transactionId: transaction.transactionId,
+                  transaction: transaction,
                   onActionCompleted: onActionCompleted,
+                  skipPaymentMethod: false,
+                  onApproveSuccess: onApproveSuccess, 
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // When amountDifference <= 0: Show both reject and approve buttons (approve without payment method)
+    // This includes amountDifference == 0 (no payment) and amountDifference < 0 (household receives money)
+    if (_shouldApproveWithoutPayment) {
+      return Container(
+        padding: EdgeInsets.fromLTRB(
+          spacing,
+          spacing * 1.5, // Increased top padding for better spacing
+          spacing,
+          spacing / 12,
+        ),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: RejectButton(
+                  transaction: transaction,
+                  onActionCompleted: onActionCompleted,
+                  onRejectSuccess: onRejectSuccess, // Navigate to transaction list after successful reject
+                ),
+              ),
+              SizedBox(width: spacing),
+              Expanded(
+                flex: 2,
+                child: ApproveButton(
+                  transaction: transaction,
+                  onActionCompleted: onActionCompleted,
+                  skipPaymentMethod: true,
+                  onApproveSuccess: onApproveSuccess,
                 ),
               ),
             ],

@@ -9,6 +9,7 @@ class TransactionDetailModel {
   final String unit;
   final double quantity;
   final double finalPrice;
+  final String type;
 
   TransactionDetailModel({
     required this.transactionId,
@@ -18,6 +19,7 @@ class TransactionDetailModel {
     required this.unit,
     required this.quantity,
     required this.finalPrice,
+    required this.type,
   });
 
   factory TransactionDetailModel.fromJson(Map<String, dynamic> json) {
@@ -30,6 +32,7 @@ class TransactionDetailModel {
       unit: json['unit'] ?? '',
       quantity: (json['quantity'] ?? 0).toDouble(),
       finalPrice: (json['finalPrice'] ?? 0).toDouble(),
+      type: json['type'] ?? '',
     );
   }
 
@@ -41,6 +44,7 @@ class TransactionDetailModel {
         'unit': unit,
         'quantity': quantity,
         'finalPrice': finalPrice,
+        'type': type,
       };
 
   TransactionDetailEntity toEntity() {
@@ -52,6 +56,7 @@ class TransactionDetailModel {
       unit: unit,
       quantity: quantity,
       finalPrice: finalPrice,
+      type: type,
     );
   }
 }

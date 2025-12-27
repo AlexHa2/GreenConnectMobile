@@ -7,6 +7,7 @@ import 'package:GreenConnectMobile/features/post/data/models/scrap_post/analyze_
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/create_scrap_post_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/household_report_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/paginated_scrap_post_model.dart';
+import 'package:GreenConnectMobile/features/post/data/models/scrap_post/post_transactions_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_detail_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/scrap_post_model.dart';
 import 'package:GreenConnectMobile/features/post/data/models/scrap_post/time_slot_model.dart';
@@ -165,17 +166,27 @@ class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
   Future<AnalyzeScrapResultModel> analyzeScrap({
     required Uint8List imageBytes,
     required String fileName,
+    UploadProgressCallback? onProgress,
+    int maxRetries = 3,
   }) async {
-    final formData = FormData.fromMap({
-      'image': MultipartFile.fromBytes(
-        imageBytes,
-        filename: fileName,
-      ),
-    });
-
-    final res = await _apiClient.postMultipart(
+    // Use extended timeout for AI analysis (10 minutes)
+    // Features:
+    // - Extended timeout (10 minutes) to prevent connection timeout
+    // - Automatic retry with exponential backoff on timeout/network errors
+    // - Progress callback for upload tracking
+    // - FormData factory ensures fresh FormData for each retry attempt
+    final res = await _apiClient.postMultipartWithLongTimeout(
       '$_aiUrl/analyze-scrap',
-      formData,
+      () => FormData.fromMap({
+        'image': MultipartFile.fromBytes(
+          imageBytes,
+          filename: fileName,
+        ),
+      }),
+      timeout: const Duration(minutes: 10), // 10 minutes timeout
+      maxRetries: maxRetries, // Default: 3 retries
+      retryDelay: const Duration(seconds: 2), // Initial retry delay
+      onProgress: onProgress, // Progress callback
     );
 
     return AnalyzeScrapResultModel.fromJson(res.data);
@@ -230,5 +241,21 @@ class ScrapPostRemoteDataSourceImpl implements ScrapPostRemoteDataSource {
       return true;
     }
     return false;
+  }
+
+  @override
+  Future<PostTransactionsResponseModel> getPostTransactions({
+    required String postId,
+    required String collectorId,
+    required String slotId,
+  }) async {
+    final res = await _apiClient.get(
+      '$_baseUrl/$postId/transactions',
+      queryParameters: {
+        'collectorId': collectorId,
+        'slotId': slotId,
+      },
+    );
+    return PostTransactionsResponseModel.fromJson(res.data);
   }
 }

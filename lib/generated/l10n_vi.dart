@@ -184,7 +184,7 @@ class SVi extends S {
   String get reward_details => 'Chi tiết phần thưởng';
 
   @override
-  String get package_dashboard => 'Bảng điều khiển gói';
+  String get package_dashboard => 'Dashboard gói';
 
   @override
   String get current_points => 'Điểm hiện tại';
@@ -203,6 +203,21 @@ class SVi extends S {
 
   @override
   String get featured_packages => 'Gói nổi bật';
+
+  @override
+  String get useful_tips => 'Mẹo hữu ích';
+
+  @override
+  String get tip_earn_points_regularly =>
+      'Tích điểm thường xuyên để nhận nhiều ưu đãi hơn';
+
+  @override
+  String get tip_use_points_for_packages =>
+      'Sử dụng điểm để mua các gói dịch vụ với giá ưu đãi';
+
+  @override
+  String get tip_view_history =>
+      'Xem lịch sử để theo dõi việc sử dụng điểm của bạn';
 
   @override
   String get value => 'Giá trị';
@@ -1231,7 +1246,7 @@ class SVi extends S {
   String get household_role => 'Hộ dân';
 
   @override
-  String get view_offers => 'Xem danh sách các đề nghị';
+  String get view_offers => 'Xem các đề nghị';
 
   @override
   String get all_offers => 'Tất cả đề nghị';
@@ -1951,7 +1966,7 @@ class SVi extends S {
   String get earliest_at_top => 'Sớm nhất ở trên';
 
   @override
-  String get emergency_cancel => 'Hủy Khẩn Cấp';
+  String get emergency_cancel => 'Hủy';
 
   @override
   String get emergency_cancel_confirm => 'Hủy Giao Dịch Khẩn Cấp';
@@ -2427,7 +2442,7 @@ class SVi extends S {
   String get points_balance => 'Điểm tích lũy';
 
   @override
-  String get credit_balance => 'Số dư tín dụng';
+  String get credit_balance => 'Điểm tín dụng';
 
   @override
   String get account_type => 'Loại tài khoản';
@@ -3028,6 +3043,84 @@ class SVi extends S {
   String get change_image => 'Đổi hình ảnh';
 
   @override
+  String get please_select_time_slot => 'Vui lòng chọn khung thời gian';
+
+  @override
+  String get select_time_slot => 'Chọn Khung Thời Gian';
+
+  @override
+  String get selected_time_slot => 'Khung Thời Gian Đã Chọn';
+
+  @override
+  String get price_label_sale => 'Giá thu mua';
+
+  @override
+  String get price_label_service => 'Giá đề nghị cho người đăng trả';
+
+  @override
+  String get price_label_donation => 'Miễn phí';
+
+  @override
+  String get donation_info_text => 'Món hàng này được tặng miễn phí';
+
+  @override
+  String get service_info_text => 'Đây là giá bạn đề nghị cho người đăng trả';
+
+  @override
+  String get supplementary_offer_note =>
+      'Giao dịch sẽ được tạo ngay lập tức mà không cần chờ chấp nhận';
+
+  @override
+  String get transaction_created_successfully => 'Tạo giao dịch thành công';
+
+  @override
+  String get buy_more => 'Mua thêm';
+
+  @override
+  String get request_payment => 'Yêu cầu thanh toán';
+
+  @override
+  String transactions_count(int count) {
+    return '$count Giao dịch';
+  }
+
+  @override
+  String transaction_number(int number) {
+    return 'Giao dịch $number';
+  }
+
+  @override
+  String copied_id(String id) {
+    return 'Đã sao chép ID: $id';
+  }
+
+  @override
+  String get id_label => 'Mã:';
+
+  @override
+  String get total_difference => 'Tổng chênh lệch';
+
+  @override
+  String get from_all_transactions => '(Từ tất cả giao dịch)';
+
+  @override
+  String get transaction_value => 'Giá trị giao dịch';
+
+  @override
+  String get total_money => 'Tổng tiền';
+
+  @override
+  String get related_transactions => 'Giao dịch liên quan';
+
+  @override
+  String amount_difference(String amount) {
+    return 'Chênh lệch số tiền: $amount';
+  }
+
+  @override
+  String get quantity_not_entered => '(Chưa nhập số lượng)';
+
+  @override
   String get recurring_schedules => 'Lịch Lặp Lại';
 
   @override
@@ -3173,4 +3266,19 @@ class SVi extends S {
 
   @override
   String get recurring_schedule_detail_delete_failed => 'Xóa vật phẩm thất bại';
+
+  @override
+  String get system_reference_price => 'Giá hệ thống';
+
+  @override
+  String get total_will_receive => 'Người đăng bài nhận';
+
+  @override
+  String get total_will_pay => 'Thu gom nhận';
+
+  @override
+  String get service_type => 'Loại hình dịch vụ';
+
+  @override
+  String get item_quantity => 'Số lượng vật phẩm';
 }

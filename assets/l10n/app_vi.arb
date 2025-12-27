@@ -58,13 +58,17 @@
   "failed_to_redeem_reward": "Không thể đổi phần thưởng",
   "no_rewards_message": "Hiện tại chưa có phần thưởng nào.\nVui lòng quay lại sau!",
   "reward_details": "Chi tiết phần thưởng",
-  "package_dashboard": "Bảng điều khiển gói",
+  "package_dashboard": "Dashboard gói",
   "current_points": "Điểm hiện tại",
   "current_package": "Gói đang dùng",
   "buy_package": "Mua gói",
   "point_history": "Lịch sử dùng điểm",
   "purchase_history": "Lịch sử mua gói",
   "featured_packages": "Gói nổi bật",
+  "useful_tips": "Mẹo hữu ích",
+  "tip_earn_points_regularly": "Tích điểm thường xuyên để nhận nhiều ưu đãi hơn",
+  "tip_use_points_for_packages": "Sử dụng điểm để mua các gói dịch vụ với giá ưu đãi",
+  "tip_view_history": "Xem lịch sử để theo dõi việc sử dụng điểm của bạn",
   "value": "Giá trị",
   "points": "điểm",
   "description": "Mô tả",
@@ -411,7 +415,7 @@
   "individual_collector": "Người thu gom cá nhân",
   "business_collector": "Doanh nghiệp thu gom",
   "household_role": "Hộ dân",
-  "view_offers":"Xem danh sách các đề nghị",
+  "view_offers":"Xem các đề nghị",
   "all_offers": "Tất cả đề nghị",
   "post_offers": "Đề nghị của bài đăng",
   "no_offers_found": "Không có đề nghị nào",
@@ -655,7 +659,7 @@
   "sort_by_creation_date": "Sắp xếp theo ngày tạo",
   "most_recent_at_top": "Gần đây nhất ở trên",
   "earliest_at_top": "Sớm nhất ở trên",
-  "emergency_cancel": "Hủy Khẩn Cấp",
+  "emergency_cancel": "Hủy",
   "emergency_cancel_confirm": "Hủy Giao Dịch Khẩn Cấp",
   "emergency_cancel_message": "Điều này sẽ hủy giao dịch do lý do khẩn cấp (xe hỏng, không liên lạc được, v.v.). Bạn có chắc chắn?",
   "emergency_cancel_note": "Chỉ dùng cho các trường hợp khẩn cấp: xe hỏng, không liên lạc được khách hàng, thời tiết xấu, v.v.",
@@ -825,7 +829,7 @@
   "banking_information":"Thông tin ngân hàng",
   "member_rank":"Hạng thành viên",
   "points_balance":"Điểm tích lũy",
-  "credit_balance":"Số dư tín dụng",
+  "credit_balance":"Điểm tín dụng",
   "account_type":"Loại tài khoản",
   "bank_code":"Mã ngân hàng",
   "account_number":"Số tài khoản",
@@ -1058,6 +1062,57 @@
   "analyzing": "Đang phân tích...",
   "analyze_with_ai": "Phân tích bằng AI",
   "change_image": "Đổi hình ảnh",
+  "please_select_time_slot": "Vui lòng chọn khung thời gian",
+  "select_time_slot": "Chọn Khung Thời Gian",
+  "selected_time_slot": "Khung Thời Gian Đã Chọn",
+  "price_label_sale": "Giá thu mua",
+  "price_label_service": "Giá đề nghị cho người đăng trả",
+  "price_label_donation": "Miễn phí",
+  "donation_info_text": "Món hàng này được tặng miễn phí",
+  "service_info_text": "Đây là giá bạn đề nghị cho người đăng trả",
+  "supplementary_offer_note": "Giao dịch sẽ được tạo ngay lập tức mà không cần chờ chấp nhận",
+  "transaction_created_successfully": "Tạo giao dịch thành công",
+  "buy_more": "Mua thêm",
+  "request_payment": "Yêu cầu thanh toán",
+  "transactions_count": "{count} Giao dịch",
+  "@transactions_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "transaction_number": "Giao dịch {number}",
+  "@transaction_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "copied_id": "Đã sao chép ID: {id}",
+  "@copied_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "id_label": "Mã:",
+  "total_difference": "Tổng chênh lệch",
+  "from_all_transactions": "(Từ tất cả giao dịch)",
+  "transaction_value": "Giá trị giao dịch",
+  "total_money": "Tổng tiền",
+  "related_transactions": "Giao dịch liên quan",
+  "amount_difference": "Chênh lệch số tiền: {amount}",
+  "@amount_difference": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "quantity_not_entered": "(Chưa nhập số lượng)",
   "recurring_schedules": "Lịch Lặp Lại",
   "recurring_schedules_description": "Lịch lặp lại cho phép bạn tạo một lịch cho bài đăng sẽ được tạo tự động vào thời gian cụ thể.",
   "recurring_schedules_create": "Tạo lịch lặp lại",
@@ -1102,5 +1157,11 @@
   "recurring_schedule_detail_delete_title": "Xóa vật phẩm",
   "recurring_schedule_detail_delete_message": "Bạn có chắc chắn muốn xóa vật phẩm này?",
   "recurring_schedule_detail_delete_success": "Xóa vật phẩm thành công",
-  "recurring_schedule_detail_delete_failed": "Xóa vật phẩm thất bại"
+  "recurring_schedule_detail_delete_failed": "Xóa vật phẩm thất bại",
+  "system_reference_price":"Giá hệ thống",
+  "total_will_receive":"Người đăng bài nhận",
+  "total_will_pay":"Thu gom nhận",
+  "service_type":"Loại hình dịch vụ",
+  "item_quantity":"Số lượng vật phẩm"
+                      
 }

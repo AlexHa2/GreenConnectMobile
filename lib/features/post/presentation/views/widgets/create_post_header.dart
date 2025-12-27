@@ -94,8 +94,7 @@ class CreatePostHeader extends StatelessWidget {
                   value: animatedValue,
                   minHeight: 6,
                   backgroundColor: theme.canvasColor,
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(theme.primaryColor),
+                  valueColor: AlwaysStoppedAnimation<Color>(theme.primaryColor),
                 );
               },
             ),
@@ -103,71 +102,92 @@ class CreatePostHeader extends StatelessWidget {
           SizedBox(height: spacing.screenPadding * 0.83),
 
           // Step pills
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: List.generate(stepCount, (index) {
+          // Step pills (full width + connecting line)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: List.generate(stepCount * 2 - 1, (i) {
+              // STEP
+              if (i.isEven) {
+                final index = i ~/ 2;
                 final isActive = index == currentStep;
+                final isCompleted = index < currentStep;
                 final canTap = index <= currentStep;
 
-                return Padding(
-                  padding: EdgeInsets.only(
-                    right: index == stepCount - 1
-                        ? 0
-                        : spacing.screenPadding * 0.67,
-                  ),
-                  child: InkWell(
-                    onTap: canTap ? () => onStepTap(index) : null,
-                    borderRadius: BorderRadius.circular(999),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: spacing.screenPadding,
-                        vertical: spacing.screenPadding * 0.67,
+                return InkWell(
+                  onTap: canTap ? () => onStepTap(index) : null,
+                  borderRadius: BorderRadius.circular(999),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: spacing.screenPadding * 0.75,
+                      vertical: spacing.screenPadding * 0.5,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: isActive || isCompleted
+                            ? theme.colorScheme.primary
+                            : theme.dividerColor,
                       ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(
-                          color: isActive
+                      color: isActive
+                          ? theme.primaryColor.withValues(alpha: 0.10)
+                          : isCompleted
+                              ? theme.primaryColor.withValues(alpha: 0.05)
+                              : theme.colorScheme.surface,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isCompleted ? Icons.check : steps[index].icon,
+                          size: 16,
+                          color: canTap
                               ? theme.colorScheme.primary
-                              : theme.dividerColor,
+                              : theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.38),
                         ),
-                        color: isActive
-                            ? theme.primaryColor.withValues(alpha: 0.10)
-                            : theme.colorScheme.surface,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            steps[index].icon,
-                            size: 16,
+                        const SizedBox(width: 6),
+                        Text(
+                          '${index + 1}',
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
                             color: canTap
-                                ? (isActive
-                                    ? theme.colorScheme.primary
-                                    : theme.iconTheme.color)
+                                ? theme.colorScheme.primary
                                 : theme.colorScheme.onSurface
                                     .withValues(alpha: 0.38),
                           ),
-                          SizedBox(width: spacing.screenPadding / 2),
-                          Text(
-                            (index + 1).toString(),
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: canTap
-                                  ? (isActive
-                                      ? theme.colorScheme.primary
-                                      : theme.textTheme.labelLarge?.color)
-                                  : theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.38),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 );
-              }),
-            ),
+              }
+
+              // LINE
+              final lineIndex = (i - 1) ~/ 2;
+              final isCompleted = lineIndex < currentStep;
+
+              return Expanded(
+                child: Container(
+                  height: 3,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(2),
+                    gradient: isCompleted
+                        ? LinearGradient(
+                            colors: [
+                              theme.colorScheme.primary,
+                              theme.colorScheme.primary.withValues(alpha: 0.5),
+                            ],
+                          )
+                        : null,
+                    color: isCompleted
+                        ? null
+                        : theme.dividerColor.withValues(alpha: 0.4),
+                  ),
+                ),
+              );
+            }),
           ),
         ],
       ),
@@ -186,4 +206,3 @@ class _StepMeta {
     required this.icon,
   });
 }
-

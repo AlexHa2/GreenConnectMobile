@@ -86,7 +86,7 @@ class TransactionSection extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: () {
           context.pushNamed(
-            'transaction-detail',
+            'transaction-detail-onlyone',
             extra: {'transactionId': transactionId},
           );
         },

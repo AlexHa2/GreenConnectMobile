@@ -6,12 +6,18 @@ class ProcessTransactionUsecase {
   ProcessTransactionUsecase(this._repository);
 
   Future<bool> call({
-    required String transactionId,
+    required String scrapPostId,
+    required String collectorId,
+    required String slotId,
     required bool isAccepted,
+    String? paymentMethod,
   }) async {
     return await _repository.processTransaction(
-      transactionId: transactionId,
+      scrapPostId: scrapPostId,
+      collectorId: collectorId,
+      slotId: slotId,
       isAccepted: isAccepted,
+      paymentMethod: paymentMethod,
     );
   }
 }

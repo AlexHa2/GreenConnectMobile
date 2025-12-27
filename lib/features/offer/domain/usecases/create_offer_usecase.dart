@@ -8,7 +8,7 @@ class CreateOfferUsecase {
   Future<bool> call({
     required String postId,
     required CreateOfferRequestEntity request,
-    String? slotTimeId,
+    required String slotTimeId,
   }) {
     return repository.createOffer(
       postId: postId,

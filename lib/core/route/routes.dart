@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/core/enum/buyer_type_status.dart';
+import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/helper/app_router_observer.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/login_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/register_page.dart';
@@ -32,18 +33,21 @@ import 'package:GreenConnectMobile/features/post/presentation/views/update_recyc
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setting.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/profile_setup.dart';
 import 'package:GreenConnectMobile/features/profile/presentation/views/upgrade_verification.dart';
+import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/recurring_schedule_detail_page.dart';
+import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/recurring_schedules_page.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/list_history_post.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/my_rewards_page.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_history_page.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/reward_store.dart';
 import 'package:GreenConnectMobile/features/reward/presentation/views/rewards_page.dart';
-import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/recurring_schedules_page.dart';
-import 'package:GreenConnectMobile/features/recurring_schedule/presentation/views/recurring_schedule_detail_page.dart';
 import 'package:GreenConnectMobile/features/schedule/presentation/views/schedules_list_page.dart';
+import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/credit_transactions_list_page.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/payment_transactions_list_page.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/qr_code_payment_page.dart';
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transaction_detail_page_modern.dart';
+import 'package:GreenConnectMobile/features/transaction/presentation/views/transaction_detail_page_onlyone_modern.dart'
+    as onlyone;
 import 'package:GreenConnectMobile/features/transaction/presentation/views/transactions_list_page.dart';
 import 'package:GreenConnectMobile/shared/layouts/collector_layout.dart';
 import 'package:GreenConnectMobile/shared/layouts/household_layout.dart';
@@ -330,8 +334,28 @@ final GoRouter greenRouter = GoRouter(
       name: 'transaction-detail',
       builder: (context, state) {
         final initialData = state.extra as Map<String, dynamic>? ?? {};
+        final rawTransactionId = initialData['transactionId']?.toString();
+        final transactionId = rawTransactionId?.trim();
+
+        // TransactionDetailPageModern: luôn nhận postId, collectorId, slotId để load post transactions
         return TransactionDetailPageModern(
-          transactionId: initialData['transactionId'] as String,
+          transactionId: transactionId,
+          postId: initialData['postId'] as String?,
+          collectorId: initialData['collectorId'] as String?,
+          slotId: initialData['slotId'] as String?,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/transaction-detail-onlyone',
+      name: 'transaction-detail-onlyone',
+      builder: (context, state) {
+        final initialData = state.extra as Map<String, dynamic>? ?? {};
+        final transactionId = initialData['transactionId'] as String;
+
+        // TransactionDetailPageModern (onlyone): chỉ nhận transactionId, gọi fetchTransactionDetail
+        return onlyone.TransactionDetailPageModern(
+          transactionId: transactionId,
         );
       },
     ),
@@ -451,7 +475,10 @@ final GoRouter greenRouter = GoRouter(
         final data = state.extra as Map<String, dynamic>;
         return QRCodePaymentPage(
           transactionId: data['transactionId'] as String,
+          transaction: data['transaction'] as TransactionEntity?,
           onActionCompleted: data['onActionCompleted'] as VoidCallback,
+          showActionButtons: data['showActionButtons'] as bool? ?? true,
+          userRole: data['userRole'] as Role?,
         );
       },
     ),

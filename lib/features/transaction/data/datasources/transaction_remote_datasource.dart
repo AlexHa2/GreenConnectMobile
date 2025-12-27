@@ -24,16 +24,20 @@ abstract class TransactionRemoteDataSource {
     required CheckInRequest request,
   });
 
-  /// POST /v1/transactions/{id}/details
+  /// POST /v1/transactions/details?scrapPostId={scrapPostId}&slotId={slotId}
   Future<List<TransactionDetailModel>> updateTransactionDetails({
-    required String transactionId,
+    required String scrapPostId,
+    required String slotId,
     required List<TransactionDetailRequest> details,
   });
 
-  /// PATCH /v1/transactions/{id}/process
+  /// PATCH /v1/transactions/process?scrapPostId={scrapPostId}&collectorId={collectorId}&slotId={slotId}&isAccepted={isAccepted}&paymentMethod={paymentMethod}
   Future<bool> processTransaction({
-    required String transactionId,
+    required String scrapPostId,
+    required String collectorId,
+    required String slotId,
     required bool isAccepted,
+    String? paymentMethod, // "BankTransfer" or "Cash"
   });
 
   /// PATCH /v1/transactions/{id}/toggle-cancel

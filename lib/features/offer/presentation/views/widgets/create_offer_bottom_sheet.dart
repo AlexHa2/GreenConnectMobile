@@ -1,8 +1,8 @@
 import 'package:GreenConnectMobile/core/enum/post_status.dart';
+import 'package:GreenConnectMobile/core/enum/scrap_post_detail_type.dart';
 import 'package:GreenConnectMobile/features/offer/domain/entities/create_offer_request_entity.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/providers/offer_providers.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/create_offer/create_offer_header.dart';
-import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/create_offer/date_time_picker_field.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/create_offer/must_take_all_warning.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/create_offer/offer_item_card.dart';
 import 'package:GreenConnectMobile/features/offer/presentation/views/widgets/create_offer/offer_item_data.dart';
@@ -28,8 +28,7 @@ class _CreateOfferBottomSheetState
     extends ConsumerState<CreateOfferBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, OfferItemData> _offerItems = {};
-  DateTime? _proposedTime;
-  final _messageController = TextEditingController();
+  String? _selectedSlotTimeId;
   bool _isSubmitting = false;
 
   @override
@@ -45,10 +44,16 @@ class _CreateOfferBottomSheetState
         );
         if (itemStatus == PostDetailStatus.available &&
             detail.scrapCategory?.scrapCategoryId != null) {
+          final detailType = ScrapPostDetailType.parseType(detail.type);
+          // For donation, set price to 0 and keep it fixed
+          final initialPrice = detailType == ScrapPostDetailType.donation
+              ? 0.0
+              : 0.0; // Both start at 0, but donation stays at 0
+          
           _offerItems[detail.scrapCategory!.scrapCategoryId] = OfferItemData(
             categoryId: detail.scrapCategory!.scrapCategoryId,
             categoryName: detail.scrapCategory!.categoryName,
-            totalPrice: 0.0,
+            totalPrice: initialPrice,
             unit: 'kg',
             isSelected: true,
           );
@@ -59,7 +64,6 @@ class _CreateOfferBottomSheetState
 
   @override
   void dispose() {
-    _messageController.dispose();
     super.dispose();
   }
 
@@ -72,43 +76,27 @@ class _CreateOfferBottomSheetState
       if (_offerItems.containsKey(categoryId)) {
         _offerItems.remove(categoryId);
       } else {
+        // Find the detail to get its type
+        final detail = widget.post.scrapPostDetails.firstWhere(
+          (d) => d.scrapCategory?.scrapCategoryId == categoryId,
+          orElse: () => widget.post.scrapPostDetails.first,
+        );
+        final detailType = ScrapPostDetailType.parseType(detail.type);
+        
+        // For donation, set price to 0 and keep it fixed
+        final initialPrice = detailType == ScrapPostDetailType.donation
+            ? 0.0
+            : 0.0; // Both start at 0, but donation stays at 0
+        
         _offerItems[categoryId] = OfferItemData(
           categoryId: categoryId,
           categoryName: categoryName,
-          totalPrice: 0.0,
+          totalPrice: initialPrice,
           unit: 'kg',
           isSelected: true,
         );
       }
     });
-  }
-
-  Future<void> _pickDateTime() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-
-    if (date != null && mounted) {
-      final time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-      );
-
-      if (time != null) {
-        setState(() {
-          _proposedTime = DateTime(
-            date.year,
-            date.month,
-            date.day,
-            time.hour,
-            time.minute,
-          );
-        });
-      }
-    }
   }
 
   Future<void> _submitOffer() async {
@@ -126,13 +114,34 @@ class _CreateOfferBottomSheetState
       return;
     }
 
-    if (_proposedTime == null) {
+    if (_selectedSlotTimeId == null || _selectedSlotTimeId!.isEmpty) {
       CustomToast.show(
         context,
-        S.of(context)!.please_select_proposed_time,
+        S.of(context)!.please_select_time_slot,
         type: ToastType.error,
       );
       return;
+    }
+
+    // Validate prices for SALE and SERVICE items
+    for (var item in _offerItems.values) {
+      final detail = widget.post.scrapPostDetails.firstWhere(
+        (d) => d.scrapCategory?.scrapCategoryId == item.categoryId,
+        orElse: () => widget.post.scrapPostDetails.first,
+      );
+      final detailType = ScrapPostDetailType.parseType(detail.type);
+      
+      // SALE and SERVICE must have price > 0
+      if ((detailType == ScrapPostDetailType.sale ||
+              detailType == ScrapPostDetailType.service) &&
+          item.totalPrice <= 0) {
+        CustomToast.show(
+          context,
+          S.of(context)!.please_enter_price,
+          type: ToastType.error,
+        );
+        return;
+      }
     }
 
     // Set submitting flag
@@ -142,27 +151,36 @@ class _CreateOfferBottomSheetState
 
     final offerDetails = _offerItems.values
         .map(
-          (item) => OfferDetailRequest(
-            scrapCategoryId: item.categoryId,
-            pricePerUnit: item.totalPrice,
-            unit: item.unit,
-          ),
+          (item) {
+            // Find the detail type for this item
+            final detail = widget.post.scrapPostDetails.firstWhere(
+              (d) => d.scrapCategory?.scrapCategoryId == item.categoryId,
+              orElse: () => widget.post.scrapPostDetails.first,
+            );
+            final detailType = ScrapPostDetailType.parseType(detail.type);
+            
+            // For donation, always set price to 0
+            final price = detailType == ScrapPostDetailType.donation
+                ? 0.0
+                : item.totalPrice;
+            
+            return OfferDetailRequest(
+              scrapCategoryId: item.categoryId,
+              pricePerUnit: price,
+              unit: item.unit,
+            );
+          },
         )
         .toList();
 
     final request = CreateOfferRequestEntity(
       offerDetails: offerDetails,
-      scheduleProposal: ScheduleProposalRequest(
-        proposedTime: _proposedTime!,
-        responseMessage: _messageController.text.trim(),
-      ),
     );
 
-    final success = await ref
-        .read(offerViewModelProvider.notifier)
-        .createOffer(
+    final success = await ref.read(offerViewModelProvider.notifier).createOffer(
           postId: widget.post.scrapPostId.toString(),
           request: request,
+          slotTimeId: _selectedSlotTimeId!,
         );
 
     if (mounted) {
@@ -261,6 +279,7 @@ class _CreateOfferBottomSheetState
 
                     final isSelected = _offerItems.containsKey(categoryId);
                     final canToggle = widget.post.mustTakeAll != true;
+                    final detailType = ScrapPostDetailType.parseType(detail.type);
 
                     return OfferItemCard(
                       categoryName: categoryName,
@@ -270,11 +289,17 @@ class _CreateOfferBottomSheetState
                       canToggle: canToggle,
                       totalPrice: _offerItems[categoryId]?.totalPrice ?? 0.0,
                       unit: _offerItems[categoryId]?.unit ?? 'kg',
+                      detailType: detailType,
                       onToggle: () => _toggleItem(categoryId, categoryName),
                       onPriceChanged: (price) {
                         setState(() {
                           if (_offerItems.containsKey(categoryId)) {
-                            _offerItems[categoryId]!.totalPrice = price;
+                            // For donation, always keep price at 0
+                            if (detailType == ScrapPostDetailType.donation) {
+                              _offerItems[categoryId]!.totalPrice = 0.0;
+                            } else {
+                              _offerItems[categoryId]!.totalPrice = price;
+                            }
                           }
                         });
                       },
@@ -290,47 +315,66 @@ class _CreateOfferBottomSheetState
 
                   SizedBox(height: space * 1.5),
 
-                  // Proposed time
-                  Text(
-                    s.proposed_pickup_time,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: space * 0.75),
-
-                  DateTimePickerField(
-                    selectedDateTime: _proposedTime,
-                    onTap: _pickDateTime,
-                  ),
-
-                  SizedBox(height: space * 1.5),
-
-                  // Message
-                  Text(
-                    s.message,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: space * 0.75),
-
-                  TextFormField(
-                    controller: _messageController,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      hintText: s.enter_your_message,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(space),
+                  // Time slots section
+                  if (widget.post.scrapPostTimeSlots.isNotEmpty) ...[
+                    Text(
+                      s.select_time_slot,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return s.message_is_required;
+                    SizedBox(height: space * 0.75),
+                    ...widget.post.scrapPostTimeSlots.map((slot) {
+                      final slotId = slot.id;
+                      if (slotId == null || slotId.isEmpty) {
+                        return const SizedBox.shrink();
                       }
-                      return null;
-                    },
-                  ),
+
+                      final isSelected = _selectedSlotTimeId == slotId;
+
+                      return Container(
+                        margin: EdgeInsets.only(bottom: space * 0.5),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: isSelected
+                                ? theme.primaryColor
+                                : theme.dividerColor,
+                            width: isSelected ? 2 : 1,
+                          ),
+                          borderRadius: BorderRadius.circular(space),
+                          color: isSelected
+                              ? theme.primaryColor.withValues(alpha: 0.1)
+                              : theme.canvasColor,
+                        ),
+                        child: ListTile(
+                          leading: Radio<String>(
+                            value: slotId,
+                            groupValue: _selectedSlotTimeId,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedSlotTimeId = value;
+                              });
+                            },
+                          ),
+                          title: Text(
+                            slot.specificDate,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          subtitle: Text(
+                            '${slot.startTime} - ${slot.endTime}',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _selectedSlotTimeId = slotId;
+                            });
+                          },
+                        ),
+                      );
+                    }),
+                  ],
 
                   SizedBox(height: space * 2),
                 ],
@@ -348,5 +392,3 @@ class _CreateOfferBottomSheetState
     );
   }
 }
-
-

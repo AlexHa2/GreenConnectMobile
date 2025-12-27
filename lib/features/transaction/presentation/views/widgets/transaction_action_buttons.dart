@@ -35,7 +35,7 @@ class TransactionActionButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      padding: EdgeInsets.all(space * 1.5),
+      padding: EdgeInsets.all(space),
       decoration: BoxDecoration(
         color: theme.cardColor,
         boxShadow: [
@@ -138,7 +138,7 @@ class TransactionActionButtons extends ConsumerWidget {
     return GradientButton(
       onPressed: () => _showCheckInDialog(context),
       text: s.check_in,
-      icon:  Icon(Icons.location_on, color: theme.scaffoldBackgroundColor),
+      icon: Icon(Icons.location_on, color: theme.scaffoldBackgroundColor),
     );
   }
 
@@ -154,7 +154,7 @@ class TransactionActionButtons extends ConsumerWidget {
     return GradientButton(
       onPressed: () => _showProcessDialog(context, isApprove: true),
       text: s.approve,
-      icon:  Icon(Icons.check, color:theme.scaffoldBackgroundColor),
+      icon: Icon(Icons.check, color: theme.scaffoldBackgroundColor),
     );
   }
 
@@ -164,7 +164,7 @@ class TransactionActionButtons extends ConsumerWidget {
       icon: const Icon(Icons.close),
       label: Text(s.reject),
       style: OutlinedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: space * 1.25),
+        padding: EdgeInsets.symmetric(vertical: space),
         side: const BorderSide(color: AppColors.danger, width: 2),
         foregroundColor: AppColors.danger,
       ),
@@ -177,7 +177,7 @@ class TransactionActionButtons extends ConsumerWidget {
       icon: const Icon(Icons.cancel_outlined),
       label: Text(s.cancel_transaction),
       style: OutlinedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: space * 1.25),
+        padding: EdgeInsets.symmetric(vertical: space),
         side: const BorderSide(color: AppColors.warningUpdate, width: 2),
         foregroundColor: AppColors.warningUpdate,
       ),
@@ -190,7 +190,7 @@ class TransactionActionButtons extends ConsumerWidget {
       icon: const Icon(Icons.rate_review_outlined),
       label: Text(s.provide_feedback),
       style: OutlinedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: space * 1.25),
+        padding: EdgeInsets.symmetric(vertical: space),
         side: BorderSide(color: theme.primaryColor, width: 2),
         foregroundColor: theme.primaryColor,
       ),
@@ -208,14 +208,13 @@ class TransactionActionButtons extends ConsumerWidget {
         style: const TextStyle(fontWeight: FontWeight.w600),
       ),
       style: OutlinedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: space * 1.25),
+        padding: EdgeInsets.symmetric(vertical: space),
         side: BorderSide(
           color: isCanceled ? AppColors.warningUpdate : AppColors.danger,
           width: 2,
         ),
-        foregroundColor: isCanceled
-            ? AppColors.warningUpdate
-            : AppColors.danger,
+        foregroundColor:
+            isCanceled ? AppColors.warningUpdate : AppColors.danger,
         backgroundColor: isCanceled
             ? AppColors.warningUpdate.withValues(alpha: 0.05)
             : AppColors.danger.withValues(alpha: 0.05),
@@ -400,7 +399,7 @@ class TransactionActionButtons extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         s.emergency_cancel_note,
-                        style:const TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.danger,
                           fontWeight: FontWeight.w500,
@@ -505,7 +504,7 @@ class TransactionActionButtons extends ConsumerWidget {
       SnackBar(
         content: Row(
           children: [
-             Icon(Icons.check_circle, color: theme.scaffoldBackgroundColor),
+            Icon(Icons.check_circle, color: theme.scaffoldBackgroundColor),
             SizedBox(width: space),
             Expanded(child: Text(message)),
           ],

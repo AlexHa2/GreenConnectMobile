@@ -7,7 +7,9 @@ class OfferDetailModel {
   final String scrapCategoryId;
   final ScrapCategoryModel? scrapCategory;
   final double pricePerUnit;
+  final double? pricePerKg;
   final String unit;
+  final String? type;
   final String? imageUrl;
 
   OfferDetailModel({
@@ -16,7 +18,9 @@ class OfferDetailModel {
     required this.scrapCategoryId,
     this.scrapCategory,
     required this.pricePerUnit,
+    this.pricePerKg,
     required this.unit,
+    this.type,
     this.imageUrl,
   });
 
@@ -29,8 +33,12 @@ class OfferDetailModel {
       scrapCategory: json['scrapCategory'] != null
           ? ScrapCategoryModel.fromJson(json['scrapCategory'])
           : null,
-      pricePerUnit: (json['pricePerUnit'] as num).toDouble(),
-      unit: json['unit'],
+      pricePerUnit: (json['pricePerUnit'] as num?)?.toDouble() ?? 0.0,
+      pricePerKg: json['pricePerKg'] != null
+          ? (json['pricePerKg'] as num).toDouble()
+          : null,
+      unit: json['unit'] ?? '',
+      type: json['type'] as String?,
       imageUrl: json['imageUrl'] as String?,
     );
   }
@@ -42,8 +50,10 @@ class OfferDetailModel {
       'scrapCategoryId': scrapCategoryId,
       'scrapCategory': scrapCategory?.toJson(),
       'pricePerUnit': pricePerUnit,
+      if (pricePerKg != null) 'pricePerKg': pricePerKg,
       'unit': unit,
-      'imageUrl': imageUrl,
+      if (type != null) 'type': type,
+      if (imageUrl != null) 'imageUrl': imageUrl,
     };
   }
 
@@ -54,7 +64,9 @@ class OfferDetailModel {
       scrapCategoryId: scrapCategoryId,
       scrapCategory: scrapCategory?.toEntity(),
       pricePerUnit: pricePerUnit,
+      pricePerKg: pricePerKg,
       unit: unit,
+      type: type,
       imageUrl: imageUrl,
     );
   }

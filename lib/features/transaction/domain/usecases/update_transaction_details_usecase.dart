@@ -8,11 +8,13 @@ class UpdateTransactionDetailsUsecase {
   UpdateTransactionDetailsUsecase(this._repository);
 
   Future<List<TransactionDetailEntity>> call({
-    required String transactionId,
+    required String scrapPostId,
+    required String slotId,
     required List<TransactionDetailRequest> details,
   }) async {
     return await _repository.updateTransactionDetails(
-      transactionId: transactionId,
+      scrapPostId: scrapPostId,
+      slotId: slotId,
       details: details,
     );
   }

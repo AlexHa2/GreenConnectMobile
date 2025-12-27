@@ -13,6 +13,8 @@ class CollectionOfferEntity {
   final DateTime createdAt;
   final List<OfferDetailEntity> offerDetails;
   final List<ScheduleProposalEntity> scheduleProposals;
+  final String? timeSlotId;
+  final ScrapPostTimeSlotEntity? timeSlot;
 
   CollectionOfferEntity({
     required this.collectionOfferId,
@@ -23,6 +25,8 @@ class CollectionOfferEntity {
     required this.createdAt,
     required this.offerDetails,
     required this.scheduleProposals,
+    this.timeSlotId,
+    this.timeSlot,
   });
 
   // Backward compatibility getter

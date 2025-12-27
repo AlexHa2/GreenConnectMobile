@@ -64,6 +64,10 @@
   "point_history": "Point Usage History",
   "purchase_history": "Package Purchase History",
   "featured_packages": "Featured Packages",
+  "useful_tips": "Useful Tips",
+  "tip_earn_points_regularly": "Earn points regularly to receive more offers",
+  "tip_use_points_for_packages": "Use points to purchase service packages at discounted prices",
+  "tip_view_history": "View history to track your point usage",
   "value": "Value",
   "points": "points",
   "description": "Description",
@@ -1059,6 +1063,57 @@
   "analyzing": "Analyzing...",
   "analyze_with_ai": "Analyze with AI",
   "change_image": "Change Image",
+  "please_select_time_slot": "Please select a time slot",
+  "select_time_slot": "Select Time Slot",
+  "selected_time_slot": "Selected Time Slot",
+  "price_label_sale": "Purchase Price",
+  "price_label_service": "Suggested Price for Poster",
+  "price_label_donation": "Free",
+  "donation_info_text": "This item is free (donation)",
+  "service_info_text": "This is the price you suggest for the poster to pay",
+  "supplementary_offer_note": "Transaction will be created immediately without waiting for acceptance",
+  "transaction_created_successfully": "Transaction created successfully",
+  "buy_more": "Buy More",
+  "request_payment": "Request Payment",
+  "transactions_count": "{count} Transactions",
+  "@transactions_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "transaction_number": "Transaction {number}",
+  "@transaction_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "copied_id": "Copied ID: {id}",
+  "@copied_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "id_label": "ID:",
+  "total_difference": "Total Difference",
+  "from_all_transactions": "(From all transactions)",
+  "transaction_value": "Transaction Value",
+  "total_money": "Total money",
+  "related_transactions": "Related Transactions",
+  "amount_difference": "Amount Difference: {amount}",
+  "@amount_difference": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "quantity_not_entered": "(Quantity not entered)",
   "recurring_schedules": "Recurring Schedules",
   "recurring_schedules_description": "Recurring schedules allow you to create a schedule for a post that will be automatically created at a specific time.",
   "recurring_schedules_create": "Create recurring schedule",
@@ -1103,5 +1158,11 @@
   "recurring_schedule_detail_delete_title": "Delete item",
   "recurring_schedule_detail_delete_message": "Are you sure you want to delete this item?",
   "recurring_schedule_detail_delete_success": "Item deleted successfully",
-  "recurring_schedule_detail_delete_failed": "Failed to delete item"
+  "recurring_schedule_detail_delete_failed": "Failed to delete item",
+  "system_reference_price":"System reference price",
+  "total_will_receive":"The HouseHold will receive",
+  "total_will_pay":"The Household will pay",
+  "service_type":"Service type",
+  "item_quantity":"Item quantity"
+                                                
 }

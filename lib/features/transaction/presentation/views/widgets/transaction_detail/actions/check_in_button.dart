@@ -5,15 +5,18 @@ import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class CheckInButton extends ConsumerWidget {
   final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
+  final VoidCallback? onCheckInSuccess; // Callback khi checkin thành công
 
   const CheckInButton({
     super.key,
     required this.transaction,
     required this.onActionCompleted,
+    this.onCheckInSuccess,
   });
 
   Future<void> _handleCheckIn(BuildContext context, WidgetRef ref) async {
@@ -58,12 +61,38 @@ class CheckInButton extends ConsumerWidget {
             s.check_in_success,
             type: ToastType.success,
           );
-          // Delay callback to ensure Navigator is not locked after pop
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (context.mounted) {
-              onActionCompleted();
-            }
-          });
+          
+          // Nếu có callback onCheckInSuccess, gọi nó (dùng cho onlyone page)
+          if (onCheckInSuccess != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                onCheckInSuccess!();
+              }
+            });
+          } else {
+            // Mặc định: Navigate to transaction detail (not onlyone) after successful check-in
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                // Get required params for transaction detail navigation
+                final postId = transaction.offer?.scrapPostId;
+                final collectorId = transaction.scrapCollectorId;
+                final slotId = transaction.timeSlotId ?? transaction.offer?.timeSlotId;
+
+                // Navigate to transaction-detail (full page, not onlyone)
+                // Params postId, collectorId, slotId luôn có khi navigate đến route này
+                context.pushNamed(
+                  'transaction-detail',
+                  extra: {
+                    'transactionId': transaction.transactionId,
+                    if (postId != null && postId.isNotEmpty) 'postId': postId,
+                    if (collectorId.isNotEmpty) 'collectorId': collectorId,
+                    if (slotId != null && slotId.isNotEmpty) 'slotId': slotId,
+                    // Bỏ hasTransactionData - data sẽ được load từ API
+                  },
+                );
+              }
+            });
+          }
         } else {
           final state = ref.read(transactionViewModelProvider);
           final errorMsg = state.errorMessage;
@@ -100,30 +129,56 @@ class CheckInButton extends ConsumerWidget {
     final state = ref.watch(transactionViewModelProvider);
     final isProcessing = state.isProcessing;
 
-    return ElevatedButton.icon(
-      onPressed: isProcessing ? null : () => _handleCheckIn(context, ref),
-      icon: isProcessing
-          ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  theme.scaffoldBackgroundColor,
-                ),
-              ),
-            )
-          : const Icon(Icons.location_on),
-      label: Text(
-        s.check_in,
-        style: const TextStyle(fontWeight: FontWeight.w600),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          colors: [
+            theme.primaryColor,
+            theme.primaryColor.withValues(alpha: 0.9),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.primaryColor.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: theme.primaryColor,
-        foregroundColor: theme.scaffoldBackgroundColor,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        disabledBackgroundColor: theme.primaryColor.withValues(alpha: 0.6),
+      child: ElevatedButton.icon(
+        onPressed: isProcessing ? null : () => _handleCheckIn(context, ref),
+        icon: isProcessing
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    theme.scaffoldBackgroundColor,
+                  ),
+                ),
+              )
+            : const Icon(Icons.location_on, size: 20),
+        label: Text(
+          s.check_in,
+          style: TextStyle(
+            color: theme.scaffoldBackgroundColor,
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
+        ),
       ),
     );
   }

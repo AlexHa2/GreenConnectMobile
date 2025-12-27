@@ -1,12 +1,13 @@
 import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/enum/transaction_status.dart';
-import 'package:GreenConnectMobile/core/helper/currency_helper.dart';
 import 'package:GreenConnectMobile/core/helper/date_time_extension.dart';
+import 'package:GreenConnectMobile/features/post/domain/entities/scrap_post_entity.dart';
 import 'package:GreenConnectMobile/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
 import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 /// Transaction card for list view
 class TransactionListCard extends StatelessWidget {
@@ -64,12 +65,6 @@ class TransactionListCard extends StatelessWidget {
               userRole: userRole,
               s: s,
             ),
-
-            // Price chip
-            if (transaction.totalPrice > 0) ...[
-              SizedBox(height: space),
-              _TransactionPriceChip(price: transaction.totalPrice),
-            ],
 
             // Action buttons for completed transactions
             // Review: household only, Complaint: all roles
@@ -229,13 +224,119 @@ class _TransactionCardInfo extends StatelessWidget {
           SizedBox(height: space * 0.75),
         ],
 
-        // Scheduled time
-        if (transaction.scheduledTime != null)
+        // Time slot (preferred over scheduledTime if available)
+        if (transaction.timeSlot != null) ...[
+          _TimeSlotInfoRow(timeSlot: transaction.timeSlot!, s: s),
+        ] else if (transaction.scheduledTime != null) ...[
           _InfoRow(
             icon: Icons.schedule_outlined,
-            text: transaction.scheduledTime!.toCustomFormat(locale: s.localeName),
+            text:
+                transaction.scheduledTime!.toCustomFormat(locale: s.localeName),
           ),
+        ],
       ],
+    );
+  }
+}
+
+/// Time slot info row widget - Clean and compact design
+class _TimeSlotInfoRow extends StatelessWidget {
+  final ScrapPostTimeSlotEntity timeSlot;
+  final S s;
+
+  const _TimeSlotInfoRow({required this.timeSlot, required this.s});
+
+  String _formatDate(String dateString) {
+    try {
+      final date = DateTime.parse(dateString);
+      return DateFormat('dd/MM/yyyy', 'vi').format(date);
+    } catch (e) {
+      return dateString;
+    }
+  }
+
+  String _formatTime(String timeString) {
+    try {
+      // Format from "00:17:00" to "00:17"
+      if (timeString.length >= 5) {
+        return timeString.substring(0, 5);
+      }
+      return timeString;
+    } catch (e) {
+      return timeString;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final space = theme.extension<AppSpacing>()!.screenPadding;
+
+    final formattedDate = _formatDate(timeSlot.specificDate);
+    final formattedStartTime = _formatTime(timeSlot.startTime);
+    final formattedEndTime = _formatTime(timeSlot.endTime);
+    final isBooked = timeSlot.isBooked == true;
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: space,
+        vertical: space * 0.75,
+      ),
+      decoration: BoxDecoration(
+        color: theme.primaryColor.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(space * 0.75),
+        border: Border.all(
+          color: theme.primaryColor.withValues(alpha: 0.15),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.access_time_rounded,
+            size: space * 1.4,
+            color: theme.primaryColor,
+          ),
+          SizedBox(width: space * 0.75),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '$formattedDate • $formattedStartTime - $formattedEndTime',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.textTheme.bodyMedium?.color,
+                  ),
+                ),
+                if (isBooked) ...[
+                  SizedBox(height: space * 0.4),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.check_circle_rounded,
+                        size: 14,
+                        color: theme.primaryColor,
+                      ),
+                      SizedBox(width: space * 0.3),
+                      Text(
+                        s.booked,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.primaryColor,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -264,41 +365,6 @@ class _InfoRow extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Price chip widget
-class _TransactionPriceChip extends StatelessWidget {
-  final double price;
-
-  const _TransactionPriceChip({required this.price});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final space = theme.extension<AppSpacing>()!.screenPadding;
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: space, vertical: space * 0.75),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(space * 0.75),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.attach_money, size: space * 1.5, color: AppColors.primary),
-          SizedBox(width: space * 0.5),
-          Text(
-            formatVND(price),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

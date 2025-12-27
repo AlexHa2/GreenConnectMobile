@@ -56,12 +56,14 @@ class TransactionRepositoryImpl implements TransactionRepository {
 
   @override
   Future<List<TransactionDetailEntity>> updateTransactionDetails({
-    required String transactionId,
+    required String scrapPostId,
+    required String slotId,
     required List<TransactionDetailRequest> details,
   }) async {
     return guard(() async {
       final result = await _remoteDataSource.updateTransactionDetails(
-        transactionId: transactionId,
+        scrapPostId: scrapPostId,
+        slotId: slotId,
         details: details,
       );
       return result.map((e) => e.toEntity()).toList();
@@ -70,13 +72,19 @@ class TransactionRepositoryImpl implements TransactionRepository {
 
   @override
   Future<bool> processTransaction({
-    required String transactionId,
+    required String scrapPostId,
+    required String collectorId,
+    required String slotId,
     required bool isAccepted,
+    String? paymentMethod,
   }) async {
     return guard(() async {
       return await _remoteDataSource.processTransaction(
-        transactionId: transactionId,
+        scrapPostId: scrapPostId,
+        collectorId: collectorId,
+        slotId: slotId,
         isAccepted: isAccepted,
+        paymentMethod: paymentMethod,
       );
     });
   }

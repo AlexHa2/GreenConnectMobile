@@ -14,19 +14,16 @@ class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
   Future<bool> createOffer({
     required String postId,
     required CreateOfferRequestModel request,
-    String? slotTimeId,
+    required String slotTimeId,
   }) async {
-    var url = '$_postsBaseUrl/$postId/offers';
-    if (slotTimeId != null) {
-      url += '?slotTimeId=$slotTimeId';
-    }
+    final url = '$_postsBaseUrl/$postId/offers?slotTimeId=$slotTimeId';
 
     final res = await _apiClient.post(
       url,
       data: request.toJsonForCreate(),
     );
 
-    return res.statusCode == 201;
+    return res.statusCode == 200;
   }
 
   @override
@@ -141,5 +138,20 @@ class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
       '$_offersBaseUrl/$offerId/details/$detailId',
     );
     return res.statusCode == 204 || res.statusCode == 200;
+  }
+
+  @override
+  Future<bool> createSupplementaryOffer({
+    required String postId,
+    required CreateOfferRequestModel request,
+  }) async {
+    final url = '$_offersBaseUrl/supplementary-offers?postId=$postId';
+
+    final res = await _apiClient.post(
+      url,
+      data: request.toJson(),
+    );
+
+    return res.statusCode == 201;
   }
 }

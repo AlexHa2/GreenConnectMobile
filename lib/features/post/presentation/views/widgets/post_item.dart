@@ -199,73 +199,108 @@ class PostItem extends StatelessWidget {
               if (hasActions) ...[
                 SizedBox(height: space),
                 Divider(height: space, thickness: 0.8),
-                Wrap(
-                  spacing: space * 2 / 3,
-                  runSpacing: space * 2 / 3,
-                  alignment: WrapAlignment.end,
+                // Row
+                Row(
                   children: [
-                    OutlinedButton.icon(
-                      onPressed: onTapDetails,
-                      style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: space * 2 / 3,
-                          vertical: space / 2,
+                    // Button
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: onTapDetails,
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: space,
+                            vertical: space * 1.5,
+                          ),
+                          side: BorderSide(
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.35),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(space),
+                          ),
+                          visualDensity: VisualDensity.compact,
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        side: BorderSide(
-                          color:
-                              theme.colorScheme.primary.withValues(alpha: 0.35),
+                        icon: const Icon(Icons.info_outline_rounded, size: 16),
+                        label: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            S.of(context)!.view_details,
+                            style: const TextStyle(fontSize: 13),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Spacing giữa 2 button
+                    if (showOffersButton && onGoToOffers != null)
+                      SizedBox(width: space * 2 / 3),
+                    // Button
+                    if (showOffersButton && onGoToOffers != null)
+                      Expanded(
+                        child: FilledButton.tonalIcon(
+                          onPressed: onGoToOffers,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: theme.primaryColor,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: space,
+                              vertical: space * 1.5,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(space),
+                            ),
+                            visualDensity: VisualDensity.compact,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          icon: Icon(
+                            Icons.receipt_long_rounded,
+                            size: 16,
+                            color: theme.scaffoldBackgroundColor,
+                          ),
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              S.of(context)!.view_offers,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: theme.scaffoldBackgroundColor,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                // Button
+                if (isAccepted) ...[
+                  SizedBox(height: space * 2 / 3),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: onGoToTransaction,
+                      style: FilledButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: space,
+                          vertical: space / 2,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(space),
                         ),
                         visualDensity: VisualDensity.compact,
                       ),
-                      icon: const Icon(Icons.info_outline_rounded, size: 16),
+                      icon: const Icon(Icons.handshake_outlined, size: 16),
                       label: Text(
-                        S.of(context)!.view_details,
+                        S.of(context)!.go_to_transaction,
                         style: const TextStyle(fontSize: 13),
                       ),
                     ),
-                    if (showOffersButton && onGoToOffers != null)
-                      FilledButton.tonalIcon(
-                        onPressed: onGoToOffers,
-                        style: FilledButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: space * 2 / 3,
-                            vertical: space / 2,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(space),
-                          ),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                        icon: const Icon(Icons.receipt_long_rounded, size: 16),
-                        label: Text(
-                          S.of(context)!.view_offers,
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                      ),
-                    if (isAccepted)
-                      FilledButton.icon(
-                        onPressed: onGoToTransaction,
-                        style: FilledButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: space * 2 / 3,
-                            vertical: space / 2,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(space),
-                          ),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                        icon: const Icon(Icons.handshake_outlined, size: 16),
-                        label: Text(
-                          S.of(context)!.go_to_transaction,
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                      ),
-                  ],
-                ),
+                  ),
+                ],
               ],
 
               // Extra: “posted:”
