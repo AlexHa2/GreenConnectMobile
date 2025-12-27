@@ -903,14 +903,13 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
             Icon(
               Icons.dashboard_rounded,
               color: theme.primaryColor,
-              size: space * 2.2,
+              size: 24,
             ),
             SizedBox(width: space),
             Text(
               s.quick_actions,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: space * 1.9,
                 letterSpacing: -0.3,
               ),
             ),
@@ -1040,7 +1039,7 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
           onTap: onTap,
           borderRadius: BorderRadius.circular(space * 2),
           child: Container(
-            padding: EdgeInsets.all(space * 1.6),
+            padding: EdgeInsets.all((space * 1.2).clamp(10.0, 14.0)),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -1063,37 +1062,48 @@ class _CollectorHomePageState extends ConsumerState<CollectorHomePage>
                 ),
               ],
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(space * 1.2),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        color.withValues(alpha: 0.2),
-                        color.withValues(alpha: 0.1),
-                      ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final iconBoxSize = (constraints.maxHeight * 0.34)
+                    .clamp(40.0, 56.0);
+                final iconSize = (constraints.maxHeight * 0.20).clamp(22.0, 30.0);
+                final gap = (constraints.maxHeight * 0.06).clamp(6.0, 10.0);
+
+                return Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: iconBoxSize,
+                      height: iconBoxSize,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            color.withValues(alpha: 0.2),
+                            color.withValues(alpha: 0.1),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(iconBoxSize * 0.28),
+                      ),
+                      child: Icon(icon, color: color, size: iconSize),
                     ),
-                    borderRadius: BorderRadius.circular(space * 1.2),
-                  ),
-                  child: Icon(icon, color: color, size: space * 3),
-                ),
-                SizedBox(height: space * 1.2),
-                Flexible(
-                  child: Text(
-                    label,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: color,
+                    SizedBox(height: gap),
+                    Flexible(
+                      child: Text(
+                        label,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: color,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+                  ],
+                );
+              },
             ),
           ),
         ),

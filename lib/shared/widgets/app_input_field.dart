@@ -7,6 +7,7 @@ class AppInputField extends StatelessWidget {
   final String hint;
   final int maxLines;
   final bool readOnly;
+  final TextInputType? keyboardType;
   final String? Function(String?)? validator;
   final Widget? suffixIcon;
   final VoidCallback? onTap;
@@ -18,6 +19,7 @@ class AppInputField extends StatelessWidget {
     required this.hint,
     this.maxLines = 1,
     this.readOnly = false,
+    this.keyboardType,
     this.validator,
     this.suffixIcon,
     this.onTap,
@@ -41,6 +43,7 @@ class AppInputField extends StatelessWidget {
           controller: controller,
           maxLines: maxLines,
           readOnly: readOnly,
+          keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hint,
             suffixIcon: suffixIcon,
