@@ -1231,7 +1231,7 @@ class SVi extends S {
   String get household_role => 'Hộ dân';
 
   @override
-  String get view_offers => 'Xem danh sách các đề nghị';
+  String get view_offers => 'Xem các đề nghị';
 
   @override
   String get all_offers => 'Tất cả đề nghị';
@@ -2427,7 +2427,7 @@ class SVi extends S {
   String get points_balance => 'Điểm tích lũy';
 
   @override
-  String get credit_balance => 'Số dư tín dụng';
+  String get credit_balance => 'Điểm tín dụng';
 
   @override
   String get account_type => 'Loại tài khoản';

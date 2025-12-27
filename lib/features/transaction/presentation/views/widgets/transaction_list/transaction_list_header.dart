@@ -21,6 +21,8 @@ class TransactionListHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final space = theme.extension<AppSpacing>()!.screenPadding;
     final s = S.of(context)!;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 400;
 
     return Container(
       padding: EdgeInsets.all(space),
@@ -36,6 +38,7 @@ class TransactionListHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
+          // Back button - fixed size
           Container(
             decoration: BoxDecoration(
               color: theme.colorScheme.primary.withValues(alpha: 0.1),
@@ -48,30 +51,42 @@ class TransactionListHeader extends StatelessWidget {
                 size: 20,
               ),
               onPressed: () {
-                // Sử dụng context.pop() từ go_router, an toàn hơn
                 if (context.canPop()) {
                   context.pop();
                 } else {
-                  // Nếu không có màn hình nào để pop, điều hướng về home
                   context.go('/collector-home');
                 }
               },
               tooltip: s.back,
+              padding: EdgeInsets.all(space * 0.5),
+              constraints: const BoxConstraints(),
             ),
           ),
           SizedBox(width: space),
+          // Title - flexible, responsive
           Expanded(
-            child: Text(
-              s.my_transactions,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                s.my_transactions,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ),
-          _FilterButton(
-            filterType: filterType,
-            isDescending: isDescending,
-            onTap: onFilterTap,
+          SizedBox(width: space * 0.5),
+          // Filter button - responsive
+          Flexible(
+            child: _FilterButton(
+              filterType: filterType,
+              isDescending: isDescending,
+              onTap: onFilterTap,
+              isSmallScreen: isSmallScreen,
+            ),
           ),
         ],
       ),
@@ -84,11 +99,13 @@ class _FilterButton extends StatelessWidget {
   final String filterType;
   final bool isDescending;
   final VoidCallback onTap;
+  final bool isSmallScreen;
 
   const _FilterButton({
     required this.filterType,
     required this.isDescending,
     required this.onTap,
+    this.isSmallScreen = false,
   });
 
   @override
@@ -97,13 +114,19 @@ class _FilterButton extends StatelessWidget {
     final space = theme.extension<AppSpacing>()!.screenPadding;
     final s = S.of(context)!;
 
+    // Responsive sizing
+    final iconSize = isSmallScreen ? space * 1.2 : space * 1.5;
+    final fontSize = isSmallScreen ? 12.0 : null;
+    final horizontalPadding = isSmallScreen ? space * 0.8 : space * 1.2;
+    final verticalPadding = isSmallScreen ? space * 0.6 : space * 0.8;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(space * 2),
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: space * 1.2,
-          vertical: space * 0.8,
+          horizontal: horizontalPadding,
+          vertical: verticalPadding,
         ),
         decoration: BoxDecoration(
           color: theme.primaryColor.withValues(alpha: 0.1),
@@ -117,23 +140,31 @@ class _FilterButton extends StatelessWidget {
           children: [
             Icon(
               isDescending ? Icons.arrow_downward : Icons.arrow_upward,
-              size: space * 1.5,
+              size: iconSize,
               color: theme.primaryColor,
             ),
             SizedBox(width: space * 0.5),
-            Text(
-              filterType == 'updateAt'
-                  ? s.transaction_updated_time
-                  : s.transaction_created_time,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.primaryColor,
-                fontWeight: FontWeight.w600,
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  filterType == 'updateAt'
+                      ? s.transaction_updated_time
+                      : s.transaction_created_time,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.primaryColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: fontSize,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
             SizedBox(width: space * 0.3),
             Icon(
               Icons.tune,
-              size: space * 1.3,
+              size: iconSize * 0.87, // Slightly smaller than arrow icon
               color: theme.primaryColor,
             ),
           ],

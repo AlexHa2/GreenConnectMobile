@@ -11,11 +11,13 @@ import 'package:go_router/go_router.dart';
 class PaymentMethodBottomSheet extends ConsumerWidget {
   final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
+  final VoidCallback? onApproveSuccess; // Callback when approve is successful to navigate to transaction list
 
   const PaymentMethodBottomSheet({
     super.key,
     required this.transaction,
     required this.onActionCompleted,
+    this.onApproveSuccess,
   });
 
   Future<void> _handleCashPayment(BuildContext context, WidgetRef ref) async {
@@ -66,6 +68,10 @@ class PaymentMethodBottomSheet extends ConsumerWidget {
           type: ToastType.success,
         );
         Navigator.of(context).pop(true); // Return success
+        // Navigate to transaction list page if callback is available
+        if (onApproveSuccess != null) {
+          onApproveSuccess!();
+        }
       } else {
         final state = ref.read(transactionViewModelProvider);
         final errorMsg = state.errorMessage;

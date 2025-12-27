@@ -1315,21 +1315,12 @@ class _CreateRecyclingPostWithAIPageState
                   if (updated['type'] != null) {
                     if (updated['type'] is ScrapPostDetailType) {
                       newType = updated['type'] as ScrapPostDetailType;
-                      debugPrint(
-                          '✅ [UPDATE] Type from dialog (enum): ${newType.name}');
                     } else if (updated['type'] is String) {
                       // If type is returned as string, parse it
                       newType = ScrapPostDetailType.fromJson(
-                          updated['type'] as String);
-                      debugPrint(
-                          '✅ [UPDATE] Type from dialog (string): ${updated['type']} -> ${newType.name}');
-                    } else {
-                      debugPrint(
-                          '⚠️ [UPDATE] Type is unexpected type: ${updated['type'].runtimeType}');
+                        updated['type'] as String,
+                      );
                     }
-                  } else {
-                    debugPrint(
-                        '⚠️ [UPDATE] Type is null, using current: ${itemData.type.name}');
                   }
 
                   Map<String, dynamic>? newAiData = itemData.aiData;

@@ -8,6 +8,7 @@ class TransactionDetailEntity {
   final String unit;
   final double quantity;
   final double finalPrice;
+  final String type;
 
   TransactionDetailEntity({
     required this.transactionId,
@@ -17,5 +18,6 @@ class TransactionDetailEntity {
     required this.unit,
     required this.quantity,
     required this.finalPrice,
+    required this.type,
   });
 }

@@ -10,11 +10,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class RejectButton extends ConsumerWidget {
   final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
+  final VoidCallback? onRejectSuccess; // Callback when reject is successful to navigate to transaction list
 
   const RejectButton({
     super.key,
     required this.transaction,
     required this.onActionCompleted,
+    this.onRejectSuccess,
   });
 
   Future<void> _handleCancel(BuildContext context, WidgetRef ref) async {
@@ -64,6 +66,10 @@ class RejectButton extends ConsumerWidget {
           type: ToastType.success,
         );
         onActionCompleted();
+        // Navigate to transaction list page if callback is available
+        if (onRejectSuccess != null) {
+          onRejectSuccess!();
+        }
       } else {
         final state = ref.read(transactionViewModelProvider);
         final errorMsg = state.errorMessage;
