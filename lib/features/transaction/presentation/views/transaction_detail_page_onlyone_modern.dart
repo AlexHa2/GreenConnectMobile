@@ -164,6 +164,34 @@ class _TransactionDetailPageModernState
     context.pop(_hasChanges);
   }
 
+  void _navigateToTransactionList() {
+    if (!mounted) return;
+
+    // Try to pop first (if we came from list page)
+    if (context.canPop()) {
+      context.pop(true); // Return with changes flag
+    } else {
+      // If can't pop, navigate to the correct list page based on user role
+      String targetRoute;
+      if (_userRole == Role.household) {
+        targetRoute = '/household-list-transactions';
+      } else if (_userRole == Role.individualCollector ||
+          _userRole == Role.businessCollector) {
+        targetRoute = '/collector-list-transactions';
+      } else {
+        // Fallback: if role is not set, don't navigate
+        debugPrint(
+            '⚠️ WARNING: User role not set, cannot navigate to transaction list');
+        return;
+      }
+
+      // Use pushReplacement or go to ensure we navigate correctly
+      if (mounted) {
+        context.go(targetRoute);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -212,6 +240,7 @@ class _TransactionDetailPageModernState
       onRefresh: _onRefresh,
       onActionCompleted: _onActionCompleted,
       onBack: _onBack,
+      onCheckInSuccess: _navigateToTransactionList,
     );
   }
 }
@@ -223,6 +252,7 @@ class _TransactionDetailContent extends StatelessWidget {
   final VoidCallback onRefresh;
   final VoidCallback onActionCompleted;
   final VoidCallback onBack;
+  final VoidCallback? onCheckInSuccess;
 
   const _TransactionDetailContent({
     super.key,
@@ -231,6 +261,7 @@ class _TransactionDetailContent extends StatelessWidget {
     required this.onRefresh,
     required this.onActionCompleted,
     required this.onBack,
+    this.onCheckInSuccess,
   });
 
   @override
@@ -290,6 +321,7 @@ class _TransactionDetailContent extends StatelessWidget {
                 0.0, // No amount difference for single transaction
             onActionCompleted: onActionCompleted,
             transactionsData: null, // No related transactions
+            onCheckInSuccess: onCheckInSuccess, // Pass callback for checkin success
           ),
         ),
 

@@ -195,20 +195,51 @@ class _TransactionsListPageState extends ConsumerState<TransactionsListPage> {
         ? 'transaction-detail'
         : 'transaction-detail-onlyone';
 
-    final result = await context.pushNamed<bool>(
-      routeName,
-      extra: {
-        'transactionId': transaction.transactionId,
-        'postId': postId,
-        'collectorId': collectorId,
-        'slotId': slotId,
-      },
-    );
+    // Debug: Check if InProgress has all required params
+    if (statusEnum == TransactionStatus.inProgress) {
+      final hasPostId = postId != null && postId.isNotEmpty;
+      final hasCollectorId = collectorId.isNotEmpty;
+      final hasSlotId = slotId != null && slotId.isNotEmpty;
 
-    // Refresh list if transaction was updated
-    debugPrint('Returned from detail with result: $result');
-    if (result == true && mounted) {
-      _onRefresh();
+      if (!hasPostId || !hasCollectorId || !hasSlotId) {
+        // Fallback to onlyone route if missing params
+        final fallbackRouteName = 'transaction-detail-onlyone';
+
+        try {
+          final result = await context.pushNamed<bool>(
+            fallbackRouteName,
+            extra: {
+              'transactionId': transaction.transactionId,
+            },
+          );
+          if (result == true && mounted) {
+            _onRefresh();
+          }
+        } catch (e) {
+          debugPrint('❌ [NAVIGATE] Error navigating to $fallbackRouteName: $e');
+        }
+        return;
+      }
+    }
+
+    try {
+      final result = await context.pushNamed<bool>(
+        routeName,
+        extra: {
+          'transactionId': transaction.transactionId,
+          'postId': postId,
+          'collectorId': collectorId,
+          'slotId': slotId,
+        },
+      );
+
+      // Refresh list if transaction was updated
+      if (result == true && mounted) {
+        _onRefresh();
+      }
+    } catch (e, stackTrace) {
+      debugPrint('❌ [NAVIGATE] Error navigating to $routeName: $e');
+      debugPrint('❌ [NAVIGATE] Stack trace: $stackTrace');
     }
   }
 

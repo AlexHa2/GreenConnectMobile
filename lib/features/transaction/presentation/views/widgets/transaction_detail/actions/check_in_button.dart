@@ -10,11 +10,13 @@ import 'package:go_router/go_router.dart';
 class CheckInButton extends ConsumerWidget {
   final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
+  final VoidCallback? onCheckInSuccess; // Callback khi checkin thành công
 
   const CheckInButton({
     super.key,
     required this.transaction,
     required this.onActionCompleted,
+    this.onCheckInSuccess,
   });
 
   Future<void> _handleCheckIn(BuildContext context, WidgetRef ref) async {
@@ -59,28 +61,38 @@ class CheckInButton extends ConsumerWidget {
             s.check_in_success,
             type: ToastType.success,
           );
-          // Navigate to transaction detail (not onlyone) after successful check-in
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (context.mounted) {
-              // Get required params for transaction detail navigation
-              final postId = transaction.offer?.scrapPostId;
-              final collectorId = transaction.scrapCollectorId;
-              final slotId = transaction.timeSlotId ?? transaction.offer?.timeSlotId;
+          
+          // Nếu có callback onCheckInSuccess, gọi nó (dùng cho onlyone page)
+          if (onCheckInSuccess != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                onCheckInSuccess!();
+              }
+            });
+          } else {
+            // Mặc định: Navigate to transaction detail (not onlyone) after successful check-in
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                // Get required params for transaction detail navigation
+                final postId = transaction.offer?.scrapPostId;
+                final collectorId = transaction.scrapCollectorId;
+                final slotId = transaction.timeSlotId ?? transaction.offer?.timeSlotId;
 
-              // Navigate to transaction-detail (full page, not onlyone)
-              // Params postId, collectorId, slotId luôn có khi navigate đến route này
-              context.pushNamed(
-                'transaction-detail',
-                extra: {
-                  'transactionId': transaction.transactionId,
-                  if (postId != null && postId.isNotEmpty) 'postId': postId,
-                  if (collectorId.isNotEmpty) 'collectorId': collectorId,
-                  if (slotId != null && slotId.isNotEmpty) 'slotId': slotId,
-                  // Bỏ hasTransactionData - data sẽ được load từ API
-                },
-              );
-            }
-          });
+                // Navigate to transaction-detail (full page, not onlyone)
+                // Params postId, collectorId, slotId luôn có khi navigate đến route này
+                context.pushNamed(
+                  'transaction-detail',
+                  extra: {
+                    'transactionId': transaction.transactionId,
+                    if (postId != null && postId.isNotEmpty) 'postId': postId,
+                    if (collectorId.isNotEmpty) 'collectorId': collectorId,
+                    if (slotId != null && slotId.isNotEmpty) 'slotId': slotId,
+                    // Bỏ hasTransactionData - data sẽ được load từ API
+                  },
+                );
+              }
+            });
+          }
         } else {
           final state = ref.read(transactionViewModelProvider);
           final errorMsg = state.errorMessage;

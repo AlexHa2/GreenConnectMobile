@@ -1,4 +1,5 @@
 import 'package:GreenConnectMobile/core/enum/buyer_type_status.dart';
+import 'package:GreenConnectMobile/core/enum/role.dart';
 import 'package:GreenConnectMobile/core/helper/app_router_observer.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/login_page.dart';
 import 'package:GreenConnectMobile/features/authentication/presentation/views/register_page.dart';
@@ -482,6 +483,8 @@ final GoRouter greenRouter = GoRouter(
           transactionId: data['transactionId'] as String,
           transaction: data['transaction'] as TransactionEntity?,
           onActionCompleted: data['onActionCompleted'] as VoidCallback,
+          showActionButtons: data['showActionButtons'] as bool? ?? true,
+          userRole: data['userRole'] as Role?,
         );
       },
     ),

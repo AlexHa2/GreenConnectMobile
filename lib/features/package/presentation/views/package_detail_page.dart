@@ -1,7 +1,6 @@
 import 'package:GreenConnectMobile/features/package/domain/entities/package_entity.dart';
 import 'package:GreenConnectMobile/features/package/presentation/providers/package_providers.dart';
 import 'package:GreenConnectMobile/generated/l10n.dart';
-import 'package:GreenConnectMobile/shared/styles/app_color.dart';
 import 'package:GreenConnectMobile/shared/styles/padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -93,19 +92,19 @@ class PackageDetailPage extends ConsumerWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          if (package.price > 0) ...[
-                            SizedBox(width: space * 0.5),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: space * 0.5),
-                              child: Text(
-                                '/ ${s.post}',
-                                style: textTheme.bodyLarge?.copyWith(
-                                  color: theme.scaffoldBackgroundColor
-                                      .withValues(alpha: 0.8),
-                                ),
-                              ),
-                            ),
-                          ],
+                          // if (package.price > 0) ...[
+                          //   SizedBox(width: space * 0.5),
+                          //   Padding(
+                          //     padding: EdgeInsets.only(bottom: space * 0.5),
+                          //     child: Text(
+                          //       '/ ${s.points}',
+                          //       style: textTheme.bodyLarge?.copyWith(
+                          //         color: theme.scaffoldBackgroundColor
+                          //             .withValues(alpha: 0.8),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ],
                         ],
                       ),
                     ],
@@ -152,8 +151,7 @@ class PackageDetailPage extends ConsumerWidget {
                     _buildFeatureItem(
                       icon: Icons.category_outlined,
                       title: s.package_type,
-                      value:
-                          package.packageType == s.freemium_packages ||
+                      value: package.packageType == s.freemium_packages ||
                               package.packageType.toLowerCase() == 'freemium'
                           ? s.freemium_packages
                           : s.paid_packages,
@@ -192,11 +190,13 @@ class PackageDetailPage extends ConsumerWidget {
                   onPressed: packageState.isProcessing
                       ? null
                       : () async {
-                          await packageViewModel.createPaymentUrl(package.packageId);
-                          
+                          await packageViewModel
+                              .createPaymentUrl(package.packageId);
+
                           // Re-read state after async call
-                          final updatedState = ref.read(packageViewModelProvider);
-                          
+                          final updatedState =
+                              ref.read(packageViewModelProvider);
+
                           if (context.mounted) {
                             if (updatedState.paymentUrl != null) {
                               // Navigate to payment webview with URL
@@ -208,7 +208,7 @@ class PackageDetailPage extends ConsumerWidget {
                                   'packageName': package.name,
                                 },
                               );
-                              
+
                               // Clear payment data after navigation
                               packageViewModel.clearPaymentData();
                             } else if (updatedState.errorMessage != null) {
@@ -261,15 +261,12 @@ class PackageDetailPage extends ConsumerWidget {
   Widget _buildTypeBadge(String type, ThemeData theme, double space, S s) {
     final isFreemium =
         type == s.freemium_packages || type.toLowerCase() == 'freemium';
-    final badgeColor = isFreemium
-        ? theme.primaryColor.withValues(alpha: 0.1)
-        : AppColors.warning.withValues(alpha: 0.1);
     final badgeText = isFreemium ? s.freemium_packages : s.paid_packages;
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: space, vertical: space * 0.5),
       decoration: BoxDecoration(
-        color: badgeColor,
+        color: theme.scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(space * 0.5),
       ),
       child: Text(

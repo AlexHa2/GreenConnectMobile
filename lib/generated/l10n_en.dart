@@ -204,6 +204,20 @@ class SEn extends S {
   String get featured_packages => 'Featured Packages';
 
   @override
+  String get useful_tips => 'Useful Tips';
+
+  @override
+  String get tip_earn_points_regularly =>
+      'Earn points regularly to receive more offers';
+
+  @override
+  String get tip_use_points_for_packages =>
+      'Use points to purchase service packages at discounted prices';
+
+  @override
+  String get tip_view_history => 'View history to track your point usage';
+
+  @override
   String get value => 'value';
 
   @override

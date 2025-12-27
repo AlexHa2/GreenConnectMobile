@@ -237,8 +237,14 @@ class TransactionItemsSection extends StatelessWidget {
     }
   }
 
-  /// Get type for a transaction item by matching scrapCategoryId with scrapPostDetails
+  /// Get type for a transaction item - use type from transactionDetails directly
   String? _getTypeForItem(TransactionDetailEntity item) {
+    // Use type directly from transactionDetails if available
+    if (item.type.isNotEmpty) {
+      return item.type;
+    }
+
+    // Fallback: try to get type from scrapPostDetails if transactionDetails doesn't have it
     final scrapPost = transaction.offer?.scrapPost;
     if (scrapPost == null || scrapPost.scrapPostDetails.isEmpty) {
       return null;

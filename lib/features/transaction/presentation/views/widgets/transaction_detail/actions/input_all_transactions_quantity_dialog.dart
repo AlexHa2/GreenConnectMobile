@@ -643,7 +643,7 @@ class _InputAllTransactionsQuantityDialogState
                                     _isLoading = false;
                                   });
                                   CustomToast.show(context, s.operation_failed,
-                                      type: ToastType.error);
+                                      type: ToastType.error,);
                                 }
                               }
                             },
