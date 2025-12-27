@@ -11,6 +11,7 @@ class ApproveButton extends ConsumerWidget {
   final VoidCallback onActionCompleted;
   final bool skipPaymentMethod;
   final VoidCallback? onApproveSuccess; // Callback when approve is successful to navigate to transaction list
+  final double? amountDifference; // Amount difference for payment
 
   const ApproveButton({
     super.key,
@@ -18,6 +19,7 @@ class ApproveButton extends ConsumerWidget {
     required this.onActionCompleted,
     this.skipPaymentMethod = false,
     this.onApproveSuccess,
+    this.amountDifference,
   });
 
   Future<void> _handleComplete(BuildContext context, WidgetRef ref) async {
@@ -92,6 +94,7 @@ class ApproveButton extends ConsumerWidget {
           transaction: transaction,
           onActionCompleted: onActionCompleted,
           onApproveSuccess: onApproveSuccess, // Pass callback to navigate to transaction list
+          amountDifference: amountDifference,
         );
       },
     );

@@ -7,11 +7,13 @@ import 'package:go_router/go_router.dart';
 class RequestPaymentButton extends StatelessWidget {
   final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
+  final double? amountDifference; // Amount difference for payment
 
   const RequestPaymentButton({
     super.key,
     required this.transaction,
     required this.onActionCompleted,
+    this.amountDifference,
   });
 
   Future<void> _handleRequestPayment(BuildContext context) async {
@@ -22,6 +24,7 @@ class RequestPaymentButton extends StatelessWidget {
         'transactionId': transaction.transactionId,
         'transaction': transaction,
         'onActionCompleted': onActionCompleted,
+        'amountDifference': amountDifference,
       },
     );
 

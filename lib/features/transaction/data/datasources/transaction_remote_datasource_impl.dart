@@ -254,9 +254,12 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   }
 
   @override
-  Future<String> getTransactionQRCode(String transactionId) async {
+  Future<String> getTransactionQRCode(String transactionId, double totalAmount) async {
     final res = await _apiClient.get(
       '$_transactionsBaseUrl/$transactionId/qr-code',
+      queryParameters: {
+        'totalAmount': totalAmount,
+      },
     );
     // API returns QR code URL in qrUrl field
     if (res.data is Map && res.data['qrUrl'] != null) {

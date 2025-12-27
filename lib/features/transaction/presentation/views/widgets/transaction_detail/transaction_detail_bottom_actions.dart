@@ -254,7 +254,8 @@ class TransactionDetailBottomActions extends ConsumerWidget {
                       'transaction': transaction,
                       'onActionCompleted': onActionCompleted,
                       'showActionButtons': false, 
-                      'userRole': userRole, 
+                      'userRole': userRole,
+                      'amountDifference': amountDifference,
                     },
                   );
 
@@ -386,7 +387,8 @@ class TransactionDetailBottomActions extends ConsumerWidget {
                   transaction: transaction,
                   onActionCompleted: onActionCompleted,
                   skipPaymentMethod: false,
-                  onApproveSuccess: onApproveSuccess, 
+                  onApproveSuccess: onApproveSuccess,
+                  amountDifference: amountDifference,
                 ),
               ),
             ],
@@ -434,6 +436,7 @@ class TransactionDetailBottomActions extends ConsumerWidget {
                   onActionCompleted: onActionCompleted,
                   skipPaymentMethod: true,
                   onApproveSuccess: onApproveSuccess,
+                  amountDifference: amountDifference,
                 ),
               ),
             ],

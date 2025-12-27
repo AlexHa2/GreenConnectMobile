@@ -61,8 +61,8 @@ abstract class TransactionRemoteDataSource {
     required int pageSize,
   });
 
-  /// GET /v1/transactions/{id}/qr-code
-  Future<String> getTransactionQRCode(String transactionId);
+  /// GET /v1/transactions/{id}/qr-code?totalAmount={totalAmount}
+  Future<String> getTransactionQRCode(String transactionId, double totalAmount);
 
   /// GET /api/v1/credit-transaction
   Future<CreditTransactionListResponseModel> getCreditTransactions({
