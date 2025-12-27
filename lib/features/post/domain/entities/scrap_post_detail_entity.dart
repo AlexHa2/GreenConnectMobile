@@ -5,7 +5,7 @@ class ScrapPostDetailEntity {
   final String scrapCategoryId;
   final ScrapCategoryEntity? scrapCategory;
   final String amountDescription;
-  final String imageUrl;
+  final String? imageUrl;
   final String? status;
   final String type;
 
@@ -13,7 +13,7 @@ class ScrapPostDetailEntity {
     required this.scrapCategoryId,
     this.scrapCategory,
     required this.amountDescription,
-    required this.imageUrl,
+    this.imageUrl,
     this.status,
     required this.type,
   });

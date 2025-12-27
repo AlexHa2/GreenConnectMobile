@@ -6,7 +6,7 @@ class ScrapPostDetailModel {
   final String scrapCategoryId;
   final ScrapCategoryModel? scrapCategory;
   final String amountDescription;
-  final String imageUrl;
+  final String? imageUrl;
   final String? status;
   final String type;
 
@@ -14,7 +14,7 @@ class ScrapPostDetailModel {
     required this.scrapCategoryId,
     this.scrapCategory,
     required this.amountDescription,
-    required this.imageUrl,
+    this.imageUrl,
     this.status,
     required this.type,
   });
@@ -26,10 +26,10 @@ class ScrapPostDetailModel {
       scrapCategory: json['scrapCategory'] != null
           ? ScrapCategoryModel.fromJson(json['scrapCategory'])
           : null,
-      amountDescription: json['amountDescription'],
+      amountDescription: json['amountDescription'] ?? '',
       imageUrl: json['imageUrl'],
       status: json['status'],
-      type: json['type'],
+      type: json['type'] ?? '',
     );
   }
 
