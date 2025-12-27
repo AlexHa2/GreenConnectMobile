@@ -59,13 +59,13 @@ class CreateScrapPostTimeSlotModel {
 class CreateScrapPostDetailModel {
   final String scrapCategoryId;
   final String amountDescription;
-  final String imageUrl;
+  final String? imageUrl;
   final String? type;
 
   CreateScrapPostDetailModel({
     required this.scrapCategoryId,
     required this.amountDescription,
-    required this.imageUrl,
+    this.imageUrl,
     this.type,
   });
 
