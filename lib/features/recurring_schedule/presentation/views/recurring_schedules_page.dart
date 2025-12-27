@@ -736,59 +736,69 @@ class _RecurringSchedulesPageState
                                               () => isSubmitting = true,
                                             );
 
-                                            final entity =
-                                                RecurringScheduleEntity(
-                                              id: '',
-                                              title: title,
-                                              description: description,
-                                              address: address,
-                                              location: location!,
-                                              mustTakeAll: mustTakeAll,
-                                              dayOfWeek: dayOfWeek,
-                                              startTime: timeToIso(start),
-                                              endTime: timeToIso(end),
-                                              isActive: true,
-                                              scheduleDetails: [
-                                                RecurringScheduleDetailEntity(
-                                                  id: '',
-                                                  recurringScheduleId: '',
-                                                  scrapCategoryId:
-                                                      scrapCategoryId,
-                                                  quantity: quantity,
-                                                  unit: unitCtrl
-                                                          .text.trim().isEmpty
-                                                      ? null
-                                                      : unitCtrl.text.trim(),
-                                                  amountDescription: amountDescCtrl
-                                                          .text.trim().isEmpty
-                                                      ? null
-                                                      : amountDescCtrl
-                                                          .text.trim(),
-                                                  type: selectedType.label,
-                                                ),
-                                              ],
-                                              lastRunDate: null,
-                                              createdAt: null,
-                                            );
+                                            try {
+                                              final backendDayOfWeek =
+                                                  dayOfWeek == 7 ? 0 : dayOfWeek;
 
-                                            final ok = await ref
-                                                .read(
-                                                  recurringScheduleViewModelProvider
-                                                      .notifier,
-                                                )
-                                                .createSchedule(entity);
-
-                                            if (!mounted) return;
-
-                                            if (ok) {
-                                              CustomToast.show(
-                                                context,
-                                                s.recurring_schedules_create_success,
-                                                type: ToastType.success,
+                                              final entity = RecurringScheduleEntity(
+                                                id: '',
+                                                title: title,
+                                                description: description,
+                                                address: address,
+                                                location: location!,
+                                                mustTakeAll: mustTakeAll,
+                                                dayOfWeek: backendDayOfWeek,
+                                                startTime: timeToIso(start),
+                                                endTime: timeToIso(end),
+                                                isActive: true,
+                                                scheduleDetails: [
+                                                  RecurringScheduleDetailEntity(
+                                                    id: '',
+                                                    recurringScheduleId: '',
+                                                    scrapCategoryId: scrapCategoryId,
+                                                    quantity: quantity,
+                                                    unit: unitCtrl.text.trim().isEmpty
+                                                        ? null
+                                                        : unitCtrl.text.trim(),
+                                                    amountDescription:
+                                                        amountDescCtrl.text.trim().isEmpty
+                                                            ? null
+                                                            : amountDescCtrl.text.trim(),
+                                                    type: selectedType.label,
+                                                  ),
+                                                ],
+                                                lastRunDate: null,
+                                                createdAt: null,
                                               );
-                                              Navigator.pop(context);
-                                              await _onRefresh();
-                                            } else {
+
+                                              final ok = await ref
+                                                  .read(
+                                                    recurringScheduleViewModelProvider
+                                                        .notifier,
+                                                  )
+                                                  .createSchedule(entity);
+
+                                              if (!mounted) return;
+
+                                              if (ok) {
+                                                CustomToast.show(
+                                                  context,
+                                                  s.recurring_schedules_create_success,
+                                                  type: ToastType.success,
+                                                );
+                                                Navigator.pop(context);
+                                                await _onRefresh();
+                                              } else {
+                                                CustomToast.show(
+                                                  context,
+                                                  s.recurring_schedules_create_failed,
+                                                  type: ToastType.error,
+                                                );
+                                                setModalState(
+                                                  () => isSubmitting = false,
+                                                );
+                                              }
+                                            } catch (e) {
                                               CustomToast.show(
                                                 context,
                                                 s.recurring_schedules_create_failed,
@@ -1138,9 +1148,10 @@ class _RecurringSchedulesPageState
                             ),
                           ),
                           title: Text(
-                            '$weekday · $start - $end',
+                            item.title,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700,
+                              fontSize: 16,
                             ),
                           ),
                           subtitle: Padding(
@@ -1148,17 +1159,58 @@ class _RecurringSchedulesPageState
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (created.isNotEmpty)
-                                  Text(
-                                    created,
-                                    style: theme.textTheme.bodySmall,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.schedule_rounded,
+                                      size: 16,
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        '$weekday · $start - $end',
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                          color: theme.colorScheme.onSurfaceVariant,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (item.address.isNotEmpty) ...[
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        Icons.location_on_outlined,
+                                        size: 16,
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Expanded(
+                                        child: Text(
+                                          item.address,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: theme.textTheme.bodyMedium?.copyWith(
+                                            color: theme.colorScheme.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                if (lastRun.isNotEmpty)
+                                ],
+                                if (created.isNotEmpty)
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 2),
+                                    padding: const EdgeInsets.only(top: 6),
                                     child: Text(
-                                      lastRun,
-                                      style: theme.textTheme.bodySmall,
+                                      'Tạo lúc: $created',
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
                                     ),
                                   ),
                               ],
