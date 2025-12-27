@@ -15,12 +15,14 @@ class InputDetailsButton extends ConsumerWidget {
   final TransactionEntity transaction;
   final VoidCallback onActionCompleted;
   final post_entity.PostTransactionsResponseEntity? transactionsData;
+  final VoidCallback? onInputDetailsSuccess; // Callback when input details is successful to navigate to transaction list
 
   const InputDetailsButton({
     super.key,
     required this.transaction,
     required this.onActionCompleted,
     this.transactionsData,
+    this.onInputDetailsSuccess,
   });
 
   Future<void> _handleInputDetails(BuildContext context, WidgetRef ref) async {
@@ -91,6 +93,7 @@ class InputDetailsButton extends ConsumerWidget {
               transactionsData: latestTransactionsData, // Use fresh data from _loadPostTransactions
               transaction: transaction,
               onActionCompleted: onActionCompleted,
+              onInputDetailsSuccess: onInputDetailsSuccess, // Pass callback to navigate to transaction list
             ),
           );
         },
@@ -166,10 +169,15 @@ class InputDetailsButton extends ConsumerWidget {
           type: ToastType.success,
         );
 
-        // Notify parent to refresh detail page (don't return to list)
+        // Notify parent to refresh detail page
         onActionCompleted();
         // Close the dialog
         Navigator.of(context).pop();
+        
+        // Navigate to transaction list page if callback is available
+        if (onInputDetailsSuccess != null) {
+          onInputDetailsSuccess!();
+        }
       } else {
         final state = ref.read(transactionViewModelProvider);
         final errorMsg = state.errorMessage;

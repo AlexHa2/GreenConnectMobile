@@ -90,6 +90,7 @@ class PaymentMethodBottomSheet extends ConsumerWidget {
   }
 
   Future<void> _handleBankTransfer(BuildContext context, WidgetRef ref) async {
+    
     // Navigate to QR code screen
     final result = await context.push(
       '/qr-payment',
@@ -99,6 +100,12 @@ class PaymentMethodBottomSheet extends ConsumerWidget {
         'onActionCompleted': onActionCompleted,
       },
     );
+    
+    // Refresh transaction data when coming back from QR payment page
+    // This ensures UI updates if bank info was updated
+    if (context.mounted) {
+      onActionCompleted();
+    }
 
     if (result == true && context.mounted) {
       Navigator.of(context).pop(true); // Return success to main screen
@@ -107,6 +114,7 @@ class PaymentMethodBottomSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    
     final theme = Theme.of(context);
     final spacing = theme.extension<AppSpacing>()!.screenPadding;
     final s = S.of(context)!;

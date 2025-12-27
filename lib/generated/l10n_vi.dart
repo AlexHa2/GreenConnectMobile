@@ -765,7 +765,7 @@ class SVi extends S {
   String get fullName => 'Họ và tên';
 
   @override
-  String get fullName_hint => 'Alex ha';
+  String get fullName_hint => 'Nguyễn Văn A';
 
   @override
   String get gender => 'Giới tính';
@@ -1202,7 +1202,7 @@ class SVi extends S {
 
   @override
   String get verification_already_pending =>
-      'Bạn đã có yêu cầu xác minh đang chờ duyệt. Vui lòng đợi phê duyệt.';
+      'Căn cước đã được sử dụng cho hoặc không hợp lệ';
 
   @override
   String get verification_conflict_error =>
@@ -3281,4 +3281,7 @@ class SVi extends S {
 
   @override
   String get item_quantity => 'Số lượng vật phẩm';
+
+  @override
+  String get error_time_in_past => 'Không thể chọn giờ trong quá khứ';
 }

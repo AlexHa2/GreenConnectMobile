@@ -167,28 +167,25 @@ class _TransactionDetailPageModernState
   void _navigateToTransactionList() {
     if (!mounted) return;
 
-    // Try to pop first (if we came from list page)
-    if (context.canPop()) {
-      context.pop(true); // Return with changes flag
+    // Determine the correct list page based on user role
+    String targetRoute;
+    if (_userRole == Role.household) {
+      targetRoute = '/household-list-transactions';
+    } else if (_userRole == Role.individualCollector ||
+        _userRole == Role.businessCollector) {
+      targetRoute = '/collector-list-transactions';
     } else {
-      // If can't pop, navigate to the correct list page based on user role
-      String targetRoute;
-      if (_userRole == Role.household) {
-        targetRoute = '/household-list-transactions';
-      } else if (_userRole == Role.individualCollector ||
-          _userRole == Role.businessCollector) {
-        targetRoute = '/collector-list-transactions';
-      } else {
-        // Fallback: if role is not set, don't navigate
-        debugPrint(
-            '⚠️ WARNING: User role not set, cannot navigate to transaction list');
-        return;
-      }
+      // Fallback: if role is not set, default to collector list
+      // (since checkin is typically done by collector)
+      debugPrint(
+          '⚠️ WARNING: User role not set, defaulting to collector list');
+      targetRoute = '/collector-list-transactions';
+    }
 
-      // Use pushReplacement or go to ensure we navigate correctly
-      if (mounted) {
-        context.go(targetRoute);
-      }
+    // For checkin success, always navigate to list page (don't try to pop)
+    // This ensures collector always goes back to transaction list after checkin
+    if (mounted && context.mounted) {
+      context.go(targetRoute);
     }
   }
 

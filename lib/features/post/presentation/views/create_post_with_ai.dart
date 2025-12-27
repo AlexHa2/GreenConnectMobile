@@ -65,6 +65,7 @@ class _CreateRecyclingPostWithAIPageState
   bool _addressFound = false;
   bool _isTakeAll = false;
   bool _isSubmitting = false;
+  String? _addressError;
 
   // ===== Step State =====
   int _currentStep = 0;
@@ -201,6 +202,10 @@ class _CreateRecyclingPostWithAIPageState
     setState(() {
       _location = location;
       _addressFound = found;
+      // Clear address error when location is updated
+      if (found && location != null) {
+        _addressError = null;
+      }
     });
   }
 
@@ -298,6 +303,10 @@ class _CreateRecyclingPostWithAIPageState
           savedImageFilePath: result.savedImageFilePath,
         );
         _scrapItems.addAll(newItems);
+        // Auto set isTakeAll to false if items <= 1
+        if (_scrapItems.length <= 1) {
+          _isTakeAll = false;
+        }
       }
 
       _isAIFilled = true;
@@ -447,6 +456,10 @@ class _CreateRecyclingPostWithAIPageState
 
   bool _validatePostInfoStep(bool showToast) {
     final s = S.of(context)!;
+
+    // Trigger form validation to show red errors on fields
+    _formKey.currentState?.validate();
+
     final title = _titleController.text.trim();
     final description = _descriptionController.text.trim();
     final address = _pickupAddressController.text.trim();
@@ -454,6 +467,20 @@ class _CreateRecyclingPostWithAIPageState
     final titleError = _validateTitle(title, s);
     final descError = _validateDescription(description, s);
     final addressError = _validateAddress(address, s);
+
+    // Update address error state
+    String? newAddressError;
+    if (addressError != null) {
+      newAddressError = addressError;
+    } else if (address.isNotEmpty && (_location == null || !_addressFound)) {
+      newAddressError = s.error_invalid_address;
+    } else {
+      newAddressError = null;
+    }
+
+    setState(() {
+      _addressError = newAddressError;
+    });
 
     if (titleError != null || descError != null || addressError != null) {
       if (showToast) {
@@ -788,6 +815,10 @@ class _CreateRecyclingPostWithAIPageState
           imageFile: imageFile,
         ),
       );
+      // Auto set isTakeAll to false if items <= 1
+      if (_scrapItems.length <= 1) {
+        _isTakeAll = false;
+      }
     });
 
     CustomToast.show(context, s.item_added_success, type: ToastType.success);
@@ -809,6 +840,7 @@ class _CreateRecyclingPostWithAIPageState
       _currentStep = 0;
       _aiAnalyzeImage = null;
       _isAIFilled = false;
+      _addressError = null;
     });
 
     _formKey.currentState?.reset();
@@ -1146,6 +1178,7 @@ class _CreateRecyclingPostWithAIPageState
               onSearchAddress: () {},
               onGetCurrentLocation: _openAddressPicker,
               addressFound: _addressFound,
+              addressValidationError: _addressError,
             ),
           ),
           SizedBox(height: spacing.screenPadding),
@@ -1355,7 +1388,13 @@ class _CreateRecyclingPostWithAIPageState
                   });
                 }
               },
-              onDelete: (item) => setState(() => _scrapItems.remove(item)),
+              onDelete: (item) => setState(() {
+                    _scrapItems.remove(item);
+                    // Auto set isTakeAll to false if items <= 1
+                    if (_scrapItems.length <= 1) {
+                      _isTakeAll = false;
+                    }
+                  }),
             ),
         ],
       ),
@@ -1364,6 +1403,15 @@ class _CreateRecyclingPostWithAIPageState
 
   // ignore: non_constant_identifier_names
   Widget _buildStep3_Review() {
+    // Auto set isTakeAll to false if items <= 1 when entering review step
+    if (_scrapItems.length <= 1 && _isTakeAll) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() => _isTakeAll = false);
+        }
+      });
+    }
+
     return _pageContainer(
       child: ReviewPage(
         title: _titleController.text,
