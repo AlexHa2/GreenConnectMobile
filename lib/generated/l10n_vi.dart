@@ -184,7 +184,7 @@ class SVi extends S {
   String get reward_details => 'Chi tiết phần thưởng';
 
   @override
-  String get package_dashboard => 'Bảng điều khiển gói';
+  String get package_dashboard => 'Dashboard gói';
 
   @override
   String get current_points => 'Điểm hiện tại';
@@ -203,6 +203,21 @@ class SVi extends S {
 
   @override
   String get featured_packages => 'Gói nổi bật';
+
+  @override
+  String get useful_tips => 'Mẹo hữu ích';
+
+  @override
+  String get tip_earn_points_regularly =>
+      'Tích điểm thường xuyên để nhận nhiều ưu đãi hơn';
+
+  @override
+  String get tip_use_points_for_packages =>
+      'Sử dụng điểm để mua các gói dịch vụ với giá ưu đãi';
+
+  @override
+  String get tip_view_history =>
+      'Xem lịch sử để theo dõi việc sử dụng điểm của bạn';
 
   @override
   String get value => 'Giá trị';
