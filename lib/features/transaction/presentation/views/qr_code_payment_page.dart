@@ -20,6 +20,7 @@ class QRCodePaymentPage extends ConsumerStatefulWidget {
   final VoidCallback onActionCompleted;
   final bool showActionButtons; // If false: hide "Complete" button, only show back to transaction list button
   final Role? userRole; // User role to navigate to correct transaction list page
+  final double? amountDifference; // Amount difference to use for QR code generation
 
   const QRCodePaymentPage({
     super.key,
@@ -28,6 +29,7 @@ class QRCodePaymentPage extends ConsumerStatefulWidget {
     required this.onActionCompleted,
     this.showActionButtons = true, // Default true to maintain backward compatibility
     this.userRole,
+    this.amountDifference,
   });
 
   @override
@@ -114,8 +116,38 @@ class _QRCodePaymentPageState extends ConsumerState<QRCodePaymentPage> {
     });
 
     try {
+      // Use amountDifference if provided, otherwise fallback to transaction.totalPrice
+      double totalAmount;
+      
+      if (widget.amountDifference != null) {
+        // Use amountDifference (absolute value for payment amount)
+        totalAmount = widget.amountDifference!.abs();
+      } else {
+        // Fallback: Get transaction to extract totalPrice
+        TransactionEntity? transaction = widget.transaction;
+        if (transaction == null) {
+          final state = ref.read(transactionViewModelProvider);
+          transaction = state.detailData;
+        }
+        
+        if (transaction == null) {
+          if (mounted) {
+            setState(() {
+              _errorMessage = 'Transaction not found';
+              _isLoadingQR = false;
+            });
+          }
+          return;
+        }
+        
+        totalAmount = transaction.totalPrice;
+      }
+
       final viewModel = ref.read(transactionViewModelProvider.notifier);
-      final qrCode = await viewModel.getTransactionQRCode(widget.transactionId);
+      final qrCode = await viewModel.getTransactionQRCode(
+        widget.transactionId,
+        totalAmount,
+      );
 
       if (mounted) {
         setState(() {

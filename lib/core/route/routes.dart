@@ -485,6 +485,7 @@ final GoRouter greenRouter = GoRouter(
           onActionCompleted: data['onActionCompleted'] as VoidCallback,
           showActionButtons: data['showActionButtons'] as bool? ?? true,
           userRole: data['userRole'] as Role?,
+          amountDifference: data['amountDifference'] as double?,
         );
       },
     ),

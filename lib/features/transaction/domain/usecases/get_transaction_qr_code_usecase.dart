@@ -5,7 +5,7 @@ class GetTransactionQRCodeUsecase {
 
   GetTransactionQRCodeUsecase(this._repository);
 
-  Future<String> call(String transactionId) async {
-    return await _repository.getTransactionQRCode(transactionId);
+  Future<String> call(String transactionId, double totalAmount) async {
+    return await _repository.getTransactionQRCode(transactionId, totalAmount);
   }
 }
